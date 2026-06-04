@@ -33,7 +33,8 @@
     "match:moneylines": "tsx src/scanner/match-moneylines.ts",
     "arb:find": "tsx src/scanner/arb-find.ts",
     "rank:overround": "tsx src/scanner/rank.ts",
-    "token:set": "tsx src/scrapers/token-set.ts"
+    "token:set": "tsx src/scrapers/token-set.ts",
+    "chance:offers": "tsx src/services/chance-engine.ts"
   },
   "dependencies": {
     "better-sqlite3": "^12.9.0",
