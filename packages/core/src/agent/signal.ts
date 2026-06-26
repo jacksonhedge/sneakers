@@ -36,19 +36,13 @@ export function evaluateSignal(s: PriceState, q: MarketQuote): SignalDecision | 
   const pUp = impliedProbUp(s)
   if (pUp > q.yesPrice) {
     const edge = pUp - q.yesPrice
-    const edgeBps = Math.round(edge * 10000)
-    if (edgeBps > 0) {
-      return { side: 'YES', impliedProb: pUp, marketProb: q.yesPrice, edgeBps }
-    }
+    return { side: 'YES', impliedProb: pUp, marketProb: q.yesPrice, edgeBps: Math.round(edge * 10000) }
   }
   const noImplied = 1 - pUp
   const noMarket = 1 - q.yesPrice
   if (noImplied > noMarket) {
     const edge = noImplied - noMarket
-    const edgeBps = Math.round(edge * 10000)
-    if (edgeBps > 0) {
-      return { side: 'NO', impliedProb: noImplied, marketProb: noMarket, edgeBps }
-    }
+    return { side: 'NO', impliedProb: noImplied, marketProb: noMarket, edgeBps: Math.round(edge * 10000) }
   }
   return null
 }
