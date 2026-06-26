@@ -40,4 +40,8 @@ describe('evaluateGate trades', () => {
       evaluateGate(bot({ lastTradeAtMs: 1_000_000 - COOLDOWN_MS }), decision, ctx()),
       { action: 'trade', sizeUsdc: 40 },
     ))
+  test('trades at the exact act-window boundary (secondsToClose === actWindowSec)', () =>
+    assert.deepEqual(evaluateGate(bot(), decision, ctx({ secondsToClose: 7 })), { action: 'trade', sizeUsdc: 40 }))
+  test('trades at exactly the min edge (edgeBps === minEdgeBps)', () =>
+    assert.deepEqual(evaluateGate(bot(), { ...decision, edgeBps: 500 }, ctx()), { action: 'trade', sizeUsdc: 40 }))
 })
