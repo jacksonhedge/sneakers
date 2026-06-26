@@ -28,7 +28,7 @@ describe('evaluateTick', () => {
     assert.equal(out.gate?.action, 'trade')
   })
 
-  test('no edge -> both null', () => {
+  test('no edge -> decision flows to gate', () => {
     const t: WindowTick = {
       window,
       price: { openRefPrice: 100, spot: 100, secondsToClose: 4, recentVolPerSec: 1 },
@@ -36,7 +36,10 @@ describe('evaluateTick', () => {
       bot,
       nowMs: 296_000,
     }
-    assert.deepEqual(evaluateTick(t), { decision: null, gate: null })
+    const out = evaluateTick(t)
+    assert.ok(out.decision)
+    assert.equal(out.decision.edgeBps, 0)
+    assert.deepEqual(out.gate, { action: 'skip', reason: 'edge_below_min' })
   })
 
   test('edge present but gate skips (paused)', () => {

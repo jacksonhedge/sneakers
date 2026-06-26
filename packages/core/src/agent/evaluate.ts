@@ -17,7 +17,7 @@ export interface TickOutcome {
 
 export function evaluateTick(t: WindowTick): TickOutcome {
   const decision = evaluateSignal(t.price, t.quote)
-  if (!decision || decision.edgeBps <= 0) return { decision: null, gate: null }
+  if (!decision) return { decision: null, gate: null }
   const gate = evaluateGate(t.bot, decision, { secondsToClose: t.price.secondsToClose, nowMs: t.nowMs })
   return { decision, gate }
 }
