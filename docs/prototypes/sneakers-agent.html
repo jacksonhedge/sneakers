@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sneakers Agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #FFFFFF;
+    --surface: #F7F9FC;
+    --surface-2: #EEF3FA;
+    --border: #E3E9F2;
+    --ink: #0A1B3D;        /* navy text */
+    --dim: #5C6B86;
+    --faint: #97A4BC;
+    --blue: #1B49D6;       /* brand primary */
+    --blue-deep: #0A2A6B;
+    --blue-soft: rgba(27,73,214,0.08);
+    --red: #E0263A;        /* accent / down */
+    --red-soft: rgba(224,38,58,0.09);
+    --green: #0EA85A;      /* up */
+    --green-soft: rgba(14,168,90,0.11);
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --shadow: 0 1px 2px rgba(10,27,61,0.04), 0 6px 20px rgba(10,27,61,0.05);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); min-height: 100vh; line-height: 1.45; }
+  /* patriotic hairline at the very top */
+  body::before { content: ""; position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 50;
+    background: linear-gradient(90deg, var(--blue) 0 38%, #ffffff 38% 62%, var(--red) 62% 100%); }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 0 20px 150px; }
+
+  /* ---------- header ---------- */
+  header { display: flex; align-items: center; justify-content: space-between; padding: 26px 0 18px; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand .brandlogo { height: 44px; width: auto; display: block; }
+  .brand small { color: var(--blue); font-weight: 700; font-size: 12px; letter-spacing: 0.07em; text-transform: uppercase;
+    border-left: 1px solid var(--border); padding-left: 10px; }
+  .badge { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.06em; color: var(--blue);
+    border: 1px solid rgba(27,73,214,0.28); background: var(--blue-soft); padding: 6px 10px; border-radius: 8px;
+    text-transform: uppercase; display: inline-flex; align-items: center; gap: 6px; }
+  .badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--blue); animation: blink 2.4s ease-in-out infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
+  .status-col { display: flex; flex-direction: column; align-items: flex-end; gap: 9px; }
+  .speed { display: flex; align-items: center; gap: 3px; }
+  .speed .slabel { font-family: var(--mono); font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase;
+    color: var(--faint); margin-right: 5px; }
+  .speed button { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--dim); background: transparent;
+    border: 1px solid transparent; padding: 5px 9px; border-radius: 7px; cursor: pointer; transition: color .15s, background .15s, border-color .15s; }
+  .speed button:hover { color: var(--ink); }
+  .speed button.active { color: var(--blue); background: var(--blue-soft); }
+  .speed button.active[data-speed="turbo"] { color: var(--red); background: var(--red-soft); }
+  .speed button.active[data-speed="off"] { color: var(--dim); background: var(--surface-2); }
+
+  /* ---------- venue desk ---------- */
+  .desk { display: flex; align-items: stretch; gap: 10px; padding: 6px 0 30px; flex-wrap: wrap; }
+  .venue { position: relative; display: flex; align-items: center; gap: 10px; padding: 11px 15px 11px 11px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 13px; min-width: 0;
+    transition: border-color .25s, box-shadow .35s, background .35s, transform .2s; }
+  .venue .logo { width: 32px; height: 32px; border-radius: 9px; flex: none; overflow: hidden;
+    box-shadow: inset 0 0 0 1px rgba(10,27,61,0.06); }
+  .venue .logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .venue .vmeta { display: flex; flex-direction: column; line-height: 1.2; }
+  .venue .vname { font-weight: 600; font-size: 14px; letter-spacing: -0.01em; color: var(--ink); }
+  .venue .vsub { font-family: var(--mono); font-size: 10px; color: var(--faint); letter-spacing: 0.02em; }
+  .venue.mirror { background: var(--bg); }
+  .venue.mirror .logo { width: 26px; height: 26px; font-size: 12px; border-radius: 8px; opacity: .9; }
+  .venue.mirror .vname { font-size: 13px; color: var(--dim); }
+  /* trade flashes */
+  .venue.fire-up { border-color: rgba(14,168,90,0.55); background: var(--green-soft);
+    box-shadow: 0 0 0 3px rgba(14,168,90,0.16), 0 6px 22px rgba(14,168,90,0.22); transform: translateY(-2px); }
+  .venue.fire-down { border-color: rgba(224,38,58,0.55); background: var(--red-soft);
+    box-shadow: 0 0 0 3px rgba(224,38,58,0.16), 0 6px 22px rgba(224,38,58,0.22); transform: translateY(-2px); }
+  .venue .floatwrap { position: absolute; left: 0; right: 0; bottom: calc(100% + 6px); height: 0;
+    display: flex; justify-content: center; pointer-events: none; }
+  .venue .float { position: absolute; bottom: 0; font-family: var(--mono); font-size: 12px; font-weight: 700;
+    white-space: nowrap; text-shadow: 0 1px 4px rgba(255,255,255,0.85); animation: rise 1.5s ease-out forwards; }
+  @keyframes rise { 0%{opacity:0; transform: translateY(8px) scale(.88);} 14%{opacity:1; transform: translateY(0) scale(1);}
+    100%{opacity:0; transform: translateY(-52px) scale(1);} }
+  .desk .pulse-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); margin-left: 2px; box-shadow: 0 0 7px var(--green); }
+  .venue.idle .live { display: none; }
+
+  /* ---------- hero ---------- */
+  .hero { padding: 2px 0 4px; }
+  .hero .label { color: var(--dim); font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+  .hero .value { font-size: clamp(44px, 9vw, 66px); font-weight: 800; letter-spacing: -0.035em;
+    font-variant-numeric: tabular-nums; line-height: 1; color: var(--ink); }
+  .hero .delta { margin-top: 12px; display: inline-flex; align-items: center; gap: 9px; font-family: var(--mono);
+    font-size: 15px; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .hero .delta .period { color: var(--faint); font-weight: 400; }
+  .up { color: var(--green); } .down { color: var(--red); }
+
+  /* ---------- chart ---------- */
+  .chart-area { margin: 16px 0 6px; position: relative; }
+  svg.chart { width: 100%; height: 220px; display: block; overflow: visible; cursor: crosshair; }
+  .chart-line { fill: none; stroke: var(--blue); stroke-width: 2.25; stroke-linecap: round; stroke-linejoin: round; }
+  .zero-line { stroke: var(--border); stroke-width: 1; stroke-dasharray: 3 5; }
+  .scrub-line { stroke: var(--faint); stroke-width: 1; opacity: 0; }
+  .scrub-dot { fill: var(--blue); stroke: var(--bg); stroke-width: 3; opacity: 0; r: 6; }
+  .scrub-time { position: absolute; top: -2px; transform: translateX(-50%); font-family: var(--mono); font-size: 11px;
+    color: var(--dim); opacity: 0; pointer-events: none; white-space: nowrap; font-weight: 600; }
+
+  .ranges { display: flex; gap: 4px; margin: 8px 0 38px; }
+  .ranges button { font-family: var(--mono); font-size: 12px; font-weight: 600; letter-spacing: 0.03em; color: var(--dim);
+    background: transparent; border: none; padding: 7px 13px; border-radius: 8px; cursor: pointer; transition: color .15s, background .15s; }
+  .ranges button:hover { color: var(--ink); }
+  .ranges button.active { color: var(--blue); background: var(--blue-soft); }
+
+  /* ---------- markets ---------- */
+  .sec-head { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 14px; }
+  .sec-head h2 { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim); }
+  .sec-head .meta { font-family: var(--mono); font-size: 12px; color: var(--faint); }
+  .markets { display: flex; flex-direction: column; gap: 8px; }
+  .market { display: grid; grid-template-columns: 1.4fr 0.9fr 1.5fr 0.95fr; align-items: center; gap: 12px;
+    background: var(--bg); border: 1px solid var(--border); border-radius: 14px; padding: 15px 18px;
+    box-shadow: var(--shadow); transition: border-color .15s, transform .15s; }
+  .market:hover { border-color: #cdd8ea; transform: translateY(-1px); }
+  .market.held { border-color: rgba(27,73,214,0.35); }
+  .m-asset { display: flex; align-items: center; gap: 11px; }
+  .m-icon { width: 34px; height: 34px; border-radius: 9px; flex: none; display: grid; place-items: center;
+    font-family: var(--mono); font-weight: 700; font-size: 11px; color: #fff; }
+  .ic-btc { background: linear-gradient(135deg,#F7931A,#ffb454); }
+  .ic-eth { background: linear-gradient(135deg,#6f7bdc,#aab2ff); }
+  .ic-sol { background: linear-gradient(135deg,#14F195,#9945FF); }
+  .ic-xrp { background: linear-gradient(135deg,#64748b,#94a3b8); }
+  .m-asset .name { font-weight: 600; font-size: 15px; letter-spacing: -0.01em; }
+  .m-asset .sub { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+  .m-window .countdown { font-family: var(--mono); font-weight: 600; font-size: 14px; color: var(--ink);
+    font-variant-numeric: tabular-nums; display: inline-flex; align-items: center; gap: 7px; }
+  .countdown .ring { width: 8px; height: 8px; border-radius: 50%; background: var(--dim); }
+  .countdown.soon { color: var(--red); }
+  .countdown.soon .ring { background: var(--red); animation: pulse .9s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{ box-shadow: 0 0 0 0 rgba(224,38,58,.5);} 50%{ box-shadow: 0 0 0 5px rgba(224,38,58,0);} }
+  .m-prices { display: flex; gap: 8px; }
+  .price { font-family: var(--mono); font-size: 12px; font-weight: 500; padding: 5px 8px; border-radius: 7px;
+    border: 1px solid var(--border); color: var(--dim); min-width: 62px; text-align: center; }
+  .price b { color: var(--ink); font-weight: 600; }
+  .price.yes.lead { border-color: rgba(14,168,90,0.4); color: var(--green); background: var(--green-soft); }
+  .m-pos { text-align: right; }
+  .pos-tag { font-family: var(--mono); font-size: 11px; font-weight: 600; padding: 5px 9px; border-radius: 7px;
+    background: var(--blue-soft); color: var(--blue); letter-spacing: 0.02em; white-space: nowrap; }
+  .pos-none { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+
+  /* ---------- rules bar ---------- */
+  .rules { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(16px) saturate(140%); border-top: 1px solid var(--border); }
+  .rules-inner { max-width: 900px; margin: 0 auto; padding: 14px 20px; display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+  .rule { display: flex; flex-direction: column; gap: 2px; }
+  .rule .k { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint); }
+  .rule .v { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; display: inline-flex; align-items: center; gap: 6px; color: var(--ink); }
+  .rule .v .preset-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); }
+  .rules .spacer { flex: 1; }
+  .edit-btn { font-family: var(--sans); font-size: 13px; font-weight: 600; color: #fff; background: var(--blue);
+    border: none; padding: 10px 18px; border-radius: 10px; cursor: pointer; transition: transform .12s, background .12s; }
+  .edit-btn:hover { transform: translateY(-1px); background: var(--blue-deep); }
+  .edit-btn.kill { background: transparent; color: var(--red); border: 1px solid rgba(224,38,58,0.4); }
+  .edit-btn.kill:hover { background: var(--red-soft); }
+
+  /* ---------- settings / gear ---------- */
+  .hright { display: flex; align-items: center; gap: 14px; }
+  .gear { width: 42px; height: 42px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface);
+    color: var(--ink); font-size: 18px; cursor: pointer; display: grid; place-items: center; flex: none;
+    transition: background .15s, border-color .15s, transform .15s; }
+  .gear:hover { background: var(--surface-2); border-color: #cdd8ea; transform: rotate(35deg); }
+
+  /* ---------- modal ---------- */
+  .modal-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(10,27,61,0.4); backdrop-filter: blur(5px);
+    display: flex; align-items: center; justify-content: center; padding: 20px; animation: fadeIn .15s ease; }
+  .modal-overlay[hidden] { display: none; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal { width: 100%; max-width: 470px; background: var(--bg); border: 1px solid var(--border); border-radius: 20px;
+    box-shadow: 0 26px 80px rgba(10,27,61,0.32); max-height: 88vh; overflow-y: auto; }
+  .modal .mhead { display: flex; align-items: flex-start; justify-content: space-between; padding: 22px 24px 4px; }
+  .modal .mhead h3 { font-size: 19px; font-weight: 800; letter-spacing: -0.025em; }
+  .modal .mclose { background: none; border: none; font-size: 22px; color: var(--dim); cursor: pointer; line-height: 1; padding: 2px 4px; }
+  .modal .msub { padding: 4px 24px 0; color: var(--dim); font-size: 13px; line-height: 1.5; }
+  .modal .msub b { color: var(--green); font-weight: 600; }
+  .oauth-banner { margin: 16px 24px 2px; padding: 11px 14px; border-radius: 12px; background: var(--blue-soft);
+    border: 1px solid rgba(27,73,214,0.18); font-size: 12.5px; color: var(--blue-deep); display: flex; gap: 9px; align-items: flex-start; }
+  .mbody { padding: 14px 24px 4px; display: flex; flex-direction: column; gap: 16px; }
+  .vblock { border: 1px solid var(--border); border-radius: 15px; padding: 15px; }
+  .vblock .bhead { display: flex; align-items: center; gap: 10px; margin-bottom: 13px; }
+  .vblock .bhead .logo { width: 28px; height: 28px; border-radius: 8px; overflow: hidden; flex: none; box-shadow: inset 0 0 0 1px rgba(10,27,61,0.06); }
+  .vblock .bhead .logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .vblock .bhead .nm { font-weight: 700; font-size: 15px; flex: 1; }
+  .oauth-btn { font-family: var(--mono); font-size: 10.5px; font-weight: 600; color: var(--faint); background: var(--surface);
+    border: 1px dashed var(--border); border-radius: 8px; padding: 6px 10px; cursor: not-allowed; white-space: nowrap; }
+  .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+  .field:last-child { margin-bottom: 0; }
+  .field label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--faint); }
+  .field input, .field textarea { font-family: var(--mono); font-size: 13px; color: var(--ink); background: var(--surface);
+    border: 1px solid var(--border); border-radius: 9px; padding: 9px 11px; width: 100%; transition: border-color .15s, background .15s; }
+  .field textarea { resize: vertical; min-height: 58px; line-height: 1.4; }
+  .field input:focus, .field textarea:focus { outline: none; border-color: var(--blue); background: var(--bg); }
+  .field input::placeholder, .field textarea::placeholder { color: #b9c4d6; }
+  .mfoot { padding: 10px 24px 22px; display: flex; gap: 10px; justify-content: flex-end; align-items: center; }
+  .mfoot .note { margin-right: auto; font-size: 11px; color: var(--faint); }
+  .btn-secondary { font-family: var(--sans); font-size: 13px; font-weight: 600; color: var(--dim); background: transparent;
+    border: 1px solid var(--border); padding: 10px 16px; border-radius: 10px; cursor: pointer; }
+  .btn-secondary:hover { color: var(--ink); border-color: #cdd8ea; }
+  .btn-primary { font-family: var(--sans); font-size: 13px; font-weight: 600; color: #fff; background: var(--blue);
+    border: none; padding: 10px 18px; border-radius: 10px; cursor: pointer; transition: background .15s; }
+  .btn-primary:hover { background: var(--blue-deep); }
+  .vsub.ok { color: var(--green) !important; }
+
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 6px; }
+
+  @media (max-width: 640px) {
+    .market { grid-template-columns: 1.3fr 1fr; grid-row-gap: 12px; }
+    .m-prices { justify-content: flex-end; } .m-pos { grid-column: 2; }
+    .rules-inner { gap: 16px; } .rule.hide-sm { display: none; }
+    .venue .vsub { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand"><img class="brandlogo" src="../../apps/platform/public/logo.png" alt="Sneakers" /><small>Agent</small></div>
+      <div class="hright">
+        <div class="status-col">
+          <span class="badge"><span class="dot"></span>Dry-run</span>
+          <div class="speed" id="speed">
+            <span class="slabel">Speed</span>
+            <button data-speed="off">Off</button>
+            <button data-speed="calm">Calm</button>
+            <button data-speed="active" class="active">Active</button>
+            <button data-speed="turbo">Turbo</button>
+          </div>
+        </div>
+        <button class="gear" id="openSettings" aria-label="API keys and settings" title="API keys">&#9881;</button>
+      </div>
+    </header>
+
+    <!-- venue desk: logos light green/red as trades fire -->
+    <div class="desk" id="desk">
+      <div class="venue idle" data-venue="polymarket">
+        <span class="logo"><img src="../../apps/platform/public/SneakersLogos/partners/polymarket.png" alt="Polymarket" /></span>
+        <span class="vmeta"><span class="vname">Polymarket</span><span class="vsub">5M · 15M · live</span></span>
+        <span class="floatwrap"></span>
+      </div>
+      <div class="venue idle" data-venue="kalshi">
+        <span class="logo"><img src="../../apps/platform/public/SneakersLogos/partners/kalshi.png" alt="Kalshi" /></span>
+        <span class="vmeta"><span class="vname">Kalshi</span><span class="vsub">15M · live</span></span>
+        <span class="floatwrap"></span>
+      </div>
+      <div class="venue mirror idle" data-venue="kalshi">
+        <span class="logo"><img src="../../apps/platform/public/SneakersLogos/partners/coinbase_predict.png" alt="Coinbase" /></span>
+        <span class="vmeta"><span class="vname">Coinbase</span><span class="vsub">via Kalshi</span></span>
+        <span class="floatwrap"></span>
+      </div>
+      <div class="venue mirror idle" data-venue="kalshi">
+        <span class="logo"><img src="../../apps/platform/public/SneakersLogos/partners/robinhood_events.png" alt="Robinhood" /></span>
+        <span class="vmeta"><span class="vname">Robinhood</span><span class="vsub">via Kalshi</span></span>
+        <span class="floatwrap"></span>
+      </div>
+    </div>
+
+    <section class="hero">
+      <div class="label" id="heroLabel">Returns · Today</div>
+      <div class="value" id="heroValue">$2,248.10</div>
+      <div class="delta up" id="heroDelta">
+        <span class="arrow">▲</span><span id="heroDeltaVal">$248.10 (12.4%)</span>
+        <span class="period" id="heroPeriod">Today</span>
+      </div>
+    </section>
+
+    <div class="chart-area">
+      <svg class="chart" id="chart" preserveAspectRatio="none" viewBox="0 0 800 220">
+        <defs>
+          <linearGradient id="fillGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--blue)" stop-opacity="0.18" />
+            <stop offset="100%" stop-color="var(--blue)" stop-opacity="0" />
+          </linearGradient>
+        </defs>
+        <line class="zero-line" id="zeroLine" x1="0" x2="800" y1="190" y2="190" />
+        <path id="chartFill" fill="url(#fillGrad)" d="" />
+        <path class="chart-line" id="chartLine" d="" />
+        <line class="scrub-line" id="scrubLine" y1="0" y2="220" />
+        <circle class="scrub-dot" id="scrubDot" cx="0" cy="0" />
+      </svg>
+      <div class="scrub-time" id="scrubTime"></div>
+    </div>
+
+    <div class="ranges" id="ranges">
+      <button data-range="1D" class="active">1D</button>
+      <button data-range="1W">1W</button>
+      <button data-range="1M">1M</button>
+      <button data-range="3M">3M</button>
+      <button data-range="ALL">ALL</button>
+    </div>
+
+    <div class="sec-head"><h2>Live Markets</h2><span class="meta">Polymarket · Kalshi</span></div>
+    <div class="markets" id="markets"></div>
+  </div>
+
+  <div class="rules">
+    <div class="rules-inner">
+      <div class="rule"><span class="k">Risk</span><span class="v"><span class="preset-dot"></span>Balanced</span></div>
+      <div class="rule hide-sm"><span class="k">Loss cap</span><span class="v">$150 / day</span></div>
+      <div class="rule"><span class="k">Deposit (sim)</span><span class="v">$2,000</span></div>
+      <div class="rule hide-sm"><span class="k">Liquidity live</span><span class="v">$500</span></div>
+      <span class="spacer"></span>
+      <button class="edit-btn kill">Kill</button>
+      <button class="edit-btn">Edit rules</button>
+    </div>
+  </div>
+
+  <!-- ===== API keys / connect modal ===== -->
+  <div class="modal-overlay" id="settingsModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mtitle">
+      <div class="mhead">
+        <h3 id="mtitle">Connect your venues</h3>
+        <button class="mclose" id="closeSettings" aria-label="Close">&times;</button>
+      </div>
+      <p class="msub"><b>Non-custodial</b> — your keys stay scoped to your own venue account. Sneakers never holds your funds and can be revoked anytime from the venue.</p>
+
+      <div class="oauth-banner">
+        <span>&#128274;</span>
+        <span>One-click <b>OAuth</b> connect is coming soon. For now, paste your API keys below.</span>
+      </div>
+
+      <div class="mbody">
+        <div class="vblock">
+          <div class="bhead">
+            <span class="logo"><img src="../../apps/platform/public/SneakersLogos/partners/polymarket.png" alt="Polymarket" /></span>
+            <span class="nm">Polymarket</span>
+            <button class="oauth-btn" disabled>OAuth · soon</button>
+          </div>
+          <div class="field"><label>CLOB API Key</label><input type="text" placeholder="pm_xxxxxxxxxxxx" autocomplete="off" /></div>
+          <div class="field"><label>Secret</label><input type="password" placeholder="••••••••••••" autocomplete="off" /></div>
+          <div class="field"><label>Passphrase</label><input type="password" placeholder="••••••••" autocomplete="off" /></div>
+        </div>
+
+        <div class="vblock">
+          <div class="bhead">
+            <span class="logo"><img src="../../apps/platform/public/SneakersLogos/partners/kalshi.png" alt="Kalshi" /></span>
+            <span class="nm">Kalshi</span>
+            <button class="oauth-btn" disabled>OAuth · soon</button>
+          </div>
+          <div class="field"><label>API Key ID</label><input type="text" placeholder="xxxxxxxx-xxxx-xxxx" autocomplete="off" /></div>
+          <div class="field"><label>Private Key (RSA PEM)</label><textarea placeholder="-----BEGIN PRIVATE KEY-----" autocomplete="off"></textarea></div>
+        </div>
+      </div>
+
+      <div class="mfoot">
+        <span class="note">Coinbase &amp; Robinhood route through Kalshi.</span>
+        <button class="btn-secondary" id="cancelSettings">Cancel</button>
+        <button class="btn-primary" id="saveSettings">Save keys</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function () {
+  "use strict";
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function gen(n, start, drift, vol, seed) {
+    let v = start, s = seed, out = [v];
+    for (let i = 1; i < n; i++) { s = (s * 9301 + 49297) % 233280; const r = s / 233280 - 0.5; v += drift + r * vol; out.push(v); }
+    return out;
+  }
+  const SERIES = {
+    "1D":  { data: gen(78, 2000, 3.2, 26, 11), label: "Today" },
+    "1W":  { data: gen(84, 1760, 5.8, 34, 5),  label: "Past week" },
+    "1M":  { data: gen(90, 1180, 12, 48, 23),  label: "Past month" },
+    "3M":  { data: gen(96, 420, 19, 70, 71),   label: "Past 3 months" },
+    "ALL": { data: gen(110, 0, 21, 95, 3),     label: "All time" }
+  };
+  const W = 800, H = 220, PAD = 8;
+  const money = (n) => (n < 0 ? "-$" : "$") + Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  let current = "1D", pts = [];
+  const $ = (id) => document.getElementById(id);
+  const line = $("chartLine"), fill = $("chartFill"), zero = $("zeroLine"),
+        scrubLine = $("scrubLine"), scrubDot = $("scrubDot"), scrubTime = $("scrubTime"), chart = $("chart");
+
+  function render(range) {
+    current = range;
+    const d = SERIES[range].data;
+    const min = Math.min(...d), max = Math.max(...d), span = (max - min) || 1, base = d[0];
+    pts = d.map((v, i) => ({ x: PAD + (i / (d.length - 1)) * (W - PAD * 2), y: PAD + (1 - (v - min) / span) * (H - PAD * 2), v }));
+    const p = pts.map((q, i) => (i ? "L" : "M") + q.x.toFixed(1) + " " + q.y.toFixed(1)).join(" ");
+    line.setAttribute("d", p);
+    fill.setAttribute("d", p + " L" + pts[pts.length-1].x.toFixed(1) + " " + H + " L" + pts[0].x.toFixed(1) + " " + H + " Z");
+    const yBase = PAD + (1 - (base - min) / span) * (H - PAD * 2);
+    zero.setAttribute("y1", yBase); zero.setAttribute("y2", yBase);
+    setHero(d[d.length-1], base, SERIES[range].label, false);
+  }
+  function setHero(value, base, periodLabel, scrubbing) {
+    const delta = value - base, pct = base !== 0 ? (delta / Math.abs(base)) * 100 : 100, up = delta >= 0;
+    $("heroValue").textContent = money(value);
+    const hd = $("heroDelta"); hd.className = "delta " + (up ? "up" : "down");
+    hd.querySelector(".arrow").textContent = up ? "▲" : "▼";
+    $("heroDeltaVal").textContent = money(Math.abs(delta)) + " (" + (up ? "" : "-") + Math.abs(pct).toFixed(2) + "%)";
+    $("heroPeriod").textContent = scrubbing ? "" : periodLabel;
+    $("heroLabel").textContent = "Returns · " + periodLabel;
+  }
+  $("ranges").addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    [...e.currentTarget.children].forEach((c) => c.classList.toggle("active", c === b));
+    render(b.dataset.range);
+  });
+  chart.addEventListener("pointermove", (e) => {
+    const r = chart.getBoundingClientRect(), svgX = ((e.clientX - r.left) / r.width) * W;
+    let nearest = pts[0], dist = Infinity;
+    for (const q of pts) { const dd = Math.abs(q.x - svgX); if (dd < dist) { dist = dd; nearest = q; } }
+    scrubLine.style.opacity = 1; scrubDot.style.opacity = 1;
+    scrubLine.setAttribute("x1", nearest.x); scrubLine.setAttribute("x2", nearest.x);
+    scrubDot.setAttribute("cx", nearest.x); scrubDot.setAttribute("cy", nearest.y);
+    setHero(nearest.v, SERIES[current].data[0], SERIES[current].label, true);
+    scrubTime.style.opacity = 1; scrubTime.style.left = (nearest.x / W) * r.width + "px"; scrubTime.textContent = money(nearest.v);
+  });
+  chart.addEventListener("pointerleave", () => {
+    scrubLine.style.opacity = 0; scrubDot.style.opacity = 0; scrubTime.style.opacity = 0;
+    const d = SERIES[current].data; setHero(d[d.length-1], d[0], SERIES[current].label, false);
+  });
+  render("1D");
+
+  // ----- live markets + countdowns -----
+  const MARKETS = [
+    { asset: "BTC", ic: "ic-btc", win: "5M",  end: 47,  yes: 88, held: true,  side: "YES", note: "sniped lag" },
+    { asset: "ETH", ic: "ic-eth", win: "5M",  end: 47,  yes: 71, held: false },
+    { asset: "BTC", ic: "ic-btc", win: "15M", end: 432, yes: 55, held: true,  side: "NO",  note: "watching" },
+    { asset: "SOL", ic: "ic-sol", win: "15M", end: 432, yes: 48, held: false },
+    { asset: "XRP", ic: "ic-xrp", win: "15M", end: 432, yes: 61, held: false }
+  ];
+  const elM = $("markets");
+  MARKETS.forEach((m) => {
+    m.t = m.end;
+    const row = document.createElement("div");
+    row.className = "market" + (m.held ? " held" : "");
+    const yesLead = m.yes >= 50;
+    row.innerHTML =
+      '<div class="m-asset"><span class="m-icon ' + m.ic + '">' + m.asset + '</span>' +
+        '<span><span class="name">' + m.asset + ' Up/Down</span><br><span class="sub">' + m.win + ' window</span></span></div>' +
+      '<div class="m-window"><span class="countdown" data-cd><span class="ring"></span><span data-t>--:--</span></span></div>' +
+      '<div class="m-prices"><span class="price yes' + (yesLead ? ' lead' : '') + '">YES <b>.' + String(m.yes).padStart(2,'0') + '</b></span>' +
+        '<span class="price no">NO <b>.' + String(100 - m.yes).padStart(2,'0') + '</b></span></div>' +
+      '<div class="m-pos">' + (m.held ? '<span class="pos-tag">● ' + m.side + ' · ' + m.note + '</span>' : '<span class="pos-none">no edge</span>') + '</div>';
+    elM.appendChild(row);
+    m._cd = row.querySelector("[data-cd]"); m._t = row.querySelector("[data-t]");
+  });
+  const fmtClock = (s) => s <= 0 ? "settling" : Math.floor(s/60) + ":" + String(s%60).padStart(2,"0");
+  function tick() {
+    MARKETS.forEach((m) => { m.t -= 1; if (m.t < 0) m.t = m.win === "5M" ? 300 : 900;
+      m._t.textContent = fmtClock(m.t); m._cd.classList.toggle("soon", m.t <= 10 && m.t > 0); });
+  }
+  tick(); setInterval(tick, 1000);
+
+  // ----- venue desk: light up on trades, paced by execution speed -----
+  const venues = [...document.querySelectorAll(".venue")];
+  function venuesFor(name) { return venues.filter((v) => v.dataset.venue === name); }
+  let rng = 99;
+  function rand() { rng = (rng * 9301 + 49297) % 233280; return rng / 233280; }
+
+  // gap = ms between trade events; sites = how many platforms fire at once
+  const SPEEDS = {
+    off:    { gap: [0, 0],       sites: 0, hold: 600 },
+    calm:   { gap: [2600, 4200], sites: 1, hold: 700 },
+    active: { gap: [650, 1300],  sites: 1, hold: 650 },
+    turbo:  { gap: [110, 300],   sites: 2, hold: 420 }   // a few/sec across all platforms
+  };
+  let currentSpeed = "active", speedTimer = null;
+
+  function spawnFloat(el, up, amt) {
+    if (reduce) return;
+    const wrap = el.querySelector(".floatwrap");
+    const f = document.createElement("span");
+    f.className = "float";
+    f.textContent = (up ? "+$" : "-$") + amt + ".00";
+    f.style.color = up ? "var(--green)" : "var(--red)";
+    wrap.appendChild(f);
+    setTimeout(() => f.remove(), 1550);
+    while (wrap.children.length > 10) wrap.removeChild(wrap.firstChild); // cap the stack
+  }
+  function flash(el, up, amt, showSpark, hold) {
+    el.classList.remove("fire-up", "fire-down"); void el.offsetWidth;
+    el.classList.add(up ? "fire-up" : "fire-down");
+    if (showSpark) spawnFloat(el, up, amt);
+    clearTimeout(el._ft);
+    el._ft = setTimeout(() => el.classList.remove("fire-up", "fire-down"), hold);
+  }
+  function fireOn(name, hold) {
+    const up = rand() < 0.6, amt = 3 + Math.floor(rand() * 15);
+    venuesFor(name).forEach((el, i) => flash(el, up, amt, i === 0, hold)); // spark on the primary tile only
+  }
+  function loop() {
+    const cfg = SPEEDS[currentSpeed];
+    if (cfg.sites > 0) {
+      const pool = rand() < 0.5 ? ["polymarket", "kalshi"] : ["kalshi", "polymarket"];
+      for (let i = 0; i < cfg.sites && i < pool.length; i++) fireOn(pool[i], cfg.hold);
+    }
+    const [lo, hi] = cfg.gap;
+    speedTimer = setTimeout(loop, lo + rand() * (hi - lo));
+  }
+  function restart() { clearTimeout(speedTimer); if (!reduce && currentSpeed !== "off") setTimeout(loop, 300); }
+
+  document.getElementById("speed").addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    [...e.currentTarget.querySelectorAll("button")].forEach((c) => c.classList.toggle("active", c === b));
+    currentSpeed = b.dataset.speed;
+    restart();
+  });
+  restart();
+
+  // ----- settings / API-keys modal -----
+  const modal = document.getElementById("settingsModal");
+  const openModal = () => { modal.hidden = false; const f = modal.querySelector("input"); if (f) setTimeout(() => f.focus(), 40); };
+  const closeModal = () => { modal.hidden = true; };
+  document.getElementById("openSettings").addEventListener("click", openModal);
+  document.getElementById("closeSettings").addEventListener("click", closeModal);
+  document.getElementById("cancelSettings").addEventListener("click", closeModal);
+  modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !modal.hidden) closeModal(); });
+  document.getElementById("saveSettings").addEventListener("click", () => {
+    document.querySelectorAll(".venue:not(.mirror) .vsub").forEach((sub) => { sub.textContent = "✓ connected"; sub.classList.add("ok"); });
+    closeModal();
+  });
+})();
+</script>
+</body>
+</html>
