@@ -10,6 +10,9 @@ export function erf(x: number): number {
 }
 
 // Standard normal cumulative distribution function.
+// NOTE: built on the A&S erf approximation (max error ~1e-7), so it is NOT
+// exact at x=0 (returns ~0.5000000005, not 0.5). Downstream code must not
+// assume normCdf(0) === 0.5 exactly.
 export function normCdf(x: number): number {
   return 0.5 * (1 + erf(x / Math.SQRT2))
 }

@@ -34,6 +34,11 @@ export function impliedProbUp(s: PriceState): number {
 // means no edge.
 export function evaluateSignal(s: PriceState, q: MarketQuote): SignalDecision | null {
   const pUp = impliedProbUp(s)
+  // Because normCdf is an approximation (not exact at gap=0), at spot==open
+  // pUp can exceed yesPrice by ~5e-10, yielding a side:'YES' decision whose
+  // edge rounds to 0 bps. That is intentional — the gate rejects it as
+  // 'edge_below_min'. Do NOT "fix" these strict inequalities to assume an
+  // exact 0.5 midpoint.
   if (pUp > q.yesPrice) {
     const edge = pUp - q.yesPrice
     return { side: 'YES', impliedProb: pUp, marketProb: q.yesPrice, edgeBps: Math.round(edge * 10000) }
