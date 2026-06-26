@@ -9,7 +9,8 @@
     "clean": "rm -rf dist",
     "db:migrate": "bash db/scripts/migrate.sh",
     "db:verify": "tsx db/scripts/verify.ts",
-    "db:load-jsonl": "tsx db/scripts/load-jsonl.ts"
+    "db:load-jsonl": "tsx db/scripts/load-jsonl.ts",
+    "test": "node --import tsx --test \"src/**/*.test.ts\""
   },
   "dependencies": {
     "pg": "^8.12.0"
