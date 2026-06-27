@@ -1,90 +1,38 @@
-# Sneakers Trading Bot
+# Sneakers
 
-Prediction market trading bot for finding and executing extreme probability (97%+) trades on crypto markets.
+**A Bitcoin investment arm — powered by an automatic trading bot.**
 
-## Quick Start
+Sneakers runs a ~90% automatic **up/down trading bot** on short-interval **Bitcoin** prediction markets (5 / 10 / 15-minute windows). The goal: let anyone grow a portfolio through perpetual, mostly-hands-off exposure to Bitcoin's short-term moves — the bot does the trading, you set the risk.
 
-```bash
-# Install dependencies
-npm install
+> **Status:** the deterministic decision core is built and unit-tested (dry-run / paper-trading). Live trading is gated behind a mandatory dry-run proof period. See the design spec and plans under `docs/superpowers/`.
 
-# Start the opportunity hunter (finds 97%+ markets)
-npm run hunter
+## How it works
 
-# In another terminal, start the market data logger
-npm run logger
+- **Markets** — short-interval Bitcoin "up or down" windows (5/10/15-min), aggregated across the only two venues with real trading APIs: **Polymarket** and **Kalshi**. (Coinbase and Robinhood resell Kalshi's orderbook, so integrating Kalshi covers them.)
+- **The edge** — a last-second mispricing engine. In the final seconds of a window, if Bitcoin's spot price already implies the outcome but the market hasn't repriced, the bot takes the lagging side.
+- **Your dial** — a single **risk preset** (Bunker → Cautious → Balanced → Aggressive → Max) plus a **loss cap**. The bot trades automatically inside those guardrails; layered kill switches and a circuit breaker fail closed.
+- **Dry-run first** — every bot paper-trades real live markets against a simulated balance, marked to real settlement, building a genuine track record before any real money.
 
-# In another terminal, analyze outcomes as markets resolve
-npm run momentum
-```
+## Repo layout (pnpm + Turborepo monorepo)
 
-## Core Scripts
+- `apps/platform` — Next.js 16 web app (live at sneakersterminal.com); the Agent dashboard lives here (`/agent`, planned).
+- `apps/trader` — market data + analysis scripts.
+- `apps/ios` — SwiftUI app.
+- `packages/core` — shared core. **The deterministic Agent decision core is at `packages/core/src/agent/`** (window model · 5 risk presets · last-second-mispricing signal · execution gate · dry-run settlement). 44 `node:test` unit tests.
+- `docs/superpowers/specs/` — design spec • `docs/superpowers/plans/` — implementation plans • `docs/prototypes/sneakers-agent.html` — interactive UI prototype.
 
-- **`npm run hunter`** — Find and track 97%+ probability opportunities
-- **`npm run logger`** — Continuously capture all market prices and momentum
-- **`npm run analyzer`** — Measure win rates by probability band (calibration)
-- **`npm run momentum`** — Correlate price momentum near expiry with outcomes
-- **`npm run bitcoin`** — Analyze Bitcoin volatility by hour (1-year history)
-- **`npm run dashboard`** — Web UI for viewing live trades
-
-## Manual Outcome Logging
-
-After markets resolve, log the outcome:
+## Develop
 
 ```bash
-npm run log-outcome 90370 YES
-npm run log-outcome 90367 NO
-npm run log-outcome -- --show    # Show all unresolved
+pnpm install
+pnpm --filter @sneakers/core test     # Agent-core unit tests (node:test)
+pnpm platform                          # run the web app
 ```
 
-## Project Structure
+## Roadmap
 
-```
-src/
-├── opportunity-hunter.ts       # Main scanner for 97%+ opportunities
-├── limitless-executor.ts       # Places orders on Limitless
-├── market-data-logger.ts       # Captures all market prices
-├── outcome-analyzer.ts         # Measures calibration (win rates)
-├── momentum-analyzer.ts        # Correlates momentum with outcomes
-├── log-outcome.ts              # Manual outcome logging
-├── bitcoin-analyzer.ts         # Bitcoin volatility analysis
-├── dashboard-server.ts         # Web dashboard
-└── ...
-```
+See `ROADMAP.md`. Immediate next steps: DB schema + live Polymarket/Kalshi/spot feeds + the always-on Railway worker, then the real `/agent` route in `apps/platform`.
 
-## Data & Logs
+---
 
-All logs are saved to a `logs/` directory (created automatically):
-- `logs/market-data/price-history.jsonl` — All price points
-- `logs/market-data/market-snapshots.jsonl` — Full market snapshots
-- `logs/market-outcomes.json` — Tracked opportunities with outcomes
-- `logs/trades-YYYY-MM-DD.json` — Daily executed trades
-
-## Environment Variables
-
-Requires a `.env` file with API keys:
-
-```
-LIMITLESS_API_KEY=your_api_key
-LIMITLESS_API_SECRET=your_api_secret
-CRYPTO_COM_API_KEY=your_key
-CRYPTO_COM_API_SECRET=your_secret
-```
-
-## Key Features
-
-✅ **Opportunity Hunter** — Finds markets at 97-99%+ probability in final 10 minutes  
-✅ **Market Data Logger** — Captures all prices with momentum tracking  
-✅ **Outcome Analyzer** — Measures if Limitless probabilities are calibrated correctly  
-✅ **Momentum Analyzer** — Finds patterns: which momentum events hurt bets?  
-✅ **Bitcoin Analyzer** — Identifies peak volatility hours for prediction markets  
-
-## Typical Workflow
-
-1. Start hunter and logger (runs continuously)
-2. Opportunities found are automatically tracked
-3. As markets expire, log outcomes manually
-4. Run analyzers to find patterns and gaps
-5. Use insights to improve trading strategy
-
-See `TRACKING_SYSTEM.md` for detailed instructions.
+_Earlier operational tooling (opportunity hunter, market-data logger, calibration analyzers) is documented in `TRACKING_SYSTEM.md` and remains available via the `pnpm` scripts in the root `package.json`._

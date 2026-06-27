@@ -6,6 +6,20 @@ Single source of truth for what's next. `WORKLOG.md` is the retrospective side (
 
 ---
 
+## North Star — Sneakers Agent (Bitcoin investment arm)
+
+Sneakers is a **Bitcoin investment arm**: a ~90% automatic **up/down trading bot** for short-interval **Bitcoin** markets (5/10/15-min) that lets people grow a portfolio with perpetual potential returns. The bot is the product; the markets terminal is supporting context.
+
+- **Edge:** last-second mispricing on Bitcoin up/down windows. **Venues:** Polymarket (5M+15M) + Kalshi (15M) are the only real APIs; Coinbase/Robinhood resell Kalshi.
+- **User dial:** one risk preset (Bunker→Max) + loss cap. Dry-run/paper first, real money gated behind a proof period.
+- **Build sequence (Rung 1 = paper-live):**
+  - [x] **Agent decision core** — `packages/core/src/agent/` (window, presets, signal, gate, settlement, orchestrator); 44 tests, dry-run P&L. Branch `feat/sneakers-agent`.
+  - [ ] **Plan 2** — DB migration `004` (windows/signals/trades/bot_configs) + live Polymarket/Kalshi/spot-oracle feeds + always-on Railway worker writing dry-run trades to Postgres. *#1 risk: oracle parity (match the Chainlink feed Polymarket settles 5-min BTC on).*
+  - [ ] **Plan 3** — real `/agent` route in `apps/platform` reading from Postgres (prototype: `docs/prototypes/sneakers-agent.html`).
+- **Later rungs:** non-custodial real money (reuses existing `/api/balance` + credential wizard), then custodial (parked, needs KYC/custody/counsel). Full design: `docs/superpowers/specs/2026-06-25-sneakers-crypto-bot-terminal-design.md`.
+
+---
+
 ## Shipped
 
 - [x] **Monorepo bootstrap** — pnpm + Turborepo, `apps/trader` + `apps/platform` + `packages/core|sdk` skeletons. Branch `chore/monorepo-bootstrap`.
