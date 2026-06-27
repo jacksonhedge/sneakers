@@ -48,6 +48,12 @@ export async function POST(req: Request) {
       { onConflict: 'user_id' },
     )
   if (settingsErr) {
+    console.error('[kill-switch] autotrade_settings upsert failed', {
+      user_id: user.id,
+      email: user.email,
+      active,
+      err: settingsErr,
+    })
     return NextResponse.json(
       { ok: false, error: settingsErr.message },
       { status: 500 },

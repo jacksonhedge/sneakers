@@ -157,15 +157,26 @@ export default async function AdminScrapersPage() {
   const dataDir = await resolveDataDir()
   if (!dataDir) {
     return (
-      <main className="max-w-4xl mx-auto px-6 py-10">
-        <h1 className="text-2xl font-bold text-stone-900 mb-2">Scrapers</h1>
-        <div className="rounded border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+      <div className="space-y-4">
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-stone-900">
+          Scrapers
+        </h1>
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900 leading-relaxed">
           Data directory not found. Expected at{' '}
-          <code className="bg-amber-100 px-1 rounded">../trader/data</code> or{' '}
-          <code className="bg-amber-100 px-1 rounded">apps/trader/data</code>. Run a scraper
-          from <code className="bg-amber-100 px-1 rounded">apps/trader</code> to populate.
+          <code className="bg-amber-100 px-1.5 py-0.5 rounded text-[11px] font-mono">
+            ../trader/data
+          </code>{' '}
+          or{' '}
+          <code className="bg-amber-100 px-1.5 py-0.5 rounded text-[11px] font-mono">
+            apps/trader/data
+          </code>
+          . Run a scraper from{' '}
+          <code className="bg-amber-100 px-1.5 py-0.5 rounded text-[11px] font-mono">
+            apps/trader
+          </code>{' '}
+          to populate.
         </div>
-      </main>
+      </div>
     )
   }
 
@@ -180,20 +191,39 @@ export default async function AdminScrapersPage() {
   const latestQuota = quota.length > 0 ? quota[quota.length - 1] : null
 
   return (
-    <main className="max-w-6xl mx-auto px-6 py-10 space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-stone-900">Scrapers</h1>
-        <p className="text-sm text-stone-600 mt-1">
-          Live state of the scraper fleet. Reads the JSONL files from Albus's disk directly;
-          no DB round-trip.
-        </p>
-      </div>
+    <div className="space-y-8">
+      <header className="flex items-end justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-stone-900">
+            Scrapers
+          </h1>
+          <p className="text-sm text-stone-500 mt-1">
+            Live state of the scraper fleet. Reads JSONL from disk directly — no DB round-trip.
+          </p>
+        </div>
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold tracking-wider">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          LIVE
+        </span>
+      </header>
 
       {/* Headline metrics */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <MetricCard label="Platforms tracking" value={String(platforms.filter((p) => p.latestFile).length)} sub={`${platforms.length} total directories`} />
-        <MetricCard label="Rows today" value={totalRowsToday.toLocaleString()} sub="Latest file, all platforms" />
-        <MetricCard label="Historical data" value={formatBytes(totalBytesAllTime)} sub="All JSONL files combined" />
+        <MetricCard
+          label="Platforms tracking"
+          value={String(platforms.filter((p) => p.latestFile).length)}
+          sub={`${platforms.length} total directories`}
+        />
+        <MetricCard
+          label="Rows today"
+          value={totalRowsToday.toLocaleString()}
+          sub="Latest file, all platforms"
+        />
+        <MetricCard
+          label="Historical data"
+          value={formatBytes(totalBytesAllTime)}
+          sub="All JSONL files combined"
+        />
         <MetricCard
           label="Odds API quota"
           value={latestQuota?.remaining?.toLocaleString() ?? '—'}
@@ -210,20 +240,22 @@ export default async function AdminScrapersPage() {
 
       {/* Disabled-scraper banner */}
       {Object.keys(DISABLED_PLATFORMS).length > 0 && (
-        <section>
-          <div className="text-[10px] text-stone-400 tracking-wider mb-2">DISABLED · NEEDS FIX</div>
-          <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 space-y-3">
+        <section className="space-y-3">
+          <h2 className="text-sm font-semibold text-stone-900 tracking-tight">
+            Disabled · needs fix
+          </h2>
+          <div className="rounded-xl border border-amber-200 bg-gradient-to-br from-amber-50 to-amber-100/40 shadow-sm p-5 space-y-3">
             {Object.entries(DISABLED_PLATFORMS).map(([name, meta]) => (
               <div key={name} className="text-sm">
-                <div className="flex items-baseline gap-2">
+                <div className="flex items-baseline gap-2 flex-wrap">
                   <span className="font-semibold text-amber-900 uppercase tracking-wide">
                     {name}
                   </span>
-                  <span className="text-[10px] text-amber-700 tracking-wider">
-                    DISABLED SINCE {meta.since}
+                  <span className="text-[10px] text-amber-700 tracking-wider px-2 py-0.5 rounded-full bg-amber-100">
+                    DISABLED · {meta.since}
                   </span>
                 </div>
-                <div className="text-xs text-amber-900/80 mt-1 leading-relaxed">
+                <div className="text-xs text-amber-900/80 mt-1.5 leading-relaxed">
                   {meta.reason}
                 </div>
               </div>
@@ -233,10 +265,10 @@ export default async function AdminScrapersPage() {
       )}
 
       {/* Per-platform table */}
-      <section>
-        <div className="text-[10px] text-stone-400 tracking-wider mb-2">PER-PLATFORM</div>
-        <div className="rounded-lg border border-stone-200 bg-white overflow-hidden">
-          <div className="grid grid-cols-[1fr_auto_auto_auto_auto_auto] gap-4 px-4 py-2 text-[10px] text-stone-400 tracking-wider border-b border-stone-100 bg-stone-50">
+      <section className="space-y-3">
+        <h2 className="text-sm font-semibold text-stone-900 tracking-tight">Per-platform</h2>
+        <div className="rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden">
+          <div className="grid grid-cols-[1fr_auto_auto_auto_auto_auto] gap-4 px-5 py-2.5 text-[10px] text-stone-500 tracking-wider font-semibold border-b border-stone-100 bg-stone-50/60">
             <div>PLATFORM</div>
             <div className="text-right">LATEST ROWS</div>
             <div className="text-right">LATEST SIZE</div>
@@ -249,27 +281,39 @@ export default async function AdminScrapersPage() {
             return (
               <div
                 key={p.platform}
-                className={`grid grid-cols-[1fr_auto_auto_auto_auto_auto] gap-4 px-4 py-2.5 border-b border-stone-100 last:border-b-0 items-center text-sm ${
+                className={`grid grid-cols-[1fr_auto_auto_auto_auto_auto] gap-4 px-5 py-3 border-b border-stone-100 last:border-b-0 items-center text-sm hover:bg-stone-50/50 transition ${
                   disabled ? 'bg-amber-50/40' : ''
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold text-stone-900">{p.platform}</span>
+                  <span className="font-semibold text-stone-900 capitalize">
+                    {p.platform.replace(/_/g, ' ')}
+                  </span>
                   {disabled && (
-                    <span className="text-[9px] tracking-[0.15em] font-bold px-2 py-0.5 rounded-full ring-1 bg-amber-100 text-amber-800 ring-amber-300">
+                    <span className="text-[9px] tracking-wider font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
                       DISABLED
                     </span>
                   )}
                 </div>
                 <div className="text-right tabular-nums text-stone-700">
-                  {p.latestFile ? p.latestRows.toLocaleString() : <span className="text-stone-400">—</span>}
+                  {p.latestFile ? (
+                    p.latestRows.toLocaleString()
+                  ) : (
+                    <span className="text-stone-300">—</span>
+                  )}
                 </div>
                 <div className="text-right tabular-nums text-stone-700">
-                  {p.latestFile ? formatBytes(p.latestBytes) : <span className="text-stone-400">—</span>}
+                  {p.latestFile ? (
+                    formatBytes(p.latestBytes)
+                  ) : (
+                    <span className="text-stone-300">—</span>
+                  )}
                 </div>
                 <div className="text-right text-xs text-stone-500">{formatAge(p.latestMtime)}</div>
                 <div className="text-right tabular-nums text-stone-700">{p.daysOnDisk}</div>
-                <div className="text-right tabular-nums text-stone-600">{formatBytes(p.totalBytesAllDays)}</div>
+                <div className="text-right tabular-nums text-stone-600">
+                  {formatBytes(p.totalBytesAllDays)}
+                </div>
               </div>
             )
           })}
@@ -277,21 +321,26 @@ export default async function AdminScrapersPage() {
       </section>
 
       {/* Odds API quota history */}
-      <section>
-        <div className="flex items-baseline justify-between mb-2">
-          <div className="text-[10px] text-stone-400 tracking-wider">ODDS API QUOTA HISTORY</div>
-          <div className="text-[10px] text-stone-400 tracking-wider">
-            {quota.length} RUN{quota.length === 1 ? '' : 'S'} LOGGED
-          </div>
+      <section className="space-y-3">
+        <div className="flex items-baseline justify-between">
+          <h2 className="text-sm font-semibold text-stone-900 tracking-tight">
+            Odds API quota history
+          </h2>
+          <span className="text-[11px] text-stone-500">
+            {quota.length} run{quota.length === 1 ? '' : 's'} logged
+          </span>
         </div>
         {quota.length === 0 ? (
-          <div className="rounded border border-stone-200 bg-white p-6 text-sm text-stone-500 text-center">
+          <div className="rounded-xl border border-stone-200 bg-white shadow-sm p-8 text-sm text-stone-500 text-center">
             No Odds API runs logged yet. Run{' '}
-            <code className="bg-stone-100 px-1 rounded text-xs">pnpm scrape:oddsapi</code> to populate.
+            <code className="bg-stone-100 px-1.5 py-0.5 rounded text-[11px] font-mono">
+              pnpm scrape:oddsapi
+            </code>{' '}
+            to populate.
           </div>
         ) : (
-          <div className="rounded-lg border border-stone-200 bg-white overflow-hidden">
-            <div className="grid grid-cols-[auto_auto_auto_auto_1fr] gap-4 px-4 py-2 text-[10px] text-stone-400 tracking-wider border-b border-stone-100 bg-stone-50">
+          <div className="rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden">
+            <div className="grid grid-cols-[auto_auto_auto_auto_1fr] gap-4 px-5 py-2.5 text-[10px] text-stone-500 tracking-wider font-semibold border-b border-stone-100 bg-stone-50/60">
               <div>TS</div>
               <div className="text-right">USED</div>
               <div className="text-right">REMAINING</div>
@@ -305,7 +354,7 @@ export default async function AdminScrapersPage() {
               .map((q, i) => (
                 <div
                   key={i}
-                  className="grid grid-cols-[auto_auto_auto_auto_1fr] gap-4 px-4 py-2 border-b border-stone-100 last:border-b-0 text-xs"
+                  className="grid grid-cols-[auto_auto_auto_auto_1fr] gap-4 px-5 py-2 border-b border-stone-100 last:border-b-0 text-xs hover:bg-stone-50/50 transition"
                 >
                   <div className="tabular-nums text-stone-700">
                     {new Date(q.ts).toLocaleString('en-US', {
@@ -324,7 +373,7 @@ export default async function AdminScrapersPage() {
                 </div>
               ))}
             {quota.length > 20 && (
-              <div className="px-4 py-2 text-[11px] text-stone-500 border-t border-stone-100">
+              <div className="px-5 py-2.5 text-[11px] text-stone-500 border-t border-stone-100 bg-stone-50/40">
                 Showing most recent 20 of {quota.length} runs.
               </div>
             )}
@@ -332,14 +381,22 @@ export default async function AdminScrapersPage() {
         )}
       </section>
 
-      <div className="text-[11px] text-stone-500 pt-4 border-t border-stone-200">
-        Scraper commands live in <code className="bg-stone-100 px-1 rounded">apps/trader/package.json</code>{' '}
-        as <code className="bg-stone-100 px-1 rounded">pnpm scrape:&lt;platform&gt;</code>. When
-        TimescaleDB is wired up (brief at{' '}
-        <code className="bg-stone-100 px-1 rounded">~/Downloads/CLAUDE_CODE_BRIEF_timescaledb.md</code>),
-        this page swaps the disk read for a SQL query.
+      <div className="text-[11px] text-stone-500 pt-4 border-t border-stone-200 leading-relaxed">
+        Scraper commands live in{' '}
+        <code className="bg-stone-100 px-1.5 py-0.5 rounded text-[10px] font-mono">
+          apps/trader/package.json
+        </code>{' '}
+        as{' '}
+        <code className="bg-stone-100 px-1.5 py-0.5 rounded text-[10px] font-mono">
+          pnpm scrape:&lt;platform&gt;
+        </code>
+        . When TimescaleDB is wired up (brief at{' '}
+        <code className="bg-stone-100 px-1.5 py-0.5 rounded text-[10px] font-mono">
+          ~/Downloads/CLAUDE_CODE_BRIEF_timescaledb.md
+        </code>
+        ), this page swaps the disk read for a SQL query.
       </div>
-    </main>
+    </div>
   )
 }
 
@@ -356,13 +413,16 @@ function MetricCard({
 }) {
   const accentCls =
     accent === 'amber'
-      ? 'border-amber-300 bg-amber-50'
+      ? 'border-amber-200 bg-gradient-to-br from-amber-50 to-amber-100/40'
       : 'border-stone-200 bg-white'
+  const valueCls = accent === 'amber' ? 'text-amber-800' : 'text-stone-900'
   return (
-    <div className={`rounded-lg border ${accentCls} p-4`}>
-      <div className="text-[10px] text-stone-400 tracking-wider">{label.toUpperCase()}</div>
-      <div className="text-2xl font-bold text-stone-900 tabular-nums mt-1">{value}</div>
-      {sub && <div className="text-[11px] text-stone-500 mt-1">{sub}</div>}
+    <div className={`rounded-xl border ${accentCls} shadow-sm hover:shadow-md transition p-4`}>
+      <div className="text-[10px] text-stone-500 tracking-wider font-semibold">
+        {label.toUpperCase()}
+      </div>
+      <div className={`text-2xl font-bold tabular-nums mt-1.5 ${valueCls}`}>{value}</div>
+      {sub && <div className="text-[11px] text-stone-500 mt-1.5 leading-snug">{sub}</div>}
     </div>
   )
 }

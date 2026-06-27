@@ -2,51 +2,84 @@
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useState, useTransition } from 'react'
+import {
+  FaBasketball,
+  FaFootball,
+  FaBaseball,
+  FaHockeyPuck,
+  FaFutbol,
+  FaVolleyball,
+  FaTableTennisPaddleBall,
+  FaGolfBallTee,
+  FaHandFist,
+  FaCarBurst,
+  FaPersonRunning,
+  FaGamepad,
+} from 'react-icons/fa6'
+import type { IconType } from 'react-icons'
 import type { MarketPhase, MarketSort } from '@/lib/markets-data'
 import type { TerminalCategory } from '@/lib/market-stats'
 import { displaySport } from '@/lib/display-names'
 import { PlatformLogo } from '../dashboard/platform-logo'
 
-// Sport-id (lowercased, scraper-canonical) → display emoji. Unknown
-// sports fall through to a neutral "•" so the chip still renders.
-const SPORT_EMOJI: Record<string, string> = {
-  nba: '🏀',
-  basketball: '🏀',
-  ncaab: '🏀',
-  cbb: '🏀',
-  wnba: '🏀',
-  nfl: '🏈',
-  football: '🏈',
-  ncaaf: '🏈',
-  cfb: '🏈',
-  mlb: '⚾',
-  baseball: '⚾',
-  nhl: '🏒',
-  hockey: '🏒',
-  soccer: '⚽',
-  mls: '⚽',
-  epl: '⚽',
-  laliga: '⚽',
-  champions_league: '⚽',
-  tennis: '🎾',
-  atp: '🎾',
-  wta: '🎾',
-  golf: '⛳',
-  pga: '⛳',
-  lpga: '⛳',
-  ufc: '🥊',
-  mma: '🥊',
-  boxing: '🥊',
-  f1: '🏎️',
-  nascar: '🏎️',
-  motorsport: '🏎️',
-  cricket: '🏏',
-  rugby: '🏉',
-  esports: '🎮',
+// Sport-id (lowercased, scraper-canonical) → react-icons component.
+// Unknown sports fall through to a neutral runner icon so the chip
+// still renders. Tints chosen to give a per-sport color hint without
+// going full Pop-Art.
+type SportShape = { Icon: IconType; tint: string }
+
+const SPORT_ICONS: Record<string, SportShape> = {
+  nba: { Icon: FaBasketball, tint: 'text-orange-600' },
+  basketball: { Icon: FaBasketball, tint: 'text-orange-600' },
+  ncaab: { Icon: FaBasketball, tint: 'text-orange-600' },
+  cbb: { Icon: FaBasketball, tint: 'text-orange-600' },
+  wnba: { Icon: FaBasketball, tint: 'text-orange-600' },
+  nfl: { Icon: FaFootball, tint: 'text-amber-800' },
+  football: { Icon: FaFootball, tint: 'text-amber-800' },
+  ncaaf: { Icon: FaFootball, tint: 'text-amber-800' },
+  cfb: { Icon: FaFootball, tint: 'text-amber-800' },
+  mlb: { Icon: FaBaseball, tint: 'text-red-600' },
+  baseball: { Icon: FaBaseball, tint: 'text-red-600' },
+  nhl: { Icon: FaHockeyPuck, tint: 'text-slate-700' },
+  hockey: { Icon: FaHockeyPuck, tint: 'text-slate-700' },
+  ice_hockey: { Icon: FaHockeyPuck, tint: 'text-slate-700' },
+  soccer: { Icon: FaFutbol, tint: 'text-emerald-700' },
+  mls: { Icon: FaFutbol, tint: 'text-emerald-700' },
+  epl: { Icon: FaFutbol, tint: 'text-emerald-700' },
+  laliga: { Icon: FaFutbol, tint: 'text-emerald-700' },
+  bundesliga: { Icon: FaFutbol, tint: 'text-emerald-700' },
+  serie_a: { Icon: FaFutbol, tint: 'text-emerald-700' },
+  ligue_1: { Icon: FaFutbol, tint: 'text-emerald-700' },
+  champions_league: { Icon: FaFutbol, tint: 'text-emerald-700' },
+  uefa_europa_league: { Icon: FaFutbol, tint: 'text-emerald-700' },
+  uefa_conference_league: { Icon: FaFutbol, tint: 'text-emerald-700' },
+  argentine_primera: { Icon: FaFutbol, tint: 'text-emerald-700' },
+  brazilian_serie_a: { Icon: FaFutbol, tint: 'text-emerald-700' },
+  world_cup: { Icon: FaFutbol, tint: 'text-emerald-700' },
+  tennis: { Icon: FaTableTennisPaddleBall, tint: 'text-lime-700' },
+  atp: { Icon: FaTableTennisPaddleBall, tint: 'text-lime-700' },
+  wta: { Icon: FaTableTennisPaddleBall, tint: 'text-lime-700' },
+  golf: { Icon: FaGolfBallTee, tint: 'text-emerald-800' },
+  pga: { Icon: FaGolfBallTee, tint: 'text-emerald-800' },
+  lpga: { Icon: FaGolfBallTee, tint: 'text-emerald-800' },
+  ufc: { Icon: FaHandFist, tint: 'text-red-700' },
+  mma: { Icon: FaHandFist, tint: 'text-red-700' },
+  boxing: { Icon: FaHandFist, tint: 'text-red-700' },
+  f1: { Icon: FaCarBurst, tint: 'text-stone-800' },
+  nascar: { Icon: FaCarBurst, tint: 'text-stone-800' },
+  motorsport: { Icon: FaCarBurst, tint: 'text-stone-800' },
+  cricket: { Icon: FaVolleyball, tint: 'text-amber-700' },
+  rugby: { Icon: FaFootball, tint: 'text-amber-900' },
+  esports: { Icon: FaGamepad, tint: 'text-violet-700' },
 }
 
-function emojiFor(sport: string): string {
-  return SPORT_EMOJI[sport.toLowerCase()] ?? '•'
+const FALLBACK_SHAPE: SportShape = {
+  Icon: FaPersonRunning,
+  tint: 'text-stone-500',
+}
+
+function shapeFor(sport: string): SportShape {
+  return SPORT_ICONS[sport.toLowerCase()] ?? FALLBACK_SHAPE
 }
 
 type Props = {
@@ -173,11 +206,13 @@ export function FilterBar({
     )
   }
 
-  // Sport chip = sport emoji + display name. Falls back to "•" for sports
-  // we don't have an emoji for yet. Display name pulls from displaySport()
-  // so raw scraper ids like ICE_HOCKEY render as "Hockey".
+  // Sport chip = react-icons sport mark + display name. Falls back to a
+  // generic "person running" icon for sports we don't have a mapping
+  // for yet. Display name pulls from displaySport() so raw scraper ids
+  // like ICE_HOCKEY render as "Hockey".
   function sportChip(value: string, current: string) {
     const active = current === value
+    const { Icon, tint } = shapeFor(value)
     return (
       <button
         key={`sport:${value}`}
@@ -189,7 +224,10 @@ export function FilterBar({
             : 'bg-white ring-stone-300 text-stone-700 hover:ring-stone-400 hover:text-stone-900'
         }`}
       >
-        <span aria-hidden>{emojiFor(value)}</span>
+        <Icon
+          aria-hidden
+          className={`h-[11px] w-[11px] shrink-0 ${active ? 'text-white' : tint}`}
+        />
         <span>{displaySport(value)}</span>
       </button>
     )

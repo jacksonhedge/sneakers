@@ -4,6 +4,7 @@ import { cache } from 'react'
 import { categoryOf, type TerminalCategory } from './market-stats'
 import { safeQuery } from './db'
 import { SEED_SNAPSHOTS } from './seed-snapshots'
+import type { ChartPoint } from '@/components/robinhood-chart'
 
 // Mirror of the MarketSnapshot contract from apps/trader/src/scrapers/types.ts.
 // Kept as a local copy so the platform app doesn't reach across the monorepo
@@ -837,6 +838,84 @@ export async function loadSingleMarketHistory(
     sport: first.sport,
     snapshots,
   }
+}
+
+/**
+ * Recent 24h price points for a bounded set of markets — drives the
+ * /markets listing-page sparklines. Replaces the old pattern of pulling
+ * ALL history (loadMarketHistory(1), ~25k-row cap) and filtering to the
+ * visible cards in JS: this pushes the visible-market filter into the
+ * WHERE clause so we only read rows for the ~50 cards actually on screen.
+ *
+ * Keyed by market_id ("<platform>:<platform_market_id>"). One ChartPoint
+ * per observed_at: the "yes" outcome's best_ask (or the first outcome for
+ * non-binary markets). Markets with <2 points are omitted — a sparkline
+ * needs a line. Returns an empty Map if the DB is unreachable; the caller
+ * just renders cards without sparklines.
+ */
+export async function loadSparklinesForMarkets(
+  marketIds: string[],
+): Promise<Map<string, ChartPoint[]>> {
+  const out = new Map<string, ChartPoint[]>()
+  if (marketIds.length === 0) return out
+
+  const sql = `
+    SELECT
+      p.market_id,
+      o.label,
+      p.observed_at,
+      p.best_ask
+    FROM price_observations p
+    JOIN outcomes o ON o.market_id = p.market_id AND o.id = p.outcome_id
+    WHERE p.market_id = ANY($1::text[])
+      AND p.observed_at >= now() - interval '24 hours'
+    ORDER BY p.market_id, p.observed_at, o.id
+  `
+  const res = await safeQuery<{
+    market_id: string
+    label: string
+    observed_at: Date | string
+    best_ask: number | string | null
+  }>(sql, [marketIds])
+  if (!res) return out
+
+  // Rows arrive ordered by (market_id, observed_at, outcome_id). A change
+  // in either market_id or observed_at closes the current snapshot.
+  let curMarket: string | null = null
+  let curTs: string | null = null
+  let curOutcomes: Array<{ label: string; best_ask: number | null }> = []
+
+  const flush = () => {
+    if (!curMarket || !curTs || curOutcomes.length === 0) return
+    const yes =
+      curOutcomes.find((o) => /^yes\b|\byes\s/i.test(o.label)) ?? curOutcomes[0]
+    const v = yes?.best_ask ?? null
+    if (v == null) return
+    let pts = out.get(curMarket)
+    if (!pts) {
+      pts = []
+      out.set(curMarket, pts)
+    }
+    pts.push({ ts: curTs, value: v })
+  }
+
+  for (const row of res.rows) {
+    const ts = toIso(row.observed_at) ?? ''
+    if (row.market_id !== curMarket || ts !== curTs) {
+      flush()
+      curMarket = row.market_id
+      curTs = ts
+      curOutcomes = []
+    }
+    curOutcomes.push({ label: row.label, best_ask: num(row.best_ask) })
+  }
+  flush()
+
+  // A sparkline needs ≥2 points; drop singletons so the card omits the chart.
+  for (const [k, pts] of out) {
+    if (pts.length < 2) out.delete(k)
+  }
+  return out
 }
 
 async function listPlatformFiles(platform: string): Promise<string[]> {
