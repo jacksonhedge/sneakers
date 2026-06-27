@@ -23,6 +23,8 @@ import {
   dbRowsToSnapshot,
   type DbRow,
   type MarketSnapshot,
+  type MarketSort,
+  type MarketPhase,
 } from './markets-data'
 import { safeQuery } from './db'
 import { categoryOf, type TerminalCategory } from './market-stats'
@@ -618,4 +620,488 @@ export async function dedupeByCanonical<T extends { platform: string; platform_m
     out.push(item)
   }
   return out
+}
+
+// ---------------------------------------------------------------------------
+// Paginated /markets listing
+//
+// The /markets + /dashboard/markets listing used to call loadAllLatestSnapshots
+// (~376k rows / 125 MB pulled into Node), groupIntoCanonical in-memory, then
+// filter/sort/paginate in JS — a 5–8s server render dominated by wire transfer.
+//
+// loadMarketsListingPage pushes all of that into SQL using the precomputed
+// markets.canonical_id column (see scripts/recompute-canonical.ts). Two queries:
+//   A — group every non-closed market to its canonical_id, apply the filters,
+//       sort, and LIMIT/OFFSET — returns just the page's canonical keys plus
+//       the facet data the FilterBar / freshness strip need.
+//   B — hydrate only those ~50 canonical groups into full CanonicalMarket
+//       objects (all venues + outcomes + latest prices).
+//
+// Falls back to the old in-memory path (which itself falls back to JSONL) when
+// the DB is unreachable, so a Timescale blip degrades gracefully instead of
+// erroring the page.
+// ---------------------------------------------------------------------------
+
+export interface MarketsListingFilter {
+  q?: string
+  /** lowercased platform id */
+  platform?: string
+  /** lowercased sport id */
+  sport?: string
+  category?: TerminalCategory
+  phase?: MarketPhase
+  sort: MarketSort
+  page: number
+  pageSize: number
+}
+
+export interface MarketsListingPage {
+  markets: CanonicalMarket[]
+  total: number
+  totalPages: number
+  page: number
+  availablePlatforms: string[]
+  availableSports: string[]
+  perBook: Record<string, { count: number; latestTs: string | null }>
+  multiVenueCount: number
+  latestDate: string | null
+}
+
+// SQL ORDER BY fragment per sort key. WHITELISTED — these strings are
+// interpolated into the query text, so the value must only ever come from
+// this map (keyed by the MarketSort union), never from raw user input.
+// All four are pure scalar aggregates on per_canon — no per-group "rep" row,
+// so per_canon can HashAggregate instead of sort-spilling to pgsql_tmp.
+const LISTING_SORT_SQL: Record<MarketSort, string> = {
+  volume: 'agg_volume DESC NULLS LAST',
+  overround: 'max_overround DESC NULLS LAST',
+  resolves_at: 'min_close_time ASC NULLS LAST',
+  updated: 'max_observed DESC NULLS LAST',
+}
+
+interface ListingPageQueryResult {
+  total: number | string
+  pageKeys: string[] | null
+  availablePlatforms: string[] | null
+  availableSports: string[] | null
+  multiVenueCount: number | string
+  latestDate: string | null
+  perBook: Record<string, { count: number | string; latestTs: string | null }> | null
+}
+
+function toCount(v: number | string | null | undefined): number {
+  if (v == null) return 0
+  const n = typeof v === 'number' ? v : parseInt(v, 10)
+  return Number.isFinite(n) ? n : 0
+}
+
+/**
+ * Query A — group/filter/sort/paginate entirely in SQL. Returns the ordered
+ * canonical keys for the requested page plus the unfiltered facet data.
+ * `categoryOf()` and the phase/sport derivations from markets-data.ts are
+ * mirrored here as SQL expressions — keep them in sync with the TS source.
+ */
+async function loadListingPageQuery(
+  filter: MarketsListingFilter,
+): Promise<ListingPageQueryResult | null> {
+  const offset = Math.max(0, (filter.page - 1) * filter.pageSize)
+  const sql = `
+    WITH per_market AS MATERIALIZED (
+      SELECT DISTINCT ON (m.id)
+        m.id AS market_id,
+        COALESCE(m.canonical_id, m.id) AS canon,
+        split_part(m.id, ':', 1) AS platform,
+        m.question AS question,
+        m.close_time AS close_time,
+        l.observed_at AS observed_at,
+        l.overround AS overround,
+        l.volume_traded AS volume_traded,
+        COALESCE(m.raw_metadata->>'sport', NULLIF(m.category, 'unknown')) AS sport,
+        COALESCE(
+          m.raw_metadata->>'phase',
+          CASE m.status
+            WHEN 'pre_open' THEN 'pre_game'
+            WHEN 'open'     THEN 'live'
+            WHEN 'closed'   THEN 'closed'
+            ELSE 'opening'
+          END
+        ) AS phase,
+        -- categoryOf() mirror: try the sport token first, then each
+        -- raw_metadata.tags entry in array order; first mapped hit wins,
+        -- 'other' otherwise. Keep in sync with CATEGORY_MAP in market-stats.ts.
+        COALESCE((
+          SELECT cat FROM (
+            SELECT
+              CASE
+                WHEN tok IN ('politics','elections') THEN 'politics'
+                WHEN tok IN ('economics','fed','finance') THEN 'economics'
+                WHEN tok IN ('crypto','bitcoin','ethereum') THEN 'crypto'
+                WHEN tok IN ('technology','tech','companies') THEN 'tech'
+                WHEN tok IN ('nba','basketball','nfl','football','mlb','baseball',
+                             'nhl','ice_hockey','soccer','boxing','mma','tennis',
+                             'golf','wnba','ncaab','ncaaf') THEN 'sports'
+                WHEN tok = 'entertainment' THEN 'other'
+                ELSE NULL
+              END AS cat,
+              ord
+            FROM (
+              SELECT lower(COALESCE(m.raw_metadata->>'sport', NULLIF(m.category, 'unknown'))) AS tok, 0 AS ord
+              UNION ALL
+              SELECT lower(t.tag), t.ord::int
+              FROM jsonb_array_elements_text(
+                CASE WHEN jsonb_typeof(m.raw_metadata->'tags') = 'array'
+                     THEN m.raw_metadata->'tags' ELSE '[]'::jsonb END
+              ) WITH ORDINALITY AS t(tag, ord)
+            ) toks
+          ) mapped
+          WHERE cat IS NOT NULL
+          ORDER BY ord
+          LIMIT 1
+        ), 'other') AS category,
+        (
+          $5::text IS NULL
+          OR m.question ILIKE '%' || $5 || '%'
+          OR EXISTS (
+            SELECT 1 FROM outcomes oq
+            WHERE oq.market_id = m.id AND oq.label ILIKE '%' || $5 || '%'
+          )
+        ) AS q_match
+      FROM markets m
+      JOIN outcomes o ON o.market_id = m.id
+      JOIN LATERAL (
+        SELECT observed_at, overround, volume_traded
+        FROM price_observations p
+        WHERE p.market_id = m.id AND p.outcome_id = o.id
+          AND p.observed_at >= now() - interval '24 hours'
+        ORDER BY p.observed_at DESC
+        LIMIT 1
+      ) l ON TRUE
+      WHERE m.status <> 'closed'
+      ORDER BY m.id, l.observed_at DESC
+    ),
+    -- Distinct (canon, platform) pairs, then a plain count(*) per canon below.
+    -- Doing it this way keeps the per_canon aggregate free of count(DISTINCT)
+    -- — which would force Postgres to sort all of per_market by
+    -- (canon, platform) and spill ~20 MB to pgsql_tmp. Both this CTE and
+    -- canon_venue_count below are HashAggregate-eligible (tiny output: ~14
+    -- distinct platforms × ~200k canons).
+    canon_platforms AS MATERIALIZED (
+      SELECT DISTINCT canon, platform FROM per_market
+    ),
+    canon_venue_count AS MATERIALIZED (
+      SELECT canon, count(*) AS venue_count
+      FROM canon_platforms
+      GROUP BY canon
+    ),
+    -- One row per canonical group. Every aggregate here is scalar
+    -- (SUM / MAX / MIN / bool_or — no DISTINCT) so Postgres can HashAggregate
+    -- per_market without a global sort. Picking a per-group "representative"
+    -- row with array_agg(... ORDER BY volume) used to force a ~54 MB sort
+    -- spill; the display row is rebuilt later by Query B + groupIntoCanonical
+    -- so Query A only needs enough to filter / sort / paginate.
+    per_canon AS MATERIALIZED (
+      SELECT
+        canon,
+        COALESCE(SUM(volume_traded), 0) AS agg_volume,
+        MAX(overround) AS max_overround,
+        MIN(close_time) AS min_close_time,
+        MAX(observed_at) AS max_observed,
+        bool_or(q_match) AS q_match,
+        -- Filter predicates: a group matches if ANY of its venues matches.
+        -- For the 98% of groups that are single-venue this is identical to
+        -- the old per-snapshot check; multi-venue groups become "any venue".
+        bool_or(platform = $1) AS platform_match,
+        bool_or(lower(sport) = $2) AS sport_match,
+        bool_or(category = $3) AS category_match,
+        bool_or(phase = $4) AS phase_match
+      FROM per_market
+      GROUP BY canon
+    ),
+    filtered AS (
+      SELECT pc.canon, pc.agg_volume, pc.max_overround, pc.min_close_time,
+             pc.max_observed, vc.venue_count
+      FROM per_canon pc
+      JOIN canon_venue_count vc USING (canon)
+      WHERE pc.q_match
+        AND ($1::text IS NULL OR pc.platform_match)
+        AND ($2::text IS NULL OR pc.sport_match)
+        AND ($3::text IS NULL OR pc.category_match)
+        AND ($4::text IS NULL OR pc.phase_match)
+    ),
+    page AS (
+      -- Inner ORDER BY + LIMIT is a top-N heapsort (≤50 rows out, no spill).
+      -- canon is the final tiebreaker so the slice is deterministic across
+      -- pages. ROW_NUMBER() OVER () then numbers the slice in that order so
+      -- json_agg can re-sort the keys back into page order below.
+      SELECT canon, ROW_NUMBER() OVER () AS rk
+      FROM (
+        SELECT canon
+        FROM filtered
+        ORDER BY ${LISTING_SORT_SQL[filter.sort]}, venue_count DESC, canon
+        LIMIT $6 OFFSET $7
+      ) ordered
+    )
+    SELECT json_build_object(
+      'total', (SELECT count(*) FROM filtered),
+      'pageKeys', COALESCE((SELECT json_agg(canon ORDER BY rk) FROM page), '[]'::json),
+      'availablePlatforms', COALESCE(
+        (SELECT json_agg(p) FROM (SELECT DISTINCT platform AS p FROM per_market) s),
+        '[]'::json),
+      'availableSports', COALESCE(
+        (SELECT json_agg(sp) FROM (
+          SELECT DISTINCT sport AS sp FROM per_market
+          WHERE sport IS NOT NULL AND sport <> ''
+        ) s),
+        '[]'::json),
+      'multiVenueCount', (SELECT count(*) FROM canon_venue_count WHERE venue_count >= 2),
+      'latestDate', (SELECT max(observed_at) FROM per_market),
+      'perBook', COALESCE((
+        SELECT json_object_agg(platform, jb) FROM (
+          SELECT platform,
+                 json_build_object('count', count(*), 'latestTs', max(observed_at)) AS jb
+          FROM per_market GROUP BY platform
+        ) t
+      ), '{}'::json)
+    ) AS result
+  `
+  const params = [
+    filter.platform ?? null,
+    filter.sport ?? null,
+    filter.category ?? null,
+    filter.phase ?? null,
+    filter.q && filter.q.trim() ? filter.q.trim() : null,
+    filter.pageSize,
+    offset,
+  ]
+  const res = await safeQuery<{ result: ListingPageQueryResult }>(sql, params)
+  if (!res || res.rows.length === 0) return null
+  return res.rows[0].result
+}
+
+/**
+ * Query B — hydrate a set of canonical keys into full CanonicalMarket objects.
+ * Pulls every non-closed market whose COALESCE(canonical_id, id) is in `keys`
+ * (so all venues of each group come along), then runs them back through
+ * groupIntoCanonical so the resulting shape + ids match the rest of the app.
+ */
+async function hydrateCanonicalGroups(keys: string[]): Promise<CanonicalMarket[]> {
+  if (keys.length === 0) return []
+  const sql = `
+    SELECT
+      m.id AS market_id,
+      m.source,
+      m.question,
+      m.category,
+      m.close_time,
+      m.status,
+      m.raw_metadata,
+      o.id AS outcome_id,
+      o.label,
+      l.observed_at,
+      l.best_bid,
+      l.best_ask,
+      l.last_price,
+      l.overround,
+      l.liquidity_usd,
+      l.volume_traded
+    FROM markets m
+    JOIN outcomes o ON o.market_id = m.id
+    JOIN LATERAL (
+      SELECT observed_at, best_bid, best_ask, last_price, overround, liquidity_usd, volume_traded
+      FROM price_observations p
+      WHERE p.market_id = m.id AND p.outcome_id = o.id
+        AND p.observed_at >= now() - interval '24 hours'
+      ORDER BY p.observed_at DESC
+      LIMIT 1
+    ) l ON TRUE
+    WHERE m.status <> 'closed'
+      AND COALESCE(m.canonical_id, m.id) = ANY($1::text[])
+    ORDER BY m.id, o.id
+  `
+  const res = await safeQuery<DbRow>(sql, [keys])
+  if (!res) return []
+
+  const byMarket = new Map<string, DbRow[]>()
+  for (const row of res.rows) {
+    let group = byMarket.get(row.market_id)
+    if (!group) {
+      group = []
+      byMarket.set(row.market_id, group)
+    }
+    group.push(row)
+  }
+  const snapshots: MarketSnapshot[] = []
+  for (const rows of byMarket.values()) {
+    const snap = dbRowsToSnapshot(rows)
+    if (snap) snapshots.push(snap)
+  }
+  return groupIntoCanonical(snapshots).canonical
+}
+
+async function loadMarketsListingPageFromDb(
+  filter: MarketsListingFilter,
+): Promise<MarketsListingPage | null> {
+  const query = await loadListingPageQuery(filter)
+  if (!query) return null
+  const pageKeys = query.pageKeys ?? []
+
+  const canonical = await hydrateCanonicalGroups(pageKeys)
+
+  // Index hydrated groups by canonical id AND by every member's raw snapshot
+  // key. A brand-new market with a not-yet-backfilled canonical_id keys off
+  // its raw id in Query A but groupIntoCanonical hands it a c_… id — the
+  // raw-key index bridges that gap so it still lands in the page.
+  const byCanonId = new Map<string, CanonicalMarket>()
+  const bySnapshotKey = new Map<string, CanonicalMarket>()
+  for (const c of canonical) {
+    byCanonId.set(c.id, c)
+    for (const q of c.quotes) {
+      bySnapshotKey.set(`${q.platform}:${q.platform_market_id}`, c)
+    }
+  }
+
+  const markets: CanonicalMarket[] = []
+  const seen = new Set<string>()
+  for (const canon of pageKeys) {
+    const c = byCanonId.get(canon) ?? bySnapshotKey.get(canon)
+    if (c && !seen.has(c.id)) {
+      seen.add(c.id)
+      markets.push(c)
+    }
+  }
+
+  const total = toCount(query.total)
+  return {
+    markets,
+    total,
+    totalPages: Math.max(1, Math.ceil(total / filter.pageSize)),
+    page: filter.page,
+    availablePlatforms: [...(query.availablePlatforms ?? [])].sort(),
+    availableSports: [...(query.availableSports ?? [])].sort(),
+    perBook: Object.fromEntries(
+      Object.entries(query.perBook ?? {}).map(([k, v]) => [
+        k,
+        { count: toCount(v.count), latestTs: v.latestTs },
+      ]),
+    ),
+    multiVenueCount: toCount(query.multiVenueCount),
+    latestDate: query.latestDate ? query.latestDate.slice(0, 10) : null,
+  }
+}
+
+function aggregateVolumeOf(c: CanonicalMarket): number {
+  let total = 0
+  for (const q of c.quotes) {
+    const v =
+      typeof q.volume_traded === 'number'
+        ? q.volume_traded
+        : parseFloat(String(q.volume_traded ?? '0'))
+    if (Number.isFinite(v)) total += v
+  }
+  return total
+}
+
+/**
+ * Fallback for when Timescale is unreachable: the original in-memory path —
+ * load every snapshot (JSONL-backed if the DB is down), group, then
+ * filter/sort/paginate in JS. Slower, but keeps the page alive. Mirrors the
+ * filter/sort semantics the SQL path implements.
+ */
+async function loadMarketsListingPageFromMemory(
+  filter: MarketsListingFilter,
+): Promise<MarketsListingPage> {
+  const { snapshots, latestDate } = await loadAllLatestSnapshots()
+  const { canonical } = groupIntoCanonical(snapshots)
+
+  const availablePlatforms = [...new Set(canonical.flatMap((c) => c.venues))].sort()
+  const availableSports = [
+    ...new Set(canonical.map((c) => c.sport).filter((s): s is string => !!s)),
+  ].sort()
+  const perBook: Record<string, { count: number; latestTs: string | null }> = {}
+  for (const s of snapshots) {
+    const b = perBook[s.platform]
+    if (!b) perBook[s.platform] = { count: 1, latestTs: s.ts }
+    else {
+      b.count += 1
+      if (!b.latestTs || s.ts > b.latestTs) b.latestTs = s.ts
+    }
+  }
+  const multiVenueCount = canonical.filter((c) => c.venueCount >= 2).length
+
+  const qLower = (filter.q ?? '').toLowerCase().trim()
+  const filtered = canonical.filter((c) => {
+    if (filter.platform && !c.venues.includes(filter.platform)) return false
+    if (filter.sport && (c.sport ?? '').toLowerCase() !== filter.sport) return false
+    if (filter.category && c.category !== filter.category) return false
+    if (filter.phase && c.quotes[0].phase !== filter.phase) return false
+    if (qLower) {
+      if (c.question.toLowerCase().includes(qLower)) return true
+      for (const qt of c.quotes) {
+        for (const o of qt.outcomes) {
+          if (o.name.toLowerCase().includes(qLower)) return true
+        }
+      }
+      return false
+    }
+    return true
+  })
+
+  filtered.sort((a, b) => {
+    switch (filter.sort) {
+      case 'overround': {
+        const av = a.quotes[0].overround ?? -Infinity
+        const bv = b.quotes[0].overround ?? -Infinity
+        if (bv !== av) return bv - av
+        break
+      }
+      case 'resolves_at': {
+        const at = a.resolves_at ? Date.parse(a.resolves_at) : Infinity
+        const bt = b.resolves_at ? Date.parse(b.resolves_at) : Infinity
+        if (at !== bt) return at - bt
+        break
+      }
+      case 'updated': {
+        const at = Math.max(...a.quotes.map((q) => Date.parse(q.ts) || 0))
+        const bt = Math.max(...b.quotes.map((q) => Date.parse(q.ts) || 0))
+        if (bt !== at) return bt - at
+        break
+      }
+      case 'volume':
+      default: {
+        const av = aggregateVolumeOf(a)
+        const bv = aggregateVolumeOf(b)
+        if (bv !== av) return bv - av
+        break
+      }
+    }
+    if (a.venueCount !== b.venueCount) return b.venueCount - a.venueCount
+    return a.question.localeCompare(b.question)
+  })
+
+  const total = filtered.length
+  const start = (filter.page - 1) * filter.pageSize
+  return {
+    markets: filtered.slice(start, start + filter.pageSize),
+    total,
+    totalPages: Math.max(1, Math.ceil(total / filter.pageSize)),
+    page: filter.page,
+    availablePlatforms,
+    availableSports,
+    perBook,
+    multiVenueCount,
+    latestDate,
+  }
+}
+
+/**
+ * Single entry point for the /markets + /dashboard/markets listing. Pushes
+ * filter/sort/paginate into SQL via markets.canonical_id; falls back to the
+ * in-memory (and ultimately JSONL) path when the DB is unreachable.
+ */
+export async function loadMarketsListingPage(
+  filter: MarketsListingFilter,
+): Promise<MarketsListingPage> {
+  const fromDb = await loadMarketsListingPageFromDb(filter)
+  if (fromDb) return fromDb
+  return loadMarketsListingPageFromMemory(filter)
 }

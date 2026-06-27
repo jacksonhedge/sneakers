@@ -10,7 +10,7 @@ export default async function AdminLayout({
 }) {
   const { email } = await requireAdmin()
   return (
-    <div className="min-h-screen bg-stone-50 text-stone-900">
+    <div className="min-h-screen bg-gradient-to-b from-stone-50 via-stone-50 to-white text-stone-900">
       <AdminNav email={email} />
       <div className="max-w-6xl mx-auto px-6 py-8">{children}</div>
     </div>

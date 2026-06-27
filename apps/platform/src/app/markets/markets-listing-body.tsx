@@ -1,14 +1,12 @@
 import Link from 'next/link'
 import {
-  loadAllLatestSnapshots,
-  loadMarketHistory,
+  loadSparklinesForMarkets,
   type MarketPhase,
-  type MarketSnapshot,
   type MarketSort,
 } from '@/lib/markets-data'
 import type { ChartPoint } from '@/components/robinhood-chart'
 import { type TerminalCategory } from '@/lib/market-stats'
-import { groupIntoCanonical, type CanonicalMarket } from '@/lib/canonical-markets'
+import { loadMarketsListingPage } from '@/lib/canonical-markets'
 import { MarketCard } from './market-card'
 import { FilterBar } from './filter-bar'
 import { PlatformFreshnessStrip } from './platform-freshness-strip'
@@ -36,15 +34,6 @@ const VALID_PHASES: MarketPhase[] = ['opening', 'pre_game', 'live', 'closed']
 const VALID_SORTS: MarketSort[] = ['volume', 'overround', 'resolves_at', 'updated']
 
 const PAGE_SIZE = 50
-
-function aggregateVolume(c: CanonicalMarket): number {
-  let total = 0
-  for (const q of c.quotes) {
-    const v = typeof q.volume_traded === 'number' ? q.volume_traded : parseFloat(String(q.volume_traded ?? '0'))
-    if (Number.isFinite(v)) total += v
-  }
-  return total
-}
 
 export interface MarketsListingParams {
   q?: string
@@ -83,108 +72,41 @@ export async function MarketsListingBody({
     : 'volume'
   const page = Math.max(1, parseInt(sp.page ?? '1', 10) || 1)
 
-  // Load + group + filter at canonical level. One card per canonical;
-  // singletons and multi-venue alike.
-  const { snapshots, latestDate } = await loadAllLatestSnapshots()
-  const { canonical } = groupIntoCanonical(snapshots)
-
-  const qLower = q.toLowerCase()
-  const filtered = canonical.filter((c) => {
-    if (platform && !c.venues.includes(platform)) return false
-    if (sport && (c.sport ?? '').toLowerCase() !== sport) return false
-    if (category && c.category !== category) return false
-    if (phase && c.quotes[0].phase !== phase) return false
-    if (qLower) {
-      if (c.question.toLowerCase().includes(qLower)) return true
-      for (const qt of c.quotes) {
-        for (const o of qt.outcomes) {
-          if (o.name.toLowerCase().includes(qLower)) return true
-        }
-      }
-      return false
-    }
-    return true
+  // Filter / sort / paginate are pushed into SQL (via markets.canonical_id) —
+  // see loadMarketsListingPage. One card per canonical market; singletons and
+  // multi-venue alike.
+  const {
+    markets: paged,
+    total,
+    totalPages,
+    availablePlatforms,
+    availableSports,
+    perBook,
+    multiVenueCount,
+    latestDate,
+  } = await loadMarketsListingPage({
+    q: q || undefined,
+    platform: platform || undefined,
+    sport: sport || undefined,
+    category,
+    phase,
+    sort,
+    page,
+    pageSize: PAGE_SIZE,
   })
 
-  filtered.sort((a, b) => {
-    switch (sort) {
-      case 'overround': {
-        const av = a.quotes[0].overround ?? -Infinity
-        const bv = b.quotes[0].overround ?? -Infinity
-        if (bv !== av) return bv - av
-        break
-      }
-      case 'resolves_at': {
-        const at = a.resolves_at ? Date.parse(a.resolves_at) : Infinity
-        const bt = b.resolves_at ? Date.parse(b.resolves_at) : Infinity
-        if (at !== bt) return at - bt
-        break
-      }
-      case 'updated': {
-        const at = Math.max(...a.quotes.map((q) => Date.parse(q.ts) || 0))
-        const bt = Math.max(...b.quotes.map((q) => Date.parse(q.ts) || 0))
-        if (bt !== at) return bt - at
-        break
-      }
-      case 'volume':
-      default: {
-        const av = aggregateVolume(a)
-        const bv = aggregateVolume(b)
-        if (bv !== av) return bv - av
-        break
-      }
-    }
-    if (a.venueCount !== b.venueCount) return b.venueCount - a.venueCount
-    return a.question.localeCompare(b.question)
-  })
-
-  const total = filtered.length
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
-  const start = (page - 1) * PAGE_SIZE
-  const paged = filtered.slice(start, start + PAGE_SIZE)
-
-  // Sparklines on visible cards only.
-  const visibleKeys = new Set(
-    paged.map((c) => `${c.quotes[0].platform}:${c.quotes[0].platform_market_id}`),
-  )
+  // Sparklines on visible cards only — bounded SQL pull keyed by the primary
+  // venue's market_id, the same key MarketCard looks up below.
   let sparklineByKey = new Map<string, ChartPoint[]>()
   try {
-    const history = await loadMarketHistory(7)
-    for (const h of history) {
-      const key = `${h.platform}:${h.platform_market_id}`
-      if (!visibleKeys.has(key)) continue
-      const pickYesAsk = (s: MarketSnapshot): number | null => {
-        const yes = s.outcomes.find((o) => /^yes\b|\byes\s/i.test(o.name)) ?? s.outcomes[0]
-        return yes?.best_ask ?? null
-      }
-      const points: ChartPoint[] = []
-      for (const s of h.snapshots) {
-        const v = pickYesAsk(s)
-        if (v != null) points.push({ ts: s.ts, value: v })
-      }
-      if (points.length >= 2) sparklineByKey.set(key, points)
-    }
+    const repIds = paged.map(
+      (c) => `${c.quotes[0].platform}:${c.quotes[0].platform_market_id}`,
+    )
+    sparklineByKey = await loadSparklinesForMarkets(repIds)
   } catch (err) {
-    console.warn('[markets-listing-body] history load failed', err)
+    console.warn('[markets-listing-body] sparkline load failed', err)
     sparklineByKey = new Map()
   }
-
-  const availablePlatforms = [...new Set(canonical.flatMap((c) => c.venues))].sort()
-  const availableSports = [
-    ...new Set(canonical.map((c) => c.sport).filter((s): s is string => !!s)),
-  ].sort()
-
-  const perBook: Record<string, { count: number; latestTs: string | null }> = {}
-  for (const s of snapshots) {
-    const b = perBook[s.platform]
-    if (!b) perBook[s.platform] = { count: 1, latestTs: s.ts }
-    else {
-      b.count += 1
-      if (!b.latestTs || s.ts > b.latestTs) b.latestTs = s.ts
-    }
-  }
-
-  const multiVenueCount = canonical.filter((c) => c.venueCount >= 2).length
 
   const buildPageUrl = (newPage: number) => {
     const params = new URLSearchParams()

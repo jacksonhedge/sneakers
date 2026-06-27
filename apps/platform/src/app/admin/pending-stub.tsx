@@ -15,36 +15,46 @@ export function PendingStub({
   eventualFeatures: string[]
 }) {
   return (
-    <main className="max-w-4xl mx-auto px-6 py-10 space-y-6">
-      <div>
-        <div className="inline-block text-[10px] tracking-wider bg-amber-100 text-amber-700 px-2 py-0.5 rounded mb-2">
+    <div className="space-y-6">
+      <header>
+        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold tracking-wider bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full mb-3">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
           NOT YET IMPLEMENTED
-        </div>
-        <h1 className="text-2xl font-bold text-stone-900">{title}</h1>
-        <p className="text-sm text-stone-600 mt-2">
+        </span>
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-stone-900">
+          {title}
+        </h1>
+        <p className="text-sm text-stone-500 mt-2 max-w-2xl">
           This admin surface is scaffolded and reserved. Implementation lives in{' '}
-          <code className="bg-stone-100 px-1.5 py-0.5 rounded text-[11px]">{brief}</code>
+          <code className="bg-stone-100 px-1.5 py-0.5 rounded text-[11px] font-mono">
+            {brief}
+          </code>
           .
         </p>
-      </div>
+      </header>
 
-      <div className="rounded-lg border border-stone-200 bg-white p-5">
-        <div className="text-[10px] text-stone-400 tracking-wider mb-3">WHEN BUILT, THIS PAGE WILL SHOW</div>
-        <ul className="space-y-2 text-sm text-stone-700">
+      <div className="bg-white border border-stone-200 rounded-xl shadow-sm p-6">
+        <div className="text-[11px] text-stone-500 tracking-wider mb-4 font-semibold">
+          WHEN BUILT, THIS PAGE WILL SHOW
+        </div>
+        <ul className="space-y-2.5 text-sm text-stone-700">
           {eventualFeatures.map((f, i) => (
-            <li key={i} className="flex gap-2">
-              <span className="text-emerald-500 mt-0.5">•</span>
-              <span>{f}</span>
+            <li key={i} className="flex gap-3">
+              <span className="text-emerald-500 mt-1 leading-none">•</span>
+              <span className="leading-snug">{f}</span>
             </li>
           ))}
         </ul>
       </div>
 
-      <div className="flex items-center gap-3 text-xs text-stone-500">
-        <Link href="/" className="text-emerald-700 hover:underline">
-          ← Back to Admin Overview
+      <div className="text-xs">
+        <Link
+          href="/"
+          className="text-emerald-700 hover:text-emerald-800 hover:underline"
+        >
+          ← Back to admin overview
         </Link>
       </div>
-    </main>
+    </div>
   )
 }

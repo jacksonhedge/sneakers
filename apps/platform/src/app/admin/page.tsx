@@ -52,11 +52,14 @@ function sparkline(rows: { created_at: string }[], days: number) {
 }
 
 function Bar({ value, max }: { value: number; max: number }) {
-  const h = max === 0 ? 0 : Math.max(2, Math.round((value / max) * 40))
+  const h = max === 0 ? 0 : Math.max(2, Math.round((value / max) * 48))
   return (
     <div className="flex flex-col items-center justify-end gap-1 flex-1 min-w-0">
-      <div className="text-[9px] text-stone-500">{value}</div>
-      <div className="bg-[#00703c] w-full" style={{ height: `${h}px` }} />
+      <div className="text-[9px] text-stone-500 tabular-nums">{value || ''}</div>
+      <div
+        className="w-full bg-gradient-to-t from-[#004225] to-[#00703c] rounded-t"
+        style={{ height: `${h}px` }}
+      />
     </div>
   )
 }
@@ -208,25 +211,37 @@ export default async function AdminOverview() {
     .reduce((a, r) => a + (r.quoted_amount_usd ?? 0), 0)
 
   return (
-    <div className="space-y-8">
-      <div>
-        <div className="text-xs text-[#004225] tracking-wider mb-1">{'>'} OVERVIEW</div>
-        <h1 className="text-2xl font-bold text-stone-900">Admin Console</h1>
-      </div>
+    <div className="space-y-10">
+      <header className="flex items-end justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-stone-900">
+            Admin overview
+          </h1>
+          <p className="text-sm text-stone-500 mt-1">
+            Top-line state of waitlist, scrapers, students, and enterprise pipeline.
+          </p>
+        </div>
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold tracking-wider">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          LIVE
+        </span>
+      </header>
 
       {/* Scraper health — big boxes per platform, freshest first */}
-      <section>
-        <div className="flex items-baseline justify-between mb-3">
-          <h2 className="text-xs text-[#004225] tracking-wider">{'>'} SCRAPER HEALTH</h2>
+      <section className="space-y-3">
+        <div className="flex items-baseline justify-between">
+          <h2 className="text-sm font-semibold text-stone-900 tracking-tight">
+            Scraper health
+          </h2>
           <Link
             href="/scrapers"
-            className="text-[11px] text-[#00703c] hover:underline tracking-wider"
+            className="text-[11px] text-[#00703c] hover:text-[#004225] hover:underline tracking-wider"
           >
             full status →
           </Link>
         </div>
         {scraperHealth.length === 0 ? (
-          <div className="border border-amber-300 bg-amber-50 p-6 text-sm text-amber-900">
+          <div className="border border-amber-300 bg-amber-50 rounded-xl p-6 text-sm text-amber-900">
             No scraper writes detected. Either the database is unreachable from
             the admin app, or no scrapers have run recently.
           </div>
@@ -234,17 +249,23 @@ export default async function AdminOverview() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
             {scraperHealth.map((h) => {
               const status = statusFor(h)
-              const cls = {
-                live: 'border-emerald-400 bg-emerald-50',
-                lagging: 'border-amber-400 bg-amber-50',
-                stale: 'border-orange-400 bg-orange-50',
-                dead: 'border-red-400 bg-red-50',
+              const accentTop = {
+                live: 'before:bg-emerald-500',
+                lagging: 'before:bg-amber-500',
+                stale: 'before:bg-orange-500',
+                dead: 'before:bg-red-500',
               }[status]
               const dotCls = {
                 live: 'bg-emerald-500 animate-pulse',
                 lagging: 'bg-amber-500 animate-pulse',
                 stale: 'bg-orange-500',
                 dead: 'bg-red-500',
+              }[status]
+              const statusText = {
+                live: 'text-emerald-700',
+                lagging: 'text-amber-700',
+                stale: 'text-orange-700',
+                dead: 'text-red-700',
               }[status]
               const ageLabel =
                 h.ageMinutes == null
@@ -259,29 +280,29 @@ export default async function AdminOverview() {
               return (
                 <div
                   key={h.platform}
-                  className={`border-2 ${cls} p-5 transition`}
+                  className={`relative bg-white rounded-xl border border-stone-200 shadow-sm hover:shadow-md transition p-5 overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-1 ${accentTop}`}
                 >
-                  <div className="flex items-center gap-2 mb-3">
-                    <span
-                      className={`inline-block w-2.5 h-2.5 rounded-full ${dotCls}`}
-                      aria-hidden
-                    />
-                    <span className="text-[10px] tracking-wider font-bold text-stone-600 uppercase">
-                      {status}
-                    </span>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`inline-block w-2 h-2 rounded-full ${dotCls}`}
+                        aria-hidden
+                      />
+                      <span
+                        className={`text-[10px] tracking-wider font-bold uppercase ${statusText}`}
+                      >
+                        {status}
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-stone-400 font-mono">{ageLabel}</span>
                   </div>
-                  <div className="text-lg font-bold text-stone-900 capitalize mb-1">
+                  <div className="text-sm font-semibold text-stone-900 capitalize mb-3 truncate">
                     {h.platform.replace(/_/g, ' ')}
                   </div>
                   <div className="text-[28px] font-bold text-stone-900 tabular-nums leading-tight">
                     {h.rowsLast24h.toLocaleString()}
                   </div>
-                  <div className="text-[11px] text-stone-600 tracking-wider">
-                    rows in 24h
-                  </div>
-                  <div className="text-[11px] text-stone-500 mt-2 font-mono">
-                    last write {ageLabel}
-                  </div>
+                  <div className="text-[11px] text-stone-500">rows · last 24h</div>
                 </div>
               )
             })}
@@ -316,32 +337,38 @@ export default async function AdminOverview() {
       </div>
 
       {/* Enterprise — Hardware + Pipeline (prominent because hardware is real money) */}
-      <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-2">{'>'} ENTERPRISE PIPELINE</div>
+      <section className="space-y-3">
+        <h2 className="text-sm font-semibold text-stone-900 tracking-tight">
+          Enterprise pipeline
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <div className="border border-stone-300 bg-white p-4 md:col-span-2">
-            <div className="flex items-baseline justify-between mb-3">
-              <div className="text-[10px] text-stone-500 tracking-wider">STATUS BREAKDOWN</div>
+          <div className="bg-white border border-stone-200 rounded-xl shadow-sm p-5 md:col-span-2">
+            <div className="flex items-baseline justify-between mb-4">
+              <div className="text-[11px] text-stone-500 tracking-wider font-semibold">
+                STATUS BREAKDOWN
+              </div>
               <Link
                 href="/enterprise"
-                className="text-xs text-emerald-700 hover:underline tracking-wider"
+                className="text-[11px] text-emerald-700 hover:text-emerald-800 hover:underline tracking-wider"
               >
-                VIEW ALL →
+                view all →
               </Link>
             </div>
             <div className="grid grid-cols-6 gap-2 text-center">
               {(Object.keys(enterpriseCounts) as Array<keyof typeof enterpriseCounts>).map((k) => (
-                <div key={k}>
-                  <div className="text-lg font-bold text-stone-900 tabular-nums">
+                <div key={k} className="rounded-lg py-2 hover:bg-stone-50 transition">
+                  <div className="text-xl font-bold text-stone-900 tabular-nums">
                     {enterpriseCounts[k]}
                   </div>
-                  <div className="text-[9px] text-stone-500 tracking-wider uppercase">{k}</div>
+                  <div className="text-[9px] text-stone-500 tracking-wider uppercase mt-0.5">
+                    {k}
+                  </div>
                 </div>
               ))}
             </div>
             <div className="mt-4 pt-3 border-t border-stone-100 flex items-baseline justify-between text-xs">
               <span className="text-stone-600">
-                Open pipeline value:{' '}
+                Open pipeline:{' '}
                 <span className="text-stone-900 font-bold tabular-nums">
                   ${pipelineValue.toLocaleString()}
                 </span>
@@ -355,16 +382,14 @@ export default async function AdminOverview() {
             </div>
           </div>
 
-          <div className="border-2 border-emerald-400/60 bg-emerald-50/50 p-4">
-            <div className="flex items-baseline justify-between mb-2">
-              <div className="text-[10px] text-emerald-800 tracking-wider font-semibold">
-                🖥️ HARDWARE REQUESTS
-              </div>
+          <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/40 border border-emerald-200 rounded-xl shadow-sm p-5">
+            <div className="text-[11px] text-emerald-800 tracking-wider font-semibold mb-2">
+              HARDWARE REQUESTS
             </div>
-            <div className="text-3xl font-bold text-emerald-800 tabular-nums">
+            <div className="text-3xl font-bold text-emerald-900 tabular-nums">
               {hardwareRequests.length}
             </div>
-            <div className="text-[11px] text-emerald-800/70 mt-1">
+            <div className="text-[11px] text-emerald-800/70 mt-1 leading-snug">
               Prospects asking for Mac Studio / MacBook Pro bundles
             </div>
             {hardwareRequests.length > 0 && (
@@ -385,16 +410,16 @@ export default async function AdminOverview() {
               </div>
             )}
             {hardwareRequests.length === 0 && enterprise.length === 0 && (
-              <div className="text-[11px] text-emerald-800/60 mt-3">
-                Awaiting first Enterprise inquiry. Form at /pricing → Contact Sales.
+              <div className="text-[11px] text-emerald-800/60 mt-3 leading-snug">
+                Awaiting first inquiry. Form at /pricing → Contact Sales.
               </div>
             )}
           </div>
         </div>
 
         {hardwareRequests.length > 0 && (
-          <div className="mt-3 border border-stone-300 bg-white">
-            <div className="px-4 py-2 border-b border-stone-200 text-[10px] text-stone-500 tracking-wider">
+          <div className="bg-white border border-stone-200 rounded-xl shadow-sm overflow-hidden">
+            <div className="px-4 py-2.5 border-b border-stone-100 text-[11px] text-stone-500 tracking-wider font-semibold">
               RECENT HARDWARE REQUESTS
             </div>
             <div className="divide-y divide-stone-100">
@@ -402,16 +427,16 @@ export default async function AdminOverview() {
                 <Link
                   key={r.id}
                   href="/enterprise"
-                  className="px-4 py-2.5 flex items-center justify-between hover:bg-stone-50 transition"
+                  className="px-4 py-3 flex items-center justify-between hover:bg-stone-50 transition"
                 >
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm text-stone-900">
+                    <div className="text-sm font-medium text-stone-900">
                       {r.company_name ?? r.contact_name}
                       <span className="text-[10px] text-stone-400 tracking-wider ml-2">
                         {(r.hardware_form_factor ?? 'unspecified').replace('_', ' ').toUpperCase()}
                       </span>
                     </div>
-                    <div className="text-[11px] text-stone-500">
+                    <div className="text-[11px] text-stone-500 mt-0.5">
                       {new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       {r.quoted_amount_usd != null && (
                         <span className="ml-2 text-stone-700 font-mono">
@@ -420,7 +445,7 @@ export default async function AdminOverview() {
                       )}
                     </div>
                   </div>
-                  <div className="text-[10px] text-stone-500 tracking-wider uppercase px-2 py-0.5 rounded bg-stone-100">
+                  <div className="text-[10px] text-stone-600 tracking-wider uppercase px-2 py-0.5 rounded-full bg-stone-100">
                     {r.status}
                   </div>
                 </Link>
@@ -431,8 +456,8 @@ export default async function AdminOverview() {
       </section>
 
       {/* Per-surface status cards */}
-      <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-2">{'>'} BY SURFACE</div>
+      <section className="space-y-3">
+        <h2 className="text-sm font-semibold text-stone-900 tracking-tight">By surface</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           <SurfaceCard
             href="/users"
@@ -503,17 +528,20 @@ export default async function AdminOverview() {
       </section>
 
       {/* Signup velocity */}
-      <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-2">
-          {'>'} SIGNUP VELOCITY (last 30 days)
+      <section className="space-y-3">
+        <div className="flex items-baseline justify-between">
+          <h2 className="text-sm font-semibold text-stone-900 tracking-tight">
+            Signup velocity
+          </h2>
+          <span className="text-[11px] text-stone-500">last 30 days</span>
         </div>
-        <div className="border border-stone-300 bg-white p-4">
-          <div className="flex items-end gap-1 h-14">
+        <div className="bg-white border border-stone-200 rounded-xl shadow-sm p-5">
+          <div className="flex items-end gap-1 h-16">
             {spark.map((v, i) => (
               <Bar key={i} value={v} max={sparkMax} />
             ))}
           </div>
-          <div className="flex justify-between text-[10px] text-stone-500 mt-2">
+          <div className="flex justify-between text-[10px] text-stone-400 mt-2">
             <span>30d ago</span>
             <span>today</span>
           </div>
@@ -521,20 +549,50 @@ export default async function AdminOverview() {
       </section>
 
       {/* Quick actions */}
-      <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-2">{'>'} QUICK ACTIONS</div>
+      <section className="space-y-3">
+        <h2 className="text-sm font-semibold text-stone-900 tracking-tight">Quick actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <Link href="/users" className="border border-stone-300 bg-white hover:bg-stone-50 p-4 transition">
-            <div className="text-sm font-semibold text-stone-900">Users →</div>
-            <div className="text-xs text-stone-500 mt-1">Search, view referral trees, manage invites</div>
+          <Link
+            href="/users"
+            className="group bg-white border border-stone-200 rounded-xl shadow-sm hover:shadow-md hover:border-stone-300 p-5 transition"
+          >
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-semibold text-stone-900">Users</div>
+              <span className="text-stone-400 group-hover:text-[#00703c] group-hover:translate-x-0.5 transition-all">
+                →
+              </span>
+            </div>
+            <div className="text-xs text-stone-500 mt-1.5">
+              Search, view referral trees, manage invites
+            </div>
           </Link>
-          <Link href="/invites" className="border border-stone-300 bg-white hover:bg-stone-50 p-4 transition">
-            <div className="text-sm font-semibold text-stone-900">Issue invites →</div>
-            <div className="text-xs text-stone-500 mt-1">Unblock the 100-testers recruitment push</div>
+          <Link
+            href="/invites"
+            className="group bg-white border border-stone-200 rounded-xl shadow-sm hover:shadow-md hover:border-stone-300 p-5 transition"
+          >
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-semibold text-stone-900">Issue invites</div>
+              <span className="text-stone-400 group-hover:text-[#00703c] group-hover:translate-x-0.5 transition-all">
+                →
+              </span>
+            </div>
+            <div className="text-xs text-stone-500 mt-1.5">
+              Unblock the 100-testers recruitment push
+            </div>
           </Link>
-          <Link href="/analytics" className="border border-stone-300 bg-white hover:bg-stone-50 p-4 transition">
-            <div className="text-sm font-semibold text-stone-900">Analytics →</div>
-            <div className="text-xs text-stone-500 mt-1">Funnel, top referrers, geo, cohort</div>
+          <Link
+            href="/analytics"
+            className="group bg-white border border-stone-200 rounded-xl shadow-sm hover:shadow-md hover:border-stone-300 p-5 transition"
+          >
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-semibold text-stone-900">Analytics</div>
+              <span className="text-stone-400 group-hover:text-[#00703c] group-hover:translate-x-0.5 transition-all">
+                →
+              </span>
+            </div>
+            <div className="text-xs text-stone-500 mt-1.5">
+              Funnel, top referrers, geo, cohort
+            </div>
           </Link>
         </div>
       </section>
@@ -555,15 +613,23 @@ function StatCard({
 }) {
   const cls =
     accent === 'amber'
-      ? 'border-amber-400 bg-amber-50'
-      : 'border-stone-300 bg-white'
+      ? 'border-amber-200 bg-gradient-to-br from-amber-50 to-amber-100/40'
+      : 'border-stone-200 bg-white'
   return (
-    <div className={`border ${cls} p-4`}>
-      <div className="text-[10px] text-stone-500 tracking-wider mb-1">{label.toUpperCase()}</div>
-      <div className={`text-2xl font-bold ${accent === 'amber' ? 'text-amber-800' : 'text-[#00703c]'}`}>
+    <div
+      className={`border ${cls} rounded-xl shadow-sm p-4 hover:shadow-md transition`}
+    >
+      <div className="text-[10px] text-stone-500 tracking-wider mb-1.5 font-semibold">
+        {label.toUpperCase()}
+      </div>
+      <div
+        className={`text-2xl font-bold tabular-nums ${
+          accent === 'amber' ? 'text-amber-800' : 'text-stone-900'
+        }`}
+      >
         {value}
       </div>
-      {hint && <div className="text-[10px] text-stone-500 mt-1">{hint}</div>}
+      {hint && <div className="text-[10px] text-stone-500 mt-1.5 leading-snug">{hint}</div>}
     </div>
   )
 }
@@ -586,23 +652,29 @@ function SurfaceCard({
   return (
     <Link
       href={href}
-      className={`block border p-4 transition ${
+      className={`group block rounded-xl border shadow-sm hover:shadow-md transition p-5 ${
         pending
-          ? 'border-stone-200 bg-stone-50/50 hover:bg-stone-50'
-          : 'border-stone-300 bg-white hover:bg-stone-50'
+          ? 'border-stone-200 bg-stone-50/40 hover:bg-stone-50'
+          : 'border-stone-200 bg-white hover:border-stone-300'
       }`}
     >
-      <div className="flex items-center justify-between mb-2">
-        <div className="text-sm font-semibold text-stone-900">{title}</div>
-        {pending && (
-          <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 tracking-wider">
-            WIP
-          </span>
-        )}
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <div className="text-sm font-semibold text-stone-900">{title}</div>
+          {pending && (
+            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 tracking-wider">
+              WIP
+            </span>
+          )}
+        </div>
+        <span className="text-stone-400 group-hover:text-[#00703c] group-hover:translate-x-0.5 transition-all">
+          →
+        </span>
       </div>
       {pending ? (
-        <div className="text-[11px] text-stone-500">
-          Scaffolded. Implemented in <code className="bg-stone-200/60 px-1 rounded">{briefRef}</code>.
+        <div className="text-[11px] text-stone-500 leading-snug">
+          Scaffolded. Implemented in{' '}
+          <code className="bg-stone-100 px-1 py-0.5 rounded text-[10px]">{briefRef}</code>.
         </div>
       ) : metrics ? (
         <div className="grid grid-cols-3 gap-2">
@@ -615,7 +687,9 @@ function SurfaceCard({
               >
                 {m.value.toLocaleString()}
               </div>
-              <div className="text-[9px] text-stone-500 tracking-wider uppercase">{m.label}</div>
+              <div className="text-[9px] text-stone-500 tracking-wider uppercase mt-0.5">
+                {m.label}
+              </div>
             </div>
           ))}
         </div>

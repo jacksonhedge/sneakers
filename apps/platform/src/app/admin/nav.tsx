@@ -12,9 +12,11 @@ const ITEMS: Array<{ href: string; label: string; pending?: boolean }> = [
   { href: '/clicks', label: 'Clicks' },
   { href: '/audit', label: 'Audit' },
   { href: '/flags', label: 'Flags' },
+  { href: '/affiliates', label: 'Affiliates' },
   { href: '/announcements', label: 'Announce' },
   { href: '/markets', label: 'Markets' },
   { href: '/scrapers', label: 'Scrapers' },
+  { href: '/hl', label: 'HL' },
   { href: '/alerts', label: 'Alerts', pending: true },
   { href: '/autotrade', label: 'AutoTrade', pending: true },
   { href: '/otoole', label: "O'Toole" },
@@ -39,18 +41,23 @@ export function AdminNav({ email }: { email: string }) {
   }
 
   return (
-    <nav className="w-full border-b border-stone-300 bg-white/70 backdrop-blur-sm">
+    <nav className="w-full border-b border-stone-200/70 bg-white/80 backdrop-blur-md sticky top-0 z-30">
       {/* Full-width container (was max-w-6xl). Brand + sign-out cluster pin
           to the edges and stay visible at every viewport width; the nav
-          items wrap onto a second line if they don't fit. Compact padding
-          on each item to keep the wrap point as far right as possible. */}
-      <div className="px-4 py-2 flex items-center justify-between gap-4 flex-wrap">
-        <div className="flex items-center gap-3 flex-wrap min-w-0">
+          items wrap onto a second line if they don't fit. Rounded-pill
+          active state matches the consumer dashboard pill language. */}
+      <div className="px-4 py-2.5 flex items-center justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-4 flex-wrap min-w-0">
           <Link
             href="/"
-            className="text-xs tracking-wider text-[#004225] font-bold whitespace-nowrap"
+            className="flex items-center gap-2 whitespace-nowrap"
           >
-            SNEAKERS / ADMIN
+            <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[#004225] text-white text-[10px] font-bold tracking-wider">
+              S
+            </span>
+            <span className="text-xs tracking-wider text-stone-900 font-semibold">
+              Admin
+            </span>
           </Link>
           <div className="flex items-center gap-0.5 flex-wrap">
             {ITEMS.map((item) => {
@@ -63,18 +70,22 @@ export function AdminNav({ email }: { email: string }) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`text-xs px-2 py-1 tracking-wider transition inline-flex items-center gap-1 whitespace-nowrap ${
+                  className={`text-[11px] px-2.5 py-1 rounded-full tracking-wider transition inline-flex items-center gap-1 whitespace-nowrap ${
                     active
-                      ? 'bg-[#00703c] text-white'
+                      ? 'bg-[#00703c] text-white shadow-sm'
                       : item.pending
                         ? 'text-stone-400 hover:bg-stone-100'
-                        : 'text-stone-700 hover:bg-stone-100'
+                        : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
                   }`}
                 >
                   {item.label.toUpperCase()}
                   {item.pending && (
                     <span
-                      className="text-[9px] px-1 rounded bg-amber-100 text-amber-700 tracking-normal"
+                      className={`text-[9px] px-1 rounded tracking-normal ${
+                        active
+                          ? 'bg-white/20 text-white/90'
+                          : 'bg-amber-100 text-amber-700'
+                      }`}
                       title="Not yet implemented"
                     >
                       WIP
@@ -86,15 +97,15 @@ export function AdminNav({ email }: { email: string }) {
           </div>
         </div>
         <div className="flex items-center gap-3 text-xs text-stone-500">
-          <span>
-            <span className="hidden sm:inline">signed in as </span>
-            <span className="text-stone-800">{email}</span>
+          <span className="hidden sm:flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span className="text-stone-700">{email}</span>
           </span>
           <button
             type="button"
             onClick={signOut}
             disabled={signingOut}
-            className="border border-stone-300 px-2 py-1 tracking-wider hover:bg-stone-100 disabled:opacity-50"
+            className="text-[11px] tracking-wider px-2.5 py-1 rounded-full border border-stone-200 text-stone-600 hover:text-stone-900 hover:bg-stone-50 hover:border-stone-300 transition disabled:opacity-50"
             title="Sign out and return to /login"
           >
             {signingOut ? 'SIGNING OUT…' : 'SIGN OUT'}
