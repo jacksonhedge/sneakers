@@ -113,6 +113,9 @@ export async function POST(req: Request) {
       )
     }
     codeValid = true
+  } else {
+    // Open self-serve signup: no code required, grant access immediately
+    codeValid = true
   }
 
   // Create the auth user via the user-scoped client. signUp returns a session
