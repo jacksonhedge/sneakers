@@ -2,9 +2,12 @@ import { redirect } from 'next/navigation'
 import { getAuthClient } from '@/lib/supabase-auth'
 import { getTierIdentity } from '@/lib/require-tier'
 import { loadMinuteMarkets, type Bucket } from '@/lib/minute-markets'
+import { getAllHlPerps } from '@/lib/hyperliquid-data'
+import { findVenue } from '@/lib/venues'
 import { MoneyTracker } from './money-tracker'
 import { AutoTradePanel } from './auto-trade-panel'
 import { QuickMarketsPanel, ALL_BUCKETS } from './quick/quick-markets-panel'
+import { HyperliquidStrip } from './hyperliquid-strip'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -30,12 +33,19 @@ export default async function DashboardPage({ searchParams }: PageProps) {
     : isPaid ? '15m' : FREE_TIER_DEFAULT_BUCKET
   const asset = isPaid ? (sp.asset?.toUpperCase() || null) : null
 
-  const result = await loadMinuteMarkets({
-    within: 60,
-    asset,
-    grouped: true,
-    cryptoOnly: true,
-  })
+  const hlMode = isPaid ? 'live' : 'delayed'
+  const [result, hlData] = await Promise.all([
+    loadMinuteMarkets({
+      within: 60,
+      asset,
+      grouped: true,
+      cryptoOnly: true,
+    }),
+    getAllHlPerps({ mode: hlMode }).catch(() => ({ perps: [], fetchedAt: Date.now(), fromCache: false, mode: hlMode as 'live' | 'delayed' })),
+  ])
+
+  const hlVenue = findVenue('hyperliquid')
+  const hlTradeUrl = hlVenue?.affiliateUrl ?? 'https://app.hyperliquid.xyz/'
 
   const allGroups = result.groups ?? []
   const groups = allGroups
@@ -87,6 +97,19 @@ export default async function DashboardPage({ searchParams }: PageProps) {
             compact={true}
           />
         )}
+      </section>
+
+      {/* 4. HYPERLIQUID PERPS STRIP — live crypto prices direct from HL API (no Railway dep) */}
+      <section>
+        <h2 className="text-[10px] text-stone-400 uppercase tracking-widest mb-3">
+          Crypto Perps
+        </h2>
+        <HyperliquidStrip
+          perps={hlData.perps}
+          fetchedAt={hlData.fetchedAt}
+          isPaid={isPaid}
+          tradeUrl={hlTradeUrl}
+        />
       </section>
     </div>
   )
