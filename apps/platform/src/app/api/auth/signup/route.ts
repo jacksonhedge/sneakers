@@ -139,6 +139,25 @@ export async function POST(req: Request) {
         { status: 409 },
       )
     }
+    // Supabase unreachable (DNS failure, network blip, or a paused project)
+    // surfaces as an AuthRetryableFetchError with status 0 / "fetch failed".
+    // That's a service outage, not the user's fault — return 503 with a clear
+    // message instead of a generic 500 that reads like the user did something
+    // wrong.
+    if (
+      signUpErr.status === 0 ||
+      signUpErr.name === 'AuthRetryableFetchError' ||
+      /fetch failed/i.test(signUpErr.message)
+    ) {
+      console.error('[auth/signup] auth service unreachable', signUpErr)
+      return Response.json(
+        {
+          error: 'auth_unavailable',
+          message: 'Sign-up is temporarily unavailable — our auth service isn’t responding. Please try again in a few minutes.',
+        },
+        { status: 503 },
+      )
+    }
     console.error('[auth/signup] signUp failed', signUpErr)
     return Response.json(
       {
