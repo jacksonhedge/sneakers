@@ -153,7 +153,7 @@ export function SignupForm({
       onSubmit={(e) => {
         e.preventDefault()
         if (busy) return
-        // Default action on Enter: if code present, use it; else waitlist.
+        // Default action on Enter: if code present, use it; else open signup.
         submitFinal(hasCode)
       }}
       className="space-y-3"
@@ -215,7 +215,7 @@ export function SignupForm({
           type="text"
           value={code}
           onChange={(e) => setCode(e.target.value.toUpperCase())}
-          placeholder="XXXXXXXX (skip to join waitlist)"
+          placeholder="XXXXXXXX (optional)"
           maxLength={8}
           spellCheck={false}
           autoCapitalize="characters"
@@ -234,7 +234,7 @@ export function SignupForm({
             ? 'CREATING…'
             : hasCode
               ? 'ENTER TERMINAL →'
-              : 'JOIN WAITLIST →'}
+              : 'CREATE ACCOUNT →'}
         </button>
       </div>
 
