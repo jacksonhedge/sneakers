@@ -18,6 +18,31 @@ importers:
         specifier: ^5.4.0
         version: 5.9.3
 
+  apps/agent-worker:
+    dependencies:
+      '@sneakers/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      pg:
+        specifier: ^8.12.0
+        version: 8.20.0
+      ws:
+        specifier: ^8.17.1
+        version: 8.20.0
+    devDependencies:
+      '@types/pg':
+        specifier: ^8.11.0
+        version: 8.20.0
+      '@types/ws':
+        specifier: ^8.5.11
+        version: 8.18.1
+      tsx:
+        specifier: ^4.21.0
+        version: 4.21.0
+      typescript:
+        specifier: ^5.4.0
+        version: 5.9.3
+
   apps/platform:
     dependencies:
       '@anthropic-ai/sdk':

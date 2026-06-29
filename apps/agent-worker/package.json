@@ -1,0 +1,23 @@
+{
+  "name": "@sneakers/agent-worker",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "test": "node --import tsx --test \"src/**/*.test.ts\"",
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@sneakers/core": "workspace:*",
+    "pg": "^8.12.0",
+    "ws": "^8.17.1"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.0",
+    "@types/ws": "^8.5.11",
+    "tsx": "^4.21.0",
+    "typescript": "^5.4.0"
+  }
+}
