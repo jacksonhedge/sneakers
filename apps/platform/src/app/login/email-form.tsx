@@ -91,7 +91,7 @@ export function LoginForm() {
       return
     }
     setPhase('error')
-    setError("Email or password didn't match. Try again, or reset via the magic-link option below.")
+    setError("Email or password didn't match. Try again, or reset your password with the link below.")
   }
 
   if (phase === 'redirecting') {
