@@ -146,9 +146,9 @@ export default async function LoginPage({
             </div>
             <LoginForm />
             <div className="text-xs text-stone-500 pt-2 border-t border-stone-200">
-              Not on the waitlist yet?{' '}
-              <Link href="/" className="text-blue-700 font-semibold hover:underline">
-                Join here →
+              Don&apos;t have an account?{' '}
+              <Link href="/signup" className="text-blue-700 font-semibold hover:underline">
+                Sign up →
               </Link>
             </div>
           </Card>

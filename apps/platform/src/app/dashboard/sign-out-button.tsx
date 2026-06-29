@@ -19,9 +19,18 @@ export function SignOutButton() {
     <button
       type="button"
       onClick={signOut}
-      className="text-xs text-stone-600 hover:text-[#00703c] tracking-wider transition"
+      className="w-full flex items-center gap-2 px-1 py-1.5 text-sm font-semibold text-stone-700 hover:text-[#00703c] transition"
     >
-      SIGN OUT
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <path
+          d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+      Sign out
     </button>
   )
 }

@@ -90,6 +90,11 @@ export function HamburgerMenu() {
               </Item>
             ))}
           </Section>
+          {/* Sign out sits directly under the real nav — never buried beneath
+              the Coming Soon grid (which pushed it off-screen before). */}
+          <div className="px-3 py-2.5 border-t border-stone-100">
+            <SignOutButton />
+          </div>
           <Section label="COMING SOON">
             <div className="grid grid-cols-2 gap-1 px-2 pb-2">
               {SOON_LINKS.map((l) => (
@@ -102,9 +107,6 @@ export function HamburgerMenu() {
               ))}
             </div>
           </Section>
-          <div className="px-3 py-2 border-t border-stone-100 flex items-center justify-end">
-            <SignOutButton />
-          </div>
         </div>
       )}
     </div>
