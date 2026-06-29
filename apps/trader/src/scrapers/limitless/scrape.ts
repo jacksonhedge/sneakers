@@ -26,17 +26,35 @@ interface LimitlessMarket {
   volumeFormatted?: string;
   prices?: [number, number];
   collateralToken?: { symbol?: string; decimals?: number; address?: string } | string;
+  priceOracleMetadata?: { ticker?: string; assetType?: string };
 }
 
-function inferSport(tags?: string[], categories?: string[]): string {
-  const all = [...(tags ?? []), ...(categories ?? [])].map((s) => s.toLowerCase());
+// Classify a market into a `sport` bucket. The API's priceOracleMetadata is the
+// most reliable signal — it carries assetType ('CRYPTO' | 'STOCK' | ...) and a
+// ticker — so we trust it first. Recurring 5-min markets put the asset ONLY in
+// the title (their categories are just ['Minutely','5 min']), so the text
+// fallback reads the title too, not just tags/categories. Without this, every
+// 5-min crypto market mapped to 'lumy' and was dropped by the downstream
+// CRYPTO_SPORTS filter in minute-markets.
+function inferSport(m: LimitlessMarket): string {
+  const pom = m.priceOracleMetadata;
+  if (pom?.assetType === 'CRYPTO') {
+    const tk = (pom.ticker ?? '').toUpperCase();
+    if (tk === 'BTC') return 'bitcoin';
+    if (tk === 'ETH') return 'ethereum';
+    if (tk === 'SOL') return 'solana';
+    return 'crypto';
+  }
+  if (pom?.assetType === 'STOCK') return 'stocks';
+  if (pom?.assetType === 'COMMODITY') return 'commodities';
+  const all = [...(m.tags ?? []), ...(m.categories ?? []), m.title ?? ''].map((s) => s.toLowerCase());
   if (all.some((t) => /btc|bitcoin/.test(t))) return 'bitcoin';
   if (all.some((t) => /eth|ethereum/.test(t))) return 'ethereum';
   if (all.some((t) => /\bsol\b|solana/.test(t))) return 'solana';
-  if (all.some((t) => /crypto|defi|memecoin|altcoin|xrp|doge|ada/.test(t))) return 'crypto';
+  if (all.some((t) => /crypto|defi|memecoin|altcoin|xrp|doge|ada|bnb|hype/.test(t))) return 'crypto';
   if (all.some((t) => /nba|nfl|mlb|nhl|sport/.test(t))) return 'sports';
   if (all.some((t) => /politics|election/.test(t))) return 'politics';
-  return all[0] || 'unknown';
+  return m.tags?.[0]?.toLowerCase() || m.categories?.[0]?.toLowerCase() || 'unknown';
 }
 
 // Limitless is an AMM market: `prices` are implied probabilities (Yes+No≈1.00),
@@ -66,7 +84,7 @@ function marketToSnapshot(m: LimitlessMarket, ts: string): MarketSnapshot | null
   const [yesPrice, noPrice] = m.prices;
   if (yesPrice == null && noPrice == null) return null;
 
-  const sport = inferSport(m.tags, m.categories);
+  const sport = inferSport(m);
   const outcomes = [
     { name: 'Yes', best_bid: null, best_ask: yesPrice ?? null, last_price: yesPrice ?? null },
     { name: 'No', best_bid: null, best_ask: noPrice ?? null, last_price: noPrice ?? null },
