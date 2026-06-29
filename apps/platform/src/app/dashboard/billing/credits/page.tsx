@@ -82,13 +82,13 @@ export default async function CreditsPage({
       <div className="max-w-5xl mx-auto px-6 py-10">
         <Link
           href="/dashboard/billing"
-          className="text-xs text-[#004225]/80 tracking-wider hover:text-[#004225]"
+          className="text-xs text-[#1E3A8A]/80 tracking-wider hover:text-[#1E3A8A]"
         >
           ← BILLING
         </Link>
 
         <header className="mt-6 mb-8">
-          <div className="text-xs text-[#004225] tracking-wider mb-1">{'>'} CREDITS</div>
+          <div className="text-xs text-[#1E3A8A] tracking-wider mb-1">{'>'} CREDITS</div>
           <h1 className="text-3xl md:text-4xl font-bold">O&apos;Toole credits</h1>
           <p className="text-sm text-stone-600 mt-2 max-w-2xl">
             Credits pay for individual O&apos;Toole messages. Haiku ≈ 3 credits, Sonnet ≈ 30,
@@ -98,7 +98,7 @@ export default async function CreditsPage({
         </header>
 
         {purchaseStatus === 'success' && (
-          <div className="mb-6 rounded bg-emerald-50 ring-1 ring-emerald-200 text-emerald-800 text-sm px-4 py-3">
+          <div className="mb-6 rounded bg-blue-50 ring-1 ring-blue-200 text-blue-800 text-sm px-4 py-3">
             ✓ Purchase complete. Credits will appear in your balance within a few seconds.
           </div>
         )}
@@ -147,7 +147,7 @@ export default async function CreditsPage({
                   <div className="flex items-baseline justify-between mb-2">
                     <div className="text-2xl font-bold tabular-nums">${pack.usd}</div>
                     {bonusPct > 0 && (
-                      <div className="text-[10px] text-emerald-700 bg-emerald-50 ring-1 ring-emerald-200 rounded px-2 py-0.5 tracking-wider">
+                      <div className="text-[10px] text-blue-700 bg-blue-50 ring-1 ring-blue-200 rounded px-2 py-0.5 tracking-wider">
                         +{bonusPct}%
                       </div>
                     )}
@@ -196,7 +196,7 @@ export default async function CreditsPage({
                       </td>
                       <td
                         className={`px-4 py-2 text-right font-mono tabular-nums ${
-                          t.delta > 0 ? 'text-emerald-700' : 'text-stone-900'
+                          t.delta > 0 ? 'text-blue-700' : 'text-stone-900'
                         }`}
                       >
                         {t.delta > 0 ? '+' : ''}

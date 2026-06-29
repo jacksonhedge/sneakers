@@ -58,13 +58,13 @@ export default async function ApiKeysPage() {
       <div className="max-w-4xl mx-auto px-6 py-10">
         <Link
           href="/dashboard"
-          className="text-xs text-[#004225]/80 tracking-wider hover:text-[#004225]"
+          className="text-xs text-[#1E3A8A]/80 tracking-wider hover:text-[#1E3A8A]"
         >
           ← DASHBOARD
         </Link>
 
         <header className="mt-6 mb-8">
-          <div className="text-xs text-[#004225] tracking-wider mb-1">{'>'} SETTINGS · API KEYS</div>
+          <div className="text-xs text-[#1E3A8A] tracking-wider mb-1">{'>'} SETTINGS · API KEYS</div>
           <h1 className="text-3xl md:text-4xl font-bold">Bring your own keys</h1>
           <p className="text-sm text-stone-600 mt-2 max-w-2xl">
             Add your own API key for any provider. When you use a model whose

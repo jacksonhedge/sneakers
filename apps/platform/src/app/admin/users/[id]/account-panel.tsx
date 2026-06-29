@@ -79,7 +79,7 @@ function CreditAdjuster({
 
   return (
     <div className="border border-stone-300 bg-white p-4">
-      <div className="text-xs text-[#004225] tracking-wider mb-2">{'>'} O&apos;TOOLE CREDITS</div>
+      <div className="text-xs text-[#1E3A8A] tracking-wider mb-2">{'>'} O&apos;TOOLE CREDITS</div>
       <div className="text-sm text-stone-700 mb-3">
         Current balance:{' '}
         <span className="font-mono text-stone-900 font-semibold tabular-nums">
@@ -125,7 +125,7 @@ function CreditAdjuster({
                 type="button"
                 disabled={!canArm || pending}
                 onClick={arm}
-                className="text-xs px-3 py-1.5 tracking-wider bg-[#00703c] text-white hover:bg-[#005a30] transition disabled:opacity-30"
+                className="text-xs px-3 py-1.5 tracking-wider bg-[#1B4DE4] text-white hover:bg-[#1740C0] transition disabled:opacity-30"
               >
                 {validDelta && deltaNum > 0
                   ? `ADD ${deltaNum.toLocaleString()} CREDITS`
@@ -140,7 +140,7 @@ function CreditAdjuster({
                   disabled={pending}
                   onClick={submit}
                   className={`text-xs px-3 py-1.5 tracking-wider text-white transition disabled:opacity-50 ${
-                    deltaNum < 0 ? 'bg-red-700 hover:bg-red-800' : 'bg-[#004225] hover:bg-[#002914]'
+                    deltaNum < 0 ? 'bg-red-700 hover:bg-red-800' : 'bg-[#1E3A8A] hover:bg-[#15275C]'
                   }`}
                 >
                   {pending
@@ -165,7 +165,7 @@ function CreditAdjuster({
             <div
               className={`text-xs px-3 py-2 inline-block ${
                 result.ok
-                  ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                  ? 'bg-blue-50 text-blue-800 border border-blue-200'
                   : 'bg-red-50 text-red-800 border border-red-200'
               }`}
             >
@@ -182,7 +182,7 @@ function CreditAdjuster({
 
 const TIER_OPTIONS: Array<{ value: Tier; label: string; cls: string }> = [
   { value: 'free', label: 'Free', cls: 'bg-stone-200 text-stone-700' },
-  { value: 'pro', label: 'Pro', cls: 'bg-emerald-500/20 text-emerald-700 ring-1 ring-emerald-400/40' },
+  { value: 'pro', label: 'Pro', cls: 'bg-blue-500/20 text-blue-700 ring-1 ring-blue-400/40' },
   { value: 'elite', label: 'Elite', cls: 'bg-amber-500/20 text-amber-700 ring-1 ring-amber-400/40' },
   { value: 'business', label: 'Business', cls: 'bg-violet-500/20 text-violet-700 ring-1 ring-violet-400/40' },
 ]
@@ -219,7 +219,7 @@ function TierAdjuster({
 
   return (
     <div className="border border-stone-300 bg-white p-4">
-      <div className="text-xs text-[#004225] tracking-wider mb-2">{'>'} PLAN TIER</div>
+      <div className="text-xs text-[#1E3A8A] tracking-wider mb-2">{'>'} PLAN TIER</div>
       <div className="text-sm text-stone-700 mb-3">
         Current tier:{' '}
         {(() => {
@@ -245,7 +245,7 @@ function TierAdjuster({
               }}
               className={`px-3 py-1.5 text-xs tracking-wider transition ${
                 target === opt.value
-                  ? 'bg-[#00703c] text-white'
+                  ? 'bg-[#1B4DE4] text-white'
                   : 'bg-white text-stone-700 border border-stone-300 hover:bg-stone-50'
               }`}
             >
@@ -273,7 +273,7 @@ function TierAdjuster({
                 setResult(null)
                 setArmed(true)
               }}
-              className="text-xs px-3 py-1.5 tracking-wider bg-[#00703c] text-white hover:bg-[#005a30] transition disabled:opacity-30"
+              className="text-xs px-3 py-1.5 tracking-wider bg-[#1B4DE4] text-white hover:bg-[#1740C0] transition disabled:opacity-30"
             >
               {changed
                 ? `CHANGE TIER → ${target.toUpperCase()}`
@@ -285,7 +285,7 @@ function TierAdjuster({
                 type="button"
                 disabled={pending}
                 onClick={submit}
-                className="text-xs px-3 py-1.5 tracking-wider bg-[#004225] text-white hover:bg-[#002914] transition disabled:opacity-50"
+                className="text-xs px-3 py-1.5 tracking-wider bg-[#1E3A8A] text-white hover:bg-[#15275C] transition disabled:opacity-50"
               >
                 {pending ? 'WORKING…' : `CONFIRM → ${currentTier} → ${target}`}
               </button>
@@ -307,7 +307,7 @@ function TierAdjuster({
           <div
             className={`text-xs px-3 py-2 inline-block ${
               result.ok
-                ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                ? 'bg-blue-50 text-blue-800 border border-blue-200'
                 : 'bg-red-50 text-red-800 border border-red-200'
             }`}
           >

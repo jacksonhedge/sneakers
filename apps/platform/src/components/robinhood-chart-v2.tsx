@@ -66,7 +66,7 @@ interface Props {
   ariaLabel?: string
 }
 
-const DEFAULT_UP = '#00703c' // brand emerald (matches RollingNumber up-flash)
+const DEFAULT_UP = '#1B4DE4' // brand blue (matches RollingNumber up-flash)
 const DEFAULT_DOWN = '#ef4444'
 const SECONDARY_DEFAULT = 'rgba(120, 113, 108, 0.55)'
 

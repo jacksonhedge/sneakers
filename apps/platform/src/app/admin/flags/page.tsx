@@ -15,7 +15,7 @@ export default async function FlagsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <div className="text-xs text-[#004225] tracking-wider mb-1">{'>'} FEATURE FLAGS</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-1">{'>'} FEATURE FLAGS</div>
         <h1 className="text-2xl font-bold text-stone-900">
           {flags.length.toLocaleString()}{' '}
           <span className="text-stone-500 text-base font-normal">flags</span>
@@ -23,11 +23,11 @@ export default async function FlagsPage() {
         <p className="text-sm text-stone-600 mt-1 max-w-2xl">
           DB-backed boolean flags. Read at runtime via <code className="bg-stone-100 px-1">getFlag(key, default)</code>.
           Flipping a flag is logged to the{' '}
-          <Link href="/audit" className="text-[#00703c] underline">audit log</Link> with the prior value, the
+          <Link href="/audit" className="text-[#1B4DE4] underline">audit log</Link> with the prior value, the
           new value, and the actor.
         </p>
         <p className="text-sm text-stone-500 mt-1 max-w-2xl">
-          Note: env-driven config (in <Link href="/signup-config" className="text-[#00703c] underline">/signup-config</Link>)
+          Note: env-driven config (in <Link href="/signup-config" className="text-[#1B4DE4] underline">/signup-config</Link>)
           still requires a Vercel env edit + redeploy. Flags here are the live-toggle alternative for new
           knobs going forward.
         </p>

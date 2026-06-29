@@ -27,14 +27,14 @@ interface Props {
 }
 
 const COLOR_PILL: Record<string, string> = {
-  emerald: 'bg-emerald-500 ring-emerald-700',
+  emerald: 'bg-blue-500 ring-blue-700',
   rose: 'bg-rose-500 ring-rose-700',
   amber: 'bg-amber-500 ring-amber-700',
   sky: 'bg-sky-500 ring-sky-700',
   violet: 'bg-violet-500 ring-violet-700',
   cyan: 'bg-cyan-500 ring-cyan-700',
   fuchsia: 'bg-fuchsia-500 ring-fuchsia-700',
-  lime: 'bg-lime-500 ring-lime-700',
+  lime: 'bg-blue-400 ring-blue-600',
   orange: 'bg-orange-500 ring-orange-700',
   teal: 'bg-teal-500 ring-teal-700',
 }
@@ -112,7 +112,7 @@ function Lane({
     <div
       className={`relative h-10 rounded-lg ring-1 overflow-hidden ${
         entry.isMe
-          ? 'bg-emerald-50/40 ring-emerald-300'
+          ? 'bg-blue-50/40 ring-blue-300'
           : isThrone
             ? 'bg-gradient-to-r from-amber-50 to-white ring-amber-300'
             : 'bg-stone-50 ring-stone-200'
@@ -142,7 +142,7 @@ function Lane({
         style={{
           right: '5%',
           background:
-            'repeating-linear-gradient(0deg, rgba(0,112,60,0.6) 0 4px, transparent 4px 8px)',
+            'repeating-linear-gradient(0deg, rgba(27, 77, 228,0.6) 0 4px, transparent 4px 8px)',
         }}
         aria-hidden
       />

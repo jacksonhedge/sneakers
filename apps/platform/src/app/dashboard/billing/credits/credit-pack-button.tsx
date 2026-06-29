@@ -33,7 +33,7 @@ export function CreditPackButton({ packId, label }: { packId: string; label: str
       <button
         onClick={onClick}
         disabled={pending}
-        className="w-full rounded bg-[#004225] hover:bg-[#00703c] text-white text-sm font-semibold py-2 px-4 transition disabled:opacity-60 disabled:cursor-not-allowed"
+        className="w-full rounded bg-[#1E3A8A] hover:bg-[#1B4DE4] text-white text-sm font-semibold py-2 px-4 transition disabled:opacity-60 disabled:cursor-not-allowed"
       >
         {pending ? 'Redirecting…' : label}
       </button>

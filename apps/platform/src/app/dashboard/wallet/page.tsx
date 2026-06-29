@@ -6,7 +6,7 @@ import { WalletView, type WalletTransaction } from './wallet-view'
 
 // Typography is the whole personality of this surface. The wallet is a
 // different "room" in the Sneakers house — serif headlines + monospace
-// ledger + cream-on-emerald-noir is what makes it read as a premium
+// ledger + cream-on-blue-noir is what makes it read as a premium
 // financial product instead of another Tailwind dashboard. Both fonts are
 // scoped to this route (loaded once, applied via className), so the rest
 // of the app is unaffected.

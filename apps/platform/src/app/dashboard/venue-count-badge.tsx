@@ -7,7 +7,7 @@ export function VenueCountBadge({ count }: { count: number | undefined }) {
   if (!count || count < 2) return null
   return (
     <span
-      className="inline-flex items-center rounded bg-emerald-50 text-emerald-700 px-1.5 py-0.5 ring-1 ring-emerald-300 text-[9px] font-semibold tracking-wider flex-shrink-0"
+      className="inline-flex items-center rounded bg-blue-50 text-blue-700 px-1.5 py-0.5 ring-1 ring-blue-300 text-[9px] font-semibold tracking-wider flex-shrink-0"
       title={`Quoted on ${count} books`}
     >
       {count}×

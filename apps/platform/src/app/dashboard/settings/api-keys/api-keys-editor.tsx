@@ -110,7 +110,7 @@ export function ApiKeysEditor({
           <div className="flex items-baseline gap-2">
             <h3 className="font-semibold text-stone-900">{name}</h3>
             {existing ? (
-              <span className="text-[10px] tracking-wider rounded-full ring-1 px-2 py-0.5 bg-emerald-50 text-emerald-700 ring-emerald-300">
+              <span className="text-[10px] tracking-wider rounded-full ring-1 px-2 py-0.5 bg-blue-50 text-blue-700 ring-blue-300">
                 KEY ON FILE
               </span>
             ) : (
@@ -133,7 +133,7 @@ export function ApiKeysEditor({
           href={getKeyUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs text-[#004225] hover:underline whitespace-nowrap"
+          className="text-xs text-[#1E3A8A] hover:underline whitespace-nowrap"
         >
           Get key →
         </a>
@@ -153,7 +153,7 @@ export function ApiKeysEditor({
           <div className="flex gap-2">
             <button
               onClick={() => setEditing(true)}
-              className="text-xs text-[#004225] hover:underline"
+              className="text-xs text-[#1E3A8A] hover:underline"
             >
               Replace
             </button>
@@ -175,7 +175,7 @@ export function ApiKeysEditor({
             value={apiKey}
             onChange={(e) => setApiKey(e.target.value)}
             placeholder={`Paste your ${name} key (${keyFormat})`}
-            className="w-full text-sm rounded ring-1 ring-stone-300 px-3 py-2 bg-stone-50 focus:outline-none focus:ring-emerald-400 font-mono"
+            className="w-full text-sm rounded ring-1 ring-stone-300 px-3 py-2 bg-stone-50 focus:outline-none focus:ring-blue-400 font-mono"
             autoComplete="off"
             spellCheck={false}
           />
@@ -184,13 +184,13 @@ export function ApiKeysEditor({
             value={label}
             onChange={(e) => setLabel(e.target.value)}
             placeholder="Label (optional, e.g. 'personal' or 'team')"
-            className="w-full text-xs rounded ring-1 ring-stone-300 px-3 py-2 focus:outline-none focus:ring-emerald-400"
+            className="w-full text-xs rounded ring-1 ring-stone-300 px-3 py-2 focus:outline-none focus:ring-blue-400"
           />
           <div className="flex items-center gap-2">
             <button
               onClick={() => onSave(true)}
               disabled={pending || !apiKey}
-              className="text-xs font-semibold rounded bg-[#004225] hover:bg-[#00703c] text-white py-2 px-4 transition disabled:opacity-60"
+              className="text-xs font-semibold rounded bg-[#1E3A8A] hover:bg-[#1B4DE4] text-white py-2 px-4 transition disabled:opacity-60"
             >
               {pending ? 'Verifying…' : 'Save & verify'}
             </button>
@@ -222,7 +222,7 @@ export function ApiKeysEditor({
         <div
           className={`mt-3 text-xs rounded px-3 py-2 ${
             message.kind === 'success'
-              ? 'bg-emerald-50 text-emerald-900 ring-1 ring-emerald-200'
+              ? 'bg-blue-50 text-blue-900 ring-1 ring-blue-200'
               : message.kind === 'error'
                 ? 'bg-red-50 text-red-900 ring-1 ring-red-200'
                 : 'bg-stone-100 text-stone-700 ring-1 ring-stone-200'

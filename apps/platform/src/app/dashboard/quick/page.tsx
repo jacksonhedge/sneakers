@@ -55,7 +55,7 @@ function fmtChangePp(c: number | null, samples: number): string {
 
 function changeClass(c: number | null): string {
   if (c == null) return 'text-stone-400'
-  if (c > 0.005) return 'text-emerald-700'
+  if (c > 0.005) return 'text-blue-700'
   if (c < -0.005) return 'text-red-700'
   return 'text-stone-500'
 }
@@ -67,7 +67,7 @@ function bucketColor(b: Bucket | null): string {
     case '15m':
       return 'bg-amber-100 text-amber-800'
     case '30m':
-      return 'bg-emerald-100 text-emerald-800'
+      return 'bg-blue-100 text-blue-800'
     default:
       return 'bg-stone-100 text-stone-600'
   }
@@ -125,8 +125,8 @@ export default async function QuickMarketsPage({ searchParams }: PageProps) {
         <header className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-baseline gap-3">
             <h1 className="text-xl font-bold tracking-tight">Resolves in minutes</h1>
-            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold tracking-wider">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[10px] font-bold tracking-wider">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
               LIVE
             </span>
           </div>
@@ -184,7 +184,7 @@ function BucketFilter({ active, asset }: { active: Bucket; asset: string | null 
           prefetch={false}
           className={`px-4 py-1.5 text-xs font-bold tracking-wider rounded-full transition ${
             b === active
-              ? 'bg-[#004225] text-white shadow-sm'
+              ? 'bg-[#1E3A8A] text-white shadow-sm'
               : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
           }`}
         >
@@ -251,10 +251,10 @@ function AssetFilter({
 
 function AutoTradeBanner() {
   return (
-    <div className="rounded-xl border border-emerald-200 bg-gradient-to-r from-emerald-50 via-emerald-50/50 to-white px-4 py-3 flex items-center justify-between gap-4 flex-wrap">
+    <div className="rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 via-blue-50/50 to-white px-4 py-3 flex items-center justify-between gap-4 flex-wrap">
       <div className="flex items-center gap-3 min-w-0 flex-1">
-        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#004225] text-white text-[10px] font-bold tracking-wider shrink-0">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse" />
+        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#1E3A8A] text-white text-[10px] font-bold tracking-wider shrink-0">
+          <span className="w-1.5 h-1.5 rounded-full bg-blue-300 animate-pulse" />
           AUTO-TRADE
         </span>
         <div className="text-sm text-stone-700">
@@ -264,7 +264,7 @@ function AutoTradeBanner() {
       </div>
       <Link
         href="/dashboard/billing"
-        className="inline-flex items-center gap-1.5 bg-[#004225] text-white text-xs font-bold tracking-wider px-4 py-2 rounded-full hover:bg-[#003520] hover:shadow-md transition-all shrink-0"
+        className="inline-flex items-center gap-1.5 bg-[#1E3A8A] text-white text-xs font-bold tracking-wider px-4 py-2 rounded-full hover:bg-[#16357A] hover:shadow-md transition-all shrink-0"
       >
         UPGRADE <span aria-hidden>→</span>
       </Link>
@@ -346,7 +346,7 @@ function MarketBox({
       href={tradeUrlFor(m.platform)}
       target="_blank"
       rel="noopener noreferrer sponsored"
-      className="group relative rounded-2xl border border-stone-200 bg-white p-4 flex flex-col gap-3 hover:border-[#004225] hover:shadow-md transition-all"
+      className="group relative rounded-2xl border border-stone-200 bg-white p-4 flex flex-col gap-3 hover:border-[#1E3A8A] hover:shadow-md transition-all"
     >
       <div className="flex items-start justify-between gap-2">
         <div className="text-sm font-semibold text-stone-900 leading-tight tracking-tight">
@@ -359,7 +359,7 @@ function MarketBox({
 
       <div className="flex items-baseline justify-between">
         <div className="flex items-baseline gap-2">
-          <span className="text-3xl font-bold text-emerald-700 font-mono tabular-nums leading-none">
+          <span className="text-3xl font-bold text-blue-700 font-mono tabular-nums leading-none">
             {ask == null ? (
               '—'
             ) : (
@@ -386,7 +386,7 @@ function MarketBox({
         </span>
         <span
           aria-hidden
-          className="text-[#004225] text-sm font-bold transition-transform group-hover:translate-x-1"
+          className="text-[#1E3A8A] text-sm font-bold transition-transform group-hover:translate-x-1"
         >
           →
         </span>

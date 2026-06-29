@@ -50,7 +50,7 @@ export function categoryOf(market: Pick<MarketSnapshot, 'sport' | 'tags'>): Term
 
 export const CATEGORY_META: Record<TerminalCategory, { label: string; short: string; badgeCls: string; lineCls: string }> = {
   politics: { label: 'Politics', short: 'POL', badgeCls: 'bg-blue-500/15 text-blue-600 ring-blue-400/40', lineCls: 'stroke-blue-500' },
-  economics: { label: 'Economics', short: 'ECO', badgeCls: 'bg-emerald-500/15 text-emerald-600 ring-emerald-400/40', lineCls: 'stroke-emerald-500' },
+  economics: { label: 'Economics', short: 'ECO', badgeCls: 'bg-blue-500/15 text-blue-600 ring-blue-400/40', lineCls: 'stroke-blue-500' },
   crypto: { label: 'Crypto', short: 'BTC', badgeCls: 'bg-amber-500/15 text-amber-600 ring-amber-400/40', lineCls: 'stroke-amber-500' },
   sports: { label: 'Sports', short: 'SPT', badgeCls: 'bg-purple-500/15 text-purple-600 ring-purple-400/40', lineCls: 'stroke-purple-500' },
   tech: { label: 'Tech', short: 'TEC', badgeCls: 'bg-rose-500/15 text-rose-600 ring-rose-400/40', lineCls: 'stroke-rose-500' },

@@ -64,7 +64,7 @@ export function LandingMobileNav({ referralCode, signupCfg }: Props) {
           />
           {/* Panel */}
           <div
-            className="absolute top-12 right-0 z-50 w-64 rounded-xl bg-stone-950/95 backdrop-blur-xl ring-1 ring-emerald-400/30 shadow-2xl p-3 space-y-2"
+            className="absolute top-12 right-0 z-50 w-64 rounded-xl bg-stone-950/95 backdrop-blur-xl ring-1 ring-blue-400/30 shadow-2xl p-3 space-y-2"
             onClick={(e) => e.stopPropagation()}
           >
             <Link

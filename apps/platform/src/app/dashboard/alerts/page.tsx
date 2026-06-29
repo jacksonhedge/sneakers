@@ -107,7 +107,7 @@ export default async function AlertsPage() {
       <div className="max-w-5xl mx-auto px-6 py-10 space-y-6">
         <div className="flex items-baseline justify-between flex-wrap gap-3">
           <div>
-            <Link href="/dashboard" className="text-xs text-[#004225]/80 tracking-wider hover:text-[#004225]">
+            <Link href="/dashboard" className="text-xs text-[#1E3A8A]/80 tracking-wider hover:text-[#1E3A8A]">
               ← DASHBOARD
             </Link>
             <h1 className="text-3xl md:text-4xl font-bold mt-3">Alerts</h1>
@@ -146,7 +146,7 @@ export default async function AlertsPage() {
             {atCap && upsell && (
               <Link
                 href="/dashboard/billing"
-                className="text-xs tracking-wider font-semibold text-emerald-700 hover:text-emerald-900"
+                className="text-xs tracking-wider font-semibold text-blue-700 hover:text-blue-900"
               >
                 {upsell.toUpperCase()} →
               </Link>
@@ -172,7 +172,7 @@ export default async function AlertsPage() {
             {effectiveCap > 0 && (
               <Link
                 href="/dashboard/alerts/new"
-                className="text-xs tracking-wider font-semibold text-emerald-700 hover:text-emerald-900"
+                className="text-xs tracking-wider font-semibold text-blue-700 hover:text-blue-900"
               >
                 CREATE YOUR FIRST RULE →
               </Link>
@@ -180,7 +180,7 @@ export default async function AlertsPage() {
             {effectiveCap === 0 && tier === 'free' && (
               <div className="text-xs text-stone-500 mt-2">
                 Alerts are a Pro feature.{' '}
-                <Link href="/dashboard/billing" className="text-emerald-700 hover:underline">
+                <Link href="/dashboard/billing" className="text-blue-700 hover:underline">
                   Upgrade to Pro
                 </Link>
                 .

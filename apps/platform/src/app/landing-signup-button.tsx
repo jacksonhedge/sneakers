@@ -58,7 +58,7 @@ export function LandingSignupButton({
       <button
         type="button"
         onClick={() => setMenuOpen((o) => !o)}
-        className="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-4 py-2 text-xs font-semibold tracking-wider text-black ring-1 ring-emerald-400 hover:bg-emerald-400 transition"
+        className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-4 py-2 text-xs font-semibold tracking-wider text-white ring-1 ring-blue-400 hover:bg-blue-500 transition"
         aria-haspopup="menu"
         aria-expanded={menuOpen}
       >
@@ -71,16 +71,16 @@ export function LandingSignupButton({
       {menuOpen && (
         <div
           role="menu"
-          className="absolute right-0 top-full mt-2 w-72 rounded-lg bg-stone-950 ring-1 ring-emerald-400/30 shadow-[0_24px_72px_rgba(0,0,0,0.6)] overflow-hidden"
+          className="absolute right-0 top-full mt-2 w-72 rounded-lg bg-stone-950 ring-1 ring-blue-400/30 shadow-[0_24px_72px_rgba(0,0,0,0.6)] overflow-hidden"
         >
           {individualEnabled && (
             <Link
               href="/signup"
-              className="block p-4 hover:bg-emerald-500/10 transition border-b border-white/5"
+              className="block p-4 hover:bg-blue-500/10 transition border-b border-white/5"
               onClick={() => setMenuOpen(false)}
               role="menuitem"
             >
-              <div className="text-sm font-semibold text-emerald-300">Individual →</div>
+              <div className="text-sm font-semibold text-blue-300">Individual →</div>
               <div className="text-[11px] text-white/60 mt-0.5 leading-snug">
                 Sign up just for you. Personal account, .edu unlocks 75% off after
                 verification.
@@ -94,10 +94,10 @@ export function LandingSignupButton({
                 setMenuOpen(false)
                 setOrgOpen(true)
               }}
-              className="block w-full text-left p-4 hover:bg-emerald-500/10 transition"
+              className="block w-full text-left p-4 hover:bg-blue-500/10 transition"
               role="menuitem"
             >
-              <div className="text-sm font-semibold text-emerald-300">
+              <div className="text-sm font-semibold text-blue-300">
                 Organization / Group →
               </div>
               <div className="text-[11px] text-white/60 mt-0.5 leading-snug">
@@ -120,7 +120,7 @@ export function LandingSignupButton({
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative max-w-lg w-full bg-stone-950 rounded-xl shadow-2xl ring-1 ring-emerald-400/30 p-6 text-white my-8"
+            className="relative max-w-lg w-full bg-stone-950 rounded-xl shadow-2xl ring-1 ring-blue-400/30 p-6 text-white my-8"
           >
             <button
               type="button"
@@ -131,7 +131,7 @@ export function LandingSignupButton({
               ×
             </button>
             <div className="mb-5 pr-8">
-              <div className="text-[10px] tracking-[0.2em] text-emerald-300/80 font-semibold mb-1">
+              <div className="text-[10px] tracking-[0.2em] text-blue-300/80 font-semibold mb-1">
                 SNEAKERS TERMINAL · FOR COLLEGE ORGS
               </div>
               <h2 className="text-xl font-bold text-white">Get your org in early.</h2>

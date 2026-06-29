@@ -57,7 +57,7 @@ export default async function LeaderboardPage() {
 
   return (
     <div className="max-w-3xl mx-auto py-10 px-6">
-      <div className="text-[10px] tracking-[0.15em] text-emerald-700 font-semibold mb-2">
+      <div className="text-[10px] tracking-[0.15em] text-blue-700 font-semibold mb-2">
         COLLEGE LEADERBOARD
       </div>
       <h1 className="text-3xl font-bold text-stone-900 mb-2">
@@ -73,16 +73,16 @@ export default async function LeaderboardPage() {
       </p>
 
       {!userIsOnBoard && (
-        <div className="mt-6 rounded-lg border border-emerald-300 bg-emerald-50 p-4 flex items-start justify-between gap-4">
+        <div className="mt-6 rounded-lg border border-blue-300 bg-blue-50 p-4 flex items-start justify-between gap-4">
           <div className="flex-1">
-            <div className="text-sm font-semibold text-emerald-900">You&apos;re not on the board yet.</div>
-            <div className="text-xs text-emerald-800 mt-0.5">
+            <div className="text-sm font-semibold text-blue-900">You&apos;re not on the board yet.</div>
+            <div className="text-xs text-blue-800 mt-0.5">
               Verify your student status + pick a public handle. Takes ~30 seconds.
             </div>
           </div>
           <Link
             href="/dashboard/leaderboard/join"
-            className="shrink-0 self-center text-xs px-3 py-2 tracking-wider bg-[#00703c] text-white hover:bg-[#005a30] transition rounded"
+            className="shrink-0 self-center text-xs px-3 py-2 tracking-wider bg-[#1B4DE4] text-white hover:bg-[#1740C0] transition rounded"
           >
             JOIN →
           </Link>
@@ -124,7 +124,7 @@ export default async function LeaderboardPage() {
                   No one on the leaderboard yet — be the first.{' '}
                   <Link
                     href="/dashboard/leaderboard/join"
-                    className="text-[#00703c] underline"
+                    className="text-[#1B4DE4] underline"
                   >
                     Verify and join →
                   </Link>

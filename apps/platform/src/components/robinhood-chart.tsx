@@ -5,7 +5,7 @@ import { useEffect, useId, useMemo, useRef, useState } from 'react'
 // Robinhood-style price chart.
 //
 // Visual language:
-//   - Single bold line, direction-aware color (emerald up, red down vs first point)
+//   - Single bold line, direction-aware color (blue up, red down vs first point)
 //   - Soft gradient fill underneath, fading to transparent
 //   - No grid / no axes — just the line + an optional dashed start-price reference
 //   - Catmull-Rom smoothing on the primary line for a clean curve (toggleable)
@@ -60,7 +60,7 @@ interface ChartProps {
   ariaLabel?: string
 }
 
-const DEFAULT_UP = '#10b981'   // emerald-500
+const DEFAULT_UP = '#10b981'   // blue-500
 const DEFAULT_DOWN = '#ef4444' // red-500
 const SECONDARY_DEFAULT = 'rgba(120, 113, 108, 0.55)'
 
@@ -331,8 +331,8 @@ export function RobinhoodChart({
         <div className="flex items-center gap-1.5 text-[10px] font-mono">
           {isLive ? (
             <>
-              <span className={`w-1.5 h-1.5 rounded-full bg-emerald-500 rh-pulse-${chartId}`} />
-              <span className="text-emerald-600 tracking-wider">LIVE</span>
+              <span className={`w-1.5 h-1.5 rounded-full bg-blue-500 rh-pulse-${chartId}`} />
+              <span className="text-blue-600 tracking-wider">LIVE</span>
               <span className="text-stone-400">· {lastAge}</span>
             </>
           ) : (

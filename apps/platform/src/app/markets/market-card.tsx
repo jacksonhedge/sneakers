@@ -33,7 +33,7 @@ function emojiForSport(sport: string | undefined): string | null {
 function phaseBadge(phase: MarketSnapshot['phase']): { label: string; cls: string } {
   switch (phase) {
     case 'live':
-      return { label: 'LIVE', cls: 'bg-emerald-50 text-emerald-700 ring-emerald-300' }
+      return { label: 'LIVE', cls: 'bg-blue-50 text-blue-700 ring-blue-300' }
     case 'pre_game':
       return { label: 'PRE', cls: 'bg-amber-50 text-amber-700 ring-amber-300' }
     case 'opening':
@@ -121,7 +121,7 @@ export function MarketCard({
   }
 
   return (
-    <div className="flex flex-col rounded-lg bg-white ring-1 ring-stone-200 p-5 hover:ring-[#004225]/40 transition">
+    <div className="flex flex-col rounded-lg bg-white ring-1 ring-stone-200 p-5 hover:ring-[#1E3A8A]/40 transition">
       <Link href={detailHref} className="block group cursor-pointer">
         <div className="flex items-start justify-between gap-3 mb-3">
           <PlatformLogo platform={primary.platform} size="md" />
@@ -138,12 +138,12 @@ export function MarketCard({
                 </span>
               </span>
               {market.venueCount > 1 && (
-                <span className="rounded bg-emerald-50 text-emerald-700 px-1.5 py-0.5 ring-1 ring-emerald-300">
+                <span className="rounded bg-blue-50 text-blue-700 px-1.5 py-0.5 ring-1 ring-blue-300">
                   {market.venueCount} BOOKS
                 </span>
               )}
             </div>
-            <div className="text-sm font-semibold text-stone-900 leading-snug line-clamp-3 group-hover:text-[#004225] transition">
+            <div className="text-sm font-semibold text-stone-900 leading-snug line-clamp-3 group-hover:text-[#1E3A8A] transition">
               {market.question}
             </div>
           </div>
@@ -169,7 +169,7 @@ export function MarketCard({
               <span className="text-stone-700 truncate pr-3">{o.name}</span>
               <div className="flex gap-3 font-mono tabular-nums text-stone-500 flex-shrink-0">
                 {o.best_ask !== null ? (
-                  <span className="text-emerald-700 font-semibold">{pct(o.best_ask)}</span>
+                  <span className="text-blue-700 font-semibold">{pct(o.best_ask)}</span>
                 ) : o.last_price !== null ? (
                   <span className="text-stone-500">{pct(o.last_price)}</span>
                 ) : (
@@ -188,7 +188,7 @@ export function MarketCard({
         <div className="flex items-center gap-3 text-[11px] text-stone-500 mb-3">
           {bestAsk !== null && market.venueCount > 1 && (
             <span>
-              best <span className="text-emerald-700 font-mono">{pct(bestAsk)}</span>
+              best <span className="text-blue-700 font-mono">{pct(bestAsk)}</span>
             </span>
           )}
           {totalVolume > 0 && (
@@ -208,7 +208,7 @@ export function MarketCard({
                 href={v.affiliateUrl}
                 target="_blank"
                 rel="noopener noreferrer sponsored"
-                className="inline-flex items-center gap-1.5 text-[10px] tracking-wider pl-1 pr-2 py-0.5 rounded-full ring-1 ring-[#004225]/40 text-[#004225] hover:bg-[#004225]/5 transition"
+                className="inline-flex items-center gap-1.5 text-[10px] tracking-wider pl-1 pr-2 py-0.5 rounded-full ring-1 ring-[#1E3A8A]/40 text-[#1E3A8A] hover:bg-[#1E3A8A]/5 transition"
                 title={`Trade ${v.name} →`}
               >
                 <PlatformLogo platform={v.id} size="xs" />

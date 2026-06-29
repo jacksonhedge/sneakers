@@ -29,7 +29,7 @@ export default async function PlatformsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-emerald-300">
+        <h1 className="text-2xl font-semibold text-blue-300">
           Where do you already trade?
         </h1>
         <p className="text-sm text-white/60 mt-2">

@@ -24,7 +24,7 @@ export default async function AdminOTooleMemoryPage() {
   return (
     <div className="space-y-8">
       <div>
-        <div className="text-xs text-[#004225] tracking-wider mb-1">
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-1">
           {'>'} O&apos;TOOLE — GLOBAL MEMORY &amp; STRATEGY
         </div>
         <h1 className="text-2xl font-bold text-stone-900">
@@ -36,13 +36,13 @@ export default async function AdminOTooleMemoryPage() {
           insight sources on top via{' '}
           <Link
             href="/dashboard/settings/otoole"
-            className="text-[#00703c] underline"
+            className="text-[#1B4DE4] underline"
           >
             /dashboard/settings/otoole
           </Link>
           ; that surface is owned by the user, not editable here. Edits to this
           page are audit-logged (
-          <Link href="/audit" className="text-[#00703c] underline">/admin/audit</Link>
+          <Link href="/audit" className="text-[#1B4DE4] underline">/admin/audit</Link>
           ).
         </p>
       </div>

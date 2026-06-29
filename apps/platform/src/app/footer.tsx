@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { FooterNewsletter } from './footer-newsletter'
 
 // Add a real URL to surface a social icon in the footer. Empty href = hidden,
 // so we don't ship dead links to cold visitors. When you fill one in, drop
@@ -46,70 +47,120 @@ export function Footer() {
   const year = new Date().getFullYear()
   const liveSocials = SOCIAL_LINKS.filter((s) => s.href)
 
+  const productLinks = [
+    { label: 'Markets', href: '/markets' },
+    { label: 'Venues', href: '/venues' },
+    { label: 'Dashboard', href: '/dashboard' },
+    { label: 'Pricing', href: '/pricing' },
+  ]
+  const companyLinks = [
+    { label: 'Students — 75% off', href: '/students' },
+    { label: 'College', href: '/college' },
+    { label: 'Hardware', href: '/hardware' },
+    { label: 'Sign in', href: '/login' },
+  ]
+
   return (
-    <footer className="bg-stone-950 text-white/60 border-t border-white/10 z-10 relative">
-      <div className="max-w-5xl mx-auto px-6 py-10 flex flex-col md:flex-row gap-6 md:gap-8 items-start md:items-center justify-between">
-        {/* Brand */}
-        <div>
-          <div className="text-sm font-semibold text-white tracking-wide">
-            Sneakers Terminal
+    <footer className="z-10 relative px-4 sm:px-6 lg:px-8 pb-6">
+      <div className="max-w-6xl mx-auto rounded-2xl bg-[var(--footer-bg)] border border-blue-900/10 overflow-hidden">
+        {/* Top: brand + link columns + newsletter */}
+        <div className="px-6 sm:px-10 pt-12 pb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+          {/* Brand */}
+          <div className="lg:pr-6">
+            <div className="font-display text-2xl tracking-tight text-blue-900">
+              Sneakers Terminal
+            </div>
+            <p className="text-sm text-blue-900/60 mt-3 leading-relaxed max-w-xs">
+              A trading terminal for prediction markets — built for college students and recent grads.
+            </p>
+            <a
+              href="mailto:hello@sneakersterminal.com"
+              className="inline-block text-sm text-blue-700 hover:text-blue-900 transition mt-4"
+            >
+              hello@sneakersterminal.com
+            </a>
           </div>
-          <div className="text-xs text-white/50 mt-1">
-            A trading terminal for prediction markets.
+
+          {/* Product */}
+          <div>
+            <div className="text-xs font-semibold tracking-[0.15em] text-blue-900/50 uppercase">
+              Product
+            </div>
+            <ul className="mt-4 space-y-3">
+              {productLinks.map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} className="text-sm text-blue-900/70 hover:text-blue-700 transition">
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Company */}
+          <div>
+            <div className="text-xs font-semibold tracking-[0.15em] text-blue-900/50 uppercase">
+              Company
+            </div>
+            <ul className="mt-4 space-y-3">
+              {companyLinks.map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} className="text-sm text-blue-900/70 hover:text-blue-700 transition">
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Newsletter */}
+          <div>
+            <div className="text-xs font-semibold tracking-[0.15em] text-blue-900/50 uppercase">
+              Newsletter
+            </div>
+            <p className="text-sm text-blue-900/60 mt-4 mb-3 leading-relaxed">
+              Get market drops, invites &amp; early access.
+            </p>
+            <FooterNewsletter />
           </div>
         </div>
 
-        {/* Social — only render rows with a real href so we never ship dead # links */}
-        {liveSocials.length > 0 && (
-          <div className="flex items-center gap-3">
-            {liveSocials.map((s) => (
-              <a
-                key={s.name}
-                href={s.href}
-                aria-label={s.name}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-9 h-9 flex items-center justify-center border border-white/15 text-white/70 hover:text-emerald-400 hover:border-emerald-400/50 transition"
-              >
-                {s.icon}
-              </a>
-            ))}
-          </div>
-        )}
+        {/* Illustration band */}
+        <div className="relative w-full select-none pointer-events-none">
+          <img
+            src="/footer-illustration.png"
+            alt=""
+            aria-hidden
+            loading="lazy"
+            className="w-full h-auto object-cover object-bottom"
+          />
+        </div>
 
-        {/* Legal */}
-        <div className="text-xs text-white/50 md:text-right">
-          <div>© {year} Sneakers Terminal</div>
-          <div className="mt-1">
-            Not a registered investment advisor. Educational use only.
+        {/* Bottom bar */}
+        <div className="border-t border-blue-900/10 px-6 sm:px-10 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+          {liveSocials.length > 0 && (
+            <div className="flex items-center gap-3">
+              {liveSocials.map((s) => (
+                <a
+                  key={s.name}
+                  href={s.href}
+                  aria-label={s.name}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-9 h-9 flex items-center justify-center rounded-md border border-blue-900/15 text-blue-900/60 hover:text-blue-600 hover:border-blue-600/40 transition"
+                >
+                  {s.icon}
+                </a>
+              ))}
+            </div>
+          )}
+          <div className="text-xs text-blue-900/50 text-center sm:text-right">
+            <div>© {year} Sneakers Terminal · Not a registered investment advisor. Educational use only.</div>
+            <div className="mt-1">
+              Trading prediction markets involves substantial risk of loss.
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Links row */}
-      <div className="border-t border-white/5 px-6 py-3 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs">
-        <Link
-          href="/students"
-          className="text-emerald-300/80 hover:text-emerald-300 transition"
-        >
-          🎓 Student discount — 75% off
-        </Link>
-        <Link href="/venues" className="text-white/60 hover:text-white/90 transition">
-          Venues
-        </Link>
-        <Link href="/markets" className="text-white/60 hover:text-white/90 transition">
-          Markets
-        </Link>
-        <Link href="/dashboard" className="text-white/60 hover:text-white/90 transition">
-          Dashboard
-        </Link>
-      </div>
-
-      <div className="border-t border-white/5 px-6 py-3 text-[10px] text-white/30 text-center">
-        Trading prediction markets involves substantial risk of loss.{' '}
-        <Link href="/" className="hover:text-white/60 transition">
-          sneakersterminal.com
-        </Link>
       </div>
     </footer>
   )

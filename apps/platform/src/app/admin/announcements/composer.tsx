@@ -146,7 +146,7 @@ export function BroadcastComposer() {
               setArmed(true)
             }}
             disabled={pending}
-            className="bg-[#00703c] text-white text-xs px-4 py-2 tracking-wider hover:bg-[#005a30] disabled:opacity-50"
+            className="bg-[#1B4DE4] text-white text-xs px-4 py-2 tracking-wider hover:bg-[#1740C0] disabled:opacity-50"
           >
             SEND TO {preview.recipientCount}
           </button>
@@ -195,7 +195,7 @@ export function BroadcastComposer() {
         <div
           className={`text-xs px-3 py-2 ${
             sendResult.ok
-              ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+              ? 'bg-blue-50 text-blue-800 border border-blue-200'
               : 'bg-red-50 text-red-800 border border-red-200'
           }`}
         >

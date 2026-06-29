@@ -33,7 +33,7 @@ export function PendingStub({
         <ul className="space-y-2 text-sm text-stone-700">
           {eventualFeatures.map((f, i) => (
             <li key={i} className="flex gap-2">
-              <span className="text-emerald-500 mt-0.5">•</span>
+              <span className="text-blue-500 mt-0.5">•</span>
               <span>{f}</span>
             </li>
           ))}
@@ -41,7 +41,7 @@ export function PendingStub({
       </div>
 
       <div className="flex items-center gap-3 text-xs text-stone-500">
-        <Link href="/" className="text-emerald-700 hover:underline">
+        <Link href="/" className="text-blue-700 hover:underline">
           ← Back to Admin Overview
         </Link>
       </div>

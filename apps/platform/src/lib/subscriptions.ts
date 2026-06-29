@@ -273,7 +273,7 @@ export const PLANS: TierPlan[] = [
     tier: 'pro',
     name: 'Pro',
     tagline: 'Every market, every mode, real-time',
-    accent: 'emerald',
+    accent: 'blue',
     priceMonthly: 39,
     priceYearly: 390,
     trialDays: 7,

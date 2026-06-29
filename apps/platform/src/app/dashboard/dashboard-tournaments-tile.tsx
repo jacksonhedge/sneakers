@@ -70,7 +70,7 @@ export function DashboardTournamentsTile() {
         <span>Crypto Horse Race · 5/15/30-min strike markets</span>
         <Link
           href="/dashboard/horse-race"
-          className="text-emerald-700 font-semibold hover:underline whitespace-nowrap"
+          className="text-blue-700 font-semibold hover:underline whitespace-nowrap"
         >
           OPEN LOBBY →
         </Link>
@@ -116,7 +116,7 @@ function TournamentRow({ t }: { t: Tournament }) {
           <div
             className={`h-full transition-all duration-500 ${
               t.registered >= t.cap
-                ? 'bg-gradient-to-r from-emerald-400 to-emerald-600'
+                ? 'bg-gradient-to-r from-blue-400 to-blue-600'
                 : isUnderfilled
                   ? 'bg-gradient-to-r from-amber-300 to-amber-500'
                   : 'bg-gradient-to-r from-stone-400 to-stone-500'

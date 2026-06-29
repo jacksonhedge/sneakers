@@ -16,7 +16,7 @@ type Row = {
 }
 
 const ACTION_CLS: Record<string, string> = {
-  grant_access: 'bg-emerald-100 text-emerald-800 ring-emerald-300',
+  grant_access: 'bg-blue-100 text-blue-800 ring-blue-300',
   issue_invite: 'bg-amber-100 text-amber-800 ring-amber-300',
   reissue_invite: 'bg-amber-100 text-amber-800 ring-amber-300',
   revoke_invite: 'bg-red-100 text-red-800 ring-red-300',
@@ -112,7 +112,7 @@ export default async function AuditPage({
   return (
     <div className="space-y-6">
       <div>
-        <div className="text-xs text-[#004225] tracking-wider mb-1">{'>'} ADMIN AUDIT</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-1">{'>'} ADMIN AUDIT</div>
         <h1 className="text-2xl font-bold text-stone-900">
           {total.toLocaleString()} <span className="text-stone-500 text-base font-normal">events</span>
         </h1>
@@ -144,7 +144,7 @@ export default async function AuditPage({
           />
         </div>
         {action && <input type="hidden" name="action" value={action} />}
-        <button className="bg-[#00703c] text-white text-xs px-3 py-1.5 tracking-wider">
+        <button className="bg-[#1B4DE4] text-white text-xs px-3 py-1.5 tracking-wider">
           SEARCH
         </button>
         {(actor || target || action) && (
@@ -163,7 +163,7 @@ export default async function AuditPage({
             href={buildUrl({ action: '', page: 1 })}
             className={`px-3 py-1.5 tracking-wider border ${
               !action
-                ? 'bg-[#00703c] text-white border-[#00703c]'
+                ? 'bg-[#1B4DE4] text-white border-[#1B4DE4]'
                 : 'bg-white text-stone-700 border-stone-300 hover:bg-stone-50'
             }`}
           >
@@ -175,7 +175,7 @@ export default async function AuditPage({
               href={buildUrl({ action: a, page: 1 })}
               className={`px-3 py-1.5 tracking-wider border ${
                 action === a
-                  ? 'bg-[#00703c] text-white border-[#00703c]'
+                  ? 'bg-[#1B4DE4] text-white border-[#1B4DE4]'
                   : 'bg-white text-stone-700 border-stone-300 hover:bg-stone-50'
               }`}
             >
@@ -225,7 +225,7 @@ export default async function AuditPage({
                   {pastLastPage ? (
                     <>
                       Page {pageNum} is past the last page ({totalPages}).{' '}
-                      <Link href={buildUrl({ page: 1 })} className="text-[#00703c] underline">
+                      <Link href={buildUrl({ page: 1 })} className="text-[#1B4DE4] underline">
                         Jump to page 1
                       </Link>
                       .

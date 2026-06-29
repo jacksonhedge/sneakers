@@ -136,7 +136,7 @@ export function ModelPicker({
                         <div className="text-[11px] text-stone-500 mt-0.5 line-clamp-1">
                           {m.tagline}
                         </div>
-                        <div className="text-[10px] text-emerald-700 mt-1 font-semibold">
+                        <div className="text-[10px] text-blue-700 mt-1 font-semibold">
                           Unlock with {m.minTier === 'pro' ? 'Pro' : m.minTier === 'elite' ? 'Elite' : 'Business'} →
                         </div>
                       </Link>
@@ -154,12 +154,12 @@ export function ModelPicker({
                         setOpen(false)
                       }}
                       className={`w-full text-left px-3 py-2 transition ${
-                        isSel ? 'bg-emerald-50' : 'hover:bg-stone-50'
+                        isSel ? 'bg-blue-50' : 'hover:bg-stone-50'
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2 min-w-0">
-                          {isSel && <span className="text-emerald-600 text-xs">✓</span>}
+                          {isSel && <span className="text-blue-600 text-xs">✓</span>}
                           <span className="text-sm font-semibold text-stone-900 truncate">
                             {m.displayName}
                           </span>

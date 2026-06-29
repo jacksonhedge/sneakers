@@ -73,11 +73,11 @@ export function WaitlistForm({ referralCode }: { referralCode?: string | null })
 
   if (status === 'admin') {
     return (
-      <div className="border border-emerald-400/80 bg-black/60 backdrop-blur-sm p-4 text-white">
-        <div className="text-sm text-emerald-300">{'>'} Admin recognized.</div>
+      <div className="border border-blue-400/80 bg-black/60 backdrop-blur-sm p-4 text-white">
+        <div className="text-sm text-blue-300">{'>'} Admin recognized.</div>
         <div className="text-xs text-white/80 mt-1">
           Magic link sent to your inbox. Click it to sign in — you&apos;ll land
-          directly on <span className="text-emerald-400 font-semibold">/admin</span>.
+          directly on <span className="text-blue-400 font-semibold">/admin</span>.
         </div>
       </div>
     )
@@ -96,7 +96,7 @@ export function WaitlistForm({ referralCode }: { referralCode?: string | null })
           onClick={() => setAccountType('individual')}
           className={`px-4 py-1 text-[11px] tracking-wider rounded-full transition ${
             accountType === 'individual'
-              ? 'bg-emerald-500 text-black font-semibold'
+              ? 'bg-blue-600 text-white font-semibold'
               : 'text-white/70 hover:text-white'
           }`}
         >
@@ -107,7 +107,7 @@ export function WaitlistForm({ referralCode }: { referralCode?: string | null })
           onClick={() => setAccountType('business')}
           className={`px-4 py-1 text-[11px] tracking-wider rounded-full transition ${
             accountType === 'business'
-              ? 'bg-emerald-500 text-black font-semibold'
+              ? 'bg-blue-600 text-white font-semibold'
               : 'text-white/70 hover:text-white'
           }`}
         >
@@ -122,7 +122,7 @@ export function WaitlistForm({ referralCode }: { referralCode?: string | null })
             value={companyName}
             onChange={(e) => setCompanyName(e.target.value)}
             placeholder="Company or fund name (optional)"
-            className="w-full bg-black/40 backdrop-blur-sm border border-white/30 text-white px-4 py-3 focus:outline-none focus:border-emerald-400 focus:bg-black/60 placeholder:text-white/40 transition"
+            className="w-full bg-black/40 backdrop-blur-sm border border-white/30 text-white px-4 py-3 focus:outline-none focus:border-blue-400 focus:bg-black/60 placeholder:text-white/40 transition"
           />
         )}
         <div className="flex gap-2">
@@ -132,18 +132,18 @@ export function WaitlistForm({ referralCode }: { referralCode?: string | null })
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder={accountType === 'business' ? 'you@firm.com' : 'you@example.com'}
-            className="flex-1 bg-black/40 backdrop-blur-sm border border-white/30 text-white px-4 py-3 focus:outline-none focus:border-emerald-400 focus:bg-black/60 placeholder:text-white/40 transition"
+            className="flex-1 bg-black/40 backdrop-blur-sm border border-white/30 text-white px-4 py-3 focus:outline-none focus:border-blue-400 focus:bg-black/60 placeholder:text-white/40 transition"
           />
           <button
             type="submit"
             disabled={status === 'loading'}
-            className="border border-emerald-400 bg-emerald-500 text-black font-semibold px-6 py-3 hover:bg-emerald-400 hover:border-emerald-300 transition disabled:opacity-50"
+            className="border border-blue-400 bg-blue-600 text-white font-semibold px-6 py-3 hover:bg-blue-400 hover:border-blue-300 transition disabled:opacity-50"
           >
             {status === 'loading' ? '...' : 'REQUEST ACCESS'}
           </button>
         </div>
         {accountType === 'business' && (
-          <div className="text-[11px] text-emerald-300/80 text-center">
+          <div className="text-[11px] text-blue-300/80 text-center">
             Business accounts get priority review + early Business-tier access.
           </div>
         )}
@@ -181,18 +181,18 @@ function SuccessCard({
   }
 
   return (
-    <div className="border border-emerald-400/60 bg-black/60 backdrop-blur-sm p-5 text-white space-y-4">
+    <div className="border border-blue-400/60 bg-black/60 backdrop-blur-sm p-5 text-white space-y-4">
       <div>
-        <div className="text-sm text-emerald-300">{'>'} Access requested.</div>
+        <div className="text-sm text-blue-300">{'>'} Access requested.</div>
         {typeof position === 'number' && (
           <div className="text-xs text-white/70 mt-1">
             You&apos;re{' '}
-            <span className="text-emerald-400 font-semibold">#{position}</span> in
+            <span className="text-blue-400 font-semibold">#{position}</span> in
             the queue.
             {referrerCode && (
               <>
                 {' '}Operator{' '}
-                <span className="text-emerald-400 font-semibold">{referrerCode}</span>{' '}
+                <span className="text-blue-400 font-semibold">{referrerCode}</span>{' '}
                 just moved up.
               </>
             )}
@@ -201,20 +201,20 @@ function SuccessCard({
       </div>
 
       {/* Invite slot — single invite, scarcity-driven */}
-      <div className="border-t border-emerald-400/20 pt-5">
+      <div className="border-t border-blue-400/20 pt-5">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-emerald-300 font-mono tabular-nums leading-none">
+            <span className="text-2xl font-bold text-blue-300 font-mono tabular-nums leading-none">
               {remaining}
             </span>
-            <span className="text-sm font-semibold tracking-wider text-emerald-300/90 uppercase">
+            <span className="text-sm font-semibold tracking-wider text-blue-300/90 uppercase">
               Invite
             </span>
           </div>
           <span
             className={`text-[10px] tracking-[0.15em] font-bold px-2.5 py-1 rounded-full ring-1 ${
               remaining > 0
-                ? 'bg-emerald-500/10 text-emerald-300 ring-emerald-400/50'
+                ? 'bg-blue-500/10 text-blue-300 ring-blue-400/50'
                 : 'bg-stone-500/20 text-stone-400 ring-stone-400/40'
             }`}
           >
@@ -229,8 +229,8 @@ function SuccessCard({
                 key={i}
                 className={`h-3 flex-1 rounded-full ${
                   filled
-                    ? 'bg-emerald-500/30'
-                    : 'bg-emerald-500 ring-1 ring-emerald-300/40'
+                    ? 'bg-blue-500/30'
+                    : 'bg-blue-500 ring-1 ring-blue-300/40'
                 }`}
                 aria-label={filled ? 'Invite used' : 'Invite available'}
               />
@@ -238,7 +238,7 @@ function SuccessCard({
           })}
         </div>
         <div className="text-sm text-white/85 mt-3 leading-relaxed">
-          You get <span className="text-emerald-300 font-bold">one</span>. Pick somebody
+          You get <span className="text-blue-300 font-bold">one</span>. Pick somebody
           who&apos;d actually use this — your frat, your roommate, or the one person in your
           group chat who knows what Kalshi is.
         </div>
@@ -246,8 +246,8 @@ function SuccessCard({
 
       {/* Share link */}
       {link && (
-        <div className="border-t border-emerald-400/20 pt-4">
-          <div className="text-[11px] tracking-wider text-emerald-300/80 mb-2">
+        <div className="border-t border-blue-400/20 pt-4">
+          <div className="text-[11px] tracking-wider text-blue-300/80 mb-2">
             YOUR LINK
           </div>
           <div className="flex items-stretch gap-2">
@@ -255,12 +255,12 @@ function SuccessCard({
               readOnly
               value={link}
               onFocus={(e) => e.currentTarget.select()}
-              className="flex-1 bg-black/50 border border-white/20 text-white/90 text-xs px-3 py-2 font-mono focus:outline-none focus:border-emerald-400"
+              className="flex-1 bg-black/50 border border-white/20 text-white/90 text-xs px-3 py-2 font-mono focus:outline-none focus:border-blue-400"
             />
             <button
               type="button"
               onClick={copy}
-              className="border border-emerald-400 bg-emerald-500 text-black text-[11px] font-semibold tracking-wider px-3 py-2 hover:bg-emerald-400 transition"
+              className="border border-blue-400 bg-blue-600 text-white text-[11px] font-semibold tracking-wider px-3 py-2 hover:bg-blue-400 transition"
             >
               {copied ? 'COPIED' : 'COPY'}
             </button>
@@ -274,7 +274,7 @@ function SuccessCard({
 
       <a
         href="/login"
-        className="block w-full text-center border border-emerald-400 bg-emerald-500 text-black text-sm font-semibold tracking-wider px-6 py-3 hover:bg-emerald-400 transition mt-2"
+        className="block w-full text-center border border-blue-400 bg-blue-600 text-white text-sm font-semibold tracking-wider px-6 py-3 hover:bg-blue-400 transition mt-2"
       >
         CONTINUE TO SIGN IN →
       </a>

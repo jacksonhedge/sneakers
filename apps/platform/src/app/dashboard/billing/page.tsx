@@ -54,13 +54,13 @@ export default async function BillingPage({
       <div className="max-w-7xl mx-auto px-6 py-10">
         <Link
           href="/dashboard"
-          className="text-xs text-[#004225]/80 tracking-wider hover:text-[#004225]"
+          className="text-xs text-[#1E3A8A]/80 tracking-wider hover:text-[#1E3A8A]"
         >
           ← DASHBOARD
         </Link>
 
         <header className="mt-6 mb-10">
-          <div className="text-xs text-[#004225] tracking-wider mb-1">{'>'} BILLING</div>
+          <div className="text-xs text-[#1E3A8A] tracking-wider mb-1">{'>'} BILLING</div>
           <h1 className="text-3xl md:text-4xl font-bold">Subscription</h1>
           <p className="text-sm text-stone-600 mt-2 max-w-2xl">
             Pick the tier that matches your workflow. Trials require a card; cancel anytime from
@@ -78,7 +78,7 @@ export default async function BillingPage({
             stacks on top of any subscription. See docs/OTOOLE_CREDITS_PLAN.md */}
         <section className="mt-12 rounded-lg bg-white ring-1 ring-stone-200 p-6 flex items-center justify-between flex-wrap gap-4">
           <div>
-            <div className="text-[10px] text-[#004225] tracking-wider mb-1">{'>'} O&apos;TOOLE CREDITS</div>
+            <div className="text-[10px] text-[#1E3A8A] tracking-wider mb-1">{'>'} O&apos;TOOLE CREDITS</div>
             <h2 className="text-lg font-bold text-stone-900">Top up O&apos;Toole credits</h2>
             <p className="text-sm text-stone-600 mt-1 max-w-xl">
               Subscriptions include a free daily allowance. For heavier usage of Sonnet or Opus

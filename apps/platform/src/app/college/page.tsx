@@ -45,24 +45,24 @@ export default async function CollegePage() {
 
       <Link
         href="/"
-        className="absolute top-4 left-4 z-10 text-xs text-emerald-300/80 tracking-wider hover:text-emerald-300"
+        className="absolute top-4 left-4 z-10 text-xs text-blue-300/80 tracking-wider hover:text-blue-300"
       >
         ← BACK
       </Link>
 
       <Link
         href="/students"
-        className="absolute top-4 right-4 z-10 inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-4 py-2 text-xs font-semibold tracking-wider text-emerald-300 ring-1 ring-emerald-400/50 backdrop-blur-sm hover:bg-emerald-500/20 hover:ring-emerald-400 transition"
+        className="absolute top-4 right-4 z-10 inline-flex items-center gap-2 rounded-full bg-blue-500/10 px-4 py-2 text-xs font-semibold tracking-wider text-blue-300 ring-1 ring-blue-400/50 backdrop-blur-sm hover:bg-blue-500/20 hover:ring-blue-400 transition"
       >
         🎓 STUDENT? 75% OFF
       </Link>
 
       <div className="max-w-2xl w-full space-y-8 text-center text-white">
         <div className="flex flex-col items-center">
-          <div className="text-xs text-emerald-300/80 mb-6 tracking-wider">
+          <div className="text-xs text-blue-300/80 mb-6 tracking-wider">
             SNEAKERS TERMINAL / COLLEGE
           </div>
-          <div className="mb-6 rounded-full bg-stone-950 p-6 ring-1 ring-emerald-400/30 shadow-[0_8px_32px_rgba(0,0,0,0.55),0_0_48px_rgba(0,112,60,0.18)]">
+          <div className="mb-6 rounded-full bg-stone-950 p-6 ring-1 ring-blue-400/30 shadow-[0_8px_32px_rgba(0,0,0,0.55),0_0_48px_rgba(27, 77, 228,0.18)]">
             <Image
               src="/logo.png"
               alt="Sneakers"
@@ -75,17 +75,17 @@ export default async function CollegePage() {
           <h1 className="sr-only">
             A personal trading terminal for the college user
           </h1>
-          <div className="text-white/90 text-2xl md:text-3xl font-semibold leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
+          <div className="text-white/90 text-2xl md:text-3xl font-display leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
             A personal trading terminal
           </div>
-          <div className="text-emerald-400 text-2xl md:text-3xl font-semibold leading-tight mt-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
+          <div className="text-blue-400 text-2xl md:text-3xl font-display leading-tight mt-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
             for the college user.
           </div>
           <div className="mt-4 text-white/70 text-sm md:text-base italic drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
             Every prediction market in your pocket. Verify your .edu to unlock{' '}
             <Link
               href="/students"
-              className="text-emerald-300 font-semibold hover:underline"
+              className="text-blue-300 font-semibold hover:underline"
             >
               75% off
             </Link>
@@ -94,10 +94,10 @@ export default async function CollegePage() {
         </div>
 
         {referralCode && (
-          <div className="mx-auto max-w-md border border-emerald-400/50 bg-black/40 backdrop-blur-sm px-4 py-3 text-xs text-white/90">
+          <div className="mx-auto max-w-md border border-blue-400/50 bg-black/40 backdrop-blur-sm px-4 py-3 text-xs text-white/90">
             <div>
               {'>'} Referred by{' '}
-              <span className="text-emerald-400 tracking-wider font-semibold">
+              <span className="text-blue-400 tracking-wider font-semibold">
                 {referralCode}
               </span>
             </div>
@@ -105,7 +105,7 @@ export default async function CollegePage() {
         )}
 
         <div className="mx-auto max-w-md w-full">
-          <div className="text-xs text-emerald-300 tracking-wider mb-3 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
+          <div className="text-xs text-blue-300 tracking-wider mb-3 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
             {'>'} JOIN THE WAITLIST
           </div>
           <WaitlistForm referralCode={referralCode} />

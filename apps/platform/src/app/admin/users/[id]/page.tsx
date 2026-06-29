@@ -28,7 +28,7 @@ const EVENT_CLS: Record<string, string> = {
 }
 
 const ACTION_CLS: Record<string, string> = {
-  grant_access: 'bg-emerald-100 text-emerald-800 ring-emerald-300',
+  grant_access: 'bg-blue-100 text-blue-800 ring-blue-300',
   issue_invite: 'bg-amber-100 text-amber-800 ring-amber-300',
   reissue_invite: 'bg-amber-100 text-amber-800 ring-amber-300',
   revoke_invite: 'bg-red-100 text-red-800 ring-red-300',
@@ -158,7 +158,7 @@ export default async function UserDetailPage({
     : { data: [] as Array<{ id: string; email: string; referral_code: string | null; referred_by_code: string | null; created_at: string; invite_used_at: string | null }> }
 
   const status = user.invite_used_at
-    ? { label: 'AUTHED', cls: 'bg-[#00703c] text-white' }
+    ? { label: 'AUTHED', cls: 'bg-[#1B4DE4] text-white' }
     : user.invite_code
       ? { label: 'INVITED', cls: 'bg-amber-500 text-white' }
       : { label: 'WAITLIST', cls: 'bg-stone-400 text-white' }
@@ -194,7 +194,7 @@ export default async function UserDetailPage({
       </div>
 
       <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-2">{'>'} ACTIONS</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-2">{'>'} ACTIONS</div>
         <div className="border border-stone-300 bg-white p-4">
           <UserActionPanel
             email={user.email}
@@ -213,7 +213,7 @@ export default async function UserDetailPage({
       </section>
 
       <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-2">
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-2">
           {'>'} ADMIN ACTIVITY ({auditEvents.length})
         </div>
         <div className="border border-stone-300 bg-white">
@@ -265,7 +265,7 @@ export default async function UserDetailPage({
       </section>
 
       <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-2">
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-2">
           {'>'} USER ACTIVITY ({clickEvents.length})
         </div>
         <div className="border border-stone-300 bg-white">
@@ -282,7 +282,7 @@ export default async function UserDetailPage({
               but no click_events recorded. Either they signed in and
               haven&apos;t loaded a page since the tracker shipped, or
               tracker is broken — check{' '}
-              <Link href="/clicks" className="text-[#00703c] underline">
+              <Link href="/clicks" className="text-[#1B4DE4] underline">
                 /clicks
               </Link>{' '}
               for global event flow.
@@ -301,7 +301,7 @@ export default async function UserDetailPage({
               <tbody>
                 {clickEvents.map((e) => {
                   const cls =
-                    EVENT_CLS[e.event_name] ?? 'bg-emerald-50 text-emerald-800 ring-emerald-300'
+                    EVENT_CLS[e.event_name] ?? 'bg-blue-50 text-blue-800 ring-blue-300'
                   return (
                     <tr key={e.id} className="border-t border-stone-200 align-top">
                       <td className="px-3 py-2 font-mono text-stone-600 whitespace-nowrap">
@@ -333,7 +333,7 @@ export default async function UserDetailPage({
       </section>
 
       <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-2">{'>'} RECORD</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-2">{'>'} RECORD</div>
         <div className="border border-stone-300 bg-white">
           <table className="w-full text-xs">
             <tbody>
@@ -349,7 +349,7 @@ export default async function UserDetailPage({
       </section>
 
       <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-2">{'>'} REFERRAL TREE</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-2">{'>'} REFERRAL TREE</div>
         <div className="border border-stone-300 bg-white p-4 space-y-4 text-xs">
           <div>
             <div className="text-stone-500 tracking-wider mb-1">PARENT (who referred them)</div>

@@ -25,7 +25,7 @@ export function CategoryNav({ activeCategory }: { activeCategory?: TerminalCateg
               href={href}
               className={`flex items-center gap-1.5 px-3 py-1.5 text-xs tracking-wider rounded-full ring-1 transition ${
                 isActive
-                  ? 'bg-emerald-500/10 text-emerald-700 ring-emerald-400/60'
+                  ? 'bg-blue-500/10 text-blue-700 ring-blue-400/60'
                   : 'text-stone-800 ring-stone-300 hover:bg-stone-100'
               }`}
             >
@@ -65,7 +65,7 @@ export function CategoryCards({ stats }: { stats: Record<string, CategoryStats> 
             key={row.id}
             href={`/markets?category=${row.id}`}
             prefetch={false}
-            className="flex items-start gap-3 rounded border border-stone-200 bg-white px-4 py-3 hover:border-emerald-400/60 hover:shadow-sm transition min-w-0"
+            className="flex items-start gap-3 rounded border border-stone-200 bg-white px-4 py-3 hover:border-blue-400/60 hover:shadow-sm transition min-w-0"
           >
             <div
               className={`shrink-0 w-9 h-9 rounded flex items-center justify-center text-[10px] font-bold tracking-wider ring-1 ${meta.badgeCls}`}

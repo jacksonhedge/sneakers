@@ -66,16 +66,16 @@ export function LandingAccess({
         ? 'Sign Up as Individual'
         : 'Sign up as an individual →'
 
-  // Primary tone = bright emerald, secondary = outlined. In the nav we show
+  // Primary tone = bright blue, secondary = outlined. In the nav we show
   // BOTH buttons at once, so we use tone to differentiate without having two
   // same-color buttons compete for attention.
   const buttonCls =
     variant === 'nav'
       ? tone === 'primary'
-        ? 'inline-flex items-center gap-2 rounded-full bg-emerald-500 px-4 py-2 text-xs font-semibold tracking-wider text-black ring-1 ring-emerald-400 hover:bg-emerald-400 transition'
+        ? 'inline-flex items-center gap-2 rounded-full bg-blue-600 px-4 py-2 text-xs font-semibold tracking-wider text-white ring-1 ring-blue-400 hover:bg-blue-500 transition'
         : 'inline-flex items-center gap-2 rounded-full bg-white/5 px-4 py-2 text-xs font-semibold tracking-wider text-white ring-1 ring-white/30 backdrop-blur-sm hover:bg-white/10 hover:ring-white/60 transition'
       : tone === 'primary'
-        ? 'inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-8 py-4 text-base font-bold tracking-wider text-black ring-1 ring-emerald-400 shadow-[0_8px_32px_rgba(16,185,129,0.4)] hover:bg-emerald-400 hover:shadow-[0_12px_48px_rgba(16,185,129,0.5)] transition'
+        ? 'inline-flex items-center gap-2 rounded-lg bg-blue-600 px-8 py-4 text-base font-bold tracking-wider text-white ring-1 ring-blue-400 shadow-[0_8px_32px_rgba(27,77,228,0.4)] hover:bg-blue-500 hover:shadow-[0_12px_48px_rgba(27,77,228,0.5)] transition'
         : 'inline-flex items-center gap-2 rounded-lg bg-white/5 px-8 py-4 text-base font-bold tracking-wider text-white ring-1 ring-white/30 backdrop-blur-sm hover:bg-white/10 hover:ring-white/60 transition'
 
   // Individual signup is a navigation, not a modal — sends them to /signup
@@ -105,7 +105,7 @@ export function LandingAccess({
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative max-w-lg w-full bg-stone-950 rounded-xl shadow-2xl ring-1 ring-emerald-400/30 p-6 text-white my-8"
+            className="relative max-w-lg w-full bg-stone-950 rounded-xl shadow-2xl ring-1 ring-blue-400/30 p-6 text-white my-8"
           >
             <button
               type="button"
@@ -116,7 +116,7 @@ export function LandingAccess({
               ×
             </button>
             <div className="mb-5 pr-8">
-              <div className="text-[10px] tracking-[0.2em] text-emerald-300/80 font-semibold mb-1">
+              <div className="text-[10px] tracking-[0.2em] text-blue-300/80 font-semibold mb-1">
                 SNEAKERS TERMINAL · FOR COLLEGE ORGS
               </div>
               <h2 className="text-xl font-bold text-white">Get your org in early.</h2>

@@ -33,7 +33,7 @@ export function RuleEnabledToggle({ ruleId, enabled }: { ruleId: string; enabled
       role="switch"
       aria-checked={optimistic}
       className={`inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-        optimistic ? 'bg-emerald-600' : 'bg-stone-300'
+        optimistic ? 'bg-blue-600' : 'bg-stone-300'
       } disabled:opacity-50`}
     >
       <span

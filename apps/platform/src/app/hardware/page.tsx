@@ -41,7 +41,7 @@ export default async function HardwarePage() {
       <nav className="relative z-10 px-6 py-5 flex items-center justify-between">
         <Link
           href="/"
-          className="text-xs text-emerald-300/80 tracking-wider hover:text-emerald-300"
+          className="text-xs text-blue-300/80 tracking-wider hover:text-blue-300"
         >
           ← SNEAKERS TERMINAL
         </Link>
@@ -79,10 +79,10 @@ export default async function HardwarePage() {
       {/* Hero */}
       <section className="px-6 py-12 md:py-20 max-w-6xl mx-auto">
         <div className="text-center mb-10">
-          <div className="text-xs text-emerald-300/80 tracking-wider mb-4">
+          <div className="text-xs text-blue-300/80 tracking-wider mb-4">
             SNEAKERS TERMINAL · HARDWARE
           </div>
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4 text-white">
+          <h1 className="text-4xl md:text-6xl font-display tracking-tight mb-4 text-white">
             Bring the terminal home.
           </h1>
           <p className="text-base md:text-lg text-white/75 max-w-2xl mx-auto leading-relaxed">
@@ -92,7 +92,7 @@ export default async function HardwarePage() {
         </div>
 
         {/* Hero image — Mac Studio with the decal */}
-        <div className="relative max-w-3xl mx-auto rounded-2xl overflow-hidden ring-1 ring-emerald-400/20 bg-gradient-to-b from-stone-900 to-stone-950 p-6 md:p-12 shadow-[0_24px_72px_rgba(16,185,129,0.15)]">
+        <div className="relative max-w-3xl mx-auto rounded-2xl overflow-hidden ring-1 ring-blue-400/20 bg-gradient-to-b from-stone-900 to-stone-950 p-6 md:p-12 shadow-[0_24px_72px_rgba(27,77,228,0.15)]">
           <Image
             src="/hardware/mac-studio.png"
             alt="Mac Studio with custom Sneakers Terminal decal"
@@ -106,7 +106,7 @@ export default async function HardwarePage() {
         <div className="flex flex-col sm:flex-row gap-3 justify-center mt-10">
           <a
             href="#pricing"
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-500 px-8 py-4 text-base font-bold tracking-wider text-black ring-1 ring-emerald-400 shadow-[0_8px_32px_rgba(16,185,129,0.4)] hover:bg-emerald-400 transition"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-8 py-4 text-base font-bold tracking-wider text-white ring-1 ring-blue-400 shadow-[0_8px_32px_rgba(27,77,228,0.4)] hover:bg-blue-500 transition"
           >
             See pricing →
           </a>
@@ -125,7 +125,7 @@ export default async function HardwarePage() {
       {/* Two options side-by-side */}
       <section className="px-6 py-16 max-w-6xl mx-auto">
         <div className="text-center mb-12">
-          <div className="text-xs text-emerald-300/80 tracking-wider mb-2">
+          <div className="text-xs text-blue-300/80 tracking-wider mb-2">
             TWO OPTIONS
           </div>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
@@ -146,7 +146,7 @@ export default async function HardwarePage() {
               />
             </div>
             <div className="p-6 md:p-8">
-              <div className="text-[10px] tracking-[0.15em] text-emerald-300/80 font-semibold mb-2">
+              <div className="text-[10px] tracking-[0.15em] text-blue-300/80 font-semibold mb-2">
                 MAC STUDIO
               </div>
               <h3 className="text-xl md:text-2xl font-bold tracking-tight mb-2">
@@ -157,7 +157,7 @@ export default async function HardwarePage() {
                 monitors, mechanical keyboard, mouse, all cables.
               </div>
               <div className="text-xs text-white/85 leading-relaxed mb-4">
-                <span className="text-emerald-300 font-semibold">Best for:</span>{' '}
+                <span className="text-blue-300 font-semibold">Best for:</span>{' '}
                 frats with a permanent install location, dorm common rooms, club
                 houses with a dedicated trading nook.
               </div>
@@ -179,7 +179,7 @@ export default async function HardwarePage() {
               />
             </div>
             <div className="p-6 md:p-8">
-              <div className="text-[10px] tracking-[0.15em] text-emerald-300/80 font-semibold mb-2">
+              <div className="text-[10px] tracking-[0.15em] text-blue-300/80 font-semibold mb-2">
                 MACBOOK PRO
               </div>
               <h3 className="text-xl md:text-2xl font-bold tracking-tight mb-2">
@@ -190,7 +190,7 @@ export default async function HardwarePage() {
                 charger included.
               </div>
               <div className="text-xs text-white/85 leading-relaxed mb-4">
-                <span className="text-emerald-300 font-semibold">Best for:</span>{' '}
+                <span className="text-blue-300 font-semibold">Best for:</span>{' '}
                 a single brother running the trades on behalf of the chapter +
                 traveling, road trips, away games.
               </div>
@@ -205,7 +205,7 @@ export default async function HardwarePage() {
       {/* What's included */}
       <section className="px-6 py-16 max-w-6xl mx-auto">
         <div className="text-center mb-12">
-          <div className="text-xs text-emerald-300/80 tracking-wider mb-2">
+          <div className="text-xs text-blue-300/80 tracking-wider mb-2">
             WHAT&apos;S INCLUDED
           </div>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
@@ -244,12 +244,12 @@ export default async function HardwarePage() {
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* Org pricing — live */}
-          <div className="rounded-2xl bg-gradient-to-br from-emerald-950 via-stone-900 to-stone-950 ring-1 ring-emerald-400/30 p-7 md:p-9 text-center shadow-[0_24px_72px_rgba(16,185,129,0.15)] flex flex-col">
+          <div className="rounded-2xl bg-gradient-to-br from-blue-950 via-stone-900 to-stone-950 ring-1 ring-blue-400/30 p-7 md:p-9 text-center shadow-[0_24px_72px_rgba(27,77,228,0.15)] flex flex-col">
             <div className="flex items-center justify-center gap-2 mb-3">
-              <div className="text-xs text-emerald-300/80 tracking-wider">
+              <div className="text-xs text-blue-300/80 tracking-wider">
                 FOR ORGANIZATIONS
               </div>
-              <span className="text-[9px] tracking-[0.15em] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/50">
+              <span className="text-[9px] tracking-[0.15em] font-bold px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-300 ring-1 ring-blue-400/50">
                 LIVE
               </span>
             </div>
@@ -259,7 +259,7 @@ export default async function HardwarePage() {
             </div>
             <div className="text-sm text-white/70 mb-6 leading-relaxed flex-1">
               Added to your{' '}
-              <span className="text-emerald-300 font-semibold">Fraternity</span>{' '}
+              <span className="text-blue-300 font-semibold">Fraternity</span>{' '}
               subscription ($799/mo software, 25 seats). Cancel anytime —
               we&apos;ll send a return label.
             </div>
@@ -317,7 +317,7 @@ export default async function HardwarePage() {
       {/* B2B tease — looking ahead */}
       <section className="px-6 py-16 max-w-4xl mx-auto">
         <div className="text-center mb-10">
-          <div className="text-xs text-emerald-300/80 tracking-wider mb-2">
+          <div className="text-xs text-blue-300/80 tracking-wider mb-2">
             NOT A FRATERNITY?
           </div>
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-2">
@@ -350,7 +350,7 @@ export default async function HardwarePage() {
         <div className="text-center mt-8">
           <a
             href="mailto:desk@sneakersterminal.com?subject=Hardware%20%2B%20desk%20setup"
-            className="inline-flex items-center gap-2 rounded-full bg-white/5 px-5 py-2.5 text-sm font-semibold tracking-wider text-emerald-300 ring-1 ring-emerald-400/40 hover:bg-white/10 hover:ring-emerald-400 transition"
+            className="inline-flex items-center gap-2 rounded-full bg-white/5 px-5 py-2.5 text-sm font-semibold tracking-wider text-blue-300 ring-1 ring-blue-400/40 hover:bg-white/10 hover:ring-blue-400 transition"
           >
             desk@sneakersterminal.com
           </a>
@@ -360,7 +360,7 @@ export default async function HardwarePage() {
       {/* FAQ */}
       <section className="px-6 py-16 max-w-3xl mx-auto">
         <div className="text-center mb-10">
-          <div className="text-xs text-emerald-300/80 tracking-wider mb-2">
+          <div className="text-xs text-blue-300/80 tracking-wider mb-2">
             FAQ
           </div>
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
@@ -394,11 +394,11 @@ export default async function HardwarePage() {
 
       {/* Footer breadcrumb */}
       <footer className="border-t border-white/10 px-6 py-8 text-center text-xs text-white/50">
-        <Link href="/pricing" className="text-emerald-300/80 hover:text-emerald-300">
+        <Link href="/pricing" className="text-blue-300/80 hover:text-blue-300">
           ← Back to pricing
         </Link>
         <span className="mx-3 text-white/20">·</span>
-        <Link href="/" className="text-emerald-300/80 hover:text-emerald-300">
+        <Link href="/" className="text-blue-300/80 hover:text-blue-300">
           Sneakers Terminal home
         </Link>
       </footer>
@@ -437,7 +437,7 @@ function Faq({ q, a }: { q: string; a: string }) {
     <details className="group rounded-xl bg-stone-900 ring-1 ring-white/10 px-5 py-3 [&_summary]:cursor-pointer">
       <summary className="flex items-center justify-between text-sm font-semibold text-white list-none">
         <span>{q}</span>
-        <span className="text-emerald-300 group-open:rotate-45 transition-transform text-xl leading-none">
+        <span className="text-blue-300 group-open:rotate-45 transition-transform text-xl leading-none">
           +
         </span>
       </summary>

@@ -38,7 +38,7 @@ function topicFromQuestion(q: string): { symbol: string; bg: string; text: strin
     return { symbol: '🗳️', bg: 'bg-rose-500/15', text: 'text-rose-700', ring: 'ring-rose-400/50' }
   }
   if (/apple|tesla|nvidia|google|microsoft|meta|amazon|earnings/.test(lower)) {
-    return { symbol: '📈', bg: 'bg-emerald-500/15', text: 'text-emerald-700', ring: 'ring-emerald-400/50' }
+    return { symbol: '📈', bg: 'bg-blue-500/15', text: 'text-blue-700', ring: 'ring-blue-400/50' }
   }
   return null
 }
@@ -51,8 +51,8 @@ function shapeFor(m: MarketSnapshot): Shape {
       baseball: { symbol: '⚾', bg: 'bg-red-500/10', text: 'text-red-700', ring: 'ring-red-400/40' },
       football: { symbol: '🏈', bg: 'bg-amber-700/15', text: 'text-amber-900', ring: 'ring-amber-600/40' },
       hockey: { symbol: '🏒', bg: 'bg-slate-500/15', text: 'text-slate-700', ring: 'ring-slate-400/50' },
-      soccer: { symbol: '⚽', bg: 'bg-green-500/15', text: 'text-green-700', ring: 'ring-green-400/50' },
-      tennis: { symbol: '🎾', bg: 'bg-lime-500/15', text: 'text-lime-700', ring: 'ring-lime-400/50' },
+      soccer: { symbol: '⚽', bg: 'bg-blue-500/15', text: 'text-blue-700', ring: 'ring-blue-400/50' },
+      tennis: { symbol: '🎾', bg: 'bg-blue-300/15', text: 'text-blue-600', ring: 'ring-blue-200/50' },
       mma: { symbol: '🥊', bg: 'bg-red-600/15', text: 'text-red-800', ring: 'ring-red-500/50' },
     }
     if (SPORT_SHAPES[sport]) return SPORT_SHAPES[sport]
@@ -71,14 +71,14 @@ function shapeFor(m: MarketSnapshot): Shape {
 
 function platformCorner(platform: string): { letter: string; cls: string } {
   const p = platform.toLowerCase()
-  if (p === 'kalshi') return { letter: 'K', cls: 'bg-emerald-600 text-white' }
+  if (p === 'kalshi') return { letter: 'K', cls: 'bg-blue-500 text-white' }
   if (p === 'polymarket') return { letter: 'P', cls: 'bg-sky-600 text-white' }
   if (p === 'novig') return { letter: 'N', cls: 'bg-amber-600 text-white' }
   if (p === 'prophetx') return { letter: 'X', cls: 'bg-violet-600 text-white' }
   if (p === 'og') return { letter: 'O', cls: 'bg-rose-600 text-white' }
   if (p === 'oddsapi') return { letter: '⚡', cls: 'bg-indigo-600 text-white' }
   if (p === 'fanduel') return { letter: 'F', cls: 'bg-blue-600 text-white' }
-  if (p === 'draftkings') return { letter: 'D', cls: 'bg-green-700 text-white' }
+  if (p === 'draftkings') return { letter: 'D', cls: 'bg-blue-700 text-white' }
   if (p === 'betmgm') return { letter: 'M', cls: 'bg-yellow-600 text-white' }
   if (p === 'betrivers') return { letter: 'R', cls: 'bg-sky-700 text-white' }
   return { letter: platform[0].toUpperCase(), cls: 'bg-stone-600 text-white' }

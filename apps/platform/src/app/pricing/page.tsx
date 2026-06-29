@@ -46,14 +46,14 @@ export default async function PricingPage() {
     <main className="min-h-screen bg-stone-50 text-stone-900">
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="text-center mb-10">
-          <Link href="/" className="text-xs text-[#004225]/80 tracking-wider hover:text-[#004225]">
+          <Link href="/" className="text-xs text-[#1E3A8A]/80 tracking-wider hover:text-[#1E3A8A]">
             ← HOME
           </Link>
-          <div className="text-xs text-[#004225] tracking-wider mt-6 mb-2">{'>'} PRICING</div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-3">Built for college.</h1>
+          <div className="text-xs text-[#1E3A8A] tracking-wider mt-6 mb-2">{'>'} PRICING</div>
+          <h1 className="text-4xl md:text-5xl font-display mb-3">Built for college.</h1>
           <p className="text-base text-stone-600 max-w-2xl mx-auto">
             Free to browse. $39/mo unlocks real-time prices, cross-venue arb, alerts, and the
-            college leaderboard. Verified .edu students get <span className="font-semibold text-[#004225]">2 weeks free + 75% off forever</span>.
+            college leaderboard. Verified .edu students get <span className="font-semibold text-[#1E3A8A]">2 weeks free + 75% off forever</span>.
           </p>
         </div>
 

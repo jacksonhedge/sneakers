@@ -29,13 +29,13 @@ export default async function OtooleSettingsPage() {
       <div className="max-w-3xl mx-auto px-6 py-12">
         <Link
           href="/dashboard"
-          className="text-xs text-[#004225]/80 tracking-wider hover:text-[#004225]"
+          className="text-xs text-[#1E3A8A]/80 tracking-wider hover:text-[#1E3A8A]"
         >
           ← DASHBOARD
         </Link>
 
         <div className="mt-6 mb-8">
-          <div className="text-xs text-emerald-700 tracking-wider font-semibold mb-2">
+          <div className="text-xs text-blue-700 tracking-wider font-semibold mb-2">
             O&apos;TOOLE · SETTINGS
           </div>
           <h1 className="text-3xl font-bold mb-2">Configure your AI trading desk.</h1>
@@ -52,7 +52,7 @@ export default async function OtooleSettingsPage() {
             <div className="text-2xl">⚙</div>
             <div>
               <h2 className="text-lg font-semibold">Configure</h2>
-              <div className="text-[10px] tracking-widest text-emerald-700 font-semibold">LIVE</div>
+              <div className="text-[10px] tracking-widest text-blue-700 font-semibold">LIVE</div>
             </div>
           </div>
           <div className="text-sm text-stone-700 mb-4 leading-relaxed">
@@ -93,7 +93,7 @@ export default async function OtooleSettingsPage() {
           </div>
           <Link
             href="/dashboard/settings/autotrade"
-            className="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-5 py-2 text-xs font-bold tracking-wider text-black hover:bg-emerald-400 transition"
+            className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-5 py-2 text-xs font-bold tracking-wider text-white hover:bg-blue-500 transition"
           >
             Join the autotrade waitlist →
           </Link>

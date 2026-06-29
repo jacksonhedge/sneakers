@@ -51,7 +51,7 @@ export function VenueTicker() {
       <div className="flex items-center gap-6 animate-ticker-marquee whitespace-nowrap will-change-transform font-mono text-sm">
         {looped.map((name, i) => (
           <Fragment key={`${name}-${i}`}>
-            <span className="uppercase tracking-[0.18em] text-emerald-300/85 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
+            <span className="uppercase tracking-[0.18em] text-blue-300/85 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
               {name}
             </span>
             <span className="text-white/25 select-none" aria-hidden>

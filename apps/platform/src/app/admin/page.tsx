@@ -56,7 +56,7 @@ function Bar({ value, max }: { value: number; max: number }) {
   return (
     <div className="flex flex-col items-center justify-end gap-1 flex-1 min-w-0">
       <div className="text-[9px] text-stone-500">{value}</div>
-      <div className="bg-[#00703c] w-full" style={{ height: `${h}px` }} />
+      <div className="bg-[#1B4DE4] w-full" style={{ height: `${h}px` }} />
     </div>
   )
 }
@@ -210,17 +210,17 @@ export default async function AdminOverview() {
   return (
     <div className="space-y-8">
       <div>
-        <div className="text-xs text-[#004225] tracking-wider mb-1">{'>'} OVERVIEW</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-1">{'>'} OVERVIEW</div>
         <h1 className="text-2xl font-bold text-stone-900">Admin Console</h1>
       </div>
 
       {/* Scraper health — big boxes per platform, freshest first */}
       <section>
         <div className="flex items-baseline justify-between mb-3">
-          <h2 className="text-xs text-[#004225] tracking-wider">{'>'} SCRAPER HEALTH</h2>
+          <h2 className="text-xs text-[#1E3A8A] tracking-wider">{'>'} SCRAPER HEALTH</h2>
           <Link
             href="/scrapers"
-            className="text-[11px] text-[#00703c] hover:underline tracking-wider"
+            className="text-[11px] text-[#1B4DE4] hover:underline tracking-wider"
           >
             full status →
           </Link>
@@ -235,13 +235,13 @@ export default async function AdminOverview() {
             {scraperHealth.map((h) => {
               const status = statusFor(h)
               const cls = {
-                live: 'border-emerald-400 bg-emerald-50',
+                live: 'border-blue-400 bg-blue-50',
                 lagging: 'border-amber-400 bg-amber-50',
                 stale: 'border-orange-400 bg-orange-50',
                 dead: 'border-red-400 bg-red-50',
               }[status]
               const dotCls = {
-                live: 'bg-emerald-500 animate-pulse',
+                live: 'bg-blue-500 animate-pulse',
                 lagging: 'bg-amber-500 animate-pulse',
                 stale: 'bg-orange-500',
                 dead: 'bg-red-500',
@@ -317,14 +317,14 @@ export default async function AdminOverview() {
 
       {/* Enterprise — Hardware + Pipeline (prominent because hardware is real money) */}
       <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-2">{'>'} ENTERPRISE PIPELINE</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-2">{'>'} ENTERPRISE PIPELINE</div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div className="border border-stone-300 bg-white p-4 md:col-span-2">
             <div className="flex items-baseline justify-between mb-3">
               <div className="text-[10px] text-stone-500 tracking-wider">STATUS BREAKDOWN</div>
               <Link
                 href="/enterprise"
-                className="text-xs text-emerald-700 hover:underline tracking-wider"
+                className="text-xs text-blue-700 hover:underline tracking-wider"
               >
                 VIEW ALL →
               </Link>
@@ -348,27 +348,27 @@ export default async function AdminOverview() {
               </span>
               <span className="text-stone-600">
                 Closed-won:{' '}
-                <span className="text-emerald-700 font-bold tabular-nums">
+                <span className="text-blue-700 font-bold tabular-nums">
                   ${wonTotal.toLocaleString()}
                 </span>
               </span>
             </div>
           </div>
 
-          <div className="border-2 border-emerald-400/60 bg-emerald-50/50 p-4">
+          <div className="border-2 border-blue-400/60 bg-blue-50/50 p-4">
             <div className="flex items-baseline justify-between mb-2">
-              <div className="text-[10px] text-emerald-800 tracking-wider font-semibold">
+              <div className="text-[10px] text-blue-800 tracking-wider font-semibold">
                 🖥️ HARDWARE REQUESTS
               </div>
             </div>
-            <div className="text-3xl font-bold text-emerald-800 tabular-nums">
+            <div className="text-3xl font-bold text-blue-800 tabular-nums">
               {hardwareRequests.length}
             </div>
-            <div className="text-[11px] text-emerald-800/70 mt-1">
+            <div className="text-[11px] text-blue-800/70 mt-1">
               Prospects asking for Mac Studio / MacBook Pro bundles
             </div>
             {hardwareRequests.length > 0 && (
-              <div className="mt-3 pt-3 border-t border-emerald-200/60 text-[11px] text-emerald-900 space-y-1">
+              <div className="mt-3 pt-3 border-t border-blue-200/60 text-[11px] text-blue-900 space-y-1">
                 {(() => {
                   const byFactor: Record<string, number> = {}
                   for (const r of hardwareRequests) {
@@ -385,7 +385,7 @@ export default async function AdminOverview() {
               </div>
             )}
             {hardwareRequests.length === 0 && enterprise.length === 0 && (
-              <div className="text-[11px] text-emerald-800/60 mt-3">
+              <div className="text-[11px] text-blue-800/60 mt-3">
                 Awaiting first Enterprise inquiry. Form at /pricing → Contact Sales.
               </div>
             )}
@@ -432,7 +432,7 @@ export default async function AdminOverview() {
 
       {/* Per-surface status cards */}
       <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-2">{'>'} BY SURFACE</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-2">{'>'} BY SURFACE</div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           <SurfaceCard
             href="/users"
@@ -504,7 +504,7 @@ export default async function AdminOverview() {
 
       {/* Signup velocity */}
       <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-2">
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-2">
           {'>'} SIGNUP VELOCITY (last 30 days)
         </div>
         <div className="border border-stone-300 bg-white p-4">
@@ -522,7 +522,7 @@ export default async function AdminOverview() {
 
       {/* Quick actions */}
       <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-2">{'>'} QUICK ACTIONS</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-2">{'>'} QUICK ACTIONS</div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <Link href="/users" className="border border-stone-300 bg-white hover:bg-stone-50 p-4 transition">
             <div className="text-sm font-semibold text-stone-900">Users →</div>
@@ -560,7 +560,7 @@ function StatCard({
   return (
     <div className={`border ${cls} p-4`}>
       <div className="text-[10px] text-stone-500 tracking-wider mb-1">{label.toUpperCase()}</div>
-      <div className={`text-2xl font-bold ${accent === 'amber' ? 'text-amber-800' : 'text-[#00703c]'}`}>
+      <div className={`text-2xl font-bold ${accent === 'amber' ? 'text-amber-800' : 'text-[#1B4DE4]'}`}>
         {value}
       </div>
       {hint && <div className="text-[10px] text-stone-500 mt-1">{hint}</div>}

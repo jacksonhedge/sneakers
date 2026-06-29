@@ -69,7 +69,7 @@ export function ApproveButton({
       type="button"
       onClick={() => go('approve')}
       disabled={pending}
-      className="text-[10px] tracking-wider font-semibold bg-[#00703c] text-white hover:bg-[#004225] px-2 py-0.5 rounded disabled:opacity-50"
+      className="text-[10px] tracking-wider font-semibold bg-[#1B4DE4] text-white hover:bg-[#1E3A8A] px-2 py-0.5 rounded disabled:opacity-50"
     >
       {pending ? 'APPROVING…' : 'APPROVE'}
     </button>

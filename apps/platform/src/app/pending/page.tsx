@@ -71,7 +71,7 @@ export default async function PendingPage() {
     <main className="min-h-screen bg-stone-50 text-stone-900 flex items-center justify-center px-6 py-12">
       <div className="max-w-md w-full">
         <div className="flex justify-center mb-6">
-          <span className="w-16 h-16 rounded-full bg-stone-950 flex items-center justify-center ring-1 ring-emerald-500/40 overflow-hidden p-2.5">
+          <span className="w-16 h-16 rounded-full bg-stone-950 flex items-center justify-center ring-1 ring-blue-500/40 overflow-hidden p-2.5">
             <Image
               src="/logo.png"
               alt="Sneakers"
@@ -84,7 +84,7 @@ export default async function PendingPage() {
         </div>
 
         <div className="rounded-2xl bg-white ring-1 ring-stone-200 shadow-sm p-7 text-center">
-          <div className="text-[10px] tracking-[0.2em] text-emerald-700 font-semibold mb-2">
+          <div className="text-[10px] tracking-[0.2em] text-blue-700 font-semibold mb-2">
             ON THE WAITLIST
           </div>
           <h1 className="text-2xl font-bold text-stone-900 mb-2">
@@ -99,18 +99,18 @@ export default async function PendingPage() {
           {/* Queue position card — prominent so the user sees their actual
               spot in line, not just "you're in line". */}
           {totalPending > 0 && (
-            <div className="rounded-lg bg-emerald-50 ring-1 ring-emerald-200 px-4 py-4 mb-6">
-              <div className="text-[10px] tracking-[0.2em] text-emerald-700 font-semibold mb-1">
+            <div className="rounded-lg bg-blue-50 ring-1 ring-blue-200 px-4 py-4 mb-6">
+              <div className="text-[10px] tracking-[0.2em] text-blue-700 font-semibold mb-1">
                 YOUR POSITION
               </div>
               <div className="flex items-baseline justify-center gap-1">
-                <span className="text-3xl font-bold text-emerald-800">#{myPosition.toLocaleString()}</span>
-                <span className="text-sm text-emerald-700/70">
+                <span className="text-3xl font-bold text-blue-800">#{myPosition.toLocaleString()}</span>
+                <span className="text-sm text-blue-700/70">
                   of {totalPending.toLocaleString()}
                 </span>
               </div>
               {aheadOfMe > 0 && (
-                <div className="text-[11px] text-emerald-700/70 mt-1">
+                <div className="text-[11px] text-blue-700/70 mt-1">
                   {aheadOfMe.toLocaleString()} {aheadOfMe === 1 ? 'tester' : 'testers'} ahead of you
                 </div>
               )}
@@ -152,7 +152,7 @@ export default async function PendingPage() {
           Need help? Email{' '}
           <a
             href="mailto:hello@sneakersterminal.com"
-            className="text-emerald-700 hover:text-emerald-800 underline"
+            className="text-blue-700 hover:text-blue-800 underline"
           >
             hello@sneakersterminal.com
           </a>

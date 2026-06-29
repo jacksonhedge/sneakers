@@ -10,7 +10,7 @@ const STATUS_LABEL: Record<Venue['status'], string> = {
 }
 
 const STATUS_CLASSES: Record<Venue['status'], string> = {
-  live: 'bg-emerald-500/15 text-emerald-300 ring-emerald-400/40',
+  live: 'bg-blue-500/15 text-blue-300 ring-blue-400/40',
   coming_soon: 'bg-amber-500/10 text-amber-300 ring-amber-400/30',
   requested_frequently: 'bg-stone-700/30 text-stone-300 ring-stone-500/30',
 }
@@ -46,7 +46,7 @@ export function VenueCard({ venue }: { venue: Venue }) {
   const logoSrc = venue.logo ?? `/SneakersLogos/partners/${venue.id}.png`
 
   return (
-    <div className="group flex flex-col rounded-lg bg-stone-950/80 ring-1 ring-stone-800 p-5 hover:ring-emerald-400/40 transition">
+    <div className="group flex flex-col rounded-lg bg-stone-950/80 ring-1 ring-stone-800 p-5 hover:ring-blue-400/40 transition">
       <div className="flex items-start justify-between mb-3 gap-3">
         {!logoBroken && (
           <div className="flex-shrink-0 w-10 h-10 rounded bg-stone-900 ring-1 ring-stone-800 flex items-center justify-center overflow-hidden">
@@ -88,7 +88,7 @@ export function VenueCard({ venue }: { venue: Venue }) {
           representative price per venue here. */}
 
       {state === 'done' ? (
-        <div className="text-xs text-emerald-400 text-center py-2">
+        <div className="text-xs text-blue-400 text-center py-2">
           ✓ We’ll email you when it’s live.
         </div>
       ) : isLive && venue.affiliateUrl ? (
@@ -96,7 +96,7 @@ export function VenueCard({ venue }: { venue: Venue }) {
           href={venue.affiliateUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="block text-center text-xs font-semibold rounded bg-emerald-500 text-stone-950 py-2 hover:bg-emerald-400 transition"
+          className="block text-center text-xs font-semibold rounded bg-blue-500 text-stone-950 py-2 hover:bg-blue-400 transition"
         >
           Trade on {venue.name} →
         </a>
@@ -108,12 +108,12 @@ export function VenueCard({ venue }: { venue: Venue }) {
             placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="rounded bg-stone-900 ring-1 ring-stone-700 text-xs text-white px-3 py-2 focus:outline-none focus:ring-emerald-400"
+            className="rounded bg-stone-900 ring-1 ring-stone-700 text-xs text-white px-3 py-2 focus:outline-none focus:ring-blue-400"
           />
           <button
             type="submit"
             disabled={state === 'submitting'}
-            className="text-xs font-semibold rounded bg-emerald-500/90 text-stone-950 py-2 hover:bg-emerald-400 disabled:opacity-60"
+            className="text-xs font-semibold rounded bg-blue-500/90 text-stone-950 py-2 hover:bg-blue-400 disabled:opacity-60"
           >
             {state === 'submitting'
               ? 'Requesting…'

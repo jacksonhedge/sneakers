@@ -322,7 +322,7 @@ export function TradePanel({
         )}
 
         {feedback.kind === 'ok' && (
-          <div className="rounded border border-emerald-400/40 bg-emerald-500/10 text-emerald-300 px-3 py-2 text-xs">
+          <div className="rounded border border-blue-400/40 bg-blue-500/10 text-blue-300 px-3 py-2 text-xs">
             ✓ Order placed.{' '}
             <span className="font-mono opacity-80">{feedback.orderId.slice(0, 14)}…</span>
           </div>

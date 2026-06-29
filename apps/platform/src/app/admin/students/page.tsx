@@ -137,7 +137,7 @@ function RowCard({ row, tab }: { row: Row; tab: 'pending' | 'approved' | 'reject
               href={igUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-emerald-700 hover:underline font-mono"
+              className="text-blue-700 hover:underline font-mono"
             >
               @{row.instagram_handle} ↗
             </a>
@@ -148,7 +148,7 @@ function RowCard({ row, tab }: { row: Row; tab: 'pending' | 'approved' | 'reject
               href={liUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-emerald-700 hover:underline break-all"
+              className="text-blue-700 hover:underline break-all"
             >
               {liUrl.length > 50 ? liUrl.slice(0, 50) + '…' : liUrl} ↗
             </a>

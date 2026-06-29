@@ -80,7 +80,7 @@ export function AffiliateRow({
           <span
             className={`text-[10px] tracking-wider px-1.5 py-0.5 ring-1 ${
               isOverridden
-                ? 'bg-emerald-100 text-emerald-800 ring-emerald-300'
+                ? 'bg-blue-100 text-blue-800 ring-blue-300'
                 : 'bg-stone-100 text-stone-700 ring-stone-300'
             }`}
           >
@@ -103,7 +103,7 @@ export function AffiliateRow({
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder={defaults.signupUrl}
-            className="w-full px-3 py-2 text-xs font-mono border border-stone-300 focus:border-[#00703c] focus:outline-none focus:ring-1 focus:ring-[#00703c]/30 rounded"
+            className="w-full px-3 py-2 text-xs font-mono border border-stone-300 focus:border-[#1B4DE4] focus:outline-none focus:ring-1 focus:ring-[#1B4DE4]/30 rounded"
           />
           <div className="text-[10px] text-stone-500 mt-1">
             Default: <span className="font-mono">{defaults.signupUrl}</span>
@@ -119,7 +119,7 @@ export function AffiliateRow({
             onChange={(e) => setCode(e.target.value)}
             placeholder={defaults.promoCode ?? 'e.g. SNEAKERS'}
             maxLength={32}
-            className="w-full px-3 py-2 text-xs font-mono uppercase tracking-wider border border-stone-300 focus:border-[#00703c] focus:outline-none focus:ring-1 focus:ring-[#00703c]/30 rounded"
+            className="w-full px-3 py-2 text-xs font-mono uppercase tracking-wider border border-stone-300 focus:border-[#1B4DE4] focus:outline-none focus:ring-1 focus:ring-[#1B4DE4]/30 rounded"
           />
           <div className="text-[10px] text-stone-500 mt-1">
             Default: <span className="font-mono">{defaults.promoCode ?? '— none —'}</span>
@@ -133,7 +133,7 @@ export function AffiliateRow({
             <span
               className={`text-[10px] px-2 py-1 ${
                 result.ok
-                  ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                  ? 'bg-blue-50 text-blue-800 border border-blue-200'
                   : 'bg-red-50 text-red-800 border border-red-200'
               }`}
             >
@@ -155,7 +155,7 @@ export function AffiliateRow({
             type="button"
             disabled={!dirty || pending || resetting || url.trim().length === 0}
             onClick={save}
-            className="text-[11px] px-4 py-1.5 tracking-wider bg-[#00703c] text-white hover:bg-[#005a30] disabled:opacity-40 disabled:cursor-not-allowed"
+            className="text-[11px] px-4 py-1.5 tracking-wider bg-[#1B4DE4] text-white hover:bg-[#1740C0] disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {pending ? 'SAVING…' : 'SAVE'}
           </button>

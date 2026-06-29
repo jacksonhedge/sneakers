@@ -37,7 +37,7 @@ type ChipKey = 'live_flowing' | 'live_stale' | 'coming_soon' | 'requested_freque
 const STATUS_CHIP: Record<ChipKey, { label: string; cls: string }> = {
   live_flowing: {
     label: 'LIVE',
-    cls: 'bg-emerald-500 text-white ring-emerald-400/60 shadow-sm shadow-emerald-500/30',
+    cls: 'bg-blue-500 text-white ring-blue-400/60 shadow-sm shadow-blue-500/30',
   },
   live_stale: {
     label: 'NO DATA',
@@ -163,11 +163,11 @@ export function ConnectionsGrid({
           <div className="text-[10px] text-stone-400 tracking-[0.15em] font-semibold">
             LIVE PRICES FLOWING
           </div>
-          <div className="text-2xl font-bold text-emerald-600 tabular-nums inline-flex items-center gap-2">
+          <div className="text-2xl font-bold text-blue-600 tabular-nums inline-flex items-center gap-2">
             {counts.connectedLive}
             {counts.connectedLive > 0 && (
               <span
-                className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"
+                className="inline-block w-2 h-2 rounded-full bg-blue-500 animate-pulse"
                 aria-hidden
               />
             )}
@@ -223,7 +223,7 @@ export function ConnectionsGrid({
                     key={v.id}
                     className={`rounded border p-3 transition ${
                       active
-                        ? 'bg-[#00703c]/5 border-[#00703c]/40 ring-1 ring-[#00703c]/30'
+                        ? 'bg-[#1B4DE4]/5 border-[#1B4DE4]/40 ring-1 ring-[#1B4DE4]/30'
                         : 'bg-white border-stone-200 hover:border-stone-300'
                     }`}
                   >
@@ -290,7 +290,7 @@ export function ConnectionsGrid({
                               ? `Connect ${v.name} — paste API keys`
                               : `Sign up at ${v.name} via Sneakers — opens ${v.affiliateUrl}`
                           }
-                          className="inline-flex items-center gap-1 text-[10px] tracking-wider font-semibold px-2.5 py-1 rounded bg-[#00703c] text-white hover:bg-[#004225] transition disabled:opacity-50"
+                          className="inline-flex items-center gap-1 text-[10px] tracking-wider font-semibold px-2.5 py-1 rounded bg-[#1B4DE4] text-white hover:bg-[#1E3A8A] transition disabled:opacity-50"
                         >
                           CONNECT{' '}
                           <span aria-hidden>{CREDENTIALED_VENUES.has(v.id) ? '→' : '↗'}</span>
@@ -300,7 +300,7 @@ export function ConnectionsGrid({
                           type="button"
                           disabled={!mounted}
                           onClick={() => toggle(v.id)}
-                          className="text-[10px] tracking-wider font-semibold px-2.5 py-1 rounded bg-[#00703c] text-white hover:bg-[#004225] transition disabled:opacity-50"
+                          className="text-[10px] tracking-wider font-semibold px-2.5 py-1 rounded bg-[#1B4DE4] text-white hover:bg-[#1E3A8A] transition disabled:opacity-50"
                         >
                           CONNECT
                         </button>
@@ -310,7 +310,7 @@ export function ConnectionsGrid({
                           href={v.affiliateUrl}
                           target="_blank"
                           rel="noopener noreferrer sponsored"
-                          className="text-[10px] text-stone-500 hover:text-[#00703c] tracking-wider"
+                          className="text-[10px] text-stone-500 hover:text-[#1B4DE4] tracking-wider"
                         >
                           open ↗
                         </a>
@@ -326,7 +326,7 @@ export function ConnectionsGrid({
 
       <div className="text-[11px] text-stone-500 border-t border-stone-200 pt-4">
         Your connections sync across web and iOS. Browse the full venue catalog at{' '}
-        <Link href="/venues" className="text-[#00703c] hover:underline">
+        <Link href="/venues" className="text-[#1B4DE4] hover:underline">
           /venues
         </Link>
         .
@@ -365,7 +365,7 @@ function FilterChip({
       onClick={onClick}
       className={`text-[11px] tracking-wider px-3 py-1.5 rounded-full ring-1 transition ${
         active
-          ? 'bg-[#00703c]/10 text-[#004225] ring-[#00703c]/60 font-semibold'
+          ? 'bg-[#1B4DE4]/10 text-[#1E3A8A] ring-[#1B4DE4]/60 font-semibold'
           : 'bg-white text-stone-600 ring-stone-300 hover:bg-stone-50'
       }`}
     >

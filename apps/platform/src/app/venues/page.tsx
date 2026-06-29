@@ -29,11 +29,11 @@ export default function VenuesPage() {
         <div className="mb-12 text-center">
           <Link
             href="/"
-            className="text-xs text-emerald-300/80 tracking-wider hover:text-emerald-300"
+            className="text-xs text-blue-300/80 tracking-wider hover:text-blue-300"
           >
             ← SNEAKERS TERMINAL
           </Link>
-          <h1 className="mt-6 text-3xl md:text-4xl font-bold">
+          <h1 className="mt-6 text-3xl md:text-4xl font-display">
             Every book, one terminal.
           </h1>
           <p className="mt-4 text-stone-400 max-w-2xl mx-auto text-sm md:text-base">
@@ -44,7 +44,7 @@ export default function VenuesPage() {
             request early access and we’ll prioritize by demand.
           </p>
           <div className="mt-6 flex justify-center gap-6 text-xs tracking-wider">
-            <span className="text-emerald-400">
+            <span className="text-blue-400">
               {liveCount} LIVE
             </span>
             <span className="text-amber-300">

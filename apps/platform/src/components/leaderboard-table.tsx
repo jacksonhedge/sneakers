@@ -11,7 +11,7 @@ import { RollingNumber } from './rolling-number'
 //
 // Visual signatures:
 //   - Rank-change badge (▲+N / ▼-N) fades in beside rank for 6s after move
-//   - Streak ≥ 3 climbs gets a brand-emerald glow ring
+//   - Streak ≥ 3 climbs gets a brand-blue glow ring
 //   - Rank #1 gets a gold-tinted throne treatment + crown
 //   - The user marked `isMe = true` gets a persistent highlight
 //   - Score uses RollingNumber so digits roll on each update
@@ -20,7 +20,7 @@ export interface LeaderEntry {
   id: string
   name: string
   emoji: string
-  /** Tailwind colour name fragment — e.g. "emerald", "rose", "amber" */
+  /** Tailwind colour name fragment — e.g. "blue", "rose", "amber" */
   color: string
   score: number
   /** Rank as of one tick ago (1-indexed). Used for the change badge. */
@@ -51,16 +51,17 @@ function defaultFmt(score: number): string {
 }
 
 const COLOR_BG: Record<string, string> = {
-  emerald: 'bg-emerald-100 text-emerald-800 ring-emerald-300',
+  emerald: 'bg-blue-100 text-blue-800 ring-blue-300',
   rose: 'bg-rose-100 text-rose-800 ring-rose-300',
   amber: 'bg-amber-100 text-amber-800 ring-amber-300',
   sky: 'bg-sky-100 text-sky-800 ring-sky-300',
   violet: 'bg-violet-100 text-violet-800 ring-violet-300',
   cyan: 'bg-cyan-100 text-cyan-800 ring-cyan-300',
   fuchsia: 'bg-fuchsia-100 text-fuchsia-800 ring-fuchsia-300',
-  lime: 'bg-lime-100 text-lime-800 ring-lime-300',
+  lime: 'bg-blue-50 text-blue-700 ring-blue-200',
   orange: 'bg-orange-100 text-orange-800 ring-orange-300',
   teal: 'bg-teal-100 text-teal-800 ring-teal-300',
+  blue: 'bg-blue-100 text-blue-800 ring-blue-300',
 }
 
 export function LeaderboardTable({
@@ -131,17 +132,17 @@ function Row({
   const isStreak = entry.streak >= STREAK_THRESHOLD
   const subLabel = subLabelFor ? subLabelFor(entry) : null
 
-  const colorClass = COLOR_BG[entry.color] ?? COLOR_BG.emerald
+  const colorClass = COLOR_BG[entry.color] ?? COLOR_BG.blue
 
   return (
     <div
       className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl ring-1 transition-shadow ${
         entry.isMe
-          ? 'bg-emerald-50/60 ring-emerald-300'
+          ? 'bg-blue-50/60 ring-blue-300'
           : isThrone
             ? 'bg-gradient-to-r from-amber-50 via-amber-50/60 to-white ring-amber-300'
             : 'bg-white ring-stone-200'
-      } ${isStreak ? 'shadow-[0_0_0_2px_rgba(0,112,60,0.18)]' : ''}`}
+      } ${isStreak ? 'shadow-[0_0_0_2px_rgba(27, 77, 228,0.18)]' : ''}`}
     >
       {/* Rank cell — fixed width so the column doesn't reflow on rank changes */}
       <div className="w-12 flex items-baseline justify-end gap-1 shrink-0">
@@ -164,7 +165,7 @@ function Row({
         <span
           className={`absolute left-12 -translate-x-1 text-[9px] font-bold tracking-wider px-1.5 py-0.5 rounded-full ring-1 pointer-events-none ${
             delta > 0
-              ? 'bg-emerald-100 text-emerald-800 ring-emerald-300'
+              ? 'bg-blue-100 text-blue-800 ring-blue-300'
               : 'bg-red-100 text-red-700 ring-red-300'
           }`}
           style={{ opacity: fadeAlpha }}
@@ -186,7 +187,7 @@ function Row({
         <div className="text-sm font-semibold text-stone-900 truncate">
           {entry.name}
           {entry.isMe && (
-            <span className="ml-1.5 text-[9px] font-bold tracking-wider text-emerald-700 align-middle">
+            <span className="ml-1.5 text-[9px] font-bold tracking-wider text-blue-700 align-middle">
               YOU
             </span>
           )}
@@ -194,7 +195,7 @@ function Row({
         {(subLabel || isStreak) && (
           <div className="text-[10px] text-stone-700 truncate">
             {isStreak && (
-              <span className="text-[#00703c] font-semibold mr-1">
+              <span className="text-[#1B4DE4] font-semibold mr-1">
                 🔥 {entry.streak} streak
               </span>
             )}

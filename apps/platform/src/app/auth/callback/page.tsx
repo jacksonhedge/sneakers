@@ -37,7 +37,7 @@ function CallbackPending() {
   return (
     <main className="min-h-screen bg-stone-950 text-white flex items-center justify-center p-8">
       <div className="text-center">
-        <div className="text-xs text-emerald-300/80 tracking-wider font-semibold mb-3">
+        <div className="text-xs text-blue-300/80 tracking-wider font-semibold mb-3">
           SIGNING YOU IN
         </div>
         <div className="text-sm text-white/70">Loading…</div>
@@ -127,7 +127,7 @@ function AuthCallbackInner() {
           </p>
           <a
             href="/signup"
-            className="inline-block bg-emerald-500 hover:bg-emerald-400 text-black text-sm font-semibold tracking-wider px-6 py-3 rounded transition"
+            className="inline-block bg-blue-500 hover:bg-blue-500 text-white text-sm font-semibold tracking-wider px-6 py-3 rounded transition"
           >
             BACK TO SIGN UP →
           </a>
@@ -139,7 +139,7 @@ function AuthCallbackInner() {
   return (
     <main className="min-h-screen bg-stone-950 text-white flex items-center justify-center p-8">
       <div className="text-center">
-        <div className="text-xs text-emerald-300/80 tracking-wider font-semibold mb-3">
+        <div className="text-xs text-blue-300/80 tracking-wider font-semibold mb-3">
           SIGNING YOU IN
         </div>
         <div className="text-sm text-white/70">Setting your session…</div>

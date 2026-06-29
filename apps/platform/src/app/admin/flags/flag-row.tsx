@@ -52,7 +52,7 @@ export function FlagRow({
         <span
           className={`inline-block px-2 py-0.5 text-[10px] tracking-wider ring-1 ${
             value
-              ? 'bg-emerald-100 text-emerald-800 ring-emerald-300'
+              ? 'bg-blue-100 text-blue-800 ring-blue-300'
               : 'bg-stone-200 text-stone-700 ring-stone-300'
           }`}
         >
@@ -80,7 +80,7 @@ export function FlagRow({
               disabled={pending}
               onClick={commit}
               className={`px-3 py-1.5 tracking-wider text-white disabled:opacity-50 ${
-                value ? 'bg-red-700 hover:bg-red-800' : 'bg-[#00703c] hover:bg-[#005a30]'
+                value ? 'bg-red-700 hover:bg-red-800' : 'bg-[#1B4DE4] hover:bg-[#1740C0]'
               }`}
             >
               {pending ? 'WORKING…' : `CONFIRM → ${value ? 'FALSE' : 'TRUE'}`}
@@ -99,7 +99,7 @@ export function FlagRow({
           <div
             className={`mt-2 inline-block text-[10px] px-2 py-1 ${
               result.ok
-                ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                ? 'bg-blue-50 text-blue-800 border border-blue-200'
                 : 'bg-red-50 text-red-800 border border-red-200'
             }`}
           >

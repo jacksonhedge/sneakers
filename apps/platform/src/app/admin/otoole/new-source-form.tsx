@@ -116,7 +116,7 @@ export function NewSourceForm() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="text-xs px-3 py-1.5 tracking-wider border border-[#00703c] text-[#00703c] hover:bg-emerald-50"
+        className="text-xs px-3 py-1.5 tracking-wider border border-[#1B4DE4] text-[#1B4DE4] hover:bg-blue-50"
       >
         + ADD SOURCE
       </button>
@@ -129,7 +129,7 @@ export function NewSourceForm() {
       className="border border-stone-300 bg-white p-4 space-y-3"
     >
       <div className="flex items-center justify-between">
-        <span className="text-xs text-[#004225] tracking-wider">
+        <span className="text-xs text-[#1E3A8A] tracking-wider">
           {'>'} NEW GLOBAL SOURCE
         </span>
         <button
@@ -164,7 +164,7 @@ export function NewSourceForm() {
             type="button"
             onClick={fetchUrl}
             disabled={fetching || !url.trim()}
-            className="text-xs px-4 py-1.5 tracking-wider border border-[#00703c] text-[#00703c] hover:bg-emerald-50 disabled:opacity-50"
+            className="text-xs px-4 py-1.5 tracking-wider border border-[#1B4DE4] text-[#1B4DE4] hover:bg-blue-50 disabled:opacity-50"
           >
             {fetching ? 'FETCHING…' : 'FETCH'}
           </button>
@@ -223,7 +223,7 @@ export function NewSourceForm() {
             type="button"
             onClick={suggestKeywords}
             disabled={suggesting || (!label.trim() && !content.trim())}
-            className="text-[10px] px-2 py-0.5 tracking-wider border border-[#00703c] text-[#00703c] hover:bg-emerald-50 disabled:opacity-50"
+            className="text-[10px] px-2 py-0.5 tracking-wider border border-[#1B4DE4] text-[#1B4DE4] hover:bg-blue-50 disabled:opacity-50"
             title="Use Claude to suggest keywords from label + content"
           >
             {suggesting ? 'SUGGESTING…' : '✨ SUGGEST'}
@@ -244,7 +244,7 @@ export function NewSourceForm() {
           <span
             className={`text-[10px] px-2 py-1 border ${
               result.ok
-                ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                ? 'bg-blue-50 text-blue-800 border-blue-200'
                 : 'bg-red-50 text-red-800 border-red-200'
             }`}
           >
@@ -256,7 +256,7 @@ export function NewSourceForm() {
         <button
           type="submit"
           disabled={creating || fetching || suggesting}
-          className="text-xs px-4 py-1.5 tracking-wider bg-[#00703c] text-white hover:bg-[#005a30] disabled:opacity-50"
+          className="text-xs px-4 py-1.5 tracking-wider bg-[#1B4DE4] text-white hover:bg-[#1740C0] disabled:opacity-50"
         >
           {creating ? 'CREATING…' : 'CREATE SOURCE'}
         </button>

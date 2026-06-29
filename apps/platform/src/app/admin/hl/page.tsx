@@ -30,7 +30,7 @@ function fmtTs(ms: number): string {
 
 function pctClass(n: number | null): string {
   if (n == null || n === 0) return 'text-stone-600'
-  return n > 0 ? 'text-emerald-700' : 'text-red-700'
+  return n > 0 ? 'text-blue-700' : 'text-red-700'
 }
 
 export default async function AdminHlPage() {
@@ -47,7 +47,7 @@ export default async function AdminHlPage() {
   return (
     <div className="space-y-8">
       <div>
-        <div className="text-xs text-[#004225] tracking-wider mb-1">
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-1">
           {'>'} HYPERLIQUID — PERPS SIGNALS
         </div>
         <h1 className="text-2xl font-bold text-stone-900">
@@ -73,7 +73,7 @@ export default async function AdminHlPage() {
           title="Crowded longs (highest funding)"
           subtitle="longs paying shorts — contrarian short signal"
           rows={topPositive}
-          signClass="text-emerald-700"
+          signClass="text-blue-700"
         />
         <FundingTable
           title="Crowded shorts (lowest funding)"

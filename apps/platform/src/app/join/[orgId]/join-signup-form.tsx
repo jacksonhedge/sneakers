@@ -48,7 +48,7 @@ export function JoinSignupForm({ orgId, orgName }: { orgId: string; orgName: str
   return (
     <form onSubmit={submit} className="space-y-3">
       <div>
-        <label className="block text-[11px] tracking-wider text-emerald-300/80 mb-1">
+        <label className="block text-[11px] tracking-wider text-blue-300/80 mb-1">
           YOUR EMAIL <span className="text-white/40 normal-case">(.edu preferred)</span>
         </label>
         <input
@@ -58,10 +58,10 @@ export function JoinSignupForm({ orgId, orgName }: { orgId: string; orgName: str
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@school.edu"
           autoComplete="email"
-          className="w-full bg-black/40 backdrop-blur-sm border border-white/30 text-white px-4 py-3 rounded focus:outline-none focus:border-emerald-400 focus:bg-black/60 placeholder:text-white/40 transition"
+          className="w-full bg-black/40 backdrop-blur-sm border border-white/30 text-white px-4 py-3 rounded focus:outline-none focus:border-blue-400 focus:bg-black/60 placeholder:text-white/40 transition"
         />
         {isEduEmail(email) && (
-          <div className="text-[10px] text-emerald-300/90 mt-1.5 tracking-wider">
+          <div className="text-[10px] text-blue-300/90 mt-1.5 tracking-wider">
             ✓ .edu detected — student verification unlocks 75% off
           </div>
         )}
@@ -70,7 +70,7 @@ export function JoinSignupForm({ orgId, orgName }: { orgId: string; orgName: str
       <button
         type="submit"
         disabled={status === 'loading'}
-        className="w-full border border-emerald-400 bg-emerald-500 text-black font-semibold px-6 py-3 rounded hover:bg-emerald-400 transition disabled:opacity-50 tracking-wider"
+        className="w-full border border-blue-400 bg-blue-600 text-white font-semibold px-6 py-3 rounded hover:bg-blue-400 transition disabled:opacity-50 tracking-wider"
       >
         {status === 'loading' ? 'JOINING…' : `JOIN ${orgName.toUpperCase()} →`}
       </button>

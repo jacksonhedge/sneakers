@@ -116,7 +116,7 @@ export function WalletButton() {
         onClick={() => setOpen((o) => !o)}
         aria-label={`Wallet — balance ${buttonLabel}`}
         title="Wallet & payments"
-        className="inline-flex items-center gap-1.5 h-9 px-3 rounded-full bg-emerald-50 text-emerald-700 ring-1 ring-emerald-300 hover:bg-emerald-100 hover:ring-emerald-400 transition text-xs font-semibold tabular-nums"
+        className="inline-flex items-center gap-1.5 h-9 px-3 rounded-full bg-blue-50 text-blue-700 ring-1 ring-blue-300 hover:bg-blue-100 hover:ring-blue-400 transition text-xs font-semibold tabular-nums"
       >
         <span aria-hidden>💳</span>
         {agg.kind === 'ready' ? (
@@ -198,7 +198,7 @@ function BalanceRow({ state }: { state: AggregateState }) {
   if (state.kind === 'loading') {
     return (
       <div className="flex items-center gap-2 text-sm text-stone-500">
-        <span className="inline-block w-3 h-3 rounded-full border-2 border-stone-300 border-t-emerald-500 animate-spin" />
+        <span className="inline-block w-3 h-3 rounded-full border-2 border-stone-300 border-t-blue-500 animate-spin" />
         <span>Checking balance…</span>
       </div>
     )

@@ -45,7 +45,7 @@ export function OTooleMobileFAB({ userName }: { userName: string | null }) {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open O'Toole AI chat"
-        className="md:hidden fixed bottom-4 right-4 z-40 w-14 h-14 rounded-full bg-stone-950 ring-2 ring-emerald-400/60 shadow-lg shadow-stone-950/30 inline-flex items-center justify-center text-emerald-400 text-xl font-bold hover:ring-emerald-400 active:scale-95 transition"
+        className="md:hidden fixed bottom-4 right-4 z-40 w-14 h-14 rounded-full bg-stone-950 ring-2 ring-blue-400/60 shadow-lg shadow-stone-950/30 inline-flex items-center justify-center text-blue-400 text-xl font-bold hover:ring-blue-400 active:scale-95 transition"
       >
         Ø
       </button>

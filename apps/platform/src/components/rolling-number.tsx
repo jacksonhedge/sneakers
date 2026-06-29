@@ -29,7 +29,7 @@ const FLASH_TOTAL_MS = FLASH_FADE_IN_MS + FLASH_HOLD_MS + FLASH_FADE_OUT_MS
 const ROLL_EASE = 'cubic-bezier(0.16, 1, 0.3, 1)'
 const FLASH_EASE = 'cubic-bezier(0.4, 0, 0.2, 1)'
 
-const UP_FLASH_RGB = '0, 112, 60'
+const UP_FLASH_RGB = '27, 77, 228'
 const DOWN_FLASH_RGB = '239, 68, 68'
 
 type Position =

@@ -100,14 +100,14 @@ export default async function ProfilePage() {
       <div className="max-w-4xl mx-auto px-6 py-10">
         <Link
           href="/dashboard"
-          className="text-xs text-[#004225]/80 tracking-wider hover:text-[#004225]"
+          className="text-xs text-[#1E3A8A]/80 tracking-wider hover:text-[#1E3A8A]"
         >
           ← DASHBOARD
         </Link>
 
         {/* Header */}
         <div className="mt-6 mb-8">
-          <div className="text-xs text-emerald-700 tracking-wider font-semibold mb-1">
+          <div className="text-xs text-blue-700 tracking-wider font-semibold mb-1">
             YOUR PROFILE
           </div>
           <div className="text-2xl font-bold text-stone-900 break-all mb-1">
@@ -143,7 +143,7 @@ export default async function ProfilePage() {
             <Label>EMAIL</Label>
             <div className="text-sm font-mono text-stone-900 break-all">{email}</div>
             {isEdu && (
-              <div className="mt-2 text-[11px] text-emerald-700 font-semibold tracking-wider">
+              <div className="mt-2 text-[11px] text-blue-700 font-semibold tracking-wider">
                 ✓ .EDU DETECTED
               </div>
             )}
@@ -155,7 +155,7 @@ export default async function ProfilePage() {
             {planTier === 'free' && (
               <Link
                 href="/pricing"
-                className="mt-2 inline-block text-xs text-emerald-700 hover:text-emerald-800 underline"
+                className="mt-2 inline-block text-xs text-blue-700 hover:text-blue-800 underline"
               >
                 See pricing →
               </Link>
@@ -183,7 +183,7 @@ export default async function ProfilePage() {
                 <div className="text-sm text-stone-600">Not submitted</div>
                 <Link
                   href="/students"
-                  className="mt-2 inline-block text-xs text-emerald-700 hover:text-emerald-800 underline"
+                  className="mt-2 inline-block text-xs text-blue-700 hover:text-blue-800 underline"
                 >
                   Verify for 75% off →
                 </Link>
@@ -217,7 +217,7 @@ export default async function ProfilePage() {
             {waitlist?.referral_code && (
               <div className="mt-3 text-[11px] text-stone-600">
                 Your link:{' '}
-                <code className="bg-stone-100 px-1.5 py-0.5 rounded text-emerald-700 font-mono">
+                <code className="bg-stone-100 px-1.5 py-0.5 rounded text-blue-700 font-mono">
                   /r/{waitlist.referral_code}
                 </code>
               </div>
@@ -259,10 +259,10 @@ function CaptainCard({
   counts: { accepted: number; pending: number; total: number }
 }) {
   return (
-    <section className="rounded-xl bg-gradient-to-br from-emerald-950 via-stone-900 to-stone-950 ring-1 ring-emerald-400/40 p-6 mb-6 text-white shadow-[0_8px_32px_rgba(16,185,129,0.18)]">
+    <section className="rounded-xl bg-gradient-to-br from-blue-950 via-stone-900 to-stone-950 ring-1 ring-blue-400/40 p-6 mb-6 text-white shadow-[0_8px_32px_rgba(27,77,228,0.18)]">
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div className="flex-1 min-w-0">
-          <div className="text-[10px] tracking-[0.15em] text-emerald-300/80 font-semibold mb-1">
+          <div className="text-[10px] tracking-[0.15em] text-blue-300/80 font-semibold mb-1">
             YOU&apos;RE THE CAPTAIN OF
           </div>
           <h2 className="text-2xl font-bold tracking-tight">{org.org_name}</h2>
@@ -275,7 +275,7 @@ function CaptainCard({
         <span
           className={`text-[10px] tracking-[0.15em] font-bold px-2.5 py-1 rounded-full ring-1 ${
             org.status === 'approved'
-              ? 'bg-emerald-500/15 text-emerald-300 ring-emerald-400/50'
+              ? 'bg-blue-500/15 text-blue-300 ring-blue-400/50'
               : 'bg-amber-500/15 text-amber-300 ring-amber-400/40'
           }`}
         >
@@ -292,7 +292,7 @@ function CaptainCard({
       <div className="mt-5 flex flex-wrap gap-2">
         <Link
           href="/dashboard/org?tab=members"
-          className="bg-emerald-500 hover:bg-emerald-400 text-black text-sm font-semibold tracking-wider px-5 py-2.5 rounded transition"
+          className="bg-blue-500 hover:bg-blue-500 text-white text-sm font-semibold tracking-wider px-5 py-2.5 rounded transition"
         >
           ADD MEMBERS →
         </Link>
@@ -304,12 +304,12 @@ function CaptainCard({
         </Link>
       </div>
 
-      <div className="mt-4 pt-4 border-t border-emerald-400/20 text-[11px] text-white/65 leading-relaxed">
-        <span className="text-emerald-300/80 font-semibold tracking-wider">
+      <div className="mt-4 pt-4 border-t border-blue-400/20 text-[11px] text-white/65 leading-relaxed">
+        <span className="text-blue-300/80 font-semibold tracking-wider">
           QUICK ROSTER:
         </span>{' '}
         text your join link to the chapter →{' '}
-        <code className="bg-white/5 px-1.5 py-0.5 rounded text-emerald-300 font-mono break-all">
+        <code className="bg-white/5 px-1.5 py-0.5 rounded text-blue-300 font-mono break-all">
           sneakersterminal.com/join/{org.id.slice(0, 8)}…
         </code>
       </div>
@@ -320,7 +320,7 @@ function CaptainCard({
 function Stat({ n, label }: { n: number; label: string }) {
   return (
     <div>
-      <div className="text-3xl font-bold font-mono tabular-nums text-emerald-300 leading-none">
+      <div className="text-3xl font-bold font-mono tabular-nums text-blue-300 leading-none">
         {n}
       </div>
       <div className="text-[10px] text-white/55 tracking-wider mt-1">{label}</div>
@@ -342,7 +342,7 @@ function Label({ children }: { children: React.ReactNode }) {
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, { label: string; cls: string }> = {
-    approved: { label: 'APPROVED', cls: 'bg-emerald-100 text-emerald-800 ring-emerald-300' },
+    approved: { label: 'APPROVED', cls: 'bg-blue-100 text-blue-800 ring-blue-300' },
     pending: { label: 'PENDING', cls: 'bg-amber-100 text-amber-800 ring-amber-300' },
     rejected: { label: 'REJECTED', cls: 'bg-red-100 text-red-800 ring-red-300' },
     pending_reverification: {
@@ -365,9 +365,9 @@ function Row({ label, yes, href }: { label: string; yes: boolean; href: string }
     <div className="flex items-center justify-between">
       <span className="text-stone-700">{label}</span>
       {yes ? (
-        <span className="text-emerald-700 font-semibold text-[10px] tracking-wider">✓ JOINED</span>
+        <span className="text-blue-700 font-semibold text-[10px] tracking-wider">✓ JOINED</span>
       ) : (
-        <Link href={href} className="text-emerald-700 hover:text-emerald-800 text-[10px] underline">
+        <Link href={href} className="text-blue-700 hover:text-blue-800 text-[10px] underline">
           Join →
         </Link>
       )}

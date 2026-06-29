@@ -24,7 +24,7 @@ function ageOf(latestTs: string | null): { label: string; level: Level } {
 }
 
 const LEVEL_CLS: Record<Level, string> = {
-  fresh: 'bg-emerald-50 text-emerald-700 ring-emerald-300',
+  fresh: 'bg-blue-50 text-blue-700 ring-blue-300',
   warn: 'bg-amber-50 text-amber-700 ring-amber-300',
   stale: 'bg-rose-50 text-rose-700 ring-rose-300',
   unknown: 'bg-stone-100 text-stone-500 ring-stone-300',

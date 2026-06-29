@@ -34,7 +34,7 @@ export function ProfileAvatar({
         prefetch={false}
         title={email ?? 'Profile'}
         aria-label="Profile"
-        className={`relative w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br ${gradient} flex items-center justify-center text-white text-base font-bold ring-1 ${ring} shadow-sm hover:ring-2 hover:ring-emerald-400 hover:shadow-md transition`}
+        className={`relative w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br ${gradient} flex items-center justify-center text-white text-base font-bold ring-1 ${ring} shadow-sm hover:ring-2 hover:ring-blue-400 hover:shadow-md transition`}
       >
         {hasImage ? (
           <Image
@@ -57,7 +57,7 @@ export function ProfileAvatar({
     <Link
       href="/dashboard/profile"
       prefetch={false}
-      className="flex items-center gap-3 p-3 mx-2 mb-2 rounded bg-white hover:bg-stone-100 transition ring-1 ring-stone-200 hover:ring-[#00703c]/40 group"
+      className="flex items-center gap-3 p-3 mx-2 mb-2 rounded bg-white hover:bg-stone-100 transition ring-1 ring-stone-200 hover:ring-[#1B4DE4]/40 group"
     >
       <div
         className={`relative w-9 h-9 rounded-full overflow-hidden bg-gradient-to-br ${gradient} flex items-center justify-center text-white text-base font-bold ring-1 ${ring} shadow-sm shrink-0`}
@@ -79,7 +79,7 @@ export function ProfileAvatar({
         <div className="text-[11px] font-semibold text-stone-900 truncate">
           {email ?? 'Profile'}
         </div>
-        <div className="text-[10px] text-stone-500 group-hover:text-[#00703c] transition">
+        <div className="text-[10px] text-stone-500 group-hover:text-[#1B4DE4] transition">
           Profile & settings →
         </div>
       </div>

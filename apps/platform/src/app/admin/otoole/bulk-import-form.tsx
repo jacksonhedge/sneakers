@@ -168,7 +168,7 @@ export function BulkImportForm() {
   return (
     <div className="border border-stone-300 bg-white p-4 space-y-3 w-full">
       <div className="flex items-center justify-between">
-        <span className="text-xs text-[#004225] tracking-wider">
+        <span className="text-xs text-[#1E3A8A] tracking-wider">
           {'>'} BULK ADD SOURCES{' '}
           <span className="text-stone-500 normal-case">
             (up to 10 URLs · fetched in parallel · created with empty filter — tune individually after)
@@ -200,7 +200,7 @@ export function BulkImportForm() {
           <span
             className={`text-[10px] px-2 py-1 border ${
               topMsg.ok
-                ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                ? 'bg-blue-50 text-blue-800 border-blue-200'
                 : 'bg-red-50 text-red-800 border-red-200'
             }`}
           >
@@ -214,7 +214,7 @@ export function BulkImportForm() {
             type="button"
             onClick={fetchAll}
             disabled={fetching || creating || !urlsText.trim()}
-            className="text-xs px-4 py-1.5 tracking-wider border border-[#00703c] text-[#00703c] hover:bg-emerald-50 disabled:opacity-50"
+            className="text-xs px-4 py-1.5 tracking-wider border border-[#1B4DE4] text-[#1B4DE4] hover:bg-blue-50 disabled:opacity-50"
           >
             {fetching ? 'FETCHING…' : 'FETCH ALL'}
           </button>
@@ -222,7 +222,7 @@ export function BulkImportForm() {
             type="button"
             onClick={createChecked}
             disabled={fetching || creating || readyCount === 0}
-            className="text-xs px-4 py-1.5 tracking-wider bg-[#00703c] text-white hover:bg-[#005a30] disabled:opacity-50"
+            className="text-xs px-4 py-1.5 tracking-wider bg-[#1B4DE4] text-white hover:bg-[#1740C0] disabled:opacity-50"
           >
             {creating ? 'CREATING…' : `CREATE ${readyCount} CHECKED`}
           </button>
@@ -272,7 +272,7 @@ function BulkRow({ row, onToggle }: { row: Row; onToggle: () => void }) {
         )
       case 'created':
         return (
-          <span className="text-[10px] tracking-wider px-1.5 py-0.5 bg-emerald-100 text-emerald-800 ring-1 ring-emerald-300">
+          <span className="text-[10px] tracking-wider px-1.5 py-0.5 bg-blue-100 text-blue-800 ring-1 ring-blue-300">
             CREATED
           </span>
         )
@@ -324,7 +324,7 @@ function BulkRow({ row, onToggle }: { row: Row; onToggle: () => void }) {
           className={`px-3 py-1 text-[10px] border-t ${
             row.status === 'failed'
               ? 'bg-red-50 text-red-800 border-red-200'
-              : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+              : 'bg-blue-50 text-blue-800 border-blue-200'
           }`}
         >
           {row.statusMsg}

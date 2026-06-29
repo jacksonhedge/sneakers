@@ -47,7 +47,7 @@ export function MemoryEditor({
               type="checkbox"
               checked={enabled}
               onChange={(e) => setEnabled(e.target.checked)}
-              className="accent-[#00703c]"
+              className="accent-[#1B4DE4]"
             />
             <span className="font-semibold text-stone-800 tracking-wider">
               {enabled ? 'INJECTING INTO EVERY CHAT' : 'DISABLED'}
@@ -65,7 +65,7 @@ export function MemoryEditor({
             <span
               className={`text-[10px] px-2 py-1 ${
                 result.ok
-                  ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                  ? 'bg-blue-50 text-blue-800 border border-blue-200'
                   : 'bg-red-50 text-red-800 border border-red-200'
               }`}
             >
@@ -76,7 +76,7 @@ export function MemoryEditor({
             type="button"
             onClick={submit}
             disabled={pending || !dirty}
-            className="text-xs px-4 py-1.5 tracking-wider bg-[#00703c] text-white hover:bg-[#005a30] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="text-xs px-4 py-1.5 tracking-wider bg-[#1B4DE4] text-white hover:bg-[#1740C0] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {pending ? 'SAVING…' : dirty ? 'SAVE' : 'SAVED'}
           </button>
@@ -86,7 +86,7 @@ export function MemoryEditor({
       <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-stone-200">
         <div className="p-4">
           <label className="block">
-            <span className="block text-xs text-[#004225] tracking-wider mb-1">
+            <span className="block text-xs text-[#1E3A8A] tracking-wider mb-1">
               {'>'} PERSONA ADDENDUM
             </span>
             <span className="block text-[11px] text-stone-500 mb-2">
@@ -98,7 +98,7 @@ export function MemoryEditor({
               value={persona}
               onChange={(e) => setPersona(e.target.value)}
               placeholder="e.g. When proposing trades without an explicit market, default to the 10–35¢ longshot band. Always remind users that prediction markets carry liquidity risk."
-              className="w-full min-h-[260px] font-mono text-xs px-3 py-2 border border-stone-300 bg-stone-50 text-stone-900 focus:outline-none focus:border-[#00703c]"
+              className="w-full min-h-[260px] font-mono text-xs px-3 py-2 border border-stone-300 bg-stone-50 text-stone-900 focus:outline-none focus:border-[#1B4DE4]"
             />
             <span className="block text-[10px] text-stone-400 mt-1 text-right">
               {persona.length.toLocaleString()} / 8,192 chars
@@ -108,7 +108,7 @@ export function MemoryEditor({
 
         <div className="p-4">
           <label className="block">
-            <span className="block text-xs text-[#004225] tracking-wider mb-1">
+            <span className="block text-xs text-[#1E3A8A] tracking-wider mb-1">
               {'>'} BASELINE MEMORY / STRATEGY
             </span>
             <span className="block text-[11px] text-stone-500 mb-2">
@@ -119,7 +119,7 @@ export function MemoryEditor({
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="e.g. Sneakers Terminal aggregates prices across prediction markets (Kalshi, Polymarket), sportsbooks, DFS pick'em, and sweeps. Prefer prediction markets for binary contracts because…"
-              className="w-full min-h-[260px] font-mono text-xs px-3 py-2 border border-stone-300 bg-stone-50 text-stone-900 focus:outline-none focus:border-[#00703c]"
+              className="w-full min-h-[260px] font-mono text-xs px-3 py-2 border border-stone-300 bg-stone-50 text-stone-900 focus:outline-none focus:border-[#1B4DE4]"
             />
             <span className="block text-[10px] text-stone-400 mt-1 text-right">
               {content.length.toLocaleString()} / 32,768 chars

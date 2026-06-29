@@ -7,7 +7,7 @@ import type { TransactionKind } from '@/lib/wallet'
 // "Wimbledon Vault" — Sneakers Wallet, phase 1 scaffold. Data now flows in
 // from the active WalletProvider (mock in dev / pre-KYB; MoonPay once env
 // vars land). The visual direction is a deliberate break from the rest of
-// the dashboard: deep emerald-noir surface, cream serif money, monospace
+// the dashboard: deep blue-noir surface, cream serif money, monospace
 // ledger, brass accents. The point is that opening the wallet feels like
 // walking into a different room — premium, intimate, financial.
 

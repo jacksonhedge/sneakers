@@ -64,8 +64,8 @@ export default function RollingDemoPage() {
     <main className="min-h-screen bg-stone-50 text-stone-900 px-6 py-10">
       <div className="max-w-3xl mx-auto space-y-8">
         <header className="space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold tracking-wider">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[10px] font-bold tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
             ROLLING NUMBER DEMO
           </div>
           <h1 className="text-3xl font-bold tracking-tight">
@@ -74,7 +74,7 @@ export default function RollingDemoPage() {
           <p className="text-sm text-stone-600 max-w-xl leading-relaxed">
             Numbers tick every 3s with a small random walk. Watch each
             digit roll independently — only the columns that actually
-            changed move. Brand emerald (#00703c) flashes on increase,
+            changed move. Brand blue (#1B4DE4) flashes on increase,
             red on decrease, opacity scaled by magnitude.
           </p>
           <div className="flex items-center gap-2 pt-1">
@@ -88,7 +88,7 @@ export default function RollingDemoPage() {
             <button
               type="button"
               onClick={tickNow}
-              className="text-xs px-3 py-1.5 rounded-full bg-[#00703c] text-white hover:bg-[#003520] font-bold tracking-wider"
+              className="text-xs px-3 py-1.5 rounded-full bg-[#1B4DE4] text-white hover:bg-[#16357A] font-bold tracking-wider"
             >
               TICK NOW
             </button>
@@ -100,7 +100,7 @@ export default function RollingDemoPage() {
 
         <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <DemoCard label="YES ASK (cents, integer)">
-            <div className="text-4xl font-bold text-emerald-700">
+            <div className="text-4xl font-bold text-blue-700">
               <RollingNumber
                 value={yesAsk}
                 format={fmtCents}
@@ -114,7 +114,7 @@ export default function RollingDemoPage() {
           </DemoCard>
 
           <DemoCard label="FUNDING APR (%, 2 decimals)">
-            <div className="text-4xl font-bold text-emerald-700">
+            <div className="text-4xl font-bold text-blue-700">
               <RollingNumber
                 value={funding}
                 format={fmtPct}

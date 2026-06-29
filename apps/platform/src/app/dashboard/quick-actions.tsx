@@ -114,7 +114,7 @@ export function QuickActions() {
             disabled={busy}
             className={`inline-flex items-center gap-1.5 text-[11px] font-semibold rounded-full px-2.5 py-1 ring-1 transition ${
               autotradeOn
-                ? 'bg-emerald-50 text-emerald-700 ring-emerald-300 hover:bg-emerald-100'
+                ? 'bg-blue-50 text-blue-700 ring-blue-300 hover:bg-blue-100'
                 : 'bg-red-50 text-red-700 ring-red-300 hover:bg-red-100'
             } disabled:opacity-50`}
             title="Autotrade kill switch"
@@ -318,11 +318,11 @@ function CustomInput({
         value={val}
         onChange={(e) => setVal(e.target.value)}
         onBlur={() => setEditing(false)}
-        className="w-16 text-[11px] font-mono ring-1 ring-stone-300 rounded px-1.5 py-0.5 focus:outline-none focus:ring-emerald-400"
+        className="w-16 text-[11px] font-mono ring-1 ring-stone-300 rounded px-1.5 py-0.5 focus:outline-none focus:ring-blue-400"
       />
       <button
         type="submit"
-        className="text-[11px] font-semibold text-emerald-700 hover:text-emerald-800"
+        className="text-[11px] font-semibold text-blue-700 hover:text-blue-800"
       >
         SET
       </button>

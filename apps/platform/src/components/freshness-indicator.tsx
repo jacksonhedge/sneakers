@@ -74,10 +74,10 @@ export function FreshnessIndicator({
     statusText = label ?? 'LOADING'
     ringCls = 'bg-amber-400/60'
   } else if (fresh) {
-    dotCls = 'bg-emerald-500'
-    statusCls = 'text-emerald-700'
+    dotCls = 'bg-blue-500'
+    statusCls = 'text-blue-700'
     statusText = label ?? 'LIVE'
-    ringCls = 'bg-emerald-400/70'
+    ringCls = 'bg-blue-400/70'
   } else if (veryStale) {
     dotCls = 'bg-red-500'
     statusCls = 'text-red-700'

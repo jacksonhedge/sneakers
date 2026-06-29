@@ -45,7 +45,7 @@ const PILLARS: Pillar[] = [
 ]
 
 const STATUS_STYLE: Record<PillarStatus, { label: string; cls: string }> = {
-  live: { label: 'LIVE', cls: 'bg-emerald-100 text-emerald-800 ring-emerald-300' },
+  live: { label: 'LIVE', cls: 'bg-blue-100 text-blue-800 ring-blue-300' },
   beta: { label: 'BETA', cls: 'bg-amber-100 text-amber-800 ring-amber-300' },
   coming_soon: { label: 'COMING SOON', cls: 'bg-stone-200 text-stone-700 ring-stone-300' },
 }
@@ -75,7 +75,7 @@ export function OtooleSpotlight() {
   if (dismissed !== false) return null
 
   return (
-    <section className="relative rounded-xl overflow-hidden ring-1 ring-stone-200 bg-gradient-to-br from-stone-950 via-stone-900 to-emerald-950 text-white">
+    <section className="relative rounded-xl overflow-hidden ring-1 ring-stone-200 bg-gradient-to-br from-stone-950 via-stone-900 to-blue-950 text-white">
       {/* Dismiss */}
       <button
         type="button"
@@ -89,7 +89,7 @@ export function OtooleSpotlight() {
       <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-6 px-6 py-6">
         {/* Left: intro */}
         <div className="flex md:flex-col items-center md:items-start gap-4 md:max-w-[200px]">
-          <div className="rounded-full bg-white/5 ring-1 ring-emerald-400/30 p-3 shadow-[0_0_32px_rgba(16,185,129,0.2)]">
+          <div className="rounded-full bg-white/5 ring-1 ring-blue-400/30 p-3 shadow-[0_0_32px_rgba(27,77,228,0.2)]">
             <Image
               src="/logo.png"
               alt="O'Toole"
@@ -99,16 +99,16 @@ export function OtooleSpotlight() {
             />
           </div>
           <div>
-            <div className="text-[10px] tracking-[0.2em] text-emerald-300/80 font-semibold">
+            <div className="text-[10px] tracking-[0.2em] text-blue-300/80 font-semibold">
               MEET O&apos;TOOLE
             </div>
             <div className="text-xl md:text-2xl font-bold tracking-tight mt-1 leading-tight">
               Your AI trading desk.
             </div>
             <div className="text-sm text-white/70 mt-2 leading-snug">
-              A bot you <span className="text-emerald-300 font-semibold">configure</span>,{' '}
-              <span className="text-emerald-300 font-semibold">teach</span>, and eventually let{' '}
-              <span className="text-emerald-300 font-semibold">execute</span> trades for you.
+              A bot you <span className="text-blue-300 font-semibold">configure</span>,{' '}
+              <span className="text-blue-300 font-semibold">teach</span>, and eventually let{' '}
+              <span className="text-blue-300 font-semibold">execute</span> trades for you.
             </div>
           </div>
         </div>
@@ -121,7 +121,7 @@ export function OtooleSpotlight() {
               <a
                 key={p.title}
                 href={p.cta.href}
-                className="group relative rounded-lg bg-white/5 hover:bg-white/10 backdrop-blur-sm ring-1 ring-white/10 hover:ring-emerald-400/50 px-4 py-4 transition"
+                className="group relative rounded-lg bg-white/5 hover:bg-white/10 backdrop-blur-sm ring-1 ring-white/10 hover:ring-blue-400/50 px-4 py-4 transition"
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="text-2xl" aria-hidden>
@@ -135,7 +135,7 @@ export function OtooleSpotlight() {
                 </div>
                 <div className="text-sm font-semibold text-white mb-1">{p.title}</div>
                 <div className="text-[11px] text-white/65 leading-relaxed mb-3">{p.body}</div>
-                <div className="text-[11px] font-semibold text-emerald-300 group-hover:text-emerald-200 tracking-wider">
+                <div className="text-[11px] font-semibold text-blue-300 group-hover:text-blue-200 tracking-wider">
                   {p.cta.label} →
                 </div>
               </a>

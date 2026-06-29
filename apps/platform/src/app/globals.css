@@ -1,20 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  /* Wimbledon-inspired light palette */
+  /* Royal-blue brand palette */
   --background: #ffffff;
   --foreground: #1a1f2c;
-  --wimbledon-green: #00703c;
-  --wimbledon-green-dark: #004225;
-  --wimbledon-purple: #5c2d91;
-  --wimbledon-cream: #f8f5ee;
+  --brand-blue: #1B4DE4;   /* primary brand / buttons / accents */
+  --brand-navy: #1E3A8A;   /* logo + headings on light */
+  --footer-bg: #F4F6F9;    /* footer panel background */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-open-sauce);
+  --font-display: var(--font-peace);
+  --font-mono: var(--font-open-sauce);
 }
 
 @keyframes wimbledon-drift {
@@ -27,20 +27,20 @@
 
 body {
   color: var(--foreground);
-  font-family: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-open-sauce), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
-  /* Layered gradient: diagonal white→cream→green-tinted-white→purple-tinted-white→white.
+  /* Layered gradient: diagonal white→blue-tinted-white→white.
      Kept low-saturation so it reads as "motion" not "disco". */
   background-color: #ffffff;
   background-image:
     linear-gradient(135deg,
-      rgba(255,255,255,1)      0%,
-      rgba(248, 245, 238, 1)  25%,
-      rgba(255,255,255,1)     40%,
-      rgba(236, 245, 239, 1)  60%,
-      rgba(255,255,255,1)     75%,
-      rgba(242, 237, 249, 1)  90%,
-      rgba(255,255,255,1)    100%
+      rgba(255,255,255,1)     0%,
+      rgba(235, 241, 254, 1) 25%,    /* soft blue */
+      rgba(255,255,255,1)    40%,
+      rgba(224, 234, 255, 1) 60%,    /* sky tint */
+      rgba(255,255,255,1)    75%,
+      rgba(237, 242, 255, 1) 90%,    /* light cobalt */
+      rgba(255,255,255,1)   100%
     );
   background-size: 400% 400%;
   animation: wimbledon-drift 30s ease-in-out infinite;

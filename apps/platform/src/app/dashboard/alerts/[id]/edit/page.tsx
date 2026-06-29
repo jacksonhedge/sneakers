@@ -45,11 +45,11 @@ export default async function EditAlertPage({
   return (
     <main className="min-h-screen bg-stone-50 text-stone-900">
       <div className="max-w-3xl mx-auto px-6 py-10 space-y-6">
-        <Link href="/dashboard/alerts" className="text-xs text-[#004225]/80 tracking-wider hover:text-[#004225]">
+        <Link href="/dashboard/alerts" className="text-xs text-[#1E3A8A]/80 tracking-wider hover:text-[#1E3A8A]">
           ← ALERTS
         </Link>
         <header>
-          <div className="text-xs text-[#004225] tracking-wider mb-1">{'>'} EDIT RULE</div>
+          <div className="text-xs text-[#1E3A8A] tracking-wider mb-1">{'>'} EDIT RULE</div>
           <h1 className="text-3xl md:text-4xl font-bold">Edit alert rule</h1>
         </header>
         <RuleForm existing={rule as AlertRule} pushAvailable={pushAvailable} />

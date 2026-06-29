@@ -138,7 +138,7 @@ function NotACaptain({ email }: { email: string }) {
   return (
     <main className="min-h-screen bg-stone-50 text-stone-900 flex items-center justify-center px-6">
       <div className="max-w-md w-full text-center">
-        <div className="text-xs text-emerald-700 tracking-wider font-semibold mb-3">
+        <div className="text-xs text-blue-700 tracking-wider font-semibold mb-3">
           ORGANIZATION DASHBOARD
         </div>
         <h1 className="text-2xl font-bold mb-3">No org found for this account.</h1>
@@ -150,7 +150,7 @@ function NotACaptain({ email }: { email: string }) {
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
             href="/"
-            className="inline-block bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold tracking-wider px-6 py-3 rounded transition"
+            className="inline-block bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold tracking-wider px-6 py-3 rounded transition"
           >
             REGISTER YOUR ORG →
           </Link>
