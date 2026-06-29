@@ -13,8 +13,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-open-sauce);
+  --font-display: var(--font-peace);
+  --font-mono: var(--font-open-sauce);
 }
 
 @keyframes wimbledon-drift {
@@ -27,7 +28,7 @@
 
 body {
   color: var(--foreground);
-  font-family: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-open-sauce), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
   /* Layered gradient: diagonal white→cream→green-tinted-white→purple-tinted-white→white.
      Kept low-saturation so it reads as "motion" not "disco". */

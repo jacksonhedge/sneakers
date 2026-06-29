@@ -1,19 +1,26 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Inter } from "next/font/google";
+import localFont from "next/font/local";
 import { headers } from "next/headers";
 import { Suspense } from "react";
 import "./globals.css";
 import { Footer } from "./footer";
 import { PageViewTracker } from "@/components/page-view-tracker";
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const openSauce = localFont({
+  variable: "--font-open-sauce",
+  display: "swap",
+  src: [
+    { path: "../fonts/OpenSauceSans-Regular.woff", weight: "400", style: "normal" },
+    { path: "../fonts/OpenSauceSans-Medium.woff2", weight: "500", style: "normal" },
+    { path: "../fonts/OpenSauceSans-SemiBold.woff2", weight: "600", style: "normal" },
+    { path: "../fonts/OpenSauceSans-Bold.woff2", weight: "700", style: "normal" },
+  ],
 });
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
+const peaceSans = localFont({
+  variable: "--font-peace",
+  display: "swap",
+  src: [{ path: "../fonts/PeaceSans.otf", weight: "400", style: "normal" }],
 });
 
 export const metadata: Metadata = {
@@ -56,7 +63,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistMono.variable} ${inter.variable} h-full antialiased`}
+      className={`${openSauce.variable} ${peaceSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col text-stone-900 font-sans">
         {/* PageViewTracker auto-fires `page_view` events on every nav. Wrapped
