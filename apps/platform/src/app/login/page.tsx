@@ -139,7 +139,7 @@ export default async function LoginPage({
 
         {state.kind === 'no_email' && (
           <Card>
-            <div className="text-sm text-blue-700 font-semibold">{'>'}Sign in</div>
+            <div className="font-display text-2xl text-blue-900">Sign in</div>
             <div className="text-xs text-stone-700">
               Sign in with your email and password. Forgot your password? Use the link below
               the form to get a one-click magic link instead.
@@ -156,7 +156,7 @@ export default async function LoginPage({
 
         {state.kind === 'admin' && (
           <Card>
-            <div className="text-sm text-blue-700 font-semibold">{'>'}Admin recognized.</div>
+            <div className="font-display text-2xl text-blue-900">Admin recognized.</div>
             <div className="text-xs text-stone-700">
               Click below and we&apos;ll send a magic link straight to your inbox. You&apos;ll land
               on <span className="text-blue-700 font-semibold">/admin</span>.
@@ -168,7 +168,7 @@ export default async function LoginPage({
 
         {state.kind === 'authed' && (
           <Card>
-            <div className="text-sm text-blue-700 font-semibold">{'>'}Welcome back.</div>
+            <div className="font-display text-2xl text-blue-900">Welcome back.</div>
             <PositionBlock position={state.position} boost={state.boost} />
             <div className="text-xs text-stone-700 pt-2 border-t border-stone-200">
               You&apos;ve already used your invite code. Send yourself a magic link to get back
@@ -181,7 +181,7 @@ export default async function LoginPage({
 
         {state.kind === 'invited' && (
           <Card>
-            <div className="text-sm text-blue-700 font-semibold">{'>'}You&apos;re off the waitlist.</div>
+            <div className="font-display text-2xl text-blue-900">You&apos;re off the waitlist.</div>
             <PositionBlock position={state.position} boost={state.boost} />
             <div className="text-xs text-stone-700 pt-2 border-t border-stone-200">
               We&apos;ll email you a fresh magic link — click it from your inbox to sign in.
@@ -195,7 +195,7 @@ export default async function LoginPage({
           const refs = state.row.direct_referrals
           return (
             <Card>
-              <div className="text-sm text-blue-700 font-semibold">{'>'}You&apos;re on the waitlist.</div>
+              <div className="font-display text-2xl text-blue-900">You&apos;re on the waitlist.</div>
               <PositionBlock position={state.position} boost={state.boost} />
 
               {/* Single-referral gate — bring somebody along */}
@@ -246,7 +246,7 @@ export default async function LoginPage({
 
         {state.kind === 'not_found' && (
           <Card>
-            <div className="text-sm text-red-700 font-semibold">{'>'} That email isn&apos;t on the waitlist.</div>
+            <div className="font-display text-2xl text-red-700">That email isn&apos;t on the waitlist.</div>
             <div className="text-xs text-stone-700">
               Either you haven&apos;t signed up yet, or you used a different address.
             </div>

@@ -87,7 +87,7 @@ export default async function SignupPage({
               <div className="text-[10px] tracking-[0.2em] text-blue-300/80 font-semibold mb-1">
                 SIGN UP · INDIVIDUAL
               </div>
-              <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
+              <h1 className="font-display text-3xl md:text-4xl text-white tracking-tight">
                 {initialCode ? 'Finish signing up.' : 'Create your account.'}
               </h1>
               <p className="text-sm text-white/70 mt-2 leading-relaxed">
