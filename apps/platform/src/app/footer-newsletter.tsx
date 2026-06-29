@@ -40,13 +40,15 @@ export function FooterNewsletter() {
   }
 
   return (
-    <form onSubmit={submit} className="flex items-stretch border border-blue-900/15 rounded-md overflow-hidden bg-white max-w-xs">
+    <form onSubmit={submit} className="flex flex-col gap-1.5 max-w-xs">
+      <div className="flex items-stretch border border-blue-900/15 rounded-md overflow-hidden bg-white">
       <input
         type="email"
         required
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="Enter your email"
+        aria-label="Email address"
         disabled={status === 'loading'}
         className="flex-1 px-3 py-2.5 text-sm text-blue-950 placeholder:text-blue-900/40 focus:outline-none disabled:opacity-50"
       />
@@ -58,6 +60,10 @@ export function FooterNewsletter() {
       >
         {status === 'loading' ? '…' : '→'}
       </button>
+      </div>
+      {status === 'error' && (
+        <p className="text-sm text-red-600 mt-2">Something went wrong — try again.</p>
+      )}
     </form>
   )
 }

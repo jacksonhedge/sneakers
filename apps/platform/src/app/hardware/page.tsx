@@ -92,7 +92,7 @@ export default async function HardwarePage() {
         </div>
 
         {/* Hero image — Mac Studio with the decal */}
-        <div className="relative max-w-3xl mx-auto rounded-2xl overflow-hidden ring-1 ring-blue-400/20 bg-gradient-to-b from-stone-900 to-stone-950 p-6 md:p-12 shadow-[0_24px_72px_rgba(16,185,129,0.15)]">
+        <div className="relative max-w-3xl mx-auto rounded-2xl overflow-hidden ring-1 ring-blue-400/20 bg-gradient-to-b from-stone-900 to-stone-950 p-6 md:p-12 shadow-[0_24px_72px_rgba(27,77,228,0.15)]">
           <Image
             src="/hardware/mac-studio.png"
             alt="Mac Studio with custom Sneakers Terminal decal"
@@ -106,7 +106,7 @@ export default async function HardwarePage() {
         <div className="flex flex-col sm:flex-row gap-3 justify-center mt-10">
           <a
             href="#pricing"
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-500 px-8 py-4 text-base font-bold tracking-wider text-black ring-1 ring-blue-400 shadow-[0_8px_32px_rgba(16,185,129,0.4)] hover:bg-blue-400 transition"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-8 py-4 text-base font-bold tracking-wider text-white ring-1 ring-blue-400 shadow-[0_8px_32px_rgba(27,77,228,0.4)] hover:bg-blue-500 transition"
           >
             See pricing →
           </a>
@@ -244,7 +244,7 @@ export default async function HardwarePage() {
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* Org pricing — live */}
-          <div className="rounded-2xl bg-gradient-to-br from-blue-950 via-stone-900 to-stone-950 ring-1 ring-blue-400/30 p-7 md:p-9 text-center shadow-[0_24px_72px_rgba(16,185,129,0.15)] flex flex-col">
+          <div className="rounded-2xl bg-gradient-to-br from-blue-950 via-stone-900 to-stone-950 ring-1 ring-blue-400/30 p-7 md:p-9 text-center shadow-[0_24px_72px_rgba(27,77,228,0.15)] flex flex-col">
             <div className="flex items-center justify-center gap-2 mb-3">
               <div className="text-xs text-blue-300/80 tracking-wider">
                 FOR ORGANIZATIONS

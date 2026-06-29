@@ -322,7 +322,7 @@ export function OToolePanel({ userName }: Props) {
                 100% { transform: translate(0%, 0%) scale(1); }
               }
               .otoole-aurora-a {
-                background: radial-gradient(circle at 20% 30%, rgba(16,185,129,0.32), transparent 55%);
+                background: radial-gradient(circle at 20% 30%, rgba(27,77,228,0.32), transparent 55%);
                 animation: otoole-aurora-a 18s ease-in-out infinite;
               }
               .otoole-aurora-b {

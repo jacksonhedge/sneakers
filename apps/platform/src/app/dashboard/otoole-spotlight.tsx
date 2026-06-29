@@ -89,7 +89,7 @@ export function OtooleSpotlight() {
       <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-6 px-6 py-6">
         {/* Left: intro */}
         <div className="flex md:flex-col items-center md:items-start gap-4 md:max-w-[200px]">
-          <div className="rounded-full bg-white/5 ring-1 ring-blue-400/30 p-3 shadow-[0_0_32px_rgba(16,185,129,0.2)]">
+          <div className="rounded-full bg-white/5 ring-1 ring-blue-400/30 p-3 shadow-[0_0_32px_rgba(27,77,228,0.2)]">
             <Image
               src="/logo.png"
               alt="O'Toole"

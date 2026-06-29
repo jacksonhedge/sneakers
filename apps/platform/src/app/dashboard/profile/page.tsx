@@ -259,7 +259,7 @@ function CaptainCard({
   counts: { accepted: number; pending: number; total: number }
 }) {
   return (
-    <section className="rounded-xl bg-gradient-to-br from-blue-950 via-stone-900 to-stone-950 ring-1 ring-blue-400/40 p-6 mb-6 text-white shadow-[0_8px_32px_rgba(16,185,129,0.18)]">
+    <section className="rounded-xl bg-gradient-to-br from-blue-950 via-stone-900 to-stone-950 ring-1 ring-blue-400/40 p-6 mb-6 text-white shadow-[0_8px_32px_rgba(27,77,228,0.18)]">
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div className="flex-1 min-w-0">
           <div className="text-[10px] tracking-[0.15em] text-blue-300/80 font-semibold mb-1">

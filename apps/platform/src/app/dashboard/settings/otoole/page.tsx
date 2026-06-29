@@ -93,7 +93,7 @@ export default async function OtooleSettingsPage() {
           </div>
           <Link
             href="/dashboard/settings/autotrade"
-            className="inline-flex items-center gap-2 rounded-full bg-blue-500 px-5 py-2 text-xs font-bold tracking-wider text-black hover:bg-blue-400 transition"
+            className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-5 py-2 text-xs font-bold tracking-wider text-white hover:bg-blue-500 transition"
           >
             Join the autotrade waitlist →
           </Link>

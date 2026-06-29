@@ -313,7 +313,7 @@ function venueAccent(id: string): string {
     case 'polymarket':
       return 'rgba(56, 189, 248, 0.15)'
     case 'kalshi':
-      return 'rgba(16, 185, 129, 0.15)'
+      return 'rgba(27, 77, 228, 0.15)'
     case 'novig':
       return 'rgba(245, 158, 11, 0.15)'
     case 'prophetx':

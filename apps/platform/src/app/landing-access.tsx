@@ -72,10 +72,10 @@ export function LandingAccess({
   const buttonCls =
     variant === 'nav'
       ? tone === 'primary'
-        ? 'inline-flex items-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-xs font-semibold tracking-wider text-black ring-1 ring-blue-400 hover:bg-blue-400 transition'
+        ? 'inline-flex items-center gap-2 rounded-full bg-blue-600 px-4 py-2 text-xs font-semibold tracking-wider text-white ring-1 ring-blue-400 hover:bg-blue-500 transition'
         : 'inline-flex items-center gap-2 rounded-full bg-white/5 px-4 py-2 text-xs font-semibold tracking-wider text-white ring-1 ring-white/30 backdrop-blur-sm hover:bg-white/10 hover:ring-white/60 transition'
       : tone === 'primary'
-        ? 'inline-flex items-center gap-2 rounded-lg bg-blue-500 px-8 py-4 text-base font-bold tracking-wider text-black ring-1 ring-blue-400 shadow-[0_8px_32px_rgba(16,185,129,0.4)] hover:bg-blue-400 hover:shadow-[0_12px_48px_rgba(16,185,129,0.5)] transition'
+        ? 'inline-flex items-center gap-2 rounded-lg bg-blue-600 px-8 py-4 text-base font-bold tracking-wider text-white ring-1 ring-blue-400 shadow-[0_8px_32px_rgba(27,77,228,0.4)] hover:bg-blue-500 hover:shadow-[0_12px_48px_rgba(27,77,228,0.5)] transition'
         : 'inline-flex items-center gap-2 rounded-lg bg-white/5 px-8 py-4 text-base font-bold tracking-wider text-white ring-1 ring-white/30 backdrop-blur-sm hover:bg-white/10 hover:ring-white/60 transition'
 
   // Individual signup is a navigation, not a modal — sends them to /signup

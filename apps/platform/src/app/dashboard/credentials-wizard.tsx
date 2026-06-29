@@ -229,11 +229,11 @@ export function CredentialsWizard({
             <button
               type="submit"
               disabled={busy}
-              className="inline-flex items-center gap-2 rounded-full bg-blue-500 ring-1 ring-blue-400 text-black font-semibold px-5 py-2.5 text-sm tracking-wider hover:bg-blue-400 transition disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-full bg-blue-600 ring-1 ring-blue-400 text-white font-semibold px-5 py-2.5 text-sm tracking-wider hover:bg-blue-500 transition disabled:opacity-50"
             >
               {busy && (
                 <span
-                  className="w-3.5 h-3.5 rounded-full border-2 border-black/30 border-t-black animate-spin"
+                  className="w-3.5 h-3.5 rounded-full border-2 border-white/30 border-t-white animate-spin"
                   aria-hidden
                 />
               )}

@@ -73,9 +73,9 @@ export default async function SignupPage({
       {/* Centered glass form card */}
       <div className="relative z-10 flex items-center justify-center px-6 py-10 min-h-[calc(100vh-64px)]">
         <div className="w-full max-w-md">
-          <div className="rounded-2xl bg-stone-950/70 backdrop-blur-xl ring-1 ring-blue-400/30 shadow-[0_24px_72px_rgba(0,0,0,0.6),0_0_64px_rgba(16,185,129,0.12)] p-7 md:p-8">
+          <div className="rounded-2xl bg-stone-950/70 backdrop-blur-xl ring-1 ring-blue-400/30 shadow-[0_24px_72px_rgba(0,0,0,0.6),0_0_64px_rgba(27,77,228,0.12)] p-7 md:p-8">
             <div className="flex flex-col items-center text-center mb-6">
-              <div className="rounded-full bg-stone-950 p-3 ring-1 ring-blue-400/40 shadow-[0_0_32px_rgba(16,185,129,0.25)] mb-4">
+              <div className="rounded-full bg-stone-950 p-3 ring-1 ring-blue-400/40 shadow-[0_0_32px_rgba(27,77,228,0.25)] mb-4">
                 <Image
                   src="/logo.png"
                   alt="Sneakers"

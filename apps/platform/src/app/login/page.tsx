@@ -122,7 +122,7 @@ export default async function LoginPage({
             SNEAKERS TERMINAL / LOGIN
           </div>
           <div className="flex justify-center mb-4">
-            <div className="rounded-full bg-stone-950 p-3 ring-1 ring-blue-500/30 shadow-[0_8px_32px_rgba(16,185,129,0.18)]">
+            <div className="rounded-full bg-stone-950 p-3 ring-1 ring-blue-500/30 shadow-[0_8px_32px_rgba(27,77,228,0.18)]">
               <Image src="/logo.png" alt="Sneakers" width={96} height={96} />
             </div>
           </div>

@@ -58,7 +58,7 @@ export function LandingSignupButton({
       <button
         type="button"
         onClick={() => setMenuOpen((o) => !o)}
-        className="inline-flex items-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-xs font-semibold tracking-wider text-black ring-1 ring-blue-400 hover:bg-blue-400 transition"
+        className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-4 py-2 text-xs font-semibold tracking-wider text-white ring-1 ring-blue-400 hover:bg-blue-500 transition"
         aria-haspopup="menu"
         aria-expanded={menuOpen}
       >
