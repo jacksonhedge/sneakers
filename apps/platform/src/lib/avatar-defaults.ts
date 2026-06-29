@@ -23,7 +23,7 @@ export const AVATAR_COLOR_KEYS = [
 export type AvatarColorKey = (typeof AVATAR_COLOR_KEYS)[number]
 
 const GRADIENT_BY_KEY: Record<AvatarColorKey, string> = {
-  emerald: 'from-emerald-500 to-emerald-700',
+  emerald: 'from-blue-600 to-blue-800',
   teal:    'from-teal-500 to-teal-700',
   sky:     'from-sky-500 to-sky-700',
   blue:    'from-blue-500 to-blue-700',
@@ -33,12 +33,12 @@ const GRADIENT_BY_KEY: Record<AvatarColorKey, string> = {
   rose:    'from-rose-500 to-rose-700',
   orange:  'from-orange-500 to-orange-700',
   amber:   'from-amber-500 to-amber-700',
-  lime:    'from-lime-500 to-lime-700',
+  lime:    'from-blue-400 to-blue-600',
   cyan:    'from-cyan-500 to-cyan-700',
 }
 
 const RING_BY_KEY: Record<AvatarColorKey, string> = {
-  emerald: 'ring-emerald-600/40',
+  emerald: 'ring-blue-700/40',
   teal:    'ring-teal-600/40',
   sky:     'ring-sky-600/40',
   blue:    'ring-blue-600/40',
@@ -48,18 +48,18 @@ const RING_BY_KEY: Record<AvatarColorKey, string> = {
   rose:    'ring-rose-600/40',
   orange:  'ring-orange-600/40',
   amber:   'ring-amber-600/40',
-  lime:    'ring-lime-600/40',
+  lime:    'ring-blue-500/40',
   cyan:    'ring-cyan-600/40',
 }
 
 export function avatarGradientClass(key: string | null | undefined): string {
   if (key && key in GRADIENT_BY_KEY) return GRADIENT_BY_KEY[key as AvatarColorKey]
-  return GRADIENT_BY_KEY.emerald
+  return GRADIENT_BY_KEY.blue
 }
 
 export function avatarRingClass(key: string | null | undefined): string {
   if (key && key in RING_BY_KEY) return RING_BY_KEY[key as AvatarColorKey]
-  return RING_BY_KEY.emerald
+  return RING_BY_KEY.blue
 }
 
 /**

@@ -77,7 +77,7 @@ export function BulkApprover() {
           onChange={(e) => setText(e.target.value)}
           placeholder="one email per line — or comma/space separated"
           rows={5}
-          className="w-full text-xs font-mono px-2 py-1.5 ring-1 ring-stone-200 rounded focus:outline-none focus:ring-emerald-400"
+          className="w-full text-xs font-mono px-2 py-1.5 ring-1 ring-stone-200 rounded focus:outline-none focus:ring-blue-400"
         />
         <div className="flex items-center gap-3">
           <button
@@ -97,7 +97,7 @@ export function BulkApprover() {
 
         {counts && (
           <div className="text-[11px] flex items-center gap-3 pt-2 border-t border-stone-200">
-            <span className="text-emerald-700 font-semibold">✓ {counts.ok} approved</span>
+            <span className="text-blue-700 font-semibold">✓ {counts.ok} approved</span>
             {counts.already_approved > 0 && (
               <span className="text-stone-500">{counts.already_approved} already in</span>
             )}

@@ -137,7 +137,7 @@ export function MarketDetailDrawer({ markets }: { markets: MarketSnapshot[] }) {
                 className="flex items-center justify-between px-3 py-2 border-b border-stone-100 last:border-b-0 text-sm"
               >
                 <span className="text-stone-800 truncate pr-3">{o.name}</span>
-                <span className="font-mono tabular-nums text-emerald-600 font-semibold">
+                <span className="font-mono tabular-nums text-blue-600 font-semibold">
                   {pct(o.best_ask ?? o.last_price)}
                 </span>
               </div>
@@ -155,7 +155,7 @@ export function MarketDetailDrawer({ markets }: { markets: MarketSnapshot[] }) {
                 <span className="ml-2 text-amber-600">· Wide book</span>
               )}
               {market.overround < 1.01 && (
-                <span className="ml-2 text-emerald-600">· Near-zero vig</span>
+                <span className="ml-2 text-blue-600">· Near-zero vig</span>
               )}
             </div>
           )}
@@ -167,7 +167,7 @@ export function MarketDetailDrawer({ markets }: { markets: MarketSnapshot[] }) {
             {!g.canSeeCrossVenue && (
               <Link
                 href="/dashboard/billing"
-                className="text-[10px] text-emerald-600 hover:underline tracking-wider"
+                className="text-[10px] text-blue-600 hover:underline tracking-wider"
               >
                 UNLOCK ON PRO →
               </Link>
@@ -207,7 +207,7 @@ export function MarketDetailDrawer({ markets }: { markets: MarketSnapshot[] }) {
                         </div>
                       )}
                     </div>
-                    <div className="font-mono tabular-nums text-sm text-emerald-600 font-semibold">
+                    <div className="font-mono tabular-nums text-sm text-blue-600 font-semibold">
                       {pct(ask)}
                     </div>
                     {venue?.affiliateUrl ? (
@@ -215,7 +215,7 @@ export function MarketDetailDrawer({ markets }: { markets: MarketSnapshot[] }) {
                         href={venue.affiliateUrl}
                         target="_blank"
                         rel="noopener noreferrer sponsored"
-                        className="text-[10px] tracking-wider px-2 py-1 rounded ring-1 ring-emerald-400/60 text-emerald-700 hover:bg-emerald-500/10 whitespace-nowrap"
+                        className="text-[10px] tracking-wider px-2 py-1 rounded ring-1 ring-blue-400/60 text-blue-700 hover:bg-blue-500/10 whitespace-nowrap"
                       >
                         TRADE →
                       </a>
@@ -291,7 +291,7 @@ export function MarketDetailDrawer({ markets }: { markets: MarketSnapshot[] }) {
                     href={v.affiliateUrl}
                     target="_blank"
                     rel="noopener noreferrer sponsored"
-                    className="text-xs tracking-wider px-3 py-2 rounded ring-1 ring-emerald-400/60 text-emerald-700 hover:bg-emerald-500/10 transition font-semibold"
+                    className="text-xs tracking-wider px-3 py-2 rounded ring-1 ring-blue-400/60 text-blue-700 hover:bg-blue-500/10 transition font-semibold"
                   >
                     TRADE ON {v.name.toUpperCase()} →
                   </a>

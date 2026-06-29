@@ -80,7 +80,7 @@ export function DashboardSidebar({
     <aside className="w-60 shrink-0 border-r border-stone-200 bg-white/60 backdrop-blur-sm flex flex-col">
       <div className="p-4 border-b border-stone-200">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-stone-950 flex items-center justify-center ring-1 ring-emerald-400/30 shadow-sm overflow-hidden p-1.5 shrink-0">
+          <div className="w-9 h-9 rounded-full bg-stone-950 flex items-center justify-center ring-1 ring-blue-400/30 shadow-sm overflow-hidden p-1.5 shrink-0">
             <Image
               src="/logo.png"
               alt="Sneakers"

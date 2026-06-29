@@ -69,7 +69,7 @@ export function Footer() {
                 aria-label={s.name}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 flex items-center justify-center border border-white/15 text-white/70 hover:text-emerald-400 hover:border-emerald-400/50 transition"
+                className="w-9 h-9 flex items-center justify-center border border-white/15 text-white/70 hover:text-blue-400 hover:border-blue-400/50 transition"
               >
                 {s.icon}
               </a>
@@ -90,7 +90,7 @@ export function Footer() {
       <div className="border-t border-white/5 px-6 py-3 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs">
         <Link
           href="/students"
-          className="text-emerald-300/80 hover:text-emerald-300 transition"
+          className="text-blue-300/80 hover:text-blue-300 transition"
         >
           🎓 Student discount — 75% off
         </Link>

@@ -75,14 +75,14 @@ export function AboutYouForm({
   return (
     <form onSubmit={submit} className="space-y-6">
       <div>
-        <label className="block text-[11px] tracking-wider text-emerald-300/80 mb-2">
+        <label className="block text-[11px] tracking-wider text-blue-300/80 mb-2">
           STATE
         </label>
         <select
           value={state}
           onChange={(e) => setState(e.target.value)}
           required
-          className="w-full bg-black/40 border border-white/30 text-white px-4 py-3 rounded focus:outline-none focus:border-emerald-400 transition"
+          className="w-full bg-black/40 border border-white/30 text-white px-4 py-3 rounded focus:outline-none focus:border-blue-400 transition"
         >
           <option value="" disabled>
             Select your state…
@@ -99,7 +99,7 @@ export function AboutYouForm({
       </div>
 
       <div>
-        <div className="block text-[11px] tracking-wider text-emerald-300/80 mb-2">
+        <div className="block text-[11px] tracking-wider text-blue-300/80 mb-2">
           HOW DO YOU TRADE?
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -112,12 +112,12 @@ export function AboutYouForm({
                 onClick={() => setUseCase(opt.id)}
                 className={`text-left p-3 rounded border transition ${
                   active
-                    ? 'border-emerald-400 bg-emerald-500/10 ring-1 ring-emerald-400/40'
+                    ? 'border-blue-400 bg-blue-500/10 ring-1 ring-blue-400/40'
                     : 'border-white/20 bg-black/40 hover:border-white/40 hover:bg-black/60'
                 }`}
               >
                 <div
-                  className={`text-sm font-semibold ${active ? 'text-emerald-300' : 'text-white'}`}
+                  className={`text-sm font-semibold ${active ? 'text-blue-300' : 'text-white'}`}
                 >
                   {opt.label}
                 </div>
@@ -134,7 +134,7 @@ export function AboutYouForm({
         <button
           type="submit"
           disabled={busy || !state || !useCase}
-          className="inline-block border border-emerald-400 bg-emerald-500 text-black font-semibold px-6 py-3 hover:bg-emerald-400 hover:border-emerald-300 transition disabled:opacity-50 tracking-wider"
+          className="inline-block border border-blue-400 bg-blue-600 text-white font-semibold px-6 py-3 hover:bg-blue-400 hover:border-blue-300 transition disabled:opacity-50 tracking-wider"
         >
           {busy ? 'SAVING…' : 'CONTINUE →'}
         </button>

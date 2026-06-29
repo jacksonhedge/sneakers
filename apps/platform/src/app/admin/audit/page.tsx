@@ -16,7 +16,7 @@ type Row = {
 }
 
 const ACTION_CLS: Record<string, string> = {
-  grant_access: 'bg-emerald-100 text-emerald-800 ring-emerald-300',
+  grant_access: 'bg-blue-100 text-blue-800 ring-blue-300',
   issue_invite: 'bg-amber-100 text-amber-800 ring-amber-300',
   reissue_invite: 'bg-amber-100 text-amber-800 ring-amber-300',
   revoke_invite: 'bg-red-100 text-red-800 ring-red-300',

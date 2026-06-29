@@ -117,12 +117,12 @@ export function MembersTab({ orgId, initialInvitations }: Props) {
       {/* Shareable join link — fastest member onboarding path. Captain
           copies this, texts to brothers, each tap signs them up + adds
           them to the roster automatically. No email-send required. */}
-      <section className="rounded-lg ring-1 ring-emerald-300 bg-emerald-50 p-5">
+      <section className="rounded-lg ring-1 ring-blue-300 bg-blue-50 p-5">
         <div className="flex items-center justify-between gap-3 mb-2 flex-wrap">
           <h2 className="text-base font-semibold text-stone-900">
             Your join link
           </h2>
-          <span className="text-[10px] tracking-[0.15em] font-bold text-emerald-800 bg-white ring-1 ring-emerald-300 px-2 py-1 rounded">
+          <span className="text-[10px] tracking-[0.15em] font-bold text-blue-800 bg-white ring-1 ring-blue-300 px-2 py-1 rounded">
             FASTEST
           </span>
         </div>
@@ -135,12 +135,12 @@ export function MembersTab({ orgId, initialInvitations }: Props) {
             readOnly
             value={joinLink}
             onFocus={(e) => e.currentTarget.select()}
-            className="flex-1 bg-white ring-1 ring-stone-300 text-stone-800 text-xs px-3 py-2 rounded font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="flex-1 bg-white ring-1 ring-stone-300 text-stone-800 text-xs px-3 py-2 rounded font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
             type="button"
             onClick={copyJoinLink}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold tracking-wider px-4 py-2 rounded transition"
+            className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold tracking-wider px-4 py-2 rounded transition"
           >
             {linkCopied ? 'COPIED ✓' : 'COPY'}
           </button>
@@ -173,7 +173,7 @@ export function MembersTab({ orgId, initialInvitations }: Props) {
             onChange={(e) => setPasteText(e.target.value)}
             placeholder={`j@uf.edu, m@uf.edu\nJeremy Albus <jeremy@uf.edu>\np@uf.edu`}
             rows={4}
-            className="w-full rounded border border-stone-300 px-3 py-2 text-sm text-stone-900 font-mono focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-500"
+            className="w-full rounded border border-stone-300 px-3 py-2 text-sm text-stone-900 font-mono focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500"
           />
           <div className="flex items-center gap-2">
             <button
@@ -214,7 +214,7 @@ export function MembersTab({ orgId, initialInvitations }: Props) {
         </div>
 
         {parseSummary && (
-          <div className="text-xs text-emerald-700 bg-emerald-50 ring-1 ring-emerald-200 rounded px-3 py-2">
+          <div className="text-xs text-blue-700 bg-blue-50 ring-1 ring-blue-200 rounded px-3 py-2">
             {parseSummary}
           </div>
         )}
@@ -222,11 +222,11 @@ export function MembersTab({ orgId, initialInvitations }: Props) {
 
       {/* Pending pills + submit */}
       {pillEmails.length > 0 && (
-        <section className="rounded-lg ring-1 ring-emerald-300 bg-emerald-50/50 p-6">
+        <section className="rounded-lg ring-1 ring-blue-300 bg-blue-50/50 p-6">
           <div className="flex items-center justify-between gap-3 mb-3">
             <h3 className="text-sm font-semibold text-stone-900">
               Ready to invite{' '}
-              <span className="font-mono tabular-nums text-emerald-700">{pillEmails.length}</span>
+              <span className="font-mono tabular-nums text-blue-700">{pillEmails.length}</span>
             </h3>
             <button
               type="button"
@@ -268,7 +268,7 @@ export function MembersTab({ orgId, initialInvitations }: Props) {
             type="button"
             onClick={submitInvites}
             disabled={submitting}
-            className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-stone-300 text-white text-sm font-semibold tracking-wider px-6 py-3 rounded transition"
+            className="bg-blue-600 hover:bg-blue-700 disabled:bg-stone-300 text-white text-sm font-semibold tracking-wider px-6 py-3 rounded transition"
           >
             {submitting ? 'SAVING…' : `INVITE ${pillEmails.length} MEMBER${pillEmails.length === 1 ? '' : 'S'} →`}
           </button>
@@ -281,7 +281,7 @@ export function MembersTab({ orgId, initialInvitations }: Props) {
       )}
 
       {submitMsg && (
-        <div className="rounded ring-1 ring-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+        <div className="rounded ring-1 ring-blue-300 bg-blue-50 px-4 py-3 text-sm text-blue-800">
           ✓ {submitMsg}
         </div>
       )}
@@ -330,7 +330,7 @@ function RosterRow({ inv, onChanged }: { inv: Invitation; onChanged: () => void 
   const statusMeta: Record<string, { label: string; cls: string }> = {
     pending: { label: 'PENDING', cls: 'bg-amber-100 text-amber-800 ring-amber-300' },
     sent: { label: 'SENT', cls: 'bg-blue-100 text-blue-800 ring-blue-300' },
-    accepted: { label: 'ACCEPTED', cls: 'bg-emerald-100 text-emerald-800 ring-emerald-300' },
+    accepted: { label: 'ACCEPTED', cls: 'bg-blue-100 text-blue-800 ring-blue-300' },
     bounced: { label: 'BOUNCED', cls: 'bg-red-100 text-red-800 ring-red-300' },
     revoked: { label: 'REVOKED', cls: 'bg-stone-200 text-stone-600 ring-stone-300' },
   }
@@ -371,7 +371,7 @@ function RosterRow({ inv, onChanged }: { inv: Invitation; onChanged: () => void 
               type="button"
               onClick={approve}
               disabled={working !== null}
-              className="text-xs text-emerald-700 hover:text-emerald-800 underline disabled:opacity-50"
+              className="text-xs text-blue-700 hover:text-blue-800 underline disabled:opacity-50"
             >
               {working === 'approve' ? 'Approving…' : 'Approve'}
             </button>

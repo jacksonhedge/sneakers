@@ -56,7 +56,7 @@ export default async function TreasuryPage() {
         </Link>
 
         <div className="mt-6 mb-8">
-          <div className="text-xs text-emerald-700 tracking-wider font-semibold mb-2">
+          <div className="text-xs text-blue-700 tracking-wider font-semibold mb-2">
             CHAPTER · TREASURY
           </div>
           <h1 className="text-3xl font-bold mb-2">A wallet your chapter votes on.</h1>
@@ -108,7 +108,7 @@ function SetupGuide() {
                   href="https://app.safe.global"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-emerald-700 font-semibold underline hover:text-emerald-800"
+                  className="text-blue-700 font-semibold underline hover:text-blue-800"
                 >
                   app.safe.global
                 </a>
@@ -182,13 +182,13 @@ function ConnectedState({
   const explorerUrl = (explorerBase[chain] ?? explorerBase.polygon) + address
 
   return (
-    <section className="rounded-lg ring-1 ring-emerald-300 bg-emerald-50 p-6 mb-6">
+    <section className="rounded-lg ring-1 ring-blue-300 bg-blue-50 p-6 mb-6">
       <div className="flex items-center gap-3 mb-3">
-        <span className="w-3 h-3 rounded-full bg-emerald-500" aria-hidden />
+        <span className="w-3 h-3 rounded-full bg-blue-500" aria-hidden />
         <h2 className="text-lg font-semibold text-stone-900">
           Treasury connected
         </h2>
-        <span className="text-[10px] tracking-[0.15em] font-bold px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-900 uppercase">
+        <span className="text-[10px] tracking-[0.15em] font-bold px-2 py-0.5 rounded-full bg-blue-200 text-blue-900 uppercase">
           {chain}
         </span>
       </div>
@@ -200,7 +200,7 @@ function ConnectedState({
           href={explorerUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-emerald-700 font-semibold hover:underline"
+          className="text-blue-700 font-semibold hover:underline"
         >
           View on explorer →
         </a>
@@ -208,7 +208,7 @@ function ConnectedState({
           href={`https://app.safe.global/${chain === 'polygon' ? 'matic' : 'eth'}:${address}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-emerald-700 font-semibold hover:underline"
+          className="text-blue-700 font-semibold hover:underline"
         >
           Open in Safe →
         </a>
@@ -218,7 +218,7 @@ function ConnectedState({
           </span>
         )}
       </div>
-      <div className="mt-5 pt-5 border-t border-emerald-300">
+      <div className="mt-5 pt-5 border-t border-blue-300">
         <h3 className="text-sm font-semibold text-stone-900 mb-2">Want to disconnect?</h3>
         <TreasuryForm initialAddress={address} initialChain={chain} disconnectMode />
       </div>
@@ -229,7 +229,7 @@ function ConnectedState({
 function Step({ n, title, body }: { n: number; title: string; body: React.ReactNode }) {
   return (
     <li className="flex gap-4">
-      <span className="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 font-bold text-sm flex items-center justify-center">
+      <span className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 text-blue-800 font-bold text-sm flex items-center justify-center">
         {n}
       </span>
       <div className="flex-1 min-w-0 pt-1">

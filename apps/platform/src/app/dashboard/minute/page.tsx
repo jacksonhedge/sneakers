@@ -39,7 +39,7 @@ function fmtChange(c: number | null, samples: number): string {
 
 function changeColor(c: number | null): string {
   if (c == null) return 'text-stone-500'
-  if (c > 0.005) return 'text-emerald-400'
+  if (c > 0.005) return 'text-blue-400'
   if (c < -0.005) return 'text-red-400'
   return 'text-stone-400'
 }
@@ -67,7 +67,7 @@ function GroupCard({ group }: { group: MinuteGroup }) {
     <div className="border border-stone-800 bg-stone-950 rounded">
       <div className="flex items-center justify-between px-3 py-2 border-b border-stone-800">
         <div className="flex items-center gap-3">
-          <span className="font-mono text-emerald-400 text-sm font-bold">{group.asset ?? '—'}</span>
+          <span className="font-mono text-blue-400 text-sm font-bold">{group.asset ?? '—'}</span>
           <span className="text-stone-500 text-xs">resolves in</span>
           <span className="font-mono text-stone-100 text-sm font-semibold">
             {fmtMinutes(group.minutes_to_resolve)}
@@ -114,7 +114,7 @@ function GroupCard({ group }: { group: MinuteGroup }) {
                   {m.strike != null ? `$${m.strike.toLocaleString()}` : '—'}
                 </td>
                 <td className="text-left px-3 py-1.5 text-stone-400">{m.direction ?? '—'}</td>
-                <td className="text-right px-3 py-1.5 text-emerald-300 tabular-nums">{fmtAsk(ask)}</td>
+                <td className="text-right px-3 py-1.5 text-blue-300 tabular-nums">{fmtAsk(ask)}</td>
                 <td className={`text-right px-3 py-1.5 tabular-nums ${changeColor(m.change_5m)}`}>
                   {fmtChange(m.change_5m, m.movement_samples)}
                 </td>
@@ -153,7 +153,7 @@ export default async function MinuteMarketsPage({ searchParams }: PageProps) {
         <header className="border-b border-stone-800 px-6 py-4 sticky top-0 bg-stone-950 z-10">
           <div className="flex items-baseline justify-between">
             <div className="flex items-baseline gap-4">
-              <h1 className="text-lg font-mono font-bold tracking-wider text-emerald-400">
+              <h1 className="text-lg font-mono font-bold tracking-wider text-blue-400">
                 MINUTE MARKETS
               </h1>
               <Link href="/dashboard" className="font-mono text-xs text-stone-500 hover:text-stone-300">
@@ -180,7 +180,7 @@ export default async function MinuteMarketsPage({ searchParams }: PageProps) {
                 <Link
                   key={n}
                   href={href}
-                  className={`px-2 py-0.5 border ${active ? 'border-emerald-500 text-emerald-400 bg-emerald-500/10' : 'border-stone-700 text-stone-400 hover:text-stone-200 hover:border-stone-500'}`}
+                  className={`px-2 py-0.5 border ${active ? 'border-blue-500 text-blue-400 bg-blue-500/10' : 'border-stone-700 text-stone-400 hover:text-stone-200 hover:border-stone-500'}`}
                 >
                   {n < 60 ? `${n}m` : `${n / 60}h`}
                 </Link>
@@ -201,7 +201,7 @@ export default async function MinuteMarketsPage({ searchParams }: PageProps) {
                 <Link
                   key={a ?? 'all'}
                   href={href}
-                  className={`px-2 py-0.5 border ${active ? 'border-emerald-500 text-emerald-400 bg-emerald-500/10' : 'border-stone-700 text-stone-400 hover:text-stone-200 hover:border-stone-500'}`}
+                  className={`px-2 py-0.5 border ${active ? 'border-blue-500 text-blue-400 bg-blue-500/10' : 'border-stone-700 text-stone-400 hover:text-stone-200 hover:border-stone-500'}`}
                 >
                   {a ?? 'all'}
                 </Link>

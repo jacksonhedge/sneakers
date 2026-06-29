@@ -41,7 +41,7 @@ const MOCK_MEMBERS: MockMember[] = [
 ]
 
 const STATUS_PILL: Record<MockStatus, { label: string; cls: string }> = {
-  accepted: { label: 'ACCEPTED', cls: 'bg-emerald-100 text-emerald-800 ring-emerald-300' },
+  accepted: { label: 'ACCEPTED', cls: 'bg-blue-100 text-blue-800 ring-blue-300' },
   pending: { label: 'PENDING', cls: 'bg-amber-100 text-amber-800 ring-amber-300' },
   sent: { label: 'SENT', cls: 'bg-stone-100 text-stone-700 ring-stone-300' },
 }
@@ -62,7 +62,7 @@ export default function ChapterPreviewPage() {
   return (
     <main className="min-h-screen bg-stone-50 text-stone-900">
       {/* Sticky preview banner */}
-      <div className="sticky top-0 z-30 bg-emerald-500 text-black border-b border-emerald-600/40">
+      <div className="sticky top-0 z-30 bg-blue-600 text-white border-b border-blue-600/40">
         <div className="max-w-5xl mx-auto px-6 py-2.5 flex items-center justify-between gap-4 flex-wrap">
           <div className="text-xs font-semibold flex items-center gap-2">
             <span aria-hidden>👀</span>
@@ -72,7 +72,7 @@ export default function ChapterPreviewPage() {
           </div>
           <Link
             href="/"
-            className="text-[11px] font-bold tracking-wider bg-stone-950 text-emerald-300 px-3 py-1.5 rounded-full hover:bg-stone-900 transition whitespace-nowrap"
+            className="text-[11px] font-bold tracking-wider bg-stone-950 text-blue-300 px-3 py-1.5 rounded-full hover:bg-stone-900 transition whitespace-nowrap"
           >
             START YOUR CHAPTER →
           </Link>
@@ -90,7 +90,7 @@ export default function ChapterPreviewPage() {
         {/* Org header — mirrors real /dashboard/org chrome */}
         <div className="mt-6 mb-6 flex items-start justify-between gap-6 flex-wrap">
           <div>
-            <div className="text-xs text-emerald-700 tracking-wider font-semibold mb-2">
+            <div className="text-xs text-blue-700 tracking-wider font-semibold mb-2">
               CAPTAIN · ORGANIZATION
             </div>
             <h1 className="text-3xl font-bold tracking-tight">Beta Theta Pi</h1>
@@ -104,8 +104,8 @@ export default function ChapterPreviewPage() {
             </div>
           </div>
           <div className="flex flex-col items-end">
-            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 ring-1 ring-emerald-300 text-[10px] font-bold tracking-wider">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 ring-1 ring-blue-300 text-[10px] font-bold tracking-wider">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
               ACTIVE
             </span>
             <div className="mt-2 text-[11px] text-stone-500 tracking-wider">
@@ -123,7 +123,7 @@ export default function ChapterPreviewPage() {
                 aria-current={t.active ? 'page' : undefined}
                 className={`px-4 py-2.5 text-sm font-semibold tracking-wider border-b-2 -mb-[2px] ${
                   t.active
-                    ? 'border-emerald-600 text-emerald-700'
+                    ? 'border-blue-600 text-blue-700'
                     : 'border-transparent text-stone-400'
                 }`}
               >
@@ -295,7 +295,7 @@ export default function ChapterPreviewPage() {
 
         {/* Bottom conversion CTA */}
         <div className="mt-12 rounded-2xl bg-stone-950 text-white p-8 text-center">
-          <div className="text-xs tracking-[0.2em] text-emerald-300/80 font-semibold mb-2">
+          <div className="text-xs tracking-[0.2em] text-blue-300/80 font-semibold mb-2">
             READY TO DO THIS FOR REAL?
           </div>
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
@@ -308,7 +308,7 @@ export default function ChapterPreviewPage() {
           </p>
           <Link
             href="/"
-            className="mt-5 inline-block rounded-full bg-emerald-500 text-black font-bold px-8 py-3 tracking-wider hover:bg-emerald-400 transition"
+            className="mt-5 inline-block rounded-full bg-blue-600 text-white font-bold px-8 py-3 tracking-wider hover:bg-blue-400 transition"
           >
             START YOUR CHAPTER →
           </Link>

@@ -116,7 +116,7 @@ export function NewSourceForm() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="text-xs px-3 py-1.5 tracking-wider border border-[#00703c] text-[#00703c] hover:bg-emerald-50"
+        className="text-xs px-3 py-1.5 tracking-wider border border-[#00703c] text-[#00703c] hover:bg-blue-50"
       >
         + ADD SOURCE
       </button>
@@ -164,7 +164,7 @@ export function NewSourceForm() {
             type="button"
             onClick={fetchUrl}
             disabled={fetching || !url.trim()}
-            className="text-xs px-4 py-1.5 tracking-wider border border-[#00703c] text-[#00703c] hover:bg-emerald-50 disabled:opacity-50"
+            className="text-xs px-4 py-1.5 tracking-wider border border-[#00703c] text-[#00703c] hover:bg-blue-50 disabled:opacity-50"
           >
             {fetching ? 'FETCHING…' : 'FETCH'}
           </button>
@@ -223,7 +223,7 @@ export function NewSourceForm() {
             type="button"
             onClick={suggestKeywords}
             disabled={suggesting || (!label.trim() && !content.trim())}
-            className="text-[10px] px-2 py-0.5 tracking-wider border border-[#00703c] text-[#00703c] hover:bg-emerald-50 disabled:opacity-50"
+            className="text-[10px] px-2 py-0.5 tracking-wider border border-[#00703c] text-[#00703c] hover:bg-blue-50 disabled:opacity-50"
             title="Use Claude to suggest keywords from label + content"
           >
             {suggesting ? 'SUGGESTING…' : '✨ SUGGEST'}
@@ -244,7 +244,7 @@ export function NewSourceForm() {
           <span
             className={`text-[10px] px-2 py-1 border ${
               result.ok
-                ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                ? 'bg-blue-50 text-blue-800 border-blue-200'
                 : 'bg-red-50 text-red-800 border-red-200'
             }`}
           >

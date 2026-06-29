@@ -89,7 +89,7 @@ export function TreasuryForm({ initialAddress, initialChain, disconnectMode }: P
           maxLength={42}
           spellCheck={false}
           autoComplete="off"
-          className="w-full px-3 py-2.5 text-sm border border-stone-300 rounded font-mono focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-500"
+          className="w-full px-3 py-2.5 text-sm border border-stone-300 rounded font-mono focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500"
         />
         <div className="mt-1 text-[11px] text-stone-500">
           Starts with 0x, followed by 40 hex characters. Copy from app.safe.global.
@@ -107,7 +107,7 @@ export function TreasuryForm({ initialAddress, initialChain, disconnectMode }: P
           id="safe-chain"
           value={chain}
           onChange={(e) => setChain(e.target.value)}
-          className="w-full px-3 py-2.5 text-sm border border-stone-300 rounded focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-500 bg-white"
+          className="w-full px-3 py-2.5 text-sm border border-stone-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 bg-white"
         >
           {CHAINS.map((c) => (
             <option key={c.value} value={c.value}>
@@ -126,7 +126,7 @@ export function TreasuryForm({ initialAddress, initialChain, disconnectMode }: P
       <button
         type="submit"
         disabled={status === 'submitting' || !address}
-        className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-stone-300 disabled:cursor-not-allowed text-white text-sm font-semibold tracking-wider px-6 py-3 rounded transition"
+        className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-stone-300 disabled:cursor-not-allowed text-white text-sm font-semibold tracking-wider px-6 py-3 rounded transition"
       >
         {status === 'submitting' ? 'Saving…' : 'Connect Treasury →'}
       </button>

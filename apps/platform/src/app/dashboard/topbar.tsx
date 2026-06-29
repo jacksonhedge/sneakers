@@ -35,7 +35,7 @@ export function DashboardTopbar({
       <div className="flex items-center gap-5 px-8 py-4">
         {/* Brand */}
         <Link href="/dashboard" className="flex items-center gap-2.5 shrink-0">
-          <div className="w-9 h-9 rounded-full bg-stone-950 flex items-center justify-center ring-1 ring-emerald-400/30 shadow-sm overflow-hidden p-1.5">
+          <div className="w-9 h-9 rounded-full bg-stone-950 flex items-center justify-center ring-1 ring-blue-400/30 shadow-sm overflow-hidden p-1.5">
             <Image
               src="/logo.png"
               alt="Sneakers"

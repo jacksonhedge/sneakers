@@ -65,7 +65,7 @@ export function AccountTypeSwitcher({ initial }: { initial: AccountType }) {
         </div>
       )}
       {saved && !error && (
-        <div className="mt-4 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded px-3 py-2">
+        <div className="mt-4 text-xs text-blue-700 bg-blue-50 border border-blue-200 rounded px-3 py-2">
           Account type updated. New tier options will appear on the billing page.
         </div>
       )}

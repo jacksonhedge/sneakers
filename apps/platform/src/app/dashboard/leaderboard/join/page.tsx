@@ -38,7 +38,7 @@ export default async function LeaderboardJoinPage() {
   if (status !== 'approved') {
     return (
       <div className="max-w-xl mx-auto py-16 px-6 text-stone-900">
-        <div className="text-[10px] tracking-[0.15em] text-emerald-700 font-semibold mb-3">
+        <div className="text-[10px] tracking-[0.15em] text-blue-700 font-semibold mb-3">
           COLLEGE LEADERBOARD
         </div>
         <h1 className="text-2xl font-bold mb-3">Verify your student status first.</h1>
@@ -49,7 +49,7 @@ export default async function LeaderboardJoinPage() {
         </p>
         <Link
           href="/students"
-          className="inline-block bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold tracking-wider px-6 py-3 rounded transition"
+          className="inline-block bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold tracking-wider px-6 py-3 rounded transition"
         >
           VERIFY STUDENT STATUS →
         </Link>
@@ -66,7 +66,7 @@ export default async function LeaderboardJoinPage() {
   // Verified — show the form.
   return (
     <div className="max-w-xl mx-auto py-16 px-6 text-stone-900">
-      <div className="text-[10px] tracking-[0.15em] text-emerald-700 font-semibold mb-3">
+      <div className="text-[10px] tracking-[0.15em] text-blue-700 font-semibold mb-3">
         COLLEGE LEADERBOARD
       </div>
       <h1 className="text-2xl font-bold mb-3">Join the board.</h1>

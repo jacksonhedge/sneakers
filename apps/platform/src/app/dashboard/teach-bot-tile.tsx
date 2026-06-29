@@ -69,7 +69,7 @@ const BOT_TRAINING_FEED: FeedItem[] = [
 
 const KIND_META: Record<FeedItemKind, { label: string; emoji: string; cls: string }> = {
   tweet: { label: 'TWEET', emoji: '𝕏', cls: 'bg-stone-900 text-white' },
-  article: { label: 'ARTICLE', emoji: '✎', cls: 'bg-emerald-100 text-emerald-800 ring-1 ring-emerald-200' },
+  article: { label: 'ARTICLE', emoji: '✎', cls: 'bg-blue-100 text-blue-800 ring-1 ring-blue-200' },
   video: { label: 'VIDEO', emoji: '▶', cls: 'bg-rose-100 text-rose-800 ring-1 ring-rose-200' },
 }
 
@@ -100,7 +100,7 @@ export function TeachBotTile() {
         <span>Tweets · articles · walkthroughs to sharpen your prompt + strategy.</span>
         <Link
           href="/dashboard/settings/otoole"
-          className="text-emerald-700 font-semibold hover:underline whitespace-nowrap"
+          className="text-blue-700 font-semibold hover:underline whitespace-nowrap"
         >
           STRATEGY →
         </Link>

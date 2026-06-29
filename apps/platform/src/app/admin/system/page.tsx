@@ -52,7 +52,7 @@ export default async function SystemPage() {
                   <td className="px-3 py-2 font-mono text-stone-900">{r.name}</td>
                   <td className="px-3 py-2">
                     {r.set ? (
-                      <span className="text-emerald-700">✓ set</span>
+                      <span className="text-blue-700">✓ set</span>
                     ) : (
                       <span className="text-red-700">✗ missing</span>
                     )}

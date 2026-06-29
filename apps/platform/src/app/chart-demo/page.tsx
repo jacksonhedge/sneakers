@@ -124,15 +124,15 @@ export default function ChartDemoPage() {
     <main className="min-h-screen bg-stone-50 text-stone-900 px-6 py-10">
       <div className="max-w-5xl mx-auto space-y-12">
         <header className="space-y-3">
-          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold tracking-wider">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[10px] font-bold tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
             CHART V2 PROTOTYPE
           </div>
           <h1 className="text-3xl font-bold tracking-tight">Robinhood-style charts — V2 polish</h1>
           <p className="text-sm text-stone-600 max-w-2xl leading-relaxed">
             Side-by-side comparison of the existing chart and the V2 polish
             pass: pulsing endpoint dot, end-of-line glow, auto-scaled Y
-            domain, tighter gradient, magnetic crosshair, brand-emerald
+            domain, tighter gradient, magnetic crosshair, brand-blue
             up-color, and a bottom volume band when data carries volume.
             Every scenario ticks live — new point every {tickInterval}ms —
             so the line visibly extends and the heartbeat keeps pulsing.
@@ -189,7 +189,7 @@ export default function ChartDemoPage() {
         <section className="space-y-3">
           <SectionHeader
             title="Scenario B · Big move 18¢ → 65¢-ish, still climbing"
-            note="V2's endpoint glow + brand emerald should pop. Volume bars show liquidity per period."
+            note="V2's endpoint glow + brand blue should pop. Volume bars show liquidity per period."
           />
           <Compare>
             <Pane label="Original">
@@ -266,7 +266,7 @@ export default function ChartDemoPage() {
         </section>
 
         <footer className="border-t border-stone-200 pt-4 text-[11px] text-stone-500 max-w-3xl">
-          V2 polish: <span className="font-semibold">brand emerald #00703c up-color</span> ·
+          V2 polish: <span className="font-semibold">brand blue #00703c up-color</span> ·
           autoscaled Y with 12% padding · pulsing endpoint dot (1.5s halo +
           1.5s dot) · end-of-line radial glow · tighter gradient ramp
           (28→10→2→0%) · magnetic crosshair · optional touch haptic ·

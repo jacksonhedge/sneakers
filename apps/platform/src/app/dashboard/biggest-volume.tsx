@@ -133,7 +133,7 @@ export function BiggestVolume({
                   {typeof m.change24h === 'number' && m.change24h !== 0 && (
                     <div
                       className={`text-[10px] font-semibold font-mono tabular-nums tracking-tight flex items-center gap-0.5 ${
-                        m.change24h > 0 ? 'text-emerald-600' : 'text-red-600'
+                        m.change24h > 0 ? 'text-blue-600' : 'text-red-600'
                       }`}
                       title="24h change in implied probability"
                     >

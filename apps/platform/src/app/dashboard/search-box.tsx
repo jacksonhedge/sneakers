@@ -51,7 +51,7 @@ export function DashboardSearchBox() {
 
   return (
     <form onSubmit={submit} className="flex-1 max-w-xl">
-      <div className="flex items-center gap-2 bg-stone-100 rounded-full px-4 py-2 text-sm text-stone-700 hover:bg-stone-200/60 focus-within:bg-white focus-within:ring-1 focus-within:ring-emerald-400/50 transition">
+      <div className="flex items-center gap-2 bg-stone-100 rounded-full px-4 py-2 text-sm text-stone-700 hover:bg-stone-200/60 focus-within:bg-white focus-within:ring-1 focus-within:ring-blue-400/50 transition">
         <span className="text-base shrink-0" aria-hidden>⌕</span>
         <input
           ref={inputRef}

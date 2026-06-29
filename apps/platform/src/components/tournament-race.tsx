@@ -71,16 +71,16 @@ export function TournamentRace({
   return (
     <div className="space-y-4">
       {isAutobot && (
-        <div className="rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-4 py-3 flex items-center gap-3 shadow-md">
+        <div className="rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-3 flex items-center gap-3 shadow-md">
           <span className="text-2xl leading-none" aria-hidden>🤖</span>
           <div className="flex-1 min-w-0">
-            <div className="text-[10px] font-bold tracking-[0.2em] text-emerald-100 uppercase">
+            <div className="text-[10px] font-bold tracking-[0.2em] text-blue-100 uppercase">
               Auto-Bot Round
             </div>
             <div className="font-bold text-sm leading-tight">
               O&apos;Toole is racing this one for you
             </div>
-            <div className="text-[11px] text-emerald-100 mt-0.5 leading-snug">
+            <div className="text-[11px] text-blue-100 mt-0.5 leading-snug">
               Manual buttons are off. Watch the strategy unfold; if you want to take
               the wheel, switch to a MANUAL round in the lobby.
             </div>
@@ -146,7 +146,7 @@ function ScoreBar({
   isAutobot: boolean
 }) {
   const isUp = returnPct >= 0
-  const tone = isUp ? 'text-emerald-700' : 'text-red-700'
+  const tone = isUp ? 'text-blue-700' : 'text-red-700'
   return (
     <div className="rounded-2xl bg-stone-900 text-white p-4 flex items-center gap-6 flex-wrap">
       <Stat
@@ -248,7 +248,7 @@ function StrikeLane({
         />
         {/* Start gate */}
         <div className="absolute top-1 bottom-1 w-px bg-stone-300 opacity-60" style={{ left: '7%' }} aria-hidden />
-        {/* Finish line — dashed emerald */}
+        {/* Finish line — dashed blue */}
         <div
           className="absolute top-1 bottom-1 w-px"
           style={{
@@ -354,13 +354,13 @@ function SidePanel({
 }) {
   const isYes = side === 'yes'
   const headerCls = isYes
-    ? 'bg-emerald-50 text-emerald-800'
+    ? 'bg-blue-50 text-blue-800'
     : 'bg-rose-50 text-rose-800'
   const buyCls = isYes
-    ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+    ? 'bg-blue-600 text-white hover:bg-blue-700'
     : 'bg-rose-600 text-white hover:bg-rose-700'
   const sellCls = 'border border-stone-300 text-stone-700 hover:bg-stone-50'
-  const pnlTone = pnl > 0.01 ? 'text-emerald-700' : pnl < -0.01 ? 'text-red-700' : 'text-stone-700'
+  const pnlTone = pnl > 0.01 ? 'text-blue-700' : pnl < -0.01 ? 'text-red-700' : 'text-stone-700'
 
   return (
     <div className="p-3 space-y-2">
@@ -392,7 +392,7 @@ function SidePanel({
       )}
       <div className="flex gap-1.5">
         {isAutobot ? (
-          <div className="flex-1 text-[10px] tracking-wider font-bold px-2 py-1.5 rounded bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200 inline-flex items-center justify-center gap-1">
+          <div className="flex-1 text-[10px] tracking-wider font-bold px-2 py-1.5 rounded bg-blue-50 text-blue-800 ring-1 ring-blue-200 inline-flex items-center justify-center gap-1">
             <span aria-hidden>🤖</span>
             <span>O&apos;TOOLE DRIVING</span>
           </div>

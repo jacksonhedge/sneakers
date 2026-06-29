@@ -66,7 +66,7 @@ export function BigMovers({
             Markets that surged 40+ points into near-consensus territory —{' '}
             <Link
               href="/dashboard/billing"
-              className="text-emerald-600 font-semibold hover:underline"
+              className="text-blue-600 font-semibold hover:underline"
             >
               Upgrade to Pro →
             </Link>
@@ -119,7 +119,7 @@ export function BigMovers({
                     <span className="text-[10px] text-stone-300">—</span>
                   )}
                 </div>
-                <div className="text-xs font-semibold text-emerald-600 font-mono tabular-nums tracking-tight text-right">
+                <div className="text-xs font-semibold text-blue-600 font-mono tabular-nums tracking-tight text-right">
                   <Price value={m.currentProb} />
                 </div>
                 <div className="text-xs font-semibold text-amber-600 font-mono tabular-nums tracking-tight text-right">

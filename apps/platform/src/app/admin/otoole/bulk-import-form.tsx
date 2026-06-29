@@ -200,7 +200,7 @@ export function BulkImportForm() {
           <span
             className={`text-[10px] px-2 py-1 border ${
               topMsg.ok
-                ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                ? 'bg-blue-50 text-blue-800 border-blue-200'
                 : 'bg-red-50 text-red-800 border-red-200'
             }`}
           >
@@ -214,7 +214,7 @@ export function BulkImportForm() {
             type="button"
             onClick={fetchAll}
             disabled={fetching || creating || !urlsText.trim()}
-            className="text-xs px-4 py-1.5 tracking-wider border border-[#00703c] text-[#00703c] hover:bg-emerald-50 disabled:opacity-50"
+            className="text-xs px-4 py-1.5 tracking-wider border border-[#00703c] text-[#00703c] hover:bg-blue-50 disabled:opacity-50"
           >
             {fetching ? 'FETCHING…' : 'FETCH ALL'}
           </button>
@@ -272,7 +272,7 @@ function BulkRow({ row, onToggle }: { row: Row; onToggle: () => void }) {
         )
       case 'created':
         return (
-          <span className="text-[10px] tracking-wider px-1.5 py-0.5 bg-emerald-100 text-emerald-800 ring-1 ring-emerald-300">
+          <span className="text-[10px] tracking-wider px-1.5 py-0.5 bg-blue-100 text-blue-800 ring-1 ring-blue-300">
             CREATED
           </span>
         )
@@ -324,7 +324,7 @@ function BulkRow({ row, onToggle }: { row: Row; onToggle: () => void }) {
           className={`px-3 py-1 text-[10px] border-t ${
             row.status === 'failed'
               ? 'bg-red-50 text-red-800 border-red-200'
-              : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+              : 'bg-blue-50 text-blue-800 border-blue-200'
           }`}
         >
           {row.statusMsg}

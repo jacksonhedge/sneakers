@@ -93,7 +93,7 @@ function renderTokens(tokens: Token[], lineKey: string): ReactNode[] {
           key={k}
           href={t.href!}
           prefetch={false}
-          className="text-emerald-700 hover:text-emerald-800 underline underline-offset-2 decoration-emerald-300 hover:decoration-emerald-500"
+          className="text-blue-700 hover:text-blue-800 underline underline-offset-2 decoration-blue-300 hover:decoration-blue-500"
         >
           {t.body}
         </Link>

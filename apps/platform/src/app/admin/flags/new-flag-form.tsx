@@ -68,7 +68,7 @@ export function NewFlagForm() {
             type="checkbox"
             checked={value}
             onChange={(e) => setValue(e.target.checked)}
-            className="w-4 h-4 rounded border-stone-300 text-emerald-600 focus:ring-emerald-400/40"
+            className="w-4 h-4 rounded border-stone-300 text-blue-600 focus:ring-blue-400/40"
           />
           <span>start ON</span>
         </label>
@@ -84,7 +84,7 @@ export function NewFlagForm() {
         <div
           className={`text-xs px-3 py-1.5 inline-block ${
             result.ok
-              ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+              ? 'bg-blue-50 text-blue-800 border border-blue-200'
               : 'bg-red-50 text-red-800 border border-red-200'
           }`}
         >

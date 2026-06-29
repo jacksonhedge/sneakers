@@ -235,13 +235,13 @@ export default async function AdminOverview() {
             {scraperHealth.map((h) => {
               const status = statusFor(h)
               const cls = {
-                live: 'border-emerald-400 bg-emerald-50',
+                live: 'border-blue-400 bg-blue-50',
                 lagging: 'border-amber-400 bg-amber-50',
                 stale: 'border-orange-400 bg-orange-50',
                 dead: 'border-red-400 bg-red-50',
               }[status]
               const dotCls = {
-                live: 'bg-emerald-500 animate-pulse',
+                live: 'bg-blue-500 animate-pulse',
                 lagging: 'bg-amber-500 animate-pulse',
                 stale: 'bg-orange-500',
                 dead: 'bg-red-500',
@@ -324,7 +324,7 @@ export default async function AdminOverview() {
               <div className="text-[10px] text-stone-500 tracking-wider">STATUS BREAKDOWN</div>
               <Link
                 href="/enterprise"
-                className="text-xs text-emerald-700 hover:underline tracking-wider"
+                className="text-xs text-blue-700 hover:underline tracking-wider"
               >
                 VIEW ALL →
               </Link>
@@ -348,27 +348,27 @@ export default async function AdminOverview() {
               </span>
               <span className="text-stone-600">
                 Closed-won:{' '}
-                <span className="text-emerald-700 font-bold tabular-nums">
+                <span className="text-blue-700 font-bold tabular-nums">
                   ${wonTotal.toLocaleString()}
                 </span>
               </span>
             </div>
           </div>
 
-          <div className="border-2 border-emerald-400/60 bg-emerald-50/50 p-4">
+          <div className="border-2 border-blue-400/60 bg-blue-50/50 p-4">
             <div className="flex items-baseline justify-between mb-2">
-              <div className="text-[10px] text-emerald-800 tracking-wider font-semibold">
+              <div className="text-[10px] text-blue-800 tracking-wider font-semibold">
                 🖥️ HARDWARE REQUESTS
               </div>
             </div>
-            <div className="text-3xl font-bold text-emerald-800 tabular-nums">
+            <div className="text-3xl font-bold text-blue-800 tabular-nums">
               {hardwareRequests.length}
             </div>
-            <div className="text-[11px] text-emerald-800/70 mt-1">
+            <div className="text-[11px] text-blue-800/70 mt-1">
               Prospects asking for Mac Studio / MacBook Pro bundles
             </div>
             {hardwareRequests.length > 0 && (
-              <div className="mt-3 pt-3 border-t border-emerald-200/60 text-[11px] text-emerald-900 space-y-1">
+              <div className="mt-3 pt-3 border-t border-blue-200/60 text-[11px] text-blue-900 space-y-1">
                 {(() => {
                   const byFactor: Record<string, number> = {}
                   for (const r of hardwareRequests) {
@@ -385,7 +385,7 @@ export default async function AdminOverview() {
               </div>
             )}
             {hardwareRequests.length === 0 && enterprise.length === 0 && (
-              <div className="text-[11px] text-emerald-800/60 mt-3">
+              <div className="text-[11px] text-blue-800/60 mt-3">
                 Awaiting first Enterprise inquiry. Form at /pricing → Contact Sales.
               </div>
             )}

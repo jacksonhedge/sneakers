@@ -182,7 +182,7 @@ export function RuleForm({ existing, pushAvailable }: Props) {
                 onClick={() => setTriggerType(opt.value)}
                 className={`text-left rounded border p-3 transition ${
                   active
-                    ? 'border-emerald-500 ring-1 ring-emerald-200 bg-emerald-50'
+                    ? 'border-blue-500 ring-1 ring-blue-200 bg-blue-50'
                     : 'border-stone-200 bg-white hover:border-stone-300'
                 }`}
               >

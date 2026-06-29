@@ -29,7 +29,7 @@ export function AutotradeWaitlistForm() {
 
   if (status === 'done') {
     return (
-      <div className="rounded border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+      <div className="rounded border border-blue-300 bg-blue-50 px-4 py-3 text-sm text-blue-800">
         ✓ You&apos;re on the list. We&apos;ll email when the first Polymarket-integrated
         rules go live.
       </div>
@@ -42,7 +42,7 @@ export function AutotradeWaitlistForm() {
         type="button"
         onClick={submit}
         disabled={status === 'submitting'}
-        className="inline-flex items-center gap-2 rounded-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-stone-300 disabled:cursor-not-allowed text-white text-sm font-semibold tracking-wider px-6 py-3 transition"
+        className="inline-flex items-center gap-2 rounded-full bg-blue-600 hover:bg-blue-500 disabled:bg-stone-300 disabled:cursor-not-allowed text-white text-sm font-semibold tracking-wider px-6 py-3 transition"
       >
         {status === 'submitting' ? 'Adding…' : 'Add me to the autotrade waitlist →'}
       </button>

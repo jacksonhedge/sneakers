@@ -37,7 +37,7 @@ type ChipKey = 'live_flowing' | 'live_stale' | 'coming_soon' | 'requested_freque
 const STATUS_CHIP: Record<ChipKey, { label: string; cls: string }> = {
   live_flowing: {
     label: 'LIVE',
-    cls: 'bg-emerald-500 text-white ring-emerald-400/60 shadow-sm shadow-emerald-500/30',
+    cls: 'bg-blue-500 text-white ring-blue-400/60 shadow-sm shadow-blue-500/30',
   },
   live_stale: {
     label: 'NO DATA',
@@ -163,11 +163,11 @@ export function ConnectionsGrid({
           <div className="text-[10px] text-stone-400 tracking-[0.15em] font-semibold">
             LIVE PRICES FLOWING
           </div>
-          <div className="text-2xl font-bold text-emerald-600 tabular-nums inline-flex items-center gap-2">
+          <div className="text-2xl font-bold text-blue-600 tabular-nums inline-flex items-center gap-2">
             {counts.connectedLive}
             {counts.connectedLive > 0 && (
               <span
-                className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"
+                className="inline-block w-2 h-2 rounded-full bg-blue-500 animate-pulse"
                 aria-hidden
               />
             )}

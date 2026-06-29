@@ -40,7 +40,7 @@ export interface PricingTableViewer {
 
 const ACCENT: Record<string, { ring: string; bg: string; text: string; btn: string }> = {
   stone:   { ring: 'ring-stone-300',     bg: 'bg-stone-50',         text: 'text-stone-700',     btn: 'bg-stone-800 hover:bg-stone-900 text-white' },
-  emerald: { ring: 'ring-[#00703c]/40',  bg: 'bg-[#00703c]/5',      text: 'text-[#004225]',     btn: 'bg-[#00703c] hover:bg-[#004225] text-white' },
+  blue: { ring: 'ring-[#00703c]/40',  bg: 'bg-[#00703c]/5',      text: 'text-[#004225]',     btn: 'bg-[#00703c] hover:bg-[#004225] text-white' },
   amber:   { ring: 'ring-amber-400/40',  bg: 'bg-amber-50',         text: 'text-amber-800',     btn: 'bg-amber-600 hover:bg-amber-700 text-white' },
   violet:  { ring: 'ring-violet-400/40', bg: 'bg-violet-50',        text: 'text-violet-800',    btn: 'bg-violet-700 hover:bg-violet-800 text-white' },
   sky:     { ring: 'ring-sky-400/40',    bg: 'bg-sky-50',           text: 'text-sky-800',       btn: 'bg-sky-700 hover:bg-sky-800 text-white' },
@@ -140,7 +140,7 @@ export function PricingTable({ viewer, hideCurrentPlanStrip }: Props) {
               : 'bg-white text-stone-700 border-stone-300 hover:bg-stone-50'
           } -ml-3`}
         >
-          ANNUAL <span className="text-emerald-400 ml-1">SAVE ~17%</span>
+          ANNUAL <span className="text-blue-400 ml-1">SAVE ~17%</span>
         </button>
       </div>
 
@@ -176,7 +176,7 @@ export function PricingTable({ viewer, hideCurrentPlanStrip }: Props) {
 
       {/* Student-discount badge */}
       {viewer?.studentDiscountApproved && (
-        <div className="rounded border border-emerald-200 bg-emerald-50 text-emerald-800 px-4 py-2 text-xs">
+        <div className="rounded border border-blue-200 bg-blue-50 text-blue-800 px-4 py-2 text-xs">
           ✓ 75% student discount will be applied at checkout for Pro and Elite.
         </div>
       )}
@@ -306,7 +306,7 @@ function PricingColumn({
               </span>
             </div>
             {interval === 'yearly' && savings > 0 && (
-              <div className="text-[11px] text-emerald-700 mt-1">
+              <div className="text-[11px] text-blue-700 mt-1">
                 Save ${savings}/yr · ≈ ${Math.round(plan.priceYearly! / 12)}/mo
               </div>
             )}
@@ -317,7 +317,7 @@ function PricingColumn({
       <ul className="space-y-2 text-xs text-stone-700 mb-6 flex-1">
         {plan.highlights.map((h) => (
           <li key={h} className="flex items-start gap-2">
-            <span className="text-emerald-600 mt-0.5">✓</span>
+            <span className="text-blue-600 mt-0.5">✓</span>
             <span>{h}</span>
           </li>
         ))}

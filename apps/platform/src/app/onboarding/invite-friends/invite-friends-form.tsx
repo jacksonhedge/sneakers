@@ -89,8 +89,8 @@ export function InviteFriendsForm({
   return (
     <div className="space-y-6">
       {/* Referral link card — always visible. */}
-      <div className="border border-emerald-400/30 bg-emerald-500/5 rounded p-4 space-y-2">
-        <div className="text-[10px] tracking-[0.15em] text-emerald-300/80 font-semibold">
+      <div className="border border-blue-400/30 bg-blue-500/5 rounded p-4 space-y-2">
+        <div className="text-[10px] tracking-[0.15em] text-blue-300/80 font-semibold">
           YOUR LINK · NO LIMIT, SHARE EVERYWHERE
         </div>
         <div className="flex items-center gap-2">
@@ -100,7 +100,7 @@ export function InviteFriendsForm({
           <button
             type="button"
             onClick={copyLink}
-            className="text-[11px] tracking-wider text-black bg-emerald-400 hover:bg-emerald-300 px-3 py-2 rounded transition"
+            className="text-[11px] tracking-wider text-white bg-blue-500 hover:bg-blue-400 px-3 py-2 rounded transition"
           >
             {copied ? 'COPIED ✓' : 'COPY'}
           </button>
@@ -115,7 +115,7 @@ export function InviteFriendsForm({
         }}
         className="space-y-3"
       >
-        <div className="text-[10px] tracking-[0.15em] text-emerald-300/80 font-semibold">
+        <div className="text-[10px] tracking-[0.15em] text-blue-300/80 font-semibold">
           OR EMAIL UP TO {MAX_INVITES} FRIENDS
         </div>
         <div className="space-y-2">
@@ -127,7 +127,7 @@ export function InviteFriendsForm({
               value={value}
               onChange={(e) => setSlot(i, e.target.value)}
               autoComplete="off"
-              className="w-full bg-black/40 border border-white/20 text-white px-4 py-2.5 rounded focus:outline-none focus:border-emerald-400 placeholder:text-white/30 transition text-sm"
+              className="w-full bg-black/40 border border-white/20 text-white px-4 py-2.5 rounded focus:outline-none focus:border-blue-400 placeholder:text-white/30 transition text-sm"
             />
           ))}
         </div>
@@ -136,7 +136,7 @@ export function InviteFriendsForm({
           <button
             type="submit"
             disabled={busy || filled === 0}
-            className="inline-block border border-emerald-400 bg-emerald-500 text-black font-semibold px-6 py-3 hover:bg-emerald-400 hover:border-emerald-300 transition disabled:opacity-50 tracking-wider"
+            className="inline-block border border-blue-400 bg-blue-600 text-white font-semibold px-6 py-3 hover:bg-blue-400 hover:border-blue-300 transition disabled:opacity-50 tracking-wider"
           >
             {busy ? 'SAVING…' : `INVITE ${filled} →`}
           </button>

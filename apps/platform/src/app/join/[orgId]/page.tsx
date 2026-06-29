@@ -60,16 +60,16 @@ export default async function JoinPage({
 
   return (
     <main className="relative min-h-screen overflow-hidden text-white bg-stone-950">
-      {/* Subtle emerald glow */}
+      {/* Subtle blue glow */}
       <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 w-[600px] h-[600px] rounded-full bg-emerald-500/15 blur-[100px] pointer-events-none"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 w-[600px] h-[600px] rounded-full bg-blue-500/15 blur-[100px] pointer-events-none"
         aria-hidden
       />
 
       <nav className="relative z-10 px-6 py-5 flex items-center justify-between">
         <Link
           href="/"
-          className="text-xs text-emerald-300/80 tracking-wider hover:text-emerald-300 transition"
+          className="text-xs text-blue-300/80 tracking-wider hover:text-blue-300 transition"
         >
           ← SNEAKERS TERMINAL
         </Link>
@@ -80,9 +80,9 @@ export default async function JoinPage({
 
       <div className="relative z-10 flex items-center justify-center px-6 py-10 min-h-[calc(100vh-64px)]">
         <div className="w-full max-w-md">
-          <div className="rounded-2xl bg-stone-950/70 backdrop-blur-xl ring-1 ring-emerald-400/30 shadow-[0_24px_72px_rgba(0,0,0,0.6),0_0_64px_rgba(16,185,129,0.12)] p-7 md:p-8">
+          <div className="rounded-2xl bg-stone-950/70 backdrop-blur-xl ring-1 ring-blue-400/30 shadow-[0_24px_72px_rgba(0,0,0,0.6),0_0_64px_rgba(16,185,129,0.12)] p-7 md:p-8">
             <div className="flex flex-col items-center text-center mb-6">
-              <div className="rounded-full bg-stone-950 p-3 ring-1 ring-emerald-400/40 shadow-[0_0_32px_rgba(16,185,129,0.25)] mb-4">
+              <div className="rounded-full bg-stone-950 p-3 ring-1 ring-blue-400/40 shadow-[0_0_32px_rgba(16,185,129,0.25)] mb-4">
                 <Image
                   src="/logo.png"
                   alt="Sneakers"
@@ -91,7 +91,7 @@ export default async function JoinPage({
                   priority
                 />
               </div>
-              <div className="text-[10px] tracking-[0.2em] text-emerald-300/80 font-semibold mb-1">
+              <div className="text-[10px] tracking-[0.2em] text-blue-300/80 font-semibold mb-1">
                 YOU&apos;RE INVITED TO
               </div>
               <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
@@ -126,7 +126,7 @@ export default async function JoinPage({
               Already in?{' '}
               <Link
                 href={`/login`}
-                className="text-emerald-300/90 hover:text-emerald-300 underline underline-offset-4"
+                className="text-blue-300/90 hover:text-blue-300 underline underline-offset-4"
               >
                 Sign in to your existing account
               </Link>
@@ -160,14 +160,14 @@ function InvalidInviteCard({ reason }: { reason: 'bad-format' | 'not-found' }) {
   return (
     <main className="relative min-h-screen overflow-hidden text-white bg-stone-950">
       <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 w-[600px] h-[600px] rounded-full bg-emerald-500/15 blur-[100px] pointer-events-none"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 w-[600px] h-[600px] rounded-full bg-blue-500/15 blur-[100px] pointer-events-none"
         aria-hidden
       />
 
       <nav className="relative z-10 px-6 py-5 flex items-center justify-between">
         <Link
           href="/"
-          className="text-xs text-emerald-300/80 tracking-wider hover:text-emerald-300 transition"
+          className="text-xs text-blue-300/80 tracking-wider hover:text-blue-300 transition"
         >
           ← SNEAKERS TERMINAL
         </Link>
@@ -195,7 +195,7 @@ function InvalidInviteCard({ reason }: { reason: 'bad-format' | 'not-found' }) {
             <div className="space-y-2">
               <Link
                 href="/"
-                className="block w-full text-center rounded-full bg-emerald-500 text-black font-semibold px-6 py-3 ring-1 ring-emerald-400 hover:bg-emerald-400 transition tracking-wider text-sm"
+                className="block w-full text-center rounded-full bg-blue-600 text-white font-semibold px-6 py-3 ring-1 ring-blue-400 hover:bg-blue-400 transition tracking-wider text-sm"
               >
                 START YOUR OWN CHAPTER →
               </Link>
@@ -211,7 +211,7 @@ function InvalidInviteCard({ reason }: { reason: 'bad-format' | 'not-found' }) {
               Already in?{' '}
               <Link
                 href="/login"
-                className="text-emerald-300/90 hover:text-emerald-300 underline underline-offset-4"
+                className="text-blue-300/90 hover:text-blue-300 underline underline-offset-4"
               >
                 Sign in.
               </Link>

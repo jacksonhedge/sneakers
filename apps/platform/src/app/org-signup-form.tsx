@@ -137,12 +137,12 @@ function ProgressBar({ current }: { current: Step }) {
           <div key={n} className="flex items-center gap-2 flex-1">
             <div
               className={`h-1 flex-1 rounded-full transition-colors ${
-                isDone || isActive ? 'bg-emerald-400' : 'bg-white/15'
+                isDone || isActive ? 'bg-blue-400' : 'bg-white/15'
               }`}
             />
             <span
               className={`text-[10px] ${
-                isActive ? 'text-emerald-300' : isDone ? 'text-emerald-300/60' : 'text-white/30'
+                isActive ? 'text-blue-300' : isDone ? 'text-blue-300/60' : 'text-white/30'
               }`}
             >
               {n}
@@ -168,7 +168,7 @@ function StepTier({
   return (
     <div className="space-y-4 animate-in fade-in slide-in-from-right-2 duration-200">
       <div>
-        <div className="text-[10px] tracking-[0.15em] text-emerald-300/80 font-semibold mb-1">
+        <div className="text-[10px] tracking-[0.15em] text-blue-300/80 font-semibold mb-1">
           STEP 1 OF 3
         </div>
         <h3 className="text-lg font-bold text-white">Pick your tier.</h3>
@@ -187,7 +187,7 @@ function StepTier({
             <div className="text-base font-bold text-white font-mono tabular-nums">
               $799<span className="text-xs text-white/60 font-normal">/mo</span>
             </div>
-            <div className="text-[10px] text-emerald-300/90 font-semibold tracking-wider">
+            <div className="text-[10px] text-blue-300/90 font-semibold tracking-wider">
               14-DAY FREE TRIAL
             </div>
           </div>
@@ -199,7 +199,7 @@ function StepTier({
       </TierCard>
 
       <div>
-        <div className="text-[10px] tracking-[0.15em] text-emerald-300/80 font-semibold mb-2">
+        <div className="text-[10px] tracking-[0.15em] text-blue-300/80 font-semibold mb-2">
           SNEAKERS TERMINAL <span className="text-white/40 normal-case">(hardware bundle)</span>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -220,7 +220,7 @@ function StepTier({
             imageSrc="/hardware/macbook-pro.png"
           />
         </div>
-        <div className="mt-2 rounded ring-1 ring-emerald-400/30 bg-emerald-500/5 px-3 py-2 text-[11px] text-emerald-200/90 leading-relaxed">
+        <div className="mt-2 rounded ring-1 ring-blue-400/30 bg-blue-500/5 px-3 py-2 text-[11px] text-blue-200/90 leading-relaxed">
           ✦ <span className="font-semibold">Local AI tools embedded.</span> Llama 3 70B + Qwen
           run on-device — your bot&apos;s strategy never leaves the house.
         </div>
@@ -229,7 +229,7 @@ function StepTier({
       <button
         type="button"
         onClick={onNext}
-        className="w-full bg-emerald-500 text-black font-semibold px-6 py-3 rounded hover:bg-emerald-400 transition tracking-wider"
+        className="w-full bg-blue-600 text-white font-semibold px-6 py-3 rounded hover:bg-blue-400 transition tracking-wider"
       >
         NEXT →
       </button>
@@ -277,7 +277,7 @@ function StepDetails({
       className="space-y-4 animate-in fade-in slide-in-from-right-2 duration-200"
     >
       <div>
-        <div className="text-[10px] tracking-[0.15em] text-emerald-300/80 font-semibold mb-1">
+        <div className="text-[10px] tracking-[0.15em] text-blue-300/80 font-semibold mb-1">
           STEP 2 OF 3
         </div>
         <h3 className="text-lg font-bold text-white">Tell us about your org.</h3>
@@ -369,7 +369,7 @@ function StepDetails({
         <button
           type="submit"
           disabled={!canContinue}
-          className="flex-1 bg-emerald-500 text-black font-semibold px-6 py-3 rounded hover:bg-emerald-400 disabled:bg-stone-700 disabled:text-stone-400 disabled:cursor-not-allowed transition tracking-wider"
+          className="flex-1 bg-blue-600 text-white font-semibold px-6 py-3 rounded hover:bg-blue-400 disabled:bg-stone-700 disabled:text-stone-400 disabled:cursor-not-allowed transition tracking-wider"
         >
           NEXT →
         </button>
@@ -408,7 +408,7 @@ function StepConfirm({
   return (
     <div className="space-y-4 animate-in fade-in slide-in-from-right-2 duration-200">
       <div>
-        <div className="text-[10px] tracking-[0.15em] text-emerald-300/80 font-semibold mb-1">
+        <div className="text-[10px] tracking-[0.15em] text-blue-300/80 font-semibold mb-1">
           STEP 3 OF 3
         </div>
         <h3 className="text-lg font-bold text-white">Looks right?</h3>
@@ -417,7 +417,7 @@ function StepConfirm({
         </p>
       </div>
 
-      <div className="rounded-lg ring-1 ring-emerald-400/30 bg-black/40 backdrop-blur-sm p-4 space-y-3">
+      <div className="rounded-lg ring-1 ring-blue-400/30 bg-black/40 backdrop-blur-sm p-4 space-y-3">
         <ConfirmRow label="Tier" value={`${meta.label} · ${meta.price}`} highlight />
         <ConfirmRow label="Organization" value={orgName} />
         <ConfirmRow label="Type" value={orgTypeLabel} />
@@ -445,7 +445,7 @@ function StepConfirm({
           type="button"
           onClick={onSubmit}
           disabled={submitting}
-          className="flex-1 bg-emerald-500 text-black font-semibold px-6 py-3 rounded hover:bg-emerald-400 disabled:opacity-50 transition tracking-wider"
+          className="flex-1 bg-blue-600 text-white font-semibold px-6 py-3 rounded hover:bg-blue-400 disabled:opacity-50 transition tracking-wider"
         >
           {submitting ? 'SAVING…' : 'SUBMIT ORG →'}
         </button>
@@ -472,7 +472,7 @@ function ConfirmRow({
       <span className="text-[10px] tracking-wider text-white/55 uppercase">{label}</span>
       <span
         className={`text-right font-medium truncate ${
-          highlight ? 'text-emerald-300 font-bold' : 'text-white/95'
+          highlight ? 'text-blue-300 font-bold' : 'text-white/95'
         }`}
       >
         {value}
@@ -484,7 +484,7 @@ function ConfirmRow({
 // ─── Shared bits ─────────────────────────────────────────────────────────
 
 const inputCls =
-  'w-full bg-black/40 backdrop-blur-sm border border-white/30 text-white px-4 py-3 focus:outline-none focus:border-emerald-400 focus:bg-black/60 placeholder:text-white/40 transition rounded'
+  'w-full bg-black/40 backdrop-blur-sm border border-white/30 text-white px-4 py-3 focus:outline-none focus:border-blue-400 focus:bg-black/60 placeholder:text-white/40 transition rounded'
 
 function Field({
   label,
@@ -501,7 +501,7 @@ function Field({
     <div>
       <label
         htmlFor={id}
-        className="block text-[11px] tracking-wider text-emerald-300/80 mb-1"
+        className="block text-[11px] tracking-wider text-blue-300/80 mb-1"
       >
         {label}
         {hint && <span className="text-white/40 normal-case ml-1">({hint})</span>}
@@ -526,7 +526,7 @@ function TierCard({
       onClick={onSelect}
       className={`w-full text-left rounded-lg p-4 transition ${
         selected
-          ? 'bg-emerald-500/10 ring-2 ring-emerald-400'
+          ? 'bg-blue-500/10 ring-2 ring-blue-400'
           : 'bg-black/40 ring-1 ring-white/15 hover:ring-white/40'
       }`}
     >
@@ -559,7 +559,7 @@ function HardwareCard({
       onClick={onSelect}
       className={`text-left rounded-lg overflow-hidden transition ${
         selected
-          ? 'ring-2 ring-emerald-400 bg-emerald-500/10'
+          ? 'ring-2 ring-blue-400 bg-blue-500/10'
           : 'ring-1 ring-white/15 bg-black/40 hover:ring-white/40'
       }`}
     >
@@ -577,7 +577,7 @@ function HardwareCard({
           <Radio selected={selected} />
           <div className="flex-1 min-w-0">
             <div className="text-sm font-bold text-white leading-tight">{label}</div>
-            <div className="text-[10px] tracking-wider text-emerald-300/80 font-semibold mt-0.5">
+            <div className="text-[10px] tracking-wider text-blue-300/80 font-semibold mt-0.5">
               {tagline.toUpperCase()}
             </div>
           </div>
@@ -598,7 +598,7 @@ function Radio({ selected }: { selected: boolean }) {
   return (
     <div
       className={`mt-1 flex-shrink-0 w-4 h-4 rounded-full ring-2 transition ${
-        selected ? 'ring-emerald-400 bg-emerald-400' : 'ring-white/30 bg-transparent'
+        selected ? 'ring-blue-400 bg-blue-400' : 'ring-white/30 bg-transparent'
       }`}
       aria-hidden
     >
@@ -615,12 +615,12 @@ function DoneCard({ orgName, tier }: { orgName: string; tier: TierChoice }) {
   const isHardware = TIER_META[tier].hardware
   const hardwareLabel = TIER_META[tier].label
   return (
-    <div className="border border-emerald-400/60 bg-black/60 backdrop-blur-sm p-5 text-white space-y-3 rounded-lg">
-      <div className="text-sm text-emerald-300">{'>'} Your org is on the list.</div>
+    <div className="border border-blue-400/60 bg-black/60 backdrop-blur-sm p-5 text-white space-y-3 rounded-lg">
+      <div className="text-sm text-blue-300">{'>'} Your org is on the list.</div>
       <div className="text-sm text-white/85 leading-relaxed">
-        <span className="text-emerald-300 font-semibold">{orgName}</span> is queued up under
+        <span className="text-blue-300 font-semibold">{orgName}</span> is queued up under
         the{' '}
-        <span className="text-emerald-300 font-semibold">
+        <span className="text-blue-300 font-semibold">
           {isHardware ? `${hardwareLabel} hardware tier` : 'Software-only tier'}
         </span>
         . As the leader you&apos;ll be the captain when we onboard — we&apos;ll email you
@@ -628,13 +628,13 @@ function DoneCard({ orgName, tier }: { orgName: string; tier: TierChoice }) {
       </div>
 
       {isHardware ? (
-        <div className="rounded-lg ring-1 ring-emerald-400/40 bg-gradient-to-br from-emerald-950/60 to-stone-900/60 px-4 py-3 space-y-2">
-          <div className="text-[10px] tracking-[0.15em] text-emerald-300/80 font-semibold">
+        <div className="rounded-lg ring-1 ring-blue-400/40 bg-gradient-to-br from-blue-950/60 to-stone-900/60 px-4 py-3 space-y-2">
+          <div className="text-[10px] tracking-[0.15em] text-blue-300/80 font-semibold">
             HARDWARE SHIPMENT
           </div>
           <div className="text-sm text-white">
             We&apos;ll ship your{' '}
-            <span className="text-emerald-300 font-semibold">{hardwareLabel}</span> within 5
+            <span className="text-blue-300 font-semibold">{hardwareLabel}</span> within 5
             business days of approving your org. Pre-loaded with Sneakers + local AI models
             (Llama 3 70B, Qwen). Plug in, log in, trade.
           </div>
@@ -653,7 +653,7 @@ function DoneCard({ orgName, tier }: { orgName: string; tier: TierChoice }) {
 
       <a
         href="/login"
-        className="block w-full text-center border border-emerald-400 bg-emerald-500 text-black text-sm font-semibold tracking-wider px-6 py-3 hover:bg-emerald-400 transition rounded"
+        className="block w-full text-center border border-blue-400 bg-blue-600 text-white text-sm font-semibold tracking-wider px-6 py-3 hover:bg-blue-400 transition rounded"
       >
         CONTINUE TO SIGN IN →
       </a>

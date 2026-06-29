@@ -40,7 +40,7 @@ export function MagicLinkButton({ email, label }: { email: string; label: string
             }
           })
         }}
-        className="w-full rounded-full bg-emerald-500 text-black font-semibold px-6 py-3 ring-1 ring-emerald-400 hover:bg-emerald-400 transition disabled:opacity-50"
+        className="w-full rounded-full bg-blue-600 text-white font-semibold px-6 py-3 ring-1 ring-blue-400 hover:bg-blue-400 transition disabled:opacity-50"
       >
         {pending ? 'SENDING…' : label}
       </button>
@@ -48,7 +48,7 @@ export function MagicLinkButton({ email, label }: { email: string; label: string
         <div
           className={`text-xs px-3 py-2 rounded-lg ${
             result.ok
-              ? 'border border-emerald-300 bg-emerald-50 text-emerald-700 font-semibold'
+              ? 'border border-blue-300 bg-blue-50 text-blue-700 font-semibold'
               : 'border border-red-300 bg-red-50 text-red-700 font-semibold'
           }`}
         >

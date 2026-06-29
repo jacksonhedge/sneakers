@@ -30,7 +30,7 @@ export function BillingFlash({ success, canceled }: Props) {
   if (!show) return null
   if (success) {
     return (
-      <div className="mb-6 rounded border border-emerald-300 bg-emerald-50 text-emerald-800 px-4 py-3 text-sm">
+      <div className="mb-6 rounded border border-blue-300 bg-blue-50 text-blue-800 px-4 py-3 text-sm">
         ✓ Subscription started. It may take a few seconds for your tier to update — refresh if it
         still says Free.
       </div>

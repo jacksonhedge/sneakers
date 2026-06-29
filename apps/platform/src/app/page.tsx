@@ -71,10 +71,10 @@ export default async function LandingPage() {
 
       <div className="max-w-2xl w-full space-y-8 text-center text-white">
         <div className="flex flex-col items-center">
-          <div className="text-xs text-emerald-300/80 mb-6 tracking-wider">
+          <div className="text-xs text-blue-300/80 mb-6 tracking-wider">
             SNEAKERS TERMINAL · FOR COLLEGE STUDENTS
           </div>
-          <div className="mb-4 rounded-full bg-stone-950 p-6 ring-1 ring-emerald-400/30 shadow-[0_8px_32px_rgba(0,0,0,0.55),0_0_48px_rgba(0,112,60,0.18)]">
+          <div className="mb-4 rounded-full bg-stone-950 p-6 ring-1 ring-blue-400/30 shadow-[0_8px_32px_rgba(0,0,0,0.55),0_0_48px_rgba(0,112,60,0.18)]">
             <Image
               src="/logo.png"
               alt="Sneakers"
@@ -85,7 +85,7 @@ export default async function LandingPage() {
             />
           </div>
           <h1 className="sr-only">Sneakers Terminal — the prediction market terminal for college</h1>
-          <div className="text-emerald-400 text-2xl md:text-3xl font-bold tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
+          <div className="text-blue-400 text-2xl md:text-3xl font-bold tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
             The prediction terminal for college.
           </div>
           <div className="mt-3 text-white/85 text-base md:text-lg drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] max-w-lg">
@@ -141,27 +141,27 @@ export default async function LandingPage() {
             below the CTAs so visitors scan value props after seeing the
             primary action. Stats strip lives after the pillars. */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mx-auto max-w-xl text-left">
-          <div className="rounded-lg bg-black/40 backdrop-blur-sm border border-emerald-400/30 px-4 py-3">
-            <div className="text-[10px] tracking-[0.15em] text-emerald-300/80 font-semibold mb-1">
+          <div className="rounded-lg bg-black/40 backdrop-blur-sm border border-blue-400/30 px-4 py-3">
+            <div className="text-[10px] tracking-[0.15em] text-blue-300/80 font-semibold mb-1">
               75% OFF
             </div>
             <div className="text-xs text-white/85 leading-snug">
-              Verified <span className="text-emerald-300 font-semibold">.edu</span> students get
+              Verified <span className="text-blue-300 font-semibold">.edu</span> students get
               2 weeks free, then 75% off forever.
             </div>
           </div>
-          <div className="rounded-lg bg-black/40 backdrop-blur-sm border border-emerald-400/30 px-4 py-3">
-            <div className="text-[10px] tracking-[0.15em] text-emerald-300/80 font-semibold mb-1">
+          <div className="rounded-lg bg-black/40 backdrop-blur-sm border border-blue-400/30 px-4 py-3">
+            <div className="text-[10px] tracking-[0.15em] text-blue-300/80 font-semibold mb-1">
               LEADERBOARDS
             </div>
             <div className="text-xs text-white/85 leading-snug">
-              Compete on <span className="text-emerald-300 font-semibold">rate of return</span>{' '}
+              Compete on <span className="text-blue-300 font-semibold">rate of return</span>{' '}
               — per-school + national.
             </div>
           </div>
-          <div className="rounded-lg bg-black/40 backdrop-blur-sm border border-emerald-400/30 px-4 py-3">
+          <div className="rounded-lg bg-black/40 backdrop-blur-sm border border-blue-400/30 px-4 py-3">
             <div className="flex items-center justify-between gap-2 mb-1">
-              <div className="text-[10px] tracking-[0.15em] text-emerald-300/80 font-semibold">
+              <div className="text-[10px] tracking-[0.15em] text-blue-300/80 font-semibold">
                 GROUPS
               </div>
               <div className="text-[9px] tracking-[0.15em] text-amber-300/80 font-semibold bg-amber-500/10 ring-1 ring-amber-400/30 px-1.5 py-0.5 rounded">
@@ -170,11 +170,11 @@ export default async function LandingPage() {
             </div>
             <div className="text-xs text-white/85 leading-snug">
               Build a team with your{' '}
-              <span className="text-emerald-300 font-semibold">frat, dorm, or class</span>.
+              <span className="text-blue-300 font-semibold">frat, dorm, or class</span>.
               Captains sign up now, members onboard as we ship.{' '}
               <Link
                 href="/chapter-preview"
-                className="text-emerald-300/90 hover:text-emerald-300 underline underline-offset-2 whitespace-nowrap"
+                className="text-blue-300/90 hover:text-blue-300 underline underline-offset-2 whitespace-nowrap"
               >
                 See the preview →
               </Link>
@@ -186,21 +186,21 @@ export default async function LandingPage() {
             pillars so it reads as supporting detail, not primary content. */}
         <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[11px] tracking-wider drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
           <div className="flex items-baseline gap-1.5">
-            <span className="font-mono tabular-nums text-emerald-300 font-bold text-sm">
+            <span className="font-mono tabular-nums text-blue-300 font-bold text-sm">
               {venueCount}
             </span>
             <span className="text-white/60 uppercase">venues tracked</span>
           </div>
           <span className="text-white/20" aria-hidden>·</span>
           <div className="flex items-baseline gap-1.5">
-            <span className="font-mono tabular-nums text-emerald-300 font-bold text-sm">
+            <span className="font-mono tabular-nums text-blue-300 font-bold text-sm">
               {roundedMarkets > 0 ? `${roundedMarkets}+` : '—'}
             </span>
             <span className="text-white/60 uppercase">live markets</span>
           </div>
           <span className="text-white/20" aria-hidden>·</span>
           <div className="flex items-baseline gap-1.5">
-            <span className="font-mono tabular-nums text-emerald-300 font-bold text-sm">
+            <span className="font-mono tabular-nums text-blue-300 font-bold text-sm">
               10m
             </span>
             <span className="text-white/60 uppercase">refresh cadence</span>
@@ -208,10 +208,10 @@ export default async function LandingPage() {
         </div>
 
         {referralCode && (
-          <div className="mx-auto max-w-md border border-emerald-400/50 bg-black/40 backdrop-blur-sm px-4 py-3 text-xs text-white/90">
+          <div className="mx-auto max-w-md border border-blue-400/50 bg-black/40 backdrop-blur-sm px-4 py-3 text-xs text-white/90">
             <div>
               {'>'} Referred by{' '}
-              <span className="text-emerald-400 tracking-wider font-semibold">{referralCode}</span>
+              <span className="text-blue-400 tracking-wider font-semibold">{referralCode}</span>
             </div>
             <div className="text-white/60 mt-1">
               Your signup boosts them 5 positions in the queue.
@@ -219,14 +219,14 @@ export default async function LandingPage() {
           </div>
         )}
 
-        <div className="text-xs text-emerald-300 tracking-wider drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
+        <div className="text-xs text-blue-300 tracking-wider drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
           {'>'} {displayCount} STUDENTS ON THE LIST
         </div>
 
         <div className="text-[11px] text-white/60 tracking-wide space-x-4">
           <a
             href="/students"
-            className="text-emerald-300/90 hover:text-emerald-300 underline underline-offset-4"
+            className="text-blue-300/90 hover:text-blue-300 underline underline-offset-4"
           >
             How student verification works →
           </a>

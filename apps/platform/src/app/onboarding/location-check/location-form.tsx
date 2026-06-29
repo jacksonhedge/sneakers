@@ -82,7 +82,7 @@ export function LocationForm({
   return (
     <div className="space-y-5">
       {/* IP-derived facts */}
-      <div className="border border-emerald-400/20 bg-black/40 rounded p-4 space-y-1.5 text-xs font-mono">
+      <div className="border border-blue-400/20 bg-black/40 rounded p-4 space-y-1.5 text-xs font-mono">
         <Row label="ip_country" value={ipCountry ?? '—'} />
         <Row label="ip_state" value={ipState ?? '—'} />
         <Row label="claimed_state" value={claimState ?? '—'} />
@@ -106,11 +106,11 @@ export function LocationForm({
 
       {/* Optional: precise geolocation */}
       <div className="space-y-2">
-        <div className="text-[10px] tracking-[0.15em] text-emerald-300/70 font-semibold">
+        <div className="text-[10px] tracking-[0.15em] text-blue-300/70 font-semibold">
           OPTIONAL — SHARE PRECISE LOCATION
         </div>
         {geo ? (
-          <div className="text-xs text-emerald-300 bg-emerald-500/5 border border-emerald-400/40 rounded px-3 py-2 font-mono">
+          <div className="text-xs text-blue-300 bg-blue-500/5 border border-blue-400/40 rounded px-3 py-2 font-mono">
             ✓ {geo.lat.toFixed(3)}°, {geo.lng.toFixed(3)}° (±{Math.round(geo.accuracy)}m)
           </div>
         ) : denied ? (
@@ -121,7 +121,7 @@ export function LocationForm({
           <button
             type="button"
             onClick={shareLocation}
-            className="text-xs tracking-wider text-emerald-300 border border-emerald-400/50 bg-emerald-500/5 hover:bg-emerald-500/10 px-4 py-2 rounded transition"
+            className="text-xs tracking-wider text-blue-300 border border-blue-400/50 bg-blue-500/5 hover:bg-blue-500/10 px-4 py-2 rounded transition"
           >
             SHARE LOCATION (BROWSER PROMPT)
           </button>
@@ -137,7 +137,7 @@ export function LocationForm({
           type="button"
           onClick={submit}
           disabled={busy}
-          className="inline-block border border-emerald-400 bg-emerald-500 text-black font-semibold px-6 py-3 hover:bg-emerald-400 hover:border-emerald-300 transition disabled:opacity-50 tracking-wider"
+          className="inline-block border border-blue-400 bg-blue-600 text-white font-semibold px-6 py-3 hover:bg-blue-400 hover:border-blue-300 transition disabled:opacity-50 tracking-wider"
         >
           {busy ? 'SAVING…' : 'CONTINUE →'}
         </button>
@@ -163,7 +163,7 @@ function Row({
 }) {
   const cls =
     color === 'good'
-      ? 'text-emerald-300'
+      ? 'text-blue-300'
       : color === 'warn'
         ? 'text-amber-300'
         : color === 'muted'
@@ -171,7 +171,7 @@ function Row({
           : 'text-white/85'
   return (
     <div className="flex items-center justify-between gap-4">
-      <span className="text-emerald-300/70">{label}:</span>
+      <span className="text-blue-300/70">{label}:</span>
       <span className={cls}>{value}</span>
     </div>
   )

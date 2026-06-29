@@ -98,7 +98,7 @@ export default async function CreditsPage({
         </header>
 
         {purchaseStatus === 'success' && (
-          <div className="mb-6 rounded bg-emerald-50 ring-1 ring-emerald-200 text-emerald-800 text-sm px-4 py-3">
+          <div className="mb-6 rounded bg-blue-50 ring-1 ring-blue-200 text-blue-800 text-sm px-4 py-3">
             ✓ Purchase complete. Credits will appear in your balance within a few seconds.
           </div>
         )}
@@ -147,7 +147,7 @@ export default async function CreditsPage({
                   <div className="flex items-baseline justify-between mb-2">
                     <div className="text-2xl font-bold tabular-nums">${pack.usd}</div>
                     {bonusPct > 0 && (
-                      <div className="text-[10px] text-emerald-700 bg-emerald-50 ring-1 ring-emerald-200 rounded px-2 py-0.5 tracking-wider">
+                      <div className="text-[10px] text-blue-700 bg-blue-50 ring-1 ring-blue-200 rounded px-2 py-0.5 tracking-wider">
                         +{bonusPct}%
                       </div>
                     )}
@@ -196,7 +196,7 @@ export default async function CreditsPage({
                       </td>
                       <td
                         className={`px-4 py-2 text-right font-mono tabular-nums ${
-                          t.delta > 0 ? 'text-emerald-700' : 'text-stone-900'
+                          t.delta > 0 ? 'text-blue-700' : 'text-stone-900'
                         }`}
                       >
                         {t.delta > 0 ? '+' : ''}

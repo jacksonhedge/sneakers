@@ -34,7 +34,7 @@ export function ProfileAvatar({
         prefetch={false}
         title={email ?? 'Profile'}
         aria-label="Profile"
-        className={`relative w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br ${gradient} flex items-center justify-center text-white text-base font-bold ring-1 ${ring} shadow-sm hover:ring-2 hover:ring-emerald-400 hover:shadow-md transition`}
+        className={`relative w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br ${gradient} flex items-center justify-center text-white text-base font-bold ring-1 ${ring} shadow-sm hover:ring-2 hover:ring-blue-400 hover:shadow-md transition`}
       >
         {hasImage ? (
           <Image

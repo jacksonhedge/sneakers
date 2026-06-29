@@ -50,7 +50,7 @@ function fmtOpenedAt(ts: string): string {
 
 function deltaClass(entry: number, current: number | null): string {
   if (current == null) return 'text-stone-500'
-  if (current > entry) return 'text-emerald-700'
+  if (current > entry) return 'text-blue-700'
   if (current < entry) return 'text-red-700'
   return 'text-stone-500'
 }
@@ -84,8 +84,8 @@ export default async function PositionsPage() {
         <header className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-baseline gap-3">
             <h1 className="text-xl font-bold tracking-tight">Open positions</h1>
-            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold tracking-wider">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[10px] font-bold tracking-wider">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
               WATCHING
             </span>
           </div>
@@ -132,7 +132,7 @@ function PositionCard({ position }: { position: AutotradePosition }) {
         <span
           className={`text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full ${
             position.side === 'YES'
-              ? 'bg-emerald-100 text-emerald-800'
+              ? 'bg-blue-100 text-blue-800'
               : 'bg-red-100 text-red-800'
           }`}
         >
@@ -176,7 +176,7 @@ function PositionCard({ position }: { position: AutotradePosition }) {
           label="TAKE PROFIT"
           value={fmtCents(position.take_profit_price)}
           icon="▲"
-          tone="text-emerald-700"
+          tone="text-blue-700"
           dim={position.take_profit_price == null}
         />
         <TriggerStat
@@ -233,7 +233,7 @@ function TriggerStat({
 }) {
   return (
     <div
-      className={`rounded px-2 py-1.5 ${dim ? 'bg-stone-50/50' : 'bg-emerald-50/50 ring-1 ring-emerald-100'}`}
+      className={`rounded px-2 py-1.5 ${dim ? 'bg-stone-50/50' : 'bg-blue-50/50 ring-1 ring-blue-100'}`}
     >
       <div className="text-[9px] text-stone-500 tracking-wider">{label}</div>
       <div className={`font-mono font-semibold flex items-center gap-1 ${dim ? 'text-stone-400' : tone}`}>

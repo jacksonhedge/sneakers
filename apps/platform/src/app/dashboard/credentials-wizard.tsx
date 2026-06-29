@@ -217,7 +217,7 @@ export function CredentialsWizard({
             <div
               className={`rounded-lg px-3 py-2.5 text-xs font-semibold leading-relaxed ${
                 feedback.kind === 'ok'
-                  ? 'bg-emerald-50 text-emerald-800 border border-emerald-300'
+                  ? 'bg-blue-50 text-blue-800 border border-blue-300'
                   : 'bg-red-50 text-red-700 border border-red-300'
               }`}
             >
@@ -229,7 +229,7 @@ export function CredentialsWizard({
             <button
               type="submit"
               disabled={busy}
-              className="inline-flex items-center gap-2 rounded-full bg-emerald-500 ring-1 ring-emerald-400 text-black font-semibold px-5 py-2.5 text-sm tracking-wider hover:bg-emerald-400 transition disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-full bg-blue-500 ring-1 ring-blue-400 text-black font-semibold px-5 py-2.5 text-sm tracking-wider hover:bg-blue-400 transition disabled:opacity-50"
             >
               {busy && (
                 <span
@@ -306,7 +306,7 @@ function Header({
 function StatusPill({ status }: { status: 'connected' | 'needs_reconnect' | 'disconnected' }) {
   if (status === 'connected') {
     return (
-      <span className="inline-flex items-center gap-1.5 text-[10px] tracking-wider font-bold bg-emerald-500 text-white ring-1 ring-emerald-400 px-2.5 py-1 rounded-full">
+      <span className="inline-flex items-center gap-1.5 text-[10px] tracking-wider font-bold bg-blue-500 text-white ring-1 ring-blue-400 px-2.5 py-1 rounded-full">
         ✓ CONNECTED
       </span>
     )
@@ -364,7 +364,7 @@ function ScopeChoice({
       onClick={onClick}
       className={`text-left rounded-lg px-3 py-2.5 ring-1 transition ${
         active
-          ? 'bg-emerald-50 ring-emerald-400 text-stone-900'
+          ? 'bg-blue-50 ring-blue-400 text-stone-900'
           : 'bg-white ring-stone-200 text-stone-700 hover:ring-stone-400'
       }`}
     >
@@ -540,7 +540,7 @@ function KalshiFields(props: {
 }
 
 const inputCls =
-  'w-full bg-white border border-stone-300 text-stone-900 px-3 py-2 rounded-lg text-sm font-mono focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-400/40 placeholder:text-stone-400 transition'
+  'w-full bg-white border border-stone-300 text-stone-900 px-3 py-2 rounded-lg text-sm font-mono focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-400/40 placeholder:text-stone-400 transition'
 
 function Field({
   label,
@@ -557,7 +557,7 @@ function Field({
     <div>
       <label className="block text-[10px] tracking-wider text-stone-700 font-semibold mb-1">
         {label}
-        {required && <span className="text-emerald-700"> *</span>}
+        {required && <span className="text-blue-700"> *</span>}
         {hint && <span className="text-stone-400 normal-case font-normal"> · {hint}</span>}
       </label>
       {children}

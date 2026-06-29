@@ -28,7 +28,7 @@ const EVENT_CLS: Record<string, string> = {
 }
 
 const ACTION_CLS: Record<string, string> = {
-  grant_access: 'bg-emerald-100 text-emerald-800 ring-emerald-300',
+  grant_access: 'bg-blue-100 text-blue-800 ring-blue-300',
   issue_invite: 'bg-amber-100 text-amber-800 ring-amber-300',
   reissue_invite: 'bg-amber-100 text-amber-800 ring-amber-300',
   revoke_invite: 'bg-red-100 text-red-800 ring-red-300',
@@ -301,7 +301,7 @@ export default async function UserDetailPage({
               <tbody>
                 {clickEvents.map((e) => {
                   const cls =
-                    EVENT_CLS[e.event_name] ?? 'bg-emerald-50 text-emerald-800 ring-emerald-300'
+                    EVENT_CLS[e.event_name] ?? 'bg-blue-50 text-blue-800 ring-blue-300'
                   return (
                     <tr key={e.id} className="border-t border-stone-200 align-top">
                       <td className="px-3 py-2 font-mono text-stone-600 whitespace-nowrap">
