@@ -2,7 +2,8 @@ import { redirect } from 'next/navigation'
 import { getAuthClient } from '@/lib/supabase-auth'
 import { getTierIdentity } from '@/lib/require-tier'
 import { loadMinuteMarkets, type Bucket } from '@/lib/minute-markets'
-import { BalanceCard } from './balance-card'
+import { MoneyTracker } from './money-tracker'
+import { AutoTradePanel } from './auto-trade-panel'
 import { QuickMarketsPanel, ALL_BUCKETS } from './quick/quick-markets-panel'
 
 export const dynamic = 'force-dynamic'
@@ -42,25 +43,50 @@ export default async function DashboardPage({ searchParams }: PageProps) {
     .filter((g) => g.markets.length > 0)
 
   return (
-    <div className="px-6 py-5 space-y-6">
+    <div className="px-6 py-6 space-y-6 max-w-4xl mx-auto">
+      {/* 1. MONEY TRACKER HERO — balance from /api/balance, honest $0 state */}
       <section>
-        <h2 className="text-[10px] text-stone-500 uppercase tracking-wider mb-3">Wallet</h2>
-        <BalanceCard />
+        <h2 className="text-[10px] text-stone-400 uppercase tracking-widest mb-3">
+          Money Tracker
+        </h2>
+        <MoneyTracker />
       </section>
 
+      {/* 2. AUTO-TRADE BOT PANEL — real config from /api/otoole/autotrade-settings */}
       <section>
-        <h2 className="text-[10px] text-stone-500 uppercase tracking-wider mb-3">Quick Markets</h2>
-        <QuickMarketsPanel
-          groups={groups}
-          bucket={bucket}
-          asset={asset}
-          isPaid={isPaid}
-          totalMarkets={result.totalMarkets}
-          totalGroups={result.totalGroups ?? 0}
-          assetsAvailable={result.assetsAvailable}
-          basePath="/dashboard"
-          compact={true}
-        />
+        <h2 className="text-[10px] text-stone-400 uppercase tracking-widest mb-3">
+          Auto-Trade Bot
+        </h2>
+        <AutoTradePanel />
+      </section>
+
+      {/* 3. LIVE CRYPTO STRIP — minute markets, honest empty state if DB is empty */}
+      <section>
+        <h2 className="text-[10px] text-stone-400 uppercase tracking-widest mb-3">
+          Live Crypto Markets
+        </h2>
+        {result.totalMarkets === 0 ? (
+          <div className="rounded-2xl border border-dashed border-stone-300 bg-white px-6 py-10 text-center">
+            <div className="text-sm font-medium text-stone-600 mb-1">
+              Live markets are syncing — check back in a minute.
+            </div>
+            <div className="text-[11px] text-stone-400">
+              BTC · ETH · SOL strikes will appear here once the scrapers feed the database.
+            </div>
+          </div>
+        ) : (
+          <QuickMarketsPanel
+            groups={groups}
+            bucket={bucket}
+            asset={asset}
+            isPaid={isPaid}
+            totalMarkets={result.totalMarkets}
+            totalGroups={result.totalGroups ?? 0}
+            assetsAvailable={result.assetsAvailable}
+            basePath="/dashboard"
+            compact={true}
+          />
+        )}
       </section>
     </div>
   )

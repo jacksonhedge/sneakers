@@ -5,24 +5,25 @@ import { useEffect, useRef, useState } from 'react'
 import { SignOutButton } from './sign-out-button'
 
 // Slide-down hamburger menu in the top-right of the dashboard nav.
-// Houses the "everything else" — settings, billing, profile, sign-out
-// + the SOON nav items that used to clutter the left sidebar.
+// V2: primary items are "O'Toole Bot" and "API Keys" (the wallet-first
+// dashboard's two key settings). Everything else stays accessible but
+// lives in secondary sections to reduce visual weight.
 
 const PRIMARY_LINKS = [
+  { href: '/dashboard/settings/otoole', label: "O'Toole Bot" },
+  { href: '/dashboard/settings/api-keys', label: 'API Keys' },
+] as const
+
+const SECONDARY_LINKS = [
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/dashboard/markets', label: 'Markets' },
   { href: '/dashboard/minute', label: 'Minute Markets' },
   { href: '/dashboard/strategies', label: 'Strategies' },
   { href: '/dashboard/alerts', label: 'Alerts' },
   { href: '/dashboard/profile', label: 'Profile' },
-] as const
-
-const SETTINGS_LINKS = [
-  { href: '/dashboard/settings', label: 'Settings' },
-  { href: '/dashboard/settings/autotrade', label: 'Trading & autotrade' },
-  { href: '/dashboard/settings/api-keys', label: 'AI API keys' },
-  { href: '/dashboard/billing', label: 'Billing' },
   { href: '/dashboard/connections', label: 'Connections' },
+  { href: '/dashboard/settings/autotrade', label: 'Trading & Autotrade' },
+  { href: '/dashboard/billing', label: 'Billing' },
 ] as const
 
 const SOON_LINKS = [
@@ -75,15 +76,15 @@ export function HamburgerMenu() {
           role="menu"
           className="absolute right-0 top-full mt-2 w-72 bg-white ring-1 ring-stone-200 rounded-xl shadow-xl overflow-hidden z-50"
         >
-          <Section label="MAIN">
+          <Section label="BOT & KEYS">
             {PRIMARY_LINKS.map((l) => (
               <Item key={l.href} href={l.href} onClick={() => setOpen(false)}>
                 {l.label}
               </Item>
             ))}
           </Section>
-          <Section label="SETTINGS">
-            {SETTINGS_LINKS.map((l) => (
+          <Section label="NAVIGATION">
+            {SECONDARY_LINKS.map((l) => (
               <Item key={l.href} href={l.href} onClick={() => setOpen(false)}>
                 {l.label}
               </Item>
