@@ -107,7 +107,7 @@ const openSauce = localFont({
   variable: "--font-open-sauce",
   display: "swap",
   src: [
-    { path: "../fonts/OpenSauceSans-Regular.woff2", weight: "400", style: "normal" },
+    { path: "../fonts/OpenSauceSans-Regular.woff", weight: "400", style: "normal" },
     { path: "../fonts/OpenSauceSans-Medium.woff2", weight: "500", style: "normal" },
     { path: "../fonts/OpenSauceSans-SemiBold.woff2", weight: "600", style: "normal" },
     { path: "../fonts/OpenSauceSans-Bold.woff2", weight: "700", style: "normal" },
