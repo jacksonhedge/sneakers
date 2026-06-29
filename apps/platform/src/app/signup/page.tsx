@@ -71,21 +71,14 @@ export default async function SignupPage({
               <p className="text-sm text-white/70 mt-2 leading-relaxed">
                 {initialCode
                   ? 'Your invite code is ready. Set up your account to drop into the terminal.'
-                  : 'Email, name, password — then your access code (or join the waitlist).'}
+                  : 'Email, name, and a password — that’s it. You’re straight into the terminal.'}
               </p>
             </div>
 
             <SignupForm initialCode={initialCode} referralCode={referralCode} />
 
             <div className="mt-6 pt-5 border-t border-white/10 text-xs text-white/55 text-center leading-relaxed">
-              No code yet?{' '}
-              <Link
-                href="/"
-                className="text-blue-300/90 hover:text-blue-300 underline underline-offset-4"
-              >
-                Join the waitlist on the homepage
-              </Link>
-              .
+              No invite code needed — accounts are open. You’ll be trading in seconds.
             </div>
           </div>
 

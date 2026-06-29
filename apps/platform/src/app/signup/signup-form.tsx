@@ -3,10 +3,10 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-// Single-screen signup. All four fields visible at once. Two action
-// buttons let the user pick the path explicitly — having a code drops
-// you straight into the dashboard, no code joins the waitlist. We don't
-// actually create the auth.users row until submit, so an abandoned form
+// Single-screen signup. All fields visible at once. Submit creates the
+// account and drops the user straight into the dashboard — an access code
+// is optional (open self-serve signup grants instant access either way).
+// We don't create the auth.users row until submit, so an abandoned form
 // doesn't leave a half-baked account behind.
 //
 // Was previously a two-step form (email/name/password → code). The
@@ -113,6 +113,8 @@ export function SignupForm({
   }
 
   if (done) {
+    const enterHref = done.needsConfirm ? '/login' : '/dashboard'
+    const enterLabel = done.needsConfirm ? 'GO TO SIGN IN →' : 'ENTER THE TERMINAL →'
     return (
       <div className="space-y-3">
         <div className="border border-blue-400/60 bg-blue-400/10 text-blue-200 px-4 py-4 rounded">
@@ -125,22 +127,16 @@ export function SignupForm({
                 Check <span className="font-mono">{email}</span> for a confirmation
                 email — click the link to activate your account, then sign in below.
               </>
-            ) : done.hasAccess ? (
-              <>You&apos;re in. Routing to your dashboard…</>
             ) : (
-              <>
-                You&apos;re on the waitlist. We&apos;ll email you when your spot opens
-                up. Refer friends from your <a href="/login" className="underline">profile page</a>{' '}
-                to jump the line.
-              </>
+              <>You&apos;re in — taking you to the terminal…</>
             )}
           </div>
         </div>
         <a
-          href="/login"
+          href={enterHref}
           className="block w-full text-center border border-blue-400 bg-blue-600 text-white font-semibold px-6 py-3 rounded hover:bg-blue-400 transition tracking-wider"
         >
-          GO TO SIGN IN →
+          {enterLabel}
         </a>
       </div>
     )
