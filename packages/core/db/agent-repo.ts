@@ -1,4 +1,4 @@
-import { Pool, PoolClient } from 'pg'
+import { Pool } from 'pg'
 import type { Venue, Asset, Side, Outcome } from '@sneakers/core'
 
 export interface WindowSeed {
@@ -132,8 +132,8 @@ export class AgentRepo {
          extract(epoch from closes_at)*1000 as closes_at,
          reference_oracle, open_ref_price, settle_ref_price, outcome, status
        FROM short_windows
-       WHERE status IN ('upcoming', 'live')
-       AND closes_at > to_timestamp($1/1000.0)`,
+       WHERE status IN ('upcoming','live')
+       AND closes_at > to_timestamp($1/1000.0) - interval '10 minutes'`,
       [nowMs]
     )
     return result.rows.map(row => ({
@@ -232,12 +232,12 @@ export class AgentRepo {
   async pnlSummary(botConfigId: number): Promise<PnlSummary> {
     const result = await this.pool.query(
       `SELECT
-         COALESCE(SUM(CASE WHEN created_at >= now()::date THEN pnl_usdc ELSE 0 END), 0) as today_usdc,
-         COALESCE(SUM(CASE WHEN status IN ('won', 'lost') THEN pnl_usdc ELSE 0 END), 0) as all_time_usdc,
-         COALESCE(SUM(CASE WHEN created_at >= now()::date THEN size_usdc ELSE 0 END), 0) as spent_today_usdc,
-         COUNT(CASE WHEN created_at >= now() - interval '1 hour' THEN 1 END) as windows_this_hour
+         COALESCE(SUM(CASE WHEN status IN ('won','lost') AND created_at >= now()::date THEN pnl_usdc ELSE 0 END), 0) AS today_usdc,
+         COALESCE(SUM(CASE WHEN status IN ('won','lost') THEN pnl_usdc ELSE 0 END), 0) AS all_time_usdc,
+         COALESCE(SUM(CASE WHEN created_at >= now()::date THEN size_usdc ELSE 0 END), 0) AS spent_today_usdc,
+         COUNT(CASE WHEN created_at >= now() - interval '1 hour' THEN 1 END) AS windows_this_hour
        FROM short_trades
-       WHERE bot_config_id = $1 AND status IN ('won', 'lost')`,
+       WHERE bot_config_id = $1`,
       [botConfigId]
     )
     const row = result.rows[0]
