@@ -125,25 +125,35 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Illustration band — filled in Task 7 */}
-        <div data-footer-illustration className="px-6 sm:px-10" />
+        {/* Illustration band */}
+        <div className="relative w-full select-none pointer-events-none">
+          <img
+            src="/footer-illustration.png"
+            alt=""
+            aria-hidden
+            loading="lazy"
+            className="w-full h-auto object-cover object-bottom"
+          />
+        </div>
 
         {/* Bottom bar */}
         <div className="border-t border-blue-900/10 px-6 sm:px-10 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            {liveSocials.map((s) => (
-              <a
-                key={s.name}
-                href={s.href}
-                aria-label={s.name}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-9 h-9 flex items-center justify-center rounded-md border border-blue-900/15 text-blue-900/60 hover:text-blue-600 hover:border-blue-600/40 transition"
-              >
-                {s.icon}
-              </a>
-            ))}
-          </div>
+          {liveSocials.length > 0 && (
+            <div className="flex items-center gap-3">
+              {liveSocials.map((s) => (
+                <a
+                  key={s.name}
+                  href={s.href}
+                  aria-label={s.name}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-9 h-9 flex items-center justify-center rounded-md border border-blue-900/15 text-blue-900/60 hover:text-blue-600 hover:border-blue-600/40 transition"
+                >
+                  {s.icon}
+                </a>
+              ))}
+            </div>
+          )}
           <div className="text-xs text-blue-900/50 text-center sm:text-right">
             <div>© {year} Sneakers Terminal · Not a registered investment advisor. Educational use only.</div>
             <div className="mt-1">
