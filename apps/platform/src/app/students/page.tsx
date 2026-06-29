@@ -1,8 +1,8 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import { cookies } from 'next/headers'
 import { WaitlistForm } from '../waitlist-form'
 import { isValidReferralCodeFormat } from '@/lib/referral-code'
+import { HeroBackground } from '../hero-background'
 
 export const dynamic = 'force-dynamic'
 
@@ -32,16 +32,7 @@ export default async function StudentsPage() {
 
   return (
     <main className="relative min-h-screen flex items-center justify-center p-8 overflow-hidden isolate">
-      <Image
-        src="/hero-bg.png"
-        alt=""
-        fill
-        priority
-        sizes="100vw"
-        className="object-cover -z-20"
-      />
-      <div className="absolute inset-0 bg-black/75 -z-10" />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/60 -z-10" />
+      <HeroBackground />
 
       <Link
         href="/"

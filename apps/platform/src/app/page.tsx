@@ -10,6 +10,7 @@ import { VENUES } from '@/lib/venues'
 import { loadMarketCount } from '@/lib/markets-data'
 import { getSignupConfig } from '@/lib/signup-config'
 import { LandingMobileNav } from './landing-mobile-nav'
+import { HeroBackground } from './hero-background'
 
 export const dynamic = 'force-dynamic'
 
@@ -33,18 +34,7 @@ export default async function LandingPage() {
 
   return (
     <main className="relative min-h-screen flex items-center justify-center px-6 pt-28 pb-32 overflow-hidden isolate">
-      {/* Background image — optimized via next/image */}
-      <Image
-        src="/hero-bg.png"
-        alt=""
-        fill
-        priority
-        sizes="100vw"
-        className="object-cover -z-20"
-      />
-      {/* Darkening overlay — dual-layer for extra contrast on the skyline */}
-      <div className="absolute inset-0 bg-black/75 -z-10" />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/60 -z-10" />
+      <HeroBackground />
 
       {/* Top nav: just LOG IN + SIGN UP. SIGN UP opens a small dropdown with
           Individual / Organization options so we don't clutter the bar with

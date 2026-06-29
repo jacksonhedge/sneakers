@@ -2,6 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { getServerClient } from '@/lib/supabase-server'
 import { JoinSignupForm } from './join-signup-form'
+import { HeroBackground } from '../../hero-background'
 
 export const dynamic = 'force-dynamic'
 
@@ -60,11 +61,7 @@ export default async function JoinPage({
 
   return (
     <main className="relative min-h-screen overflow-hidden text-white bg-stone-950">
-      {/* Subtle blue glow */}
-      <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 w-[600px] h-[600px] rounded-full bg-blue-500/15 blur-[100px] pointer-events-none"
-        aria-hidden
-      />
+      <HeroBackground />
 
       <nav className="relative z-10 px-6 py-5 flex items-center justify-between">
         <Link
@@ -159,10 +156,7 @@ function InvalidInviteCard({ reason }: { reason: 'bad-format' | 'not-found' }) {
 
   return (
     <main className="relative min-h-screen overflow-hidden text-white bg-stone-950">
-      <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 w-[600px] h-[600px] rounded-full bg-blue-500/15 blur-[100px] pointer-events-none"
-        aria-hidden
-      />
+      <HeroBackground />
 
       <nav className="relative z-10 px-6 py-5 flex items-center justify-between">
         <Link

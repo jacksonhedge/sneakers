@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { cookies } from 'next/headers'
 import { SignupForm } from './signup-form'
-import { TerminalBackdrop } from './terminal-backdrop'
+import { HeroBackground } from '../hero-background'
 import { isValidInviteCodeFormat } from '@/lib/invite-code'
 import { isValidReferralCodeFormat } from '@/lib/referral-code'
 
@@ -12,12 +12,8 @@ export const metadata = {
   title: 'Sign up — Sneakers Terminal',
 }
 
-// Immersive sign-up experience. The trading terminal renders behind a dark
-// overlay so visitors literally see what they're signing up for. Form sits
-// on top in a glass card.
-//
-// Renders a decorative TerminalBackdrop (no real data, no auth needed) so
-// the visual works even when scrapers/Postgres are quiet.
+// Immersive sign-up experience. The glowing-shoes hero image renders full
+// bleed behind the form, which sits on top in a glass card.
 
 export default async function SignupPage({
   searchParams,
@@ -37,25 +33,7 @@ export default async function SignupPage({
 
   return (
     <main className="relative min-h-screen overflow-hidden text-white">
-      {/* Layer 1 (base) — decorative terminal mock at full size + opacity.
-          opacity-50 keeps it visibly there but recessed; sm-blur softens
-          edges so it reads as ambient texture, not foreground content. */}
-      <div
-        className="absolute inset-0 z-0 opacity-50 blur-[1.5px] pointer-events-none select-none"
-        aria-hidden
-      >
-        <TerminalBackdrop />
-      </div>
-
-      {/* Layer 2 — dark wash on top of the terminal so the form has
-          contrast. Semi-transparent so the terminal still bleeds through. */}
-      <div className="absolute inset-0 z-[1] bg-gradient-to-br from-stone-950/75 via-stone-950/60 to-stone-950/85 pointer-events-none" />
-
-      {/* Layer 3 — blue glow centered behind the form */}
-      <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[2] w-[600px] h-[600px] rounded-full bg-blue-500/15 blur-[100px] pointer-events-none"
-        aria-hidden
-      />
+      <HeroBackground />
 
       {/* Top nav — back link + logo */}
       <nav className="relative z-10 px-6 py-5 flex items-center justify-between">
