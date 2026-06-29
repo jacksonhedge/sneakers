@@ -38,7 +38,7 @@ function Item({ item }: { item: NavItem }) {
     <div
       className={`flex items-center gap-3 px-3 py-2 rounded text-sm transition ${
         item.active
-          ? 'bg-[#00703c]/10 text-[#004225] font-semibold'
+          ? 'bg-[#1B4DE4]/10 text-[#1E3A8A] font-semibold'
           : 'text-stone-800 hover:bg-stone-100 hover:text-stone-900'
       } ${item.soon ? 'opacity-50 cursor-not-allowed' : ''}`}
     >
@@ -117,7 +117,7 @@ export function DashboardSidebar({
                   {s[0]}
                 </span>
                 <span>{s}</span>
-                <span className="ml-auto text-[10px] text-[#00703c] hover:underline cursor-not-allowed">
+                <span className="ml-auto text-[10px] text-[#1B4DE4] hover:underline cursor-not-allowed">
                   Configure
                 </span>
               </div>
@@ -134,13 +134,13 @@ export function DashboardSidebar({
         </div>
 
         {/* Waitlist status chip — compact version of the old dashboard */}
-        <div className="mt-3 mx-2 p-3 rounded border border-[#00703c]/30 bg-[#00703c]/5">
-          <div className="text-[9px] text-[#004225] tracking-[0.15em] font-semibold mb-1">
+        <div className="mt-3 mx-2 p-3 rounded border border-[#1B4DE4]/30 bg-[#1B4DE4]/5">
+          <div className="text-[9px] text-[#1E3A8A] tracking-[0.15em] font-semibold mb-1">
             WAITLIST STATUS
           </div>
           <div className="flex items-baseline justify-between">
             <div className="text-xs text-stone-800">Position</div>
-            <div className="text-lg font-bold text-[#00703c]">#{position.toLocaleString()}</div>
+            <div className="text-lg font-bold text-[#1B4DE4]">#{position.toLocaleString()}</div>
           </div>
           <div className="flex items-baseline justify-between mt-1">
             <div className="text-xs text-stone-800">Referrals</div>

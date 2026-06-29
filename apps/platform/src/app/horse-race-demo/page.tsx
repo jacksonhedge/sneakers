@@ -533,7 +533,7 @@ export default function HorseRaceDemoPage() {
               disabled={resolved}
               className={`text-xs px-3 py-1.5 rounded-full font-bold tracking-wider transition disabled:opacity-50 ${
                 paused
-                  ? 'bg-[#00703c] text-white hover:bg-[#003520]'
+                  ? 'bg-[#1B4DE4] text-white hover:bg-[#003520]'
                   : 'border border-stone-300 hover:bg-stone-100'
               }`}
             >
@@ -725,7 +725,7 @@ export default function HorseRaceDemoPage() {
                     ? STRIKE_DEFS.map((d) => ({
                         value: d.level,
                         label: d.label,
-                        color: '#00703c',
+                        color: '#1B4DE4',
                       }))
                     : undefined
                 return (

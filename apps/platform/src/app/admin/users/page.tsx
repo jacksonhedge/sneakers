@@ -243,7 +243,7 @@ export default async function UsersPage({
   // use identical chrome.
   const pillBase =
     'px-3 py-1.5 text-[11px] font-semibold tracking-wider rounded-full border transition'
-  const pillActive = 'bg-[#00703c] text-white border-[#00703c] shadow-sm'
+  const pillActive = 'bg-[#1B4DE4] text-white border-[#1B4DE4] shadow-sm'
   const pillIdle =
     'bg-white text-stone-600 border-stone-200 hover:text-stone-900 hover:border-stone-300'
 
@@ -283,7 +283,7 @@ export default async function UsersPage({
           {status !== 'all' && <input type="hidden" name="status" value={status} />}
           {tier !== 'all' && <input type="hidden" name="tier" value={tier} />}
           {accountType !== 'all' && <input type="hidden" name="type" value={accountType} />}
-          <button className="bg-[#00703c] text-white text-xs font-semibold tracking-wider px-4 py-1.5 rounded-lg shadow-sm hover:bg-[#004225] transition">
+          <button className="bg-[#1B4DE4] text-white text-xs font-semibold tracking-wider px-4 py-1.5 rounded-lg shadow-sm hover:bg-[#1E3A8A] transition">
             SEARCH
           </button>
           {hasAnyFilter && (
@@ -439,7 +439,7 @@ export default async function UsersPage({
                       <ApproveButton userId={r.id} approved={Boolean(r.invite_used_at)} />
                       <Link
                         href={`/users/${r.id}`}
-                        className="text-[#00703c] hover:text-[#004225] hover:underline font-semibold"
+                        className="text-[#1B4DE4] hover:text-[#1E3A8A] hover:underline font-semibold"
                       >
                         view →
                       </Link>
@@ -456,7 +456,7 @@ export default async function UsersPage({
                       Page {pageNum} is past the last page ({totalPages}).{' '}
                       <Link
                         href={buildUrl({ page: 1 })}
-                        className="text-[#00703c] underline"
+                        className="text-[#1B4DE4] underline"
                       >
                         Jump to page 1
                       </Link>

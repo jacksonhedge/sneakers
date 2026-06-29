@@ -56,7 +56,7 @@ function Bar({ value, max }: { value: number; max: number }) {
   return (
     <div className="flex flex-col items-center justify-end gap-1 flex-1 min-w-0">
       <div className="text-[9px] text-stone-500">{value}</div>
-      <div className="bg-[#00703c] w-full" style={{ height: `${h}px` }} />
+      <div className="bg-[#1B4DE4] w-full" style={{ height: `${h}px` }} />
     </div>
   )
 }
@@ -210,17 +210,17 @@ export default async function AdminOverview() {
   return (
     <div className="space-y-8">
       <div>
-        <div className="text-xs text-[#004225] tracking-wider mb-1">{'>'} OVERVIEW</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-1">{'>'} OVERVIEW</div>
         <h1 className="text-2xl font-bold text-stone-900">Admin Console</h1>
       </div>
 
       {/* Scraper health — big boxes per platform, freshest first */}
       <section>
         <div className="flex items-baseline justify-between mb-3">
-          <h2 className="text-xs text-[#004225] tracking-wider">{'>'} SCRAPER HEALTH</h2>
+          <h2 className="text-xs text-[#1E3A8A] tracking-wider">{'>'} SCRAPER HEALTH</h2>
           <Link
             href="/scrapers"
-            className="text-[11px] text-[#00703c] hover:underline tracking-wider"
+            className="text-[11px] text-[#1B4DE4] hover:underline tracking-wider"
           >
             full status →
           </Link>
@@ -317,7 +317,7 @@ export default async function AdminOverview() {
 
       {/* Enterprise — Hardware + Pipeline (prominent because hardware is real money) */}
       <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-2">{'>'} ENTERPRISE PIPELINE</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-2">{'>'} ENTERPRISE PIPELINE</div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div className="border border-stone-300 bg-white p-4 md:col-span-2">
             <div className="flex items-baseline justify-between mb-3">
@@ -432,7 +432,7 @@ export default async function AdminOverview() {
 
       {/* Per-surface status cards */}
       <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-2">{'>'} BY SURFACE</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-2">{'>'} BY SURFACE</div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           <SurfaceCard
             href="/users"
@@ -504,7 +504,7 @@ export default async function AdminOverview() {
 
       {/* Signup velocity */}
       <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-2">
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-2">
           {'>'} SIGNUP VELOCITY (last 30 days)
         </div>
         <div className="border border-stone-300 bg-white p-4">
@@ -522,7 +522,7 @@ export default async function AdminOverview() {
 
       {/* Quick actions */}
       <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-2">{'>'} QUICK ACTIONS</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-2">{'>'} QUICK ACTIONS</div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <Link href="/users" className="border border-stone-300 bg-white hover:bg-stone-50 p-4 transition">
             <div className="text-sm font-semibold text-stone-900">Users →</div>
@@ -560,7 +560,7 @@ function StatCard({
   return (
     <div className={`border ${cls} p-4`}>
       <div className="text-[10px] text-stone-500 tracking-wider mb-1">{label.toUpperCase()}</div>
-      <div className={`text-2xl font-bold ${accent === 'amber' ? 'text-amber-800' : 'text-[#00703c]'}`}>
+      <div className={`text-2xl font-bold ${accent === 'amber' ? 'text-amber-800' : 'text-[#1B4DE4]'}`}>
         {value}
       </div>
       {hint && <div className="text-[10px] text-stone-500 mt-1">{hint}</div>}

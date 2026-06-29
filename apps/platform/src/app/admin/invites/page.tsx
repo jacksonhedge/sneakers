@@ -42,7 +42,7 @@ export default async function InvitesPage() {
     <div className="space-y-8">
       <div className="flex items-end justify-between flex-wrap gap-4">
         <div>
-          <div className="text-xs text-[#004225] tracking-wider mb-1">{'>'} INVITES</div>
+          <div className="text-xs text-[#1E3A8A] tracking-wider mb-1">{'>'} INVITES</div>
           <h1 className="text-2xl font-bold text-stone-900">
             {rows.length.toLocaleString()}{' '}
             <span className="text-stone-500 text-base font-normal">
@@ -55,7 +55,7 @@ export default async function InvitesPage() {
       <IssueForm />
 
       <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-2">{'>'} PENDING ({pending.length})</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-2">{'>'} PENDING ({pending.length})</div>
         <div className="border border-stone-300 bg-white overflow-x-auto">
           <table className="w-full text-xs">
             <thead className="bg-stone-100 text-stone-600 tracking-wider">
@@ -74,7 +74,7 @@ export default async function InvitesPage() {
                       {r.email}
                     </Link>
                   </td>
-                  <td className="px-3 py-2 font-mono text-[#00703c] tracking-widest">
+                  <td className="px-3 py-2 font-mono text-[#1B4DE4] tracking-widest">
                     {r.invite_code}
                   </td>
                   <td className="px-3 py-2 text-stone-600">{fmt(r.invited_at)}</td>
@@ -96,7 +96,7 @@ export default async function InvitesPage() {
       </section>
 
       <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-2">{'>'} BURNED ({burned.length})</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-2">{'>'} BURNED ({burned.length})</div>
         <div className="border border-stone-300 bg-white overflow-x-auto">
           <table className="w-full text-xs">
             <thead className="bg-stone-100 text-stone-600 tracking-wider">

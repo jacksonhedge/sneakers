@@ -74,7 +74,7 @@ export default function RollingDemoPage() {
           <p className="text-sm text-stone-600 max-w-xl leading-relaxed">
             Numbers tick every 3s with a small random walk. Watch each
             digit roll independently — only the columns that actually
-            changed move. Brand blue (#00703c) flashes on increase,
+            changed move. Brand blue (#1B4DE4) flashes on increase,
             red on decrease, opacity scaled by magnitude.
           </p>
           <div className="flex items-center gap-2 pt-1">
@@ -88,7 +88,7 @@ export default function RollingDemoPage() {
             <button
               type="button"
               onClick={tickNow}
-              className="text-xs px-3 py-1.5 rounded-full bg-[#00703c] text-white hover:bg-[#003520] font-bold tracking-wider"
+              className="text-xs px-3 py-1.5 rounded-full bg-[#1B4DE4] text-white hover:bg-[#003520] font-bold tracking-wider"
             >
               TICK NOW
             </button>

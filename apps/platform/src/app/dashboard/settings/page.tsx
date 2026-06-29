@@ -35,7 +35,7 @@ export default async function SettingsPage() {
       <div className="max-w-3xl mx-auto px-6 py-12">
         <Link
           href="/dashboard"
-          className="text-xs text-[#004225]/80 tracking-wider hover:text-[#004225]"
+          className="text-xs text-[#1E3A8A]/80 tracking-wider hover:text-[#1E3A8A]"
         >
           ← DASHBOARD
         </Link>
@@ -55,7 +55,7 @@ export default async function SettingsPage() {
                 your current subscription — cancel via{' '}
                 <Link
                   href="/dashboard/billing"
-                  className="text-[#00703c] hover:underline"
+                  className="text-[#1B4DE4] hover:underline"
                 >
                   billing
                 </Link>{' '}
@@ -81,7 +81,7 @@ export default async function SettingsPage() {
           </p>
           <Link
             href="/dashboard/settings/api-keys"
-            className="inline-block text-xs tracking-wider font-semibold text-[#00703c] hover:underline"
+            className="inline-block text-xs tracking-wider font-semibold text-[#1B4DE4] hover:underline"
           >
             MANAGE API KEYS →
           </Link>
@@ -95,7 +95,7 @@ export default async function SettingsPage() {
           </p>
           <Link
             href="/dashboard/billing"
-            className="inline-block text-xs tracking-wider font-semibold text-[#00703c] hover:underline"
+            className="inline-block text-xs tracking-wider font-semibold text-[#1B4DE4] hover:underline"
           >
             MANAGE SUBSCRIPTION →
           </Link>

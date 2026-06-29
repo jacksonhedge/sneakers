@@ -55,11 +55,11 @@ export default async function AlertSettingsPage() {
   return (
     <main className="min-h-screen bg-stone-50 text-stone-900">
       <div className="max-w-3xl mx-auto px-6 py-10 space-y-6">
-        <Link href="/dashboard/alerts" className="text-xs text-[#004225]/80 tracking-wider hover:text-[#004225]">
+        <Link href="/dashboard/alerts" className="text-xs text-[#1E3A8A]/80 tracking-wider hover:text-[#1E3A8A]">
           ← ALERTS
         </Link>
         <header>
-          <div className="text-xs text-[#004225] tracking-wider mb-1">{'>'} SETTINGS</div>
+          <div className="text-xs text-[#1E3A8A] tracking-wider mb-1">{'>'} SETTINGS</div>
           <h1 className="text-3xl md:text-4xl font-bold">Delivery preferences</h1>
           <p className="text-sm text-stone-600 mt-2 max-w-2xl">
             Control how alerts reach you. Quiet hours skip notifications during the window — they

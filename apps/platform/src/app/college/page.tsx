@@ -62,7 +62,7 @@ export default async function CollegePage() {
           <div className="text-xs text-blue-300/80 mb-6 tracking-wider">
             SNEAKERS TERMINAL / COLLEGE
           </div>
-          <div className="mb-6 rounded-full bg-stone-950 p-6 ring-1 ring-blue-400/30 shadow-[0_8px_32px_rgba(0,0,0,0.55),0_0_48px_rgba(0,112,60,0.18)]">
+          <div className="mb-6 rounded-full bg-stone-950 p-6 ring-1 ring-blue-400/30 shadow-[0_8px_32px_rgba(0,0,0,0.55),0_0_48px_rgba(27, 77, 228,0.18)]">
             <Image
               src="/logo.png"
               alt="Sneakers"

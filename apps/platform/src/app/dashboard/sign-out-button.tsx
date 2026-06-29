@@ -19,7 +19,7 @@ export function SignOutButton() {
     <button
       type="button"
       onClick={signOut}
-      className="text-xs text-stone-600 hover:text-[#00703c] tracking-wider transition"
+      className="text-xs text-stone-600 hover:text-[#1B4DE4] tracking-wider transition"
     >
       SIGN OUT
     </button>

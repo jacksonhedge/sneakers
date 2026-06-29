@@ -77,7 +77,7 @@ export default async function AdminClicksPage() {
     return (
       <div className="space-y-4">
         <div>
-          <div className="text-xs text-[#004225] tracking-wider mb-1">{'>'} CLICKS</div>
+          <div className="text-xs text-[#1E3A8A] tracking-wider mb-1">{'>'} CLICKS</div>
           <h1 className="text-2xl font-bold text-stone-900">Click Tracking</h1>
         </div>
         <div className="border border-red-400 bg-red-50 p-4 text-sm text-red-800">
@@ -117,7 +117,7 @@ export default async function AdminClicksPage() {
   return (
     <div className="space-y-8">
       <div>
-        <div className="text-xs text-[#004225] tracking-wider mb-1">{'>'} CLICKS</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-1">{'>'} CLICKS</div>
         <h1 className="text-2xl font-bold text-stone-900">Click Tracking</h1>
         <p className="text-sm text-stone-600 mt-1">
           Last 24h of <code className="bg-stone-100 px-1 rounded text-xs">click_events</code>. Inserts

@@ -21,7 +21,7 @@ export function IssueForm() {
       }}
       className="border border-stone-300 bg-white p-4 space-y-3"
     >
-      <div className="text-xs text-[#004225] tracking-wider">{'>'} ISSUE INVITE</div>
+      <div className="text-xs text-[#1E3A8A] tracking-wider">{'>'} ISSUE INVITE</div>
       <div className="flex flex-wrap gap-2 items-center">
         <input
           type="email"
@@ -45,7 +45,7 @@ export function IssueForm() {
         <button
           type="submit"
           disabled={pending}
-          className="bg-[#00703c] text-white text-xs px-4 py-2 tracking-wider disabled:opacity-50"
+          className="bg-[#1B4DE4] text-white text-xs px-4 py-2 tracking-wider disabled:opacity-50"
         >
           {pending ? 'ISSUING…' : 'ISSUE CODE'}
         </button>

@@ -175,7 +175,7 @@ function ActionButton({
   if (!armed) {
     const cls =
       variant === 'primary'
-        ? 'bg-[#00703c] text-white hover:bg-[#005a30]'
+        ? 'bg-[#1B4DE4] text-white hover:bg-[#005a30]'
         : variant === 'destructive'
           ? 'bg-white text-red-700 border border-red-300 hover:bg-red-50'
           : 'bg-white text-stone-700 border border-stone-300 hover:bg-stone-50'
@@ -199,7 +199,7 @@ function ActionButton({
         className={`px-3 py-1.5 tracking-wider transition disabled:opacity-50 ${
           variant === 'destructive'
             ? 'bg-red-700 text-white hover:bg-red-800'
-            : 'bg-[#004225] text-white hover:bg-[#002914]'
+            : 'bg-[#1E3A8A] text-white hover:bg-[#002914]'
         }`}
       >
         {pending ? 'WORKING…' : confirmLabel.toUpperCase()}

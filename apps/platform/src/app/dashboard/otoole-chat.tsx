@@ -114,7 +114,7 @@ export function OTooleChat() {
             key={i}
             className={`text-xs leading-relaxed whitespace-pre-wrap ${
               m.role === 'user'
-                ? 'ml-4 p-3 rounded bg-[#00703c]/10 text-[#004225] border border-[#00703c]/30'
+                ? 'ml-4 p-3 rounded bg-[#1B4DE4]/10 text-[#1E3A8A] border border-[#1B4DE4]/30'
                 : 'bg-stone-100 text-stone-800 p-3 rounded'
             } ${m.stub ? 'opacity-80' : ''}`}
           >

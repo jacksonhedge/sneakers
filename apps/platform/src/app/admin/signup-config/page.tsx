@@ -42,7 +42,7 @@ export default async function AdminSignupConfigPage() {
       <div className="max-w-3xl mx-auto px-6 py-12">
         <Link
           href="/"
-          className="text-xs text-[#004225]/80 tracking-wider hover:text-[#004225]"
+          className="text-xs text-[#1E3A8A]/80 tracking-wider hover:text-[#1E3A8A]"
         >
           ← ADMIN
         </Link>

@@ -133,7 +133,7 @@ export function ApiKeysEditor({
           href={getKeyUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs text-[#004225] hover:underline whitespace-nowrap"
+          className="text-xs text-[#1E3A8A] hover:underline whitespace-nowrap"
         >
           Get key →
         </a>
@@ -153,7 +153,7 @@ export function ApiKeysEditor({
           <div className="flex gap-2">
             <button
               onClick={() => setEditing(true)}
-              className="text-xs text-[#004225] hover:underline"
+              className="text-xs text-[#1E3A8A] hover:underline"
             >
               Replace
             </button>
@@ -190,7 +190,7 @@ export function ApiKeysEditor({
             <button
               onClick={() => onSave(true)}
               disabled={pending || !apiKey}
-              className="text-xs font-semibold rounded bg-[#004225] hover:bg-[#00703c] text-white py-2 px-4 transition disabled:opacity-60"
+              className="text-xs font-semibold rounded bg-[#1E3A8A] hover:bg-[#1B4DE4] text-white py-2 px-4 transition disabled:opacity-60"
             >
               {pending ? 'Verifying…' : 'Save & verify'}
             </button>

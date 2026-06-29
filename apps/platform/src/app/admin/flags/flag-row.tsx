@@ -80,7 +80,7 @@ export function FlagRow({
               disabled={pending}
               onClick={commit}
               className={`px-3 py-1.5 tracking-wider text-white disabled:opacity-50 ${
-                value ? 'bg-red-700 hover:bg-red-800' : 'bg-[#00703c] hover:bg-[#005a30]'
+                value ? 'bg-red-700 hover:bg-red-800' : 'bg-[#1B4DE4] hover:bg-[#005a30]'
               }`}
             >
               {pending ? 'WORKING…' : `CONFIRM → ${value ? 'FALSE' : 'TRUE'}`}

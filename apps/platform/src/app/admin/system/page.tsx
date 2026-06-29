@@ -31,12 +31,12 @@ export default async function SystemPage() {
   return (
     <div className="space-y-8">
       <div>
-        <div className="text-xs text-[#004225] tracking-wider mb-1">{'>'} SYSTEM</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-1">{'>'} SYSTEM</div>
         <h1 className="text-2xl font-bold text-stone-900">Infra & API Usage</h1>
       </div>
 
       <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-2">{'>'} ENV VAR STATUS</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-2">{'>'} ENV VAR STATUS</div>
         <div className="border border-stone-300 bg-white">
           <table className="w-full text-xs">
             <thead className="bg-stone-100 text-stone-600 tracking-wider">
@@ -66,7 +66,7 @@ export default async function SystemPage() {
       </section>
 
       <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-2">{'>'} ADMIN ALLOWLIST</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-2">{'>'} ADMIN ALLOWLIST</div>
         <div className="border border-stone-300 bg-white p-4">
           {adminEmails.length === 0 ? (
             <div className="text-xs text-red-700">
@@ -88,7 +88,7 @@ export default async function SystemPage() {
       </section>
 
       <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-2">{'>'} THIRD-PARTY DASHBOARDS</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-2">{'>'} THIRD-PARTY DASHBOARDS</div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <a
             href="https://supabase.com/dashboard"
@@ -127,7 +127,7 @@ export default async function SystemPage() {
       </section>
 
       <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-2">{'>'} PAYMENTS</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-2">{'>'} PAYMENTS</div>
         <div className="border border-stone-300 bg-white p-4">
           <div className="text-sm font-semibold text-stone-900 mb-1">Not wired yet</div>
           <div className="text-xs text-stone-500">
@@ -139,7 +139,7 @@ export default async function SystemPage() {
       </section>
 
       <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-2">{'>'} STRESS-TEST CLEANUP</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-2">{'>'} STRESS-TEST CLEANUP</div>
         <div className="border border-stone-300 bg-white p-4 space-y-3">
           <div className="text-xs text-stone-700">
             Deletes every waitlist row whose email starts with{' '}

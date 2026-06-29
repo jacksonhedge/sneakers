@@ -125,14 +125,14 @@ export async function sendPasswordResetEmail({
 
   const html = `
 <div style="font-family: ui-monospace, 'SF Mono', Menlo, monospace; background: #fff; color: #1a1f2c; padding: 32px; max-width: 560px; margin: 0 auto; border: 1px solid #e5e7eb;">
-  <div style="font-size: 11px; color: rgba(0,66,37,0.6); margin-bottom: 16px; letter-spacing: 0.05em;">SNEAKERS TERMINAL / PASSWORD RESET</div>
-  <div style="font-size: 16px; color: #004225; margin-bottom: 8px; font-weight: 600;">&gt; Reset your password.</div>
+  <div style="font-size: 11px; color: rgba(30, 58, 138,0.6); margin-bottom: 16px; letter-spacing: 0.05em;">SNEAKERS TERMINAL / PASSWORD RESET</div>
+  <div style="font-size: 16px; color: #1E3A8A; margin-bottom: 8px; font-weight: 600;">&gt; Reset your password.</div>
   <div style="font-size: 14px; color: #374151; line-height: 1.6; margin-bottom: 24px;">
     Click the button below to set a new password. The link is single-use and expires in about an hour.
   </div>
 
   <div style="text-align: center; margin-bottom: 24px;">
-    <a href="${resetUrl}" style="display: inline-block; background: #00703c; color: #ffffff; padding: 12px 32px; text-decoration: none; font-weight: 600; letter-spacing: 0.05em; border-radius: 9999px;">
+    <a href="${resetUrl}" style="display: inline-block; background: #1B4DE4; color: #ffffff; padding: 12px 32px; text-decoration: none; font-weight: 600; letter-spacing: 0.05em; border-radius: 9999px;">
       RESET PASSWORD →
     </a>
   </div>
@@ -206,14 +206,14 @@ export async function sendMagicLinkEmail({
 
   const html = `
 <div style="font-family: ui-monospace, 'SF Mono', Menlo, monospace; background: #fff; color: #1a1f2c; padding: 32px; max-width: 560px; margin: 0 auto; border: 1px solid #e5e7eb;">
-  <div style="font-size: 11px; color: rgba(0,66,37,0.6); margin-bottom: 16px; letter-spacing: 0.05em;">SNEAKERS TERMINAL / SIGN IN</div>
-  <div style="font-size: 16px; color: #004225; margin-bottom: 8px; font-weight: 600;">&gt; Sign in.</div>
+  <div style="font-size: 11px; color: rgba(30, 58, 138,0.6); margin-bottom: 16px; letter-spacing: 0.05em;">SNEAKERS TERMINAL / SIGN IN</div>
+  <div style="font-size: 16px; color: #1E3A8A; margin-bottom: 8px; font-weight: 600;">&gt; Sign in.</div>
   <div style="font-size: 14px; color: #374151; line-height: 1.6; margin-bottom: 24px;">
     Click the button below to sign in. The link is single-use and expires in about an hour.
   </div>
 
   <div style="text-align: center; margin-bottom: 24px;">
-    <a href="${magicLinkUrl}" style="display: inline-block; background: #00703c; color: #ffffff; padding: 12px 32px; text-decoration: none; font-weight: 600; letter-spacing: 0.05em;">
+    <a href="${magicLinkUrl}" style="display: inline-block; background: #1B4DE4; color: #ffffff; padding: 12px 32px; text-decoration: none; font-weight: 600; letter-spacing: 0.05em;">
       SIGN IN →
     </a>
   </div>
@@ -275,7 +275,7 @@ export async function sendBroadcastEmail({
     )
       .split('\n\n')
       .map((p) => `<p style="margin: 0 0 16px;">${p.replace(/\n/g, '<br>')}</p>`)
-      .join('')}<div style="margin-top:24px; padding-top:16px; border-top:1px solid #e5e7eb; font-size:11px; color:#6b7280;">Sneakers Terminal · <a href="${SITE_URL}" style="color:#00703c;">${SITE_URL.replace(/^https?:\/\//, '')}</a></div></div>`
+      .join('')}<div style="margin-top:24px; padding-top:16px; border-top:1px solid #e5e7eb; font-size:11px; color:#6b7280;">Sneakers Terminal · <a href="${SITE_URL}" style="color:#1B4DE4;">${SITE_URL.replace(/^https?:\/\//, '')}</a></div></div>`
 
   const { error } = await resend.emails.send({
     from: FROM,
@@ -332,19 +332,19 @@ export async function sendInviteEmail({ to, code }: InviteEmailInput): Promise<v
 
   const html = `
 <div style="font-family: ui-monospace, 'SF Mono', Menlo, monospace; background: #fff; color: #1a1f2c; padding: 32px; max-width: 560px; margin: 0 auto; border: 1px solid #e5e7eb;">
-  <div style="font-size: 11px; color: rgba(0,66,37,0.6); margin-bottom: 16px; letter-spacing: 0.05em;">SNEAKERS TERMINAL / ACCESS GRANTED</div>
-  <div style="font-size: 16px; color: #004225; margin-bottom: 8px; font-weight: 600;">&gt; Welcome to Sneakers Terminal.</div>
+  <div style="font-size: 11px; color: rgba(30, 58, 138,0.6); margin-bottom: 16px; letter-spacing: 0.05em;">SNEAKERS TERMINAL / ACCESS GRANTED</div>
+  <div style="font-size: 16px; color: #1E3A8A; margin-bottom: 8px; font-weight: 600;">&gt; Welcome to Sneakers Terminal.</div>
   <div style="font-size: 14px; color: #374151; line-height: 1.6; margin-bottom: 24px;">
     You're off the waitlist. Your one-time access code is below.
   </div>
 
-  <div style="background: #f8f5ee; border: 1px solid rgba(0, 112, 60, 0.2); padding: 20px; text-align: center; margin-bottom: 24px;">
+  <div style="background: #F4F6F9; border: 1px solid rgba(27, 77, 228, 0.2); padding: 20px; text-align: center; margin-bottom: 24px;">
     <div style="font-size: 11px; color: #6b7280; letter-spacing: 0.15em; margin-bottom: 8px;">ACCESS CODE</div>
-    <div style="font-size: 28px; font-weight: 700; color: #00703c; letter-spacing: 0.3em;">${code}</div>
+    <div style="font-size: 28px; font-weight: 700; color: #1B4DE4; letter-spacing: 0.3em;">${code}</div>
   </div>
 
   <div style="text-align: center; margin-bottom: 24px;">
-    <a href="${signupUrl}" style="display: inline-block; background: #00703c; color: #ffffff; padding: 12px 32px; text-decoration: none; font-weight: 600; letter-spacing: 0.05em;">
+    <a href="${signupUrl}" style="display: inline-block; background: #1B4DE4; color: #ffffff; padding: 12px 32px; text-decoration: none; font-weight: 600; letter-spacing: 0.05em;">
       SIGN UP →
     </a>
   </div>
@@ -358,7 +358,7 @@ export async function sendInviteEmail({ to, code }: InviteEmailInput): Promise<v
   <div style="border-top: 1px solid #e5e7eb; padding-top: 16px; font-size: 11px; color: #9ca3af;">
     — Sneakers Terminal
     <br>
-    <a href="${SITE_URL}" style="color: #00703c; text-decoration: none;">${SITE_URL.replace(/^https?:\/\//, '')}</a>
+    <a href="${SITE_URL}" style="color: #1B4DE4; text-decoration: none;">${SITE_URL.replace(/^https?:\/\//, '')}</a>
   </div>
 </div>
 `.trim()
@@ -416,14 +416,14 @@ export async function sendApprovedEmail({ to }: { to: string }): Promise<void> {
 
   const html = `
 <div style="font-family: ui-monospace, 'SF Mono', Menlo, monospace; background: #fff; color: #1a1f2c; padding: 32px; max-width: 560px; margin: 0 auto; border: 1px solid #e5e7eb;">
-  <div style="font-size: 11px; color: rgba(0,66,37,0.6); margin-bottom: 16px; letter-spacing: 0.05em;">SNEAKERS TERMINAL / ACCESS GRANTED</div>
-  <div style="font-size: 16px; color: #004225; margin-bottom: 8px; font-weight: 600;">&gt; You're in.</div>
+  <div style="font-size: 11px; color: rgba(30, 58, 138,0.6); margin-bottom: 16px; letter-spacing: 0.05em;">SNEAKERS TERMINAL / ACCESS GRANTED</div>
+  <div style="font-size: 16px; color: #1E3A8A; margin-bottom: 8px; font-weight: 600;">&gt; You're in.</div>
   <div style="font-size: 14px; color: #374151; line-height: 1.6; margin-bottom: 24px;">
     You're off the Sneakers Terminal waitlist. Your dashboard is unlocked.
   </div>
 
   <div style="text-align: center; margin-bottom: 24px;">
-    <a href="${dashboardUrl}" style="display: inline-block; background: #00703c; color: #ffffff; padding: 12px 32px; text-decoration: none; font-weight: 600; letter-spacing: 0.05em;">
+    <a href="${dashboardUrl}" style="display: inline-block; background: #1B4DE4; color: #ffffff; padding: 12px 32px; text-decoration: none; font-weight: 600; letter-spacing: 0.05em;">
       OPEN DASHBOARD →
     </a>
   </div>
@@ -435,7 +435,7 @@ export async function sendApprovedEmail({ to }: { to: string }): Promise<void> {
   <div style="border-top: 1px solid #e5e7eb; padding-top: 16px; font-size: 11px; color: #9ca3af;">
     — Sneakers Terminal
     <br>
-    <a href="${SITE_URL}" style="color: #00703c; text-decoration: none;">${SITE_URL.replace(/^https?:\/\//, '')}</a>
+    <a href="${SITE_URL}" style="color: #1B4DE4; text-decoration: none;">${SITE_URL.replace(/^https?:\/\//, '')}</a>
   </div>
 </div>
 `.trim()

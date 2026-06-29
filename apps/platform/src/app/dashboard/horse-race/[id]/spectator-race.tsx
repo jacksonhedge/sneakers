@@ -447,7 +447,7 @@ function SpectatorLane({ strike, rank }: { strike: Strike; rank: number }) {
           style={{
             right: '3%',
             background:
-              'repeating-linear-gradient(0deg, rgba(0,112,60,0.7) 0 4px, transparent 4px 8px)',
+              'repeating-linear-gradient(0deg, rgba(27, 77, 228,0.7) 0 4px, transparent 4px 8px)',
           }}
           aria-hidden
         />

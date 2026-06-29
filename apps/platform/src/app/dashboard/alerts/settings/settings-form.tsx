@@ -351,7 +351,7 @@ export function SettingsForm({ initial }: { initial: Initial }) {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="rounded border border-stone-200 bg-white p-5 space-y-3">
-      <div className="text-xs text-[#004225] tracking-wider font-semibold">{'>'} {title.toUpperCase()}</div>
+      <div className="text-xs text-[#1E3A8A] tracking-wider font-semibold">{'>'} {title.toUpperCase()}</div>
       {children}
     </section>
   )

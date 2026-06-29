@@ -93,14 +93,14 @@ function Tile({
       disabled={disabled || active}
       className={`text-left rounded border p-4 transition focus:outline-none ${
         active
-          ? 'border-[#00703c] ring-2 ring-[#00703c]/40 bg-[#00703c]/5 cursor-default'
+          ? 'border-[#1B4DE4] ring-2 ring-[#1B4DE4]/40 bg-[#1B4DE4]/5 cursor-default'
           : 'border-stone-200 bg-white hover:border-stone-400 hover:bg-stone-50'
       } ${disabled ? 'opacity-60' : ''}`}
     >
       <div className="flex items-center justify-between mb-1">
         <div className="text-sm font-semibold text-stone-900">{title}</div>
         {active && (
-          <span className="text-[10px] tracking-wider text-[#00703c] font-semibold">
+          <span className="text-[10px] tracking-wider text-[#1B4DE4] font-semibold">
             CURRENT
           </span>
         )}

@@ -16,13 +16,13 @@ export function CopyLink({ value }: { value: string }) {
 
   return (
     <div className="flex items-stretch gap-2">
-      <div className="flex-1 bg-white border border-[#00703c]/40 px-4 py-3 text-sm text-stone-800 font-semibold overflow-x-auto whitespace-nowrap">
+      <div className="flex-1 bg-white border border-[#1B4DE4]/40 px-4 py-3 text-sm text-stone-800 font-semibold overflow-x-auto whitespace-nowrap">
         {value}
       </div>
       <button
         type="button"
         onClick={copy}
-        className="border border-[#00703c] bg-[#00703c] text-white px-4 py-3 text-xs tracking-wider hover:bg-[#004225] hover:border-[#004225] transition"
+        className="border border-[#1B4DE4] bg-[#1B4DE4] text-white px-4 py-3 text-xs tracking-wider hover:bg-[#1E3A8A] hover:border-[#1E3A8A] transition"
       >
         {copied ? 'COPIED' : 'COPY'}
       </button>

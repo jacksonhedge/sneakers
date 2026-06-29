@@ -142,7 +142,7 @@ function Row({
           : isThrone
             ? 'bg-gradient-to-r from-amber-50 via-amber-50/60 to-white ring-amber-300'
             : 'bg-white ring-stone-200'
-      } ${isStreak ? 'shadow-[0_0_0_2px_rgba(0,112,60,0.18)]' : ''}`}
+      } ${isStreak ? 'shadow-[0_0_0_2px_rgba(27, 77, 228,0.18)]' : ''}`}
     >
       {/* Rank cell — fixed width so the column doesn't reflow on rank changes */}
       <div className="w-12 flex items-baseline justify-end gap-1 shrink-0">
@@ -195,7 +195,7 @@ function Row({
         {(subLabel || isStreak) && (
           <div className="text-[10px] text-stone-700 truncate">
             {isStreak && (
-              <span className="text-[#00703c] font-semibold mr-1">
+              <span className="text-[#1B4DE4] font-semibold mr-1">
                 🔥 {entry.streak} streak
               </span>
             )}

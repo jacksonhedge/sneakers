@@ -142,7 +142,7 @@ export function FilterBar({
         onClick={() => go({ [param]: active ? null : value })}
         className={`text-[10px] tracking-wider px-2.5 py-1 rounded-full ring-1 transition ${
           active
-            ? 'bg-[#004225] text-white ring-[#004225]'
+            ? 'bg-[#1E3A8A] text-white ring-[#1E3A8A]'
             : 'bg-white ring-stone-300 text-stone-600 hover:ring-stone-400 hover:text-stone-900'
         }`}
       >
@@ -163,7 +163,7 @@ export function FilterBar({
         onClick={() => go({ platform: active ? null : value })}
         className={`inline-flex items-center gap-1.5 text-[10px] tracking-wider pl-1 pr-2.5 py-0.5 rounded-full ring-1 transition ${
           active
-            ? 'bg-[#004225] text-white ring-[#004225]'
+            ? 'bg-[#1E3A8A] text-white ring-[#1E3A8A]'
             : 'bg-white ring-stone-300 text-stone-600 hover:ring-stone-400 hover:text-stone-900'
         }`}
       >
@@ -185,7 +185,7 @@ export function FilterBar({
         onClick={() => go({ sport: active ? null : value })}
         className={`inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-full ring-1 transition ${
           active
-            ? 'bg-[#004225] text-white ring-[#004225]'
+            ? 'bg-[#1E3A8A] text-white ring-[#1E3A8A]'
             : 'bg-white ring-stone-300 text-stone-700 hover:ring-stone-400 hover:text-stone-900'
         }`}
       >
@@ -201,14 +201,14 @@ export function FilterBar({
     return (
       <span
         key={`active:${param}`}
-        className="inline-flex items-center gap-1.5 text-[10px] tracking-wider px-2 py-1 rounded-full bg-[#004225]/10 text-[#004225] ring-1 ring-[#004225]/30"
+        className="inline-flex items-center gap-1.5 text-[10px] tracking-wider px-2 py-1 rounded-full bg-[#1E3A8A]/10 text-[#1E3A8A] ring-1 ring-[#1E3A8A]/30"
       >
         <span className="text-stone-400">{label}:</span>
         <span className="font-semibold">{value.toUpperCase()}</span>
         <button
           type="button"
           onClick={() => go({ [param]: null })}
-          className="text-[#004225]/60 hover:text-[#004225] transition"
+          className="text-[#1E3A8A]/60 hover:text-[#1E3A8A] transition"
           aria-label={`Clear ${label}`}
         >
           ×
@@ -239,12 +239,12 @@ export function FilterBar({
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Search player, team, question…"
-          className="flex-1 min-w-[240px] bg-white ring-1 ring-stone-300 focus:ring-[#004225]/60 focus:outline-none px-3 py-2 text-sm text-stone-900 placeholder:text-stone-400 transition rounded"
+          className="flex-1 min-w-[240px] bg-white ring-1 ring-stone-300 focus:ring-[#1E3A8A]/60 focus:outline-none px-3 py-2 text-sm text-stone-900 placeholder:text-stone-400 transition rounded"
         />
         <button
           type="submit"
           disabled={pending}
-          className="bg-[#004225] hover:bg-[#00703c] text-white px-4 py-2 text-xs tracking-wider transition disabled:opacity-60 rounded font-semibold"
+          className="bg-[#1E3A8A] hover:bg-[#1B4DE4] text-white px-4 py-2 text-xs tracking-wider transition disabled:opacity-60 rounded font-semibold"
         >
           SEARCH
         </button>

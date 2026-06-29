@@ -496,7 +496,7 @@ function TriggerConfigFields({
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="rounded border border-stone-200 bg-white p-5">
-      <div className="text-xs text-[#004225] tracking-wider mb-4 font-semibold">{'>'} {title.toUpperCase()}</div>
+      <div className="text-xs text-[#1E3A8A] tracking-wider mb-4 font-semibold">{'>'} {title.toUpperCase()}</div>
       <div className="space-y-3">{children}</div>
     </section>
   )

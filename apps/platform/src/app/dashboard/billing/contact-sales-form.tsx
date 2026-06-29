@@ -66,7 +66,7 @@ export function ContactSalesForm({ viewerEmail, onClose }: Props) {
       >
         <div className="flex items-start justify-between mb-4">
           <div>
-            <div className="text-[10px] text-[#004225] tracking-wider mb-1">{'>'} ENTERPRISE</div>
+            <div className="text-[10px] text-[#1E3A8A] tracking-wider mb-1">{'>'} ENTERPRISE</div>
             <h2 className="text-xl font-bold text-stone-900">Contact Sales</h2>
             <p className="text-sm text-stone-600 mt-1">
               Custom deployments, SSO, white-label, private hosting. Optional hardware bundle

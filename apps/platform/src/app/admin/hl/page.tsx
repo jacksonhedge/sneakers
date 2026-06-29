@@ -47,7 +47,7 @@ export default async function AdminHlPage() {
   return (
     <div className="space-y-8">
       <div>
-        <div className="text-xs text-[#004225] tracking-wider mb-1">
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-1">
           {'>'} HYPERLIQUID — PERPS SIGNALS
         </div>
         <h1 className="text-2xl font-bold text-stone-900">

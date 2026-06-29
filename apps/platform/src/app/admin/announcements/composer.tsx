@@ -146,7 +146,7 @@ export function BroadcastComposer() {
               setArmed(true)
             }}
             disabled={pending}
-            className="bg-[#00703c] text-white text-xs px-4 py-2 tracking-wider hover:bg-[#005a30] disabled:opacity-50"
+            className="bg-[#1B4DE4] text-white text-xs px-4 py-2 tracking-wider hover:bg-[#005a30] disabled:opacity-50"
           >
             SEND TO {preview.recipientCount}
           </button>

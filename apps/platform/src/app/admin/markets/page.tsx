@@ -130,7 +130,7 @@ function FilterChip({
       href={href}
       className={`text-[11px] px-2 py-0.5 rounded ring-1 transition tabular-nums ${
         active
-          ? 'bg-[#00703c] text-white ring-[#00703c]'
+          ? 'bg-[#1B4DE4] text-white ring-[#1B4DE4]'
           : 'bg-white text-stone-700 ring-stone-300 hover:ring-stone-500'
       }`}
     >
@@ -223,7 +223,7 @@ export default async function AdminMarketsPage({ searchParams }: PageProps) {
   return (
     <div className="space-y-6">
       <div>
-        <div className="text-xs text-[#004225] tracking-wider mb-1">{'>'} ADMIN</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-1">{'>'} ADMIN</div>
         <h1 className="text-2xl font-bold text-stone-900">Markets Catalog</h1>
         <p className="text-sm text-stone-600 mt-1">
           All scraped markets across every platform. Stale rows are NOT hidden —
@@ -330,7 +330,7 @@ export default async function AdminMarketsPage({ searchParams }: PageProps) {
             name="q"
             defaultValue={q}
             placeholder="search question or platform_market_id…"
-            className="flex-1 px-3 py-1.5 text-xs font-mono border border-stone-300 rounded focus:outline-none focus:ring-1 focus:ring-[#00703c]"
+            className="flex-1 px-3 py-1.5 text-xs font-mono border border-stone-300 rounded focus:outline-none focus:ring-1 focus:ring-[#1B4DE4]"
           />
           <button
             type="submit"

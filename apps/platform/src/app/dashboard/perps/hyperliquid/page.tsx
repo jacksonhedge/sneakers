@@ -85,13 +85,13 @@ export default async function DashboardHyperliquidPage() {
       <div className="max-w-6xl mx-auto px-6 py-8 space-y-8">
         <Link
           href="/dashboard"
-          className="text-xs text-[#004225]/80 tracking-wider hover:text-[#004225]"
+          className="text-xs text-[#1E3A8A]/80 tracking-wider hover:text-[#1E3A8A]"
         >
           ← DASHBOARD
         </Link>
 
         <header className="space-y-2">
-          <div className="text-xs text-[#004225] tracking-wider">{'>'} PERPS · HYPERLIQUID</div>
+          <div className="text-xs text-[#1E3A8A] tracking-wider">{'>'} PERPS · HYPERLIQUID</div>
           <div className="flex items-baseline justify-between gap-4 flex-wrap">
             <h1 className="text-3xl md:text-4xl font-bold">Hyperliquid perps</h1>
             <RefreshBadge isPaid={isPaid} fetchedAt={fetchedAt} />
@@ -170,7 +170,7 @@ function FreeTierBanner() {
       </div>
       <Link
         href="/dashboard/billing"
-        className="inline-block bg-[#004225] text-white text-xs font-semibold tracking-wider px-3 py-2 rounded hover:bg-[#003520] transition"
+        className="inline-block bg-[#1E3A8A] text-white text-xs font-semibold tracking-wider px-3 py-2 rounded hover:bg-[#003520] transition"
       >
         UPGRADE
       </Link>
@@ -239,7 +239,7 @@ function PerpsTable({ rows, isPaid, tradeUrl }: TableProps) {
                     href={tradeUrl}
                     target="_blank"
                     rel="noopener noreferrer sponsored"
-                    className="inline-block text-[11px] tracking-wider font-semibold text-[#004225] border border-[#004225]/30 px-2.5 py-1 rounded hover:bg-[#004225] hover:text-white transition"
+                    className="inline-block text-[11px] tracking-wider font-semibold text-[#1E3A8A] border border-[#1E3A8A]/30 px-2.5 py-1 rounded hover:bg-[#1E3A8A] hover:text-white transition"
                   >
                     TRADE →
                   </a>
@@ -319,7 +319,7 @@ function FundingOutlierCard({
                       href={tradeUrl}
                       target="_blank"
                       rel="noopener noreferrer sponsored"
-                      className="inline-block text-[10px] tracking-wider font-semibold text-[#004225] hover:underline"
+                      className="inline-block text-[10px] tracking-wider font-semibold text-[#1E3A8A] hover:underline"
                     >
                       TRADE →
                     </a>

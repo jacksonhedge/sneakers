@@ -258,7 +258,7 @@ function EmptyState() {
       </p>
       <Link
         href="/dashboard"
-        className="inline-flex items-center gap-1.5 text-xs font-bold tracking-wider text-[#004225] hover:text-[#003520]"
+        className="inline-flex items-center gap-1.5 text-xs font-bold tracking-wider text-[#1E3A8A] hover:text-[#003520]"
       >
         BACK TO DASHBOARD <span aria-hidden>→</span>
       </Link>

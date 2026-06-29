@@ -61,7 +61,7 @@ export function OrgDashboard({ org, initialInvitations, initialTab }: Props) {
       <div className="max-w-5xl mx-auto px-6 py-10">
         <Link
           href="/dashboard"
-          className="text-xs text-[#004225]/80 tracking-wider hover:text-[#004225]"
+          className="text-xs text-[#1E3A8A]/80 tracking-wider hover:text-[#1E3A8A]"
         >
           ← DASHBOARD
         </Link>

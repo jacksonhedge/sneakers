@@ -40,7 +40,7 @@ export interface PricingTableViewer {
 
 const ACCENT: Record<string, { ring: string; bg: string; text: string; btn: string }> = {
   stone:   { ring: 'ring-stone-300',     bg: 'bg-stone-50',         text: 'text-stone-700',     btn: 'bg-stone-800 hover:bg-stone-900 text-white' },
-  blue: { ring: 'ring-[#00703c]/40',  bg: 'bg-[#00703c]/5',      text: 'text-[#004225]',     btn: 'bg-[#00703c] hover:bg-[#004225] text-white' },
+  blue: { ring: 'ring-[#1B4DE4]/40',  bg: 'bg-[#1B4DE4]/5',      text: 'text-[#1E3A8A]',     btn: 'bg-[#1B4DE4] hover:bg-[#1E3A8A] text-white' },
   amber:   { ring: 'ring-amber-400/40',  bg: 'bg-amber-50',         text: 'text-amber-800',     btn: 'bg-amber-600 hover:bg-amber-700 text-white' },
   violet:  { ring: 'ring-violet-400/40', bg: 'bg-violet-50',        text: 'text-violet-800',    btn: 'bg-violet-700 hover:bg-violet-800 text-white' },
   sky:     { ring: 'ring-sky-400/40',    bg: 'bg-sky-50',           text: 'text-sky-800',       btn: 'bg-sky-700 hover:bg-sky-800 text-white' },
@@ -342,7 +342,7 @@ function PricingColumn({
       {accountTypeMismatch && (
         <a
           href="/dashboard/settings"
-          className="block text-center text-[10px] text-[#00703c] hover:underline mt-2"
+          className="block text-center text-[10px] text-[#1B4DE4] hover:underline mt-2"
         >
           Switch account type →
         </a>

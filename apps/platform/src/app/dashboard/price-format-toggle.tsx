@@ -23,7 +23,7 @@ export function PriceFormatToggle() {
             title={FORMAT_LABELS[f].long}
             className={`px-2 py-1 text-[11px] tracking-wider transition ${
               active
-                ? 'bg-[#00703c] text-white font-semibold'
+                ? 'bg-[#1B4DE4] text-white font-semibold'
                 : 'text-stone-600 hover:bg-stone-100'
             }`}
           >

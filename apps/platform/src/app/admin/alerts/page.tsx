@@ -268,7 +268,7 @@ function ChannelCard({ label, ok, fail }: { label: string; ok: number; fail: num
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="space-y-3">
-      <h2 className="text-xs text-[#004225] tracking-wider font-semibold">{'>'} {title.toUpperCase()}</h2>
+      <h2 className="text-xs text-[#1E3A8A] tracking-wider font-semibold">{'>'} {title.toUpperCase()}</h2>
       {children}
     </section>
   )

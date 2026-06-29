@@ -142,7 +142,7 @@ function Lane({
         style={{
           right: '5%',
           background:
-            'repeating-linear-gradient(0deg, rgba(0,112,60,0.6) 0 4px, transparent 4px 8px)',
+            'repeating-linear-gradient(0deg, rgba(27, 77, 228,0.6) 0 4px, transparent 4px 8px)',
         }}
         aria-hidden
       />

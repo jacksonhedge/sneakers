@@ -29,7 +29,7 @@ function FunnelBar({ label, value, max }: { label: string; value: number; max: n
       </div>
       <div className="h-6 bg-stone-200 w-full relative">
         <div
-          className="h-full bg-[#00703c]"
+          className="h-full bg-[#1B4DE4]"
           style={{ width: `${pct}%` }}
         />
       </div>
@@ -41,7 +41,7 @@ function DailyBar({ value, max }: { value: number; max: number }) {
   const h = max === 0 ? 0 : Math.max(2, Math.round((value / max) * 80))
   return (
     <div className="flex flex-col items-center justify-end gap-1 flex-1 min-w-0">
-      <div className="bg-[#00703c] w-full" style={{ height: `${h}px` }} />
+      <div className="bg-[#1B4DE4] w-full" style={{ height: `${h}px` }} />
     </div>
   )
 }
@@ -107,12 +107,12 @@ export default async function AnalyticsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <div className="text-xs text-[#004225] tracking-wider mb-1">{'>'} ANALYTICS</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-1">{'>'} ANALYTICS</div>
         <h1 className="text-2xl font-bold text-stone-900">Funnel & Cohort</h1>
       </div>
 
       <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-3">{'>'} SIGNUP FUNNEL</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-3">{'>'} SIGNUP FUNNEL</div>
         <div className="border border-stone-300 bg-white p-5 space-y-4">
           <FunnelBar label="WAITLIST" value={total} max={total} />
           <FunnelBar label="INVITED" value={invited} max={total} />
@@ -141,7 +141,7 @@ export default async function AnalyticsPage() {
       </section>
 
       <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-3">{'>'} DAILY SIGNUPS (last {DAYS} days)</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-3">{'>'} DAILY SIGNUPS (last {DAYS} days)</div>
         <div className="border border-stone-300 bg-white p-4">
           <div className="flex items-end gap-0.5 h-24">
             {daily.map((v, i) => (
@@ -157,7 +157,7 @@ export default async function AnalyticsPage() {
       </section>
 
       <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-3">{'>'} TOP REFERRERS</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-3">{'>'} TOP REFERRERS</div>
         <div className="border border-stone-300 bg-white">
           <table className="w-full text-xs">
             <thead className="bg-stone-100 text-stone-600 tracking-wider">
@@ -182,7 +182,7 @@ export default async function AnalyticsPage() {
                   <td className="px-3 py-2 font-mono text-stone-700">{r.referral_code}</td>
                   <td className="px-3 py-2 text-right tabular-nums">{r.direct_referrals}</td>
                   <td className="px-3 py-2 text-right tabular-nums">{r.indirect_referrals}</td>
-                  <td className="px-3 py-2 text-right tabular-nums text-[#00703c] font-bold">
+                  <td className="px-3 py-2 text-right tabular-nums text-[#1B4DE4] font-bold">
                     +{5 * r.direct_referrals + 2 * r.indirect_referrals}
                   </td>
                 </tr>
@@ -200,7 +200,7 @@ export default async function AnalyticsPage() {
       </section>
 
       <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-3">{'>'} GEO</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-3">{'>'} GEO</div>
         <div className="border border-stone-300 bg-white p-4">
           <div className="space-y-2">
             {geo.map(([country, n]) => {
@@ -212,7 +212,7 @@ export default async function AnalyticsPage() {
                     <span className="text-stone-500">{n}</span>
                   </div>
                   <div className="h-2 bg-stone-200 w-full">
-                    <div className="h-full bg-[#00703c]" style={{ width: `${pct}%` }} />
+                    <div className="h-full bg-[#1B4DE4]" style={{ width: `${pct}%` }} />
                   </div>
                 </div>
               )
@@ -222,7 +222,7 @@ export default async function AnalyticsPage() {
       </section>
 
       <section>
-        <div className="text-xs text-[#004225] tracking-wider mb-3">{'>'} REFERRAL SOURCE</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-3">{'>'} REFERRAL SOURCE</div>
         <div className="grid grid-cols-2 gap-3">
           <div className="border border-stone-300 bg-white p-4">
             <div className="text-[10px] text-stone-500 tracking-wider mb-1">DIRECT (no referrer)</div>
@@ -233,7 +233,7 @@ export default async function AnalyticsPage() {
           </div>
           <div className="border border-stone-300 bg-white p-4">
             <div className="text-[10px] text-stone-500 tracking-wider mb-1">REFERRED</div>
-            <div className="text-2xl font-bold text-[#00703c]">{referredCount.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-[#1B4DE4]">{referredCount.toLocaleString()}</div>
             <div className="text-[10px] text-stone-500 mt-1">
               {total > 0 ? ((referredCount / total) * 100).toFixed(1) : '0.0'}% of signups
             </div>

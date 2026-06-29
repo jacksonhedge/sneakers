@@ -82,7 +82,7 @@ export default async function LeaderboardPage() {
           </div>
           <Link
             href="/dashboard/leaderboard/join"
-            className="shrink-0 self-center text-xs px-3 py-2 tracking-wider bg-[#00703c] text-white hover:bg-[#005a30] transition rounded"
+            className="shrink-0 self-center text-xs px-3 py-2 tracking-wider bg-[#1B4DE4] text-white hover:bg-[#005a30] transition rounded"
           >
             JOIN →
           </Link>
@@ -124,7 +124,7 @@ export default async function LeaderboardPage() {
                   No one on the leaderboard yet — be the first.{' '}
                   <Link
                     href="/dashboard/leaderboard/join"
-                    className="text-[#00703c] underline"
+                    className="text-[#1B4DE4] underline"
                   >
                     Verify and join →
                   </Link>

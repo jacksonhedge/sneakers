@@ -121,7 +121,7 @@ export function MarketCard({
   }
 
   return (
-    <div className="flex flex-col rounded-lg bg-white ring-1 ring-stone-200 p-5 hover:ring-[#004225]/40 transition">
+    <div className="flex flex-col rounded-lg bg-white ring-1 ring-stone-200 p-5 hover:ring-[#1E3A8A]/40 transition">
       <Link href={detailHref} className="block group cursor-pointer">
         <div className="flex items-start justify-between gap-3 mb-3">
           <PlatformLogo platform={primary.platform} size="md" />
@@ -143,7 +143,7 @@ export function MarketCard({
                 </span>
               )}
             </div>
-            <div className="text-sm font-semibold text-stone-900 leading-snug line-clamp-3 group-hover:text-[#004225] transition">
+            <div className="text-sm font-semibold text-stone-900 leading-snug line-clamp-3 group-hover:text-[#1E3A8A] transition">
               {market.question}
             </div>
           </div>
@@ -208,7 +208,7 @@ export function MarketCard({
                 href={v.affiliateUrl}
                 target="_blank"
                 rel="noopener noreferrer sponsored"
-                className="inline-flex items-center gap-1.5 text-[10px] tracking-wider pl-1 pr-2 py-0.5 rounded-full ring-1 ring-[#004225]/40 text-[#004225] hover:bg-[#004225]/5 transition"
+                className="inline-flex items-center gap-1.5 text-[10px] tracking-wider pl-1 pr-2 py-0.5 rounded-full ring-1 ring-[#1E3A8A]/40 text-[#1E3A8A] hover:bg-[#1E3A8A]/5 transition"
                 title={`Trade ${v.name} →`}
               >
                 <PlatformLogo platform={v.id} size="xs" />

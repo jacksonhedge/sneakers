@@ -48,7 +48,7 @@ export function AdminNav({ email }: { email: string }) {
         <div className="flex items-center gap-3 flex-wrap min-w-0">
           <Link
             href="/"
-            className="text-xs tracking-wider text-[#004225] font-bold whitespace-nowrap"
+            className="text-xs tracking-wider text-[#1E3A8A] font-bold whitespace-nowrap"
           >
             SNEAKERS / ADMIN
           </Link>
@@ -65,7 +65,7 @@ export function AdminNav({ email }: { email: string }) {
                   href={item.href}
                   className={`text-xs px-2 py-1 tracking-wider transition inline-flex items-center gap-1 whitespace-nowrap ${
                     active
-                      ? 'bg-[#00703c] text-white'
+                      ? 'bg-[#1B4DE4] text-white'
                       : item.pending
                         ? 'text-stone-400 hover:bg-stone-100'
                         : 'text-stone-700 hover:bg-stone-100'

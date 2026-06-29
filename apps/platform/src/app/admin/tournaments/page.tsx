@@ -52,7 +52,7 @@ export default async function TournamentsAdminPage() {
   return (
     <div className="space-y-6">
       <div>
-        <div className="text-xs text-[#004225] tracking-wider mb-1">{'>'} TOURNAMENTS</div>
+        <div className="text-xs text-[#1E3A8A] tracking-wider mb-1">{'>'} TOURNAMENTS</div>
         <h1 className="text-2xl font-bold text-stone-900">
           {all.length}{' '}
           <span className="text-stone-500 text-base font-normal">
@@ -175,7 +175,7 @@ function TournamentAdminRow({ t }: { t: Tournament }) {
       <td className="px-3 py-2 text-stone-700 whitespace-nowrap">
         <Link
           href={`/affiliates`}
-          className="text-stone-700 hover:text-[#00703c] hover:underline"
+          className="text-stone-700 hover:text-[#1B4DE4] hover:underline"
           title="Edit affiliate link for this venue"
         >
           {VENUE_NAME[t.venue]}

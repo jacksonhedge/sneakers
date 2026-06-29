@@ -103,7 +103,7 @@ export function AffiliateRow({
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder={defaults.signupUrl}
-            className="w-full px-3 py-2 text-xs font-mono border border-stone-300 focus:border-[#00703c] focus:outline-none focus:ring-1 focus:ring-[#00703c]/30 rounded"
+            className="w-full px-3 py-2 text-xs font-mono border border-stone-300 focus:border-[#1B4DE4] focus:outline-none focus:ring-1 focus:ring-[#1B4DE4]/30 rounded"
           />
           <div className="text-[10px] text-stone-500 mt-1">
             Default: <span className="font-mono">{defaults.signupUrl}</span>
@@ -119,7 +119,7 @@ export function AffiliateRow({
             onChange={(e) => setCode(e.target.value)}
             placeholder={defaults.promoCode ?? 'e.g. SNEAKERS'}
             maxLength={32}
-            className="w-full px-3 py-2 text-xs font-mono uppercase tracking-wider border border-stone-300 focus:border-[#00703c] focus:outline-none focus:ring-1 focus:ring-[#00703c]/30 rounded"
+            className="w-full px-3 py-2 text-xs font-mono uppercase tracking-wider border border-stone-300 focus:border-[#1B4DE4] focus:outline-none focus:ring-1 focus:ring-[#1B4DE4]/30 rounded"
           />
           <div className="text-[10px] text-stone-500 mt-1">
             Default: <span className="font-mono">{defaults.promoCode ?? '— none —'}</span>
@@ -155,7 +155,7 @@ export function AffiliateRow({
             type="button"
             disabled={!dirty || pending || resetting || url.trim().length === 0}
             onClick={save}
-            className="text-[11px] px-4 py-1.5 tracking-wider bg-[#00703c] text-white hover:bg-[#005a30] disabled:opacity-40 disabled:cursor-not-allowed"
+            className="text-[11px] px-4 py-1.5 tracking-wider bg-[#1B4DE4] text-white hover:bg-[#005a30] disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {pending ? 'SAVING…' : 'SAVE'}
           </button>

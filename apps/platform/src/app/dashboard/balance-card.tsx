@@ -77,7 +77,7 @@ export function BalanceCard() {
         </div>
         <Link
           href="/dashboard/connections"
-          className="mt-3 inline-block text-xs px-3 py-1.5 tracking-wider rounded bg-[#00703c] text-white hover:bg-[#005a30] transition"
+          className="mt-3 inline-block text-xs px-3 py-1.5 tracking-wider rounded bg-[#1B4DE4] text-white hover:bg-[#005a30] transition"
         >
           CONNECT A VENUE →
         </Link>

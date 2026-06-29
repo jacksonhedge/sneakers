@@ -84,7 +84,7 @@ export function BulkApprover() {
             type="button"
             onClick={go}
             disabled={pending || emails.length === 0}
-            className="text-[11px] tracking-wider font-semibold bg-[#00703c] text-white hover:bg-[#004225] px-3 py-1 rounded disabled:opacity-50"
+            className="text-[11px] tracking-wider font-semibold bg-[#1B4DE4] text-white hover:bg-[#1E3A8A] px-3 py-1 rounded disabled:opacity-50"
           >
             {pending ? `APPROVING ${emails.length}…` : `APPROVE ${emails.length}`}
           </button>

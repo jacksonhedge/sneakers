@@ -143,7 +143,7 @@ export default function ChartDemoPage() {
               onClick={() => setPaused((p) => !p)}
               className={`text-xs px-3 py-1.5 rounded-full font-bold tracking-wider transition ${
                 paused
-                  ? 'bg-[#00703c] text-white hover:bg-[#003520]'
+                  ? 'bg-[#1B4DE4] text-white hover:bg-[#003520]'
                   : 'border border-stone-300 hover:bg-stone-100'
               }`}
             >
@@ -266,7 +266,7 @@ export default function ChartDemoPage() {
         </section>
 
         <footer className="border-t border-stone-200 pt-4 text-[11px] text-stone-500 max-w-3xl">
-          V2 polish: <span className="font-semibold">brand blue #00703c up-color</span> ·
+          V2 polish: <span className="font-semibold">brand blue #1B4DE4 up-color</span> ·
           autoscaled Y with 12% padding · pulsing endpoint dot (1.5s halo +
           1.5s dot) · end-of-line radial glow · tighter gradient ramp
           (28→10→2→0%) · magnetic crosshair · optional touch haptic ·

@@ -107,7 +107,7 @@ export default async function AlertsPage() {
       <div className="max-w-5xl mx-auto px-6 py-10 space-y-6">
         <div className="flex items-baseline justify-between flex-wrap gap-3">
           <div>
-            <Link href="/dashboard" className="text-xs text-[#004225]/80 tracking-wider hover:text-[#004225]">
+            <Link href="/dashboard" className="text-xs text-[#1E3A8A]/80 tracking-wider hover:text-[#1E3A8A]">
               ← DASHBOARD
             </Link>
             <h1 className="text-3xl md:text-4xl font-bold mt-3">Alerts</h1>

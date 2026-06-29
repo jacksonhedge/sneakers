@@ -380,7 +380,7 @@ export function HorseRaceLobby({
                 </div>
                 <div className="rounded-xl bg-gradient-to-br from-blue-50 via-blue-50/60 to-white ring-1 ring-blue-200 p-5 space-y-2">
                   <div className="flex items-center gap-2">
-                    <span className="w-7 h-7 rounded-full bg-[#00703c] text-white inline-flex items-center justify-center text-sm">
+                    <span className="w-7 h-7 rounded-full bg-[#1B4DE4] text-white inline-flex items-center justify-center text-sm">
                       🤖
                     </span>
                     <span className="text-sm font-bold text-stone-900">Auto Bot</span>
