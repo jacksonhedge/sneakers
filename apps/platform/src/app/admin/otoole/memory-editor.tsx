@@ -76,7 +76,7 @@ export function MemoryEditor({
             type="button"
             onClick={submit}
             disabled={pending || !dirty}
-            className="text-xs px-4 py-1.5 tracking-wider bg-[#1B4DE4] text-white hover:bg-[#005a30] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="text-xs px-4 py-1.5 tracking-wider bg-[#1B4DE4] text-white hover:bg-[#1740C0] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {pending ? 'SAVING…' : dirty ? 'SAVE' : 'SAVED'}
           </button>

@@ -125,7 +125,7 @@ function CreditAdjuster({
                 type="button"
                 disabled={!canArm || pending}
                 onClick={arm}
-                className="text-xs px-3 py-1.5 tracking-wider bg-[#1B4DE4] text-white hover:bg-[#005a30] transition disabled:opacity-30"
+                className="text-xs px-3 py-1.5 tracking-wider bg-[#1B4DE4] text-white hover:bg-[#1740C0] transition disabled:opacity-30"
               >
                 {validDelta && deltaNum > 0
                   ? `ADD ${deltaNum.toLocaleString()} CREDITS`
@@ -140,7 +140,7 @@ function CreditAdjuster({
                   disabled={pending}
                   onClick={submit}
                   className={`text-xs px-3 py-1.5 tracking-wider text-white transition disabled:opacity-50 ${
-                    deltaNum < 0 ? 'bg-red-700 hover:bg-red-800' : 'bg-[#1E3A8A] hover:bg-[#002914]'
+                    deltaNum < 0 ? 'bg-red-700 hover:bg-red-800' : 'bg-[#1E3A8A] hover:bg-[#15275C]'
                   }`}
                 >
                   {pending
@@ -273,7 +273,7 @@ function TierAdjuster({
                 setResult(null)
                 setArmed(true)
               }}
-              className="text-xs px-3 py-1.5 tracking-wider bg-[#1B4DE4] text-white hover:bg-[#005a30] transition disabled:opacity-30"
+              className="text-xs px-3 py-1.5 tracking-wider bg-[#1B4DE4] text-white hover:bg-[#1740C0] transition disabled:opacity-30"
             >
               {changed
                 ? `CHANGE TIER → ${target.toUpperCase()}`
@@ -285,7 +285,7 @@ function TierAdjuster({
                 type="button"
                 disabled={pending}
                 onClick={submit}
-                className="text-xs px-3 py-1.5 tracking-wider bg-[#1E3A8A] text-white hover:bg-[#002914] transition disabled:opacity-50"
+                className="text-xs px-3 py-1.5 tracking-wider bg-[#1E3A8A] text-white hover:bg-[#15275C] transition disabled:opacity-50"
               >
                 {pending ? 'WORKING…' : `CONFIRM → ${currentTier} → ${target}`}
               </button>

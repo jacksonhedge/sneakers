@@ -155,7 +155,7 @@ export function AffiliateRow({
             type="button"
             disabled={!dirty || pending || resetting || url.trim().length === 0}
             onClick={save}
-            className="text-[11px] px-4 py-1.5 tracking-wider bg-[#1B4DE4] text-white hover:bg-[#005a30] disabled:opacity-40 disabled:cursor-not-allowed"
+            className="text-[11px] px-4 py-1.5 tracking-wider bg-[#1B4DE4] text-white hover:bg-[#1740C0] disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {pending ? 'SAVING…' : 'SAVE'}
           </button>

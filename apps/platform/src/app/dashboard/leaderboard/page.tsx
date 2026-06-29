@@ -82,7 +82,7 @@ export default async function LeaderboardPage() {
           </div>
           <Link
             href="/dashboard/leaderboard/join"
-            className="shrink-0 self-center text-xs px-3 py-2 tracking-wider bg-[#1B4DE4] text-white hover:bg-[#005a30] transition rounded"
+            className="shrink-0 self-center text-xs px-3 py-2 tracking-wider bg-[#1B4DE4] text-white hover:bg-[#1740C0] transition rounded"
           >
             JOIN →
           </Link>

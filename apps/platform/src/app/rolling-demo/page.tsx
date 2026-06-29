@@ -88,7 +88,7 @@ export default function RollingDemoPage() {
             <button
               type="button"
               onClick={tickNow}
-              className="text-xs px-3 py-1.5 rounded-full bg-[#1B4DE4] text-white hover:bg-[#003520] font-bold tracking-wider"
+              className="text-xs px-3 py-1.5 rounded-full bg-[#1B4DE4] text-white hover:bg-[#16357A] font-bold tracking-wider"
             >
               TICK NOW
             </button>

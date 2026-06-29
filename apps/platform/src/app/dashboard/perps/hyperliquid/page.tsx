@@ -170,7 +170,7 @@ function FreeTierBanner() {
       </div>
       <Link
         href="/dashboard/billing"
-        className="inline-block bg-[#1E3A8A] text-white text-xs font-semibold tracking-wider px-3 py-2 rounded hover:bg-[#003520] transition"
+        className="inline-block bg-[#1E3A8A] text-white text-xs font-semibold tracking-wider px-3 py-2 rounded hover:bg-[#16357A] transition"
       >
         UPGRADE
       </Link>

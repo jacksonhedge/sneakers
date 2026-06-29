@@ -264,7 +264,7 @@ function AutoTradeBanner() {
       </div>
       <Link
         href="/dashboard/billing"
-        className="inline-flex items-center gap-1.5 bg-[#1E3A8A] text-white text-xs font-bold tracking-wider px-4 py-2 rounded-full hover:bg-[#003520] hover:shadow-md transition-all shrink-0"
+        className="inline-flex items-center gap-1.5 bg-[#1E3A8A] text-white text-xs font-bold tracking-wider px-4 py-2 rounded-full hover:bg-[#16357A] hover:shadow-md transition-all shrink-0"
       >
         UPGRADE <span aria-hidden>→</span>
       </Link>

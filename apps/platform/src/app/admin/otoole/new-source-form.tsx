@@ -256,7 +256,7 @@ export function NewSourceForm() {
         <button
           type="submit"
           disabled={creating || fetching || suggesting}
-          className="text-xs px-4 py-1.5 tracking-wider bg-[#1B4DE4] text-white hover:bg-[#005a30] disabled:opacity-50"
+          className="text-xs px-4 py-1.5 tracking-wider bg-[#1B4DE4] text-white hover:bg-[#1740C0] disabled:opacity-50"
         >
           {creating ? 'CREATING…' : 'CREATE SOURCE'}
         </button>

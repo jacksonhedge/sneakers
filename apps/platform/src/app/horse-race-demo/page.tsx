@@ -533,7 +533,7 @@ export default function HorseRaceDemoPage() {
               disabled={resolved}
               className={`text-xs px-3 py-1.5 rounded-full font-bold tracking-wider transition disabled:opacity-50 ${
                 paused
-                  ? 'bg-[#1B4DE4] text-white hover:bg-[#003520]'
+                  ? 'bg-[#1B4DE4] text-white hover:bg-[#16357A]'
                   : 'border border-stone-300 hover:bg-stone-100'
               }`}
             >

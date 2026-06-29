@@ -75,7 +75,7 @@ export function NewFlagForm() {
         <button
           type="submit"
           disabled={pending || !key.trim()}
-          className="bg-[#1B4DE4] text-white text-xs px-4 py-1.5 tracking-wider hover:bg-[#005a30] disabled:opacity-50"
+          className="bg-[#1B4DE4] text-white text-xs px-4 py-1.5 tracking-wider hover:bg-[#1740C0] disabled:opacity-50"
         >
           {pending ? 'CREATING…' : 'CREATE'}
         </button>
