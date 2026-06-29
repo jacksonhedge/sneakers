@@ -3,13 +3,12 @@ import { getAuthClient } from '@/lib/supabase-auth'
 import { getTierIdentity } from '@/lib/require-tier'
 import { loadMinuteMarkets, type Bucket } from '@/lib/minute-markets'
 import { BalanceCard } from './balance-card'
-import { QuickMarketsPanel } from './quick/quick-markets-panel'
+import { QuickMarketsPanel, ALL_BUCKETS } from './quick/quick-markets-panel'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
 const FREE_TIER_DEFAULT_BUCKET: Bucket = '15m'
-const ALL_BUCKETS: Bucket[] = ['5m', '15m', '30m', '60m']
 
 interface PageProps {
   searchParams: Promise<{ b?: string; asset?: string }>
@@ -59,6 +58,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
           totalMarkets={result.totalMarkets}
           totalGroups={result.totalGroups ?? 0}
           assetsAvailable={result.assetsAvailable}
+          basePath="/dashboard"
           compact={true}
         />
       </section>

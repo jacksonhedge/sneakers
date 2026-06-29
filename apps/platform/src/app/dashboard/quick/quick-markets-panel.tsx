@@ -15,6 +15,7 @@ export interface QuickMarketsPanelProps {
   totalMarkets: number
   totalGroups: number
   assetsAvailable: string[]
+  basePath: string
   compact?: boolean
 }
 
@@ -22,7 +23,7 @@ export interface QuickMarketsPanelProps {
 // Pure helpers
 // ---------------------------------------------------------------------------
 
-const ALL_BUCKETS: Bucket[] = ['5m', '15m', '30m', '60m']
+export const ALL_BUCKETS: Bucket[] = ['5m', '15m', '30m', '60m']
 
 function fmtCountdown(minutes: number): string {
   if (minutes < 1) return `${Math.max(0, Math.round(minutes * 60))}s`
@@ -88,13 +89,13 @@ function tradeUrlFor(platform: string): string {
 // Sub-components
 // ---------------------------------------------------------------------------
 
-function BucketFilter({ active, asset }: { active: Bucket; asset: string | null }) {
+function BucketFilter({ active, asset, basePath }: { active: Bucket; asset: string | null; basePath: string }) {
   const buildHref = (b: Bucket) => {
     const params = new URLSearchParams()
     if (b !== '15m') params.set('b', b)
     if (asset) params.set('asset', asset)
     const qs = params.toString()
-    return qs ? `/dashboard/quick?${qs}` : '/dashboard/quick'
+    return qs ? `${basePath}?${qs}` : basePath
   }
   return (
     <div className="inline-flex gap-1 p-1 rounded-full bg-white border border-stone-200 shadow-sm">
@@ -120,10 +121,12 @@ function AssetFilter({
   active,
   available,
   bucket,
+  basePath,
 }: {
   active: string | null
   available: string[]
   bucket: Bucket
+  basePath: string
 }) {
   const PINNED = ['BTC', 'ETH', 'SOL', 'XRP', 'DOGE']
   const visible = [
@@ -135,7 +138,7 @@ function AssetFilter({
     if (bucket !== '15m') params.set('b', bucket)
     if (a) params.set('asset', a)
     const qs = params.toString()
-    return qs ? `/dashboard/quick?${qs}` : '/dashboard/quick'
+    return qs ? `${basePath}?${qs}` : basePath
   }
   return (
     <div className="flex gap-2 flex-wrap items-center">
@@ -327,6 +330,7 @@ export function QuickMarketsPanel({
   totalMarkets,
   totalGroups,
   assetsAvailable,
+  basePath,
   compact = false,
 }: QuickMarketsPanelProps) {
   return (
@@ -347,12 +351,13 @@ export function QuickMarketsPanel({
       )}
 
       <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-        <BucketFilter active={bucket} asset={asset} />
+        <BucketFilter active={bucket} asset={asset} basePath={basePath} />
         {isPaid && (
           <AssetFilter
             active={asset}
             available={assetsAvailable}
             bucket={bucket}
+            basePath={basePath}
           />
         )}
       </div>
