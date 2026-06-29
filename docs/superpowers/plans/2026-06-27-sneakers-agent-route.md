@@ -156,6 +156,23 @@
 
 ---
 
+### Task 9: Portfolio | Markets view toggle (grid view)
+
+**Files:**
+- Create: `apps/platform/src/app/agent/view-tabs.tsx` (client toggle)
+- Create: `apps/platform/src/app/agent/markets-grid.tsx` (client grid view)
+- Modify: `apps/platform/src/app/agent/page.tsx` (host both views under the toggle)
+
+**Interfaces:**
+- Consumes: `getLiveWindows(venues)` (Task 1) + the bot's `mode`/`paused` from `BotConfig` (Task 2).
+- Produces: a top-of-page **Portfolio | Markets** switcher. **Portfolio** = the returns/chart/actions/rules dashboard (Tasks 4–7, default). **Markets** = a live grid of every site's short-interval windows, ported from `docs/prototypes/sneakers-markets-grid.html` (per-asset cards, real countdowns, Robinhood tabular odds + flash on change, **site filter** Polymarket/Kalshi, interval filter). Each card shows the bot's current stance on that window (held side / "no edge"). When the bot is in **live** mode (Rung 2), each card exposes a **Trade** affordance that opens the confirm flow; in **dry-run** it's read-only ("paper"). This is the "grid as an option on the main trading side" — the user flips to Markets to watch/act per-window, back to Portfolio to see results.
+
+- [ ] **Step 1:** Build `view-tabs.tsx` (two-state toggle, URL-synced `?view=markets`), and `markets-grid.tsx` reading `getLiveWindows` (poll on an interval). Port the prototype's card + odds + flash styling. Gate the Trade affordance on `mode==='live' && !paused`.
+- [ ] **Step 2:** Verify with the `run` skill: toggle Portfolio↔Markets; grid shows both venues' live windows with real countdowns; dry-run shows read-only cards.
+- [ ] **Step 3: Commit** `feat(agent-route): Portfolio|Markets view toggle + live grid`.
+
+---
+
 ## Self-Review
 
 **Spec coverage (Plan 3 = the user-facing `/agent` route):**
