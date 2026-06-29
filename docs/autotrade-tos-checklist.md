@@ -212,6 +212,51 @@ need to be done before Phase 5 ships and the brief calls them out.
 
 ---
 
+## F. Agent (bot) consent — v1
+
+The following consent text is adapted for the Sneakers Agent (autonomous
+execution bot) and is stored in the `agent_consents` table with version +
+timestamp. This complements the auto-trade TOS above; the agent is a distinct
+execution mode (pre-configured rules placed autonomously, no per-trade approval).
+
+**CRITICAL:** This text must be reviewed with legal counsel before the agent
+feature ships live (Phase 4 in the Agent handoff). The user's counsel
+sign-off is a hard gate — do not ship agent execution without it.
+
+- [ ] **F1. Not an investment advisor.** *"Sneakers Terminal is not a
+      registered investment advisor, broker-dealer, or commodity trading
+      advisor. The Sneakers Agent executes your pre-configured rules
+      automatically according to the schedules and conditions you set. You
+      retain full responsibility for all trading decisions and outcomes. Past
+      performance of any market is not indicative of future results."*
+
+- [ ] **F2. Non-custodial + credential scope.** *"Sneakers Terminal does not
+      hold, custody, or have unilateral control over your funds. The venues
+      (Polymarket, Kalshi, or other integrated platforms) custody your wallet.
+      The API credentials you provide to the Sneakers Agent authenticate only
+      the order operations you have configured in your rules — not transfers,
+      withdrawals, deposits, or any other wallet action. You can revoke our
+      access at any time by disconnecting credentials or rotating API keys
+      directly in your venue's settings."*
+
+- [ ] **F3. User is principal.** *"By enabling the Sneakers Agent, you affirm
+      that (a) your account is in good standing, (b) you have the legal
+      authority and right to engage in automated trading in your jurisdiction,
+      (c) where your account is held by an entity (trust, corporation, fund,
+      etc.), you have the authority to act on behalf of that entity, and (d)
+      you understand and accept the risk profile of automated trading on
+      prediction markets, including the possibility of partial fills, rapid
+      market movements, and total loss of capital deployed via the Agent."*
+
+- [ ] **F4. Consent is recorded + revocable.** *"Your consent to enable the
+      Sneakers Agent is recorded in our system with the version number and
+      timestamp you accepted it, allowing us to audit and prove what terms you
+      agreed to at the time. You can revoke the Agent's permission to trade
+      immediately by (a) disabling the Agent in your account settings, (b)
+      disconnecting your venue credentials, or (c) rotating your API keys in
+      your venue's own interface. Sneakers will not retain or attempt to
+      re-use revoked credentials."*
+
 ## Sign-off
 
 Once all checkboxes above are ticked (or alternative language is noted
