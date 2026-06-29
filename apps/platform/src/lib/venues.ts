@@ -126,9 +126,10 @@ export const VENUES: Venue[] = [
     id: 'limitless',
     name: 'Limitless',
     category: 'prediction_market',
-    status: 'coming_soon',
+    status: 'live',
     logo: '/SneakersLogos/partners/limitless.svg',
-    blurb: 'On-chain short-duration prediction markets on Base.',
+    blurb: 'On-chain short-duration crypto up/down markets on Base — 5/15-min BTC, ETH, SOL.',
+    affiliateUrl: 'https://limitless.exchange/?ref=SNEAKERS',
   },
   {
     id: 'opinion',
