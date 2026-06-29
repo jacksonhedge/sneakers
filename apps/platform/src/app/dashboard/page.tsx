@@ -1,175 +1,67 @@
 import { redirect } from 'next/navigation'
 import { getAuthClient } from '@/lib/supabase-auth'
-import { getServerClient } from '@/lib/supabase-server'
-import { loadMarkets, loadMarketCount, loadMarketHistory, type MarketSnapshot } from '@/lib/markets-data'
-import { loadCanonicalMarkets } from '@/lib/canonical-markets'
-import {
-  aggregateByCategory,
-  bigMovers,
-  topByVolume,
-  upcomingResolutions,
-  type TerminalCategory,
-} from '@/lib/market-stats'
-import { CategoryCards } from './category-row'
-import { WalletStatusCard } from './wallet-status-card'
+import { getTierIdentity } from '@/lib/require-tier'
+import { loadMinuteMarkets, type Bucket } from '@/lib/minute-markets'
 import { BalanceCard } from './balance-card'
-import { OtooleSpotlight } from './otoole-spotlight'
-import { BiggestVolume } from './biggest-volume'
-import { DashboardTournamentsTile } from './dashboard-tournaments-tile'
-import { TeachBotTile } from './teach-bot-tile'
-import { UpcomingResolutions, MyPositions } from './upcoming-positions'
-import { BigMovers } from './big-movers'
-import './view-mode.css'
+import { QuickMarketsPanel } from './quick/quick-markets-panel'
 
 export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
-// Auth + chrome (top bar, OToole panel) live in dashboard/layout.tsx so
-// they persist across navigations. This page just produces the trading
-// content that fills the right-hand slot.
+const FREE_TIER_DEFAULT_BUCKET: Bucket = '15m'
+const ALL_BUCKETS: Bucket[] = ['5m', '15m', '30m', '60m']
 
-function toNumSafe(v: number | string | null | undefined): number {
-  if (v === null || v === undefined) return 0
-  const n = typeof v === 'number' ? v : parseFloat(v)
-  return Number.isFinite(n) ? n : 0
+interface PageProps {
+  searchParams: Promise<{ b?: string; asset?: string }>
 }
 
-export default async function DashboardPage() {
+export default async function DashboardPage({ searchParams }: PageProps) {
   const supabase = await getAuthClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user || !user.email) redirect('/signup')
 
-  const admin = getServerClient()
+  const me = await getTierIdentity()
+  const isPaid = me.tier !== 'free'
+  const sp = await searchParams
 
-  // Independent loads run in parallel — sequential walks were exceeding
-  // Vercel's 60s function ceiling on prod. History window is 24h: enough
-  // signal for sparklines + movers without scanning millions of rows.
-  // We also pull the canonical grouping ONCE here and reuse it below
-  // (used to call canonicalReps/buildVenueCountMap/dedupeByCanonical
-  // separately, each re-running loadCanonicalMarkets internally).
-  const [
-    marketsResult,
-    history,
-    { canonical },
-    marketCount,
-  ] = await Promise.all([
-    loadMarkets({ pageSize: 10_000 }),
-    loadMarketHistory(1),
-    loadCanonicalMarkets(),
-    loadMarketCount(),
-  ])
+  const requestedBucket = (sp.b ?? '').toLowerCase() as Bucket | ''
+  const bucket: Bucket = ALL_BUCKETS.includes(requestedBucket as Bucket)
+    ? (requestedBucket as Bucket)
+    : isPaid ? '15m' : FREE_TIER_DEFAULT_BUCKET
+  const asset = isPaid ? (sp.asset?.toUpperCase() || null) : null
 
-  const { dataDate } = marketsResult
-  // Footer count uses the targeted count query (sub-100ms, always accurate)
-  // rather than marketsResult.total — the latter is computed from the full
-  // snapshot pull and can be stale or partial under DB load.
-  const total = marketCount
-
-  // Reps = highest-volume quote per canonical group. Replaces canonicalReps().
-  const reps: MarketSnapshot[] = []
-  for (const c of canonical) {
-    let pick = c.quotes[0]
-    let pickVol = toNumSafe(pick.volume_traded)
-    for (const q of c.quotes) {
-      const v = toNumSafe(q.volume_traded)
-      if (v > pickVol) {
-        pick = q
-        pickVol = v
-      }
-    }
-    reps.push(pick)
-  }
-
-  // Snapshot-key → venueCount map. Replaces buildVenueCountMap().
-  const venueCounts: Record<string, number> = {}
-  // Snapshot-key → canonical id, used to dedupe movers by canonical.
-  const canonicalBySnapshot = new Map<string, string>()
-  for (const c of canonical) {
-    for (const q of c.quotes) {
-      const key = `${q.platform}:${q.platform_market_id}`
-      venueCounts[key] = c.venueCount
-      canonicalBySnapshot.set(key, c.id)
-    }
-  }
-
-  const stats = aggregateByCategory(reps)
-  const volumeTop = topByVolume(reps, 6)
-  const resolutions = upcomingResolutions(reps, 7, 6)
-
-  // Sparkline points per market — used by BiggestVolume + BigMovers row
-  // decorations. Empty / single-point histories are dropped so the chart
-  // components don't render degenerate lines.
-  const sparklineByKey = new Map<string, Array<{ ts: string; value: number }>>()
-  for (const h of history) {
-    const points: Array<{ ts: string; value: number }> = []
-    for (const s of h.snapshots) {
-      const yes = s.outcomes.find((o) => /^yes\b|\byes\s/i.test(o.name)) ?? s.outcomes[0]
-      const v = yes?.best_ask
-      if (typeof v === 'number') points.push({ ts: s.ts, value: v })
-    }
-    if (points.length >= 2) {
-      sparklineByKey.set(`${h.platform}:${h.platform_market_id}`, points)
-    }
-  }
-
-  // Big movers: dedupe by canonical id (replaces dedupeByCanonical()).
-  const moversRaw = bigMovers(history, {
-    deltaThreshold: 0.4,
-    currentThreshold: 0.86,
-    minSamples: 3,
-    limit: 24,
+  const result = await loadMinuteMarkets({
+    within: 60,
+    asset,
+    grouped: true,
+    cryptoOnly: true,
   })
-  const seenCanonical = new Set<string>()
-  const moversDeduped: typeof moversRaw = []
-  for (const m of moversRaw) {
-    const key = `${m.market.platform}:${m.market.platform_market_id}`
-    const cid = canonicalBySnapshot.get(key) ?? `raw:${key}`
-    if (seenCanonical.has(cid)) continue
-    seenCanonical.add(cid)
-    moversDeduped.push(m)
-  }
-  const movers = moversDeduped.slice(0, 12)
+
+  const allGroups = result.groups ?? []
+  const groups = allGroups
+    .map((g) => ({ ...g, markets: g.markets.filter((m) => m.bucket === bucket) }))
+    .filter((g) => g.markets.length > 0)
 
   return (
-    <div className="px-6 py-5 space-y-5">
-      <BalanceCard />
-      <WalletStatusCard />
-      <OtooleSpotlight />
-      <CategoryCards stats={stats} />
+    <div className="px-6 py-5 space-y-6">
+      <section>
+        <h2 className="text-[10px] text-stone-500 uppercase tracking-wider mb-3">Wallet</h2>
+        <BalanceCard />
+      </section>
 
-      {/* Center 3-column: Biggest Volume · Tournaments · Teach-your-bot */}
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_1fr_1.5fr] gap-4">
-        <BiggestVolume
-          markets={volumeTop}
-          venueCounts={venueCounts}
-          sparklineByKey={sparklineByKey}
+      <section>
+        <h2 className="text-[10px] text-stone-500 uppercase tracking-wider mb-3">Quick Markets</h2>
+        <QuickMarketsPanel
+          groups={groups}
+          bucket={bucket}
+          asset={asset}
+          isPaid={isPaid}
+          totalMarkets={result.totalMarkets}
+          totalGroups={result.totalGroups ?? 0}
+          assetsAvailable={result.assetsAvailable}
+          compact={true}
         />
-        <div data-hide-in="simple">
-          <DashboardTournamentsTile />
-        </div>
-        <div data-hide-in="simple">
-          <TeachBotTile />
-        </div>
-      </div>
-
-      {/* Biggest Movers — full-width row */}
-      <div data-hide-in="simple">
-        <BigMovers
-          movers={movers}
-          venueCounts={venueCounts}
-          sparklineByKey={sparklineByKey}
-        />
-      </div>
-
-      {/* Lower row: Upcoming Resolutions · My Positions */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4" data-hide-in="simple">
-        <UpcomingResolutions markets={resolutions} venueCounts={venueCounts} />
-        <MyPositions />
-      </div>
-
-      <footer className="pt-4 border-t border-stone-200 text-[11px] text-stone-500">
-        Snapshot {dataDate ?? '—'} · {total.toLocaleString()} markets across Kalshi,
-        Polymarket, OG Markets, NoVig, and ProphetX. Live prices refresh every few minutes.
-      </footer>
+      </section>
     </div>
   )
 }
