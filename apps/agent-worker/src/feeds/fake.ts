@@ -46,14 +46,24 @@ export class FakeSpotFeed implements SpotFeed {
 }
 
 export class FakeRefSource implements RefPriceSource {
-  private price: number
+  private priceMap: Record<number, number>
+  private fallback: number
 
-  constructor(price: number) {
-    this.price = price
+  constructor(priceOrMap: number | Record<number, number>) {
+    if (typeof priceOrMap === 'number') {
+      this.priceMap = {}
+      this.fallback = priceOrMap
+    } else {
+      this.priceMap = priceOrMap
+      // Use the first value as fallback if no exact match
+      const values = Object.values(priceOrMap)
+      this.fallback = values.length > 0 ? values[0] : 0
+    }
   }
 
   async refPriceAt(atMs: number): Promise<number> {
-    return this.price
+    if (atMs in this.priceMap) return this.priceMap[atMs]
+    return this.fallback
   }
 }
 
@@ -180,6 +190,20 @@ export class InMemoryStore implements WindowStore {
       trade.pnlUsdc = pnl
       trade.status = status
     }
+  }
+
+  /** Test helper: seed a bot config row directly. Fills optional fields with defaults. */
+  async seedBotConfig(config: Omit<BotConfigRow, 'userId' | 'createdAt'> & { userId?: string | null; createdAt?: number }): Promise<void> {
+    this.botConfigs.push({
+      userId: config.userId ?? null,
+      createdAt: config.createdAt ?? Date.now(),
+      ...config,
+    })
+  }
+
+  /** Test helper: return all trades (open and settled). */
+  async allTrades(): Promise<TradeRow[]> {
+    return Array.from(this.trades.values())
   }
 
   async pnlSummary(botConfigId: number): Promise<PnlSummary> {
