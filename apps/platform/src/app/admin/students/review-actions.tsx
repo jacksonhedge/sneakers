@@ -88,7 +88,7 @@ export function StudentReviewActions({ id }: { id: string }) {
         type="button"
         disabled={busy}
         onClick={() => call('approve')}
-        className="px-3 py-1.5 text-xs tracking-wider font-semibold rounded bg-emerald-700 text-white hover:bg-emerald-800 disabled:opacity-50"
+        className="px-3 py-1.5 text-xs tracking-wider font-semibold rounded bg-blue-700 text-white hover:bg-blue-800 disabled:opacity-50"
       >
         {busy ? '…' : 'APPROVE'}
       </button>

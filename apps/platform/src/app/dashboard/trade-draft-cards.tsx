@@ -159,13 +159,13 @@ export function TradeDraftCards({
         return (
           <div
             key={d.id}
-            className="rounded-xl border border-emerald-300 bg-emerald-50/60 p-3 space-y-2.5"
+            className="rounded-xl border border-blue-300 bg-blue-50/60 p-3 space-y-2.5"
           >
             <div className="flex items-start gap-2.5">
               <PlatformLogo platform={d.platform} size="sm" />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-0.5">
-                  <span className="text-[10px] tracking-wider font-semibold text-emerald-800">
+                  <span className="text-[10px] tracking-wider font-semibold text-blue-800">
                     O&apos;TOOLE PROPOSED
                   </span>
                   <span className="text-[10px] text-stone-500">
@@ -187,7 +187,7 @@ export function TradeDraftCards({
                 <div
                   className={
                     d.side === 'buy'
-                      ? 'text-emerald-700 font-semibold'
+                      ? 'text-blue-700 font-semibold'
                       : 'text-red-700 font-semibold'
                   }
                 >
@@ -215,12 +215,12 @@ export function TradeDraftCards({
 
             {(d.take_profit_price != null || d.stop_loss_price != null) && (
               <div className="rounded bg-white/80 px-2.5 py-1.5 flex items-center gap-3 text-[11px]">
-                <span className="text-[9px] tracking-wider font-bold text-emerald-800 shrink-0">
+                <span className="text-[9px] tracking-wider font-bold text-blue-800 shrink-0">
                   AUTO-SELL
                 </span>
                 {fmtCents(d.take_profit_price) && (
                   <span className="inline-flex items-center gap-1 font-mono">
-                    <span className="text-emerald-700">▲</span>
+                    <span className="text-blue-700">▲</span>
                     <span className="text-stone-500 text-[10px]">TP</span>
                     <span className="font-semibold text-stone-900">
                       {fmtCents(d.take_profit_price)}
@@ -253,7 +253,7 @@ export function TradeDraftCards({
                     {state.verdicts.map((v) => (
                       <li
                         key={v.gate}
-                        className={v.pass ? 'text-emerald-700' : 'text-red-700'}
+                        className={v.pass ? 'text-blue-700' : 'text-red-700'}
                       >
                         {v.pass ? '✓' : '✗'} {v.gate}
                         {v.pass && v.detail ? ` — ${v.detail}` : ''}
@@ -270,7 +270,7 @@ export function TradeDraftCards({
                 type="button"
                 onClick={() => confirmDraft(d.id)}
                 disabled={state?.busy}
-                className="flex-1 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-semibold px-3 py-2 text-xs disabled:opacity-50 transition"
+                className="flex-1 rounded-full bg-blue-500 hover:bg-blue-500 text-white font-semibold px-3 py-2 text-xs disabled:opacity-50 transition"
               >
                 {state?.busy ? 'PLACING…' : 'CONFIRM →'}
               </button>

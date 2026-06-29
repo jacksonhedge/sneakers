@@ -115,7 +115,7 @@ export function SignupForm({
   if (done) {
     return (
       <div className="space-y-3">
-        <div className="border border-emerald-400/60 bg-emerald-400/10 text-emerald-200 px-4 py-4 rounded">
+        <div className="border border-blue-400/60 bg-blue-400/10 text-blue-200 px-4 py-4 rounded">
           <div className="text-xs tracking-wider font-semibold mb-1">
             ✓ ACCOUNT CREATED
           </div>
@@ -138,7 +138,7 @@ export function SignupForm({
         </div>
         <a
           href="/login"
-          className="block w-full text-center border border-emerald-400 bg-emerald-500 text-black font-semibold px-6 py-3 rounded hover:bg-emerald-400 transition tracking-wider"
+          className="block w-full text-center border border-blue-400 bg-blue-600 text-white font-semibold px-6 py-3 rounded hover:bg-blue-400 transition tracking-wider"
         >
           GO TO SIGN IN →
         </a>
@@ -169,7 +169,7 @@ export function SignupForm({
           className={inputCls}
         />
         {isEduEmail(email) && (
-          <div className="text-[10px] text-emerald-300/90 mt-1.5 tracking-wider">
+          <div className="text-[10px] text-blue-300/90 mt-1.5 tracking-wider">
             ✓ .edu detected — 75% off + leaderboard access after verification
           </div>
         )}
@@ -203,7 +203,7 @@ export function SignupForm({
           <button
             type="button"
             onClick={() => setShowPw((s) => !s)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] tracking-wider text-emerald-300/80 hover:text-emerald-300"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] tracking-wider text-blue-300/80 hover:text-blue-300"
           >
             {showPw ? 'HIDE' : 'SHOW'}
           </button>
@@ -228,7 +228,7 @@ export function SignupForm({
         <button
           type="submit"
           disabled={busy || !fieldsValid()}
-          className="w-full border border-emerald-400 bg-emerald-500 text-black font-semibold px-6 py-3 rounded hover:bg-emerald-400 transition disabled:opacity-40 tracking-wider"
+          className="w-full border border-blue-400 bg-blue-600 text-white font-semibold px-6 py-3 rounded hover:bg-blue-400 transition disabled:opacity-40 tracking-wider"
         >
           {busy
             ? 'CREATING…'
@@ -242,7 +242,7 @@ export function SignupForm({
 
       <div className="text-[11px] text-white/55 text-center leading-relaxed">
         Already have an account?{' '}
-        <a href="/login" className="text-emerald-300/90 hover:text-emerald-300 underline">
+        <a href="/login" className="text-blue-300/90 hover:text-blue-300 underline">
           Sign in
         </a>
       </div>
@@ -264,7 +264,7 @@ function ErrorBox({
       {error.action && (
         <a
           href={error.action.href}
-          className="inline-block mt-1.5 ml-3 text-emerald-300/90 hover:text-emerald-300 underline tracking-wider"
+          className="inline-block mt-1.5 ml-3 text-blue-300/90 hover:text-blue-300 underline tracking-wider"
         >
           {error.action.label}
         </a>
@@ -274,7 +274,7 @@ function ErrorBox({
 }
 
 const inputCls =
-  'w-full bg-black/40 backdrop-blur-sm border border-white/30 text-white px-4 py-3 rounded focus:outline-none focus:border-emerald-400 focus:bg-black/60 placeholder:text-white/30 transition'
+  'w-full bg-black/40 backdrop-blur-sm border border-white/30 text-white px-4 py-3 rounded focus:outline-none focus:border-blue-400 focus:bg-black/60 placeholder:text-white/30 transition'
 
 function Field({
   label,
@@ -287,7 +287,7 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-[11px] tracking-wider text-emerald-300/80 mb-1">
+      <label className="block text-[11px] tracking-wider text-blue-300/80 mb-1">
         {label} {hint && <span className="text-white/40 normal-case">({hint})</span>}
       </label>
       {children}

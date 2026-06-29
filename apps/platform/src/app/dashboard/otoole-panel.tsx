@@ -221,7 +221,7 @@ export function OToolePanel({ userName }: Props) {
           type="button"
           onClick={() => setCollapsed(false)}
           aria-label="Expand O'Toole AI"
-          className="w-7 h-7 rounded-full ring-1 ring-stone-300 bg-stone-950 flex items-center justify-center text-[11px] text-emerald-400 font-bold hover:ring-emerald-400 transition mb-3"
+          className="w-7 h-7 rounded-full ring-1 ring-stone-300 bg-stone-950 flex items-center justify-center text-[11px] text-blue-400 font-bold hover:ring-blue-400 transition mb-3"
         >
           Ø
         </button>
@@ -245,7 +245,7 @@ export function OToolePanel({ userName }: Props) {
     <aside className="hidden md:flex w-[380px] shrink-0 flex-col bg-white border-r border-stone-200 min-h-0 h-full">
       <header className="flex items-center gap-2 px-5 py-3.5 border-b border-stone-200">
         <span
-          className="w-6 h-6 rounded-full ring-1 ring-stone-300 bg-stone-950 inline-flex items-center justify-center text-[10px] text-emerald-400 font-bold"
+          className="w-6 h-6 rounded-full ring-1 ring-stone-300 bg-stone-950 inline-flex items-center justify-center text-[10px] text-blue-400 font-bold"
           aria-hidden
         >
           Ø
@@ -345,9 +345,9 @@ export function OToolePanel({ userName }: Props) {
             <div className="otoole-aurora-layer otoole-aurora-c" aria-hidden />
 
             <div className="relative px-5 py-6 space-y-5 text-[15px] leading-relaxed text-stone-900">
-              <div className="inline-flex items-center gap-1.5 text-[10px] tracking-[0.2em] font-semibold text-emerald-700 bg-white/70 backdrop-blur-sm rounded-full px-2.5 py-1 ring-1 ring-emerald-200">
+              <div className="inline-flex items-center gap-1.5 text-[10px] tracking-[0.2em] font-semibold text-blue-700 bg-white/70 backdrop-blur-sm rounded-full px-2.5 py-1 ring-1 ring-blue-200">
                 <span
-                  className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"
+                  className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"
                   aria-hidden
                 />
                 AI WINDOW
@@ -368,7 +368,7 @@ export function OToolePanel({ userName }: Props) {
               m.role === 'user' ? (
                 <div
                   key={i}
-                  className={`ml-6 px-3 py-2 rounded-2xl rounded-br-sm bg-emerald-50 text-stone-900 ring-1 ring-emerald-200 leading-relaxed whitespace-pre-wrap ${USER_MSG_SIZE_CLASS[textSize]}`}
+                  className={`ml-6 px-3 py-2 rounded-2xl rounded-br-sm bg-blue-50 text-stone-900 ring-1 ring-blue-200 leading-relaxed whitespace-pre-wrap ${USER_MSG_SIZE_CLASS[textSize]}`}
                 >
                   {m.content}
                 </div>
@@ -505,7 +505,7 @@ function ByoKeyRow({
               type="button"
               onClick={onSave}
               disabled={!pasteInput.trim() || byo.state === 'saving'}
-              className="text-[11px] font-semibold text-emerald-700 hover:text-emerald-800 disabled:opacity-40"
+              className="text-[11px] font-semibold text-blue-700 hover:text-blue-800 disabled:opacity-40"
             >
               {byo.state === 'saving' ? 'Saving…' : 'Save key'}
             </button>
@@ -520,7 +520,7 @@ function ByoKeyRow({
       {byo.state === 'using_byo' ? (
         <>
           <span className="inline-flex items-center gap-1.5">
-            <span className="text-emerald-700 font-semibold">✓ Using your key</span>
+            <span className="text-blue-700 font-semibold">✓ Using your key</span>
             <span className="font-mono text-stone-500">{byo.preview}</span>
           </span>
           <button
@@ -542,7 +542,7 @@ function ByoKeyRow({
           <button
             type="button"
             onClick={onEdit}
-            className="text-emerald-700 hover:text-emerald-800 font-semibold"
+            className="text-blue-700 hover:text-blue-800 font-semibold"
           >
             Use your own key →
           </button>

@@ -139,18 +139,18 @@ export function TeachSection() {
               ? 'Loading…'
               : 'e.g. I trade 10–35¢ longshots, $50 max per ticket, never crypto perps, prefer regulated venues.'
           }
-          className="w-full rounded-lg border border-stone-300 px-3 py-2.5 text-sm text-stone-900 leading-relaxed focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-400/40 placeholder:text-stone-400 transition"
+          className="w-full rounded-lg border border-stone-300 px-3 py-2.5 text-sm text-stone-900 leading-relaxed focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-400/40 placeholder:text-stone-400 transition"
         />
         <div className="mt-2 flex items-center gap-3">
           <button
             type="button"
             onClick={saveMemory}
             disabled={!memoryDirty || memorySaving || loading}
-            className="rounded-full bg-emerald-500 text-black font-semibold px-4 py-1.5 text-xs tracking-wider hover:bg-emerald-400 transition disabled:opacity-50"
+            className="rounded-full bg-blue-600 text-white font-semibold px-4 py-1.5 text-xs tracking-wider hover:bg-blue-400 transition disabled:opacity-50"
           >
             {memorySaving ? 'SAVING…' : 'SAVE'}
           </button>
-          {memorySaved && <span className="text-[11px] text-emerald-700">✓ saved</span>}
+          {memorySaved && <span className="text-[11px] text-blue-700">✓ saved</span>}
           <span className="text-[11px] text-stone-400 ml-auto tabular-nums">
             {memory.length} / 8000
           </span>
@@ -225,7 +225,7 @@ function SectionHeader({
       <div className="text-2xl">{icon}</div>
       <div>
         <h2 className="text-lg font-semibold">{title}</h2>
-        <div className="text-[10px] tracking-widest text-emerald-700 font-semibold">
+        <div className="text-[10px] tracking-widest text-blue-700 font-semibold">
           {status}
         </div>
       </div>
@@ -261,7 +261,7 @@ function SourceSubsection({
           <button
             type="button"
             onClick={onAdd}
-            className="text-[11px] tracking-wider font-semibold text-emerald-700 hover:text-emerald-800"
+            className="text-[11px] tracking-wider font-semibold text-blue-700 hover:text-blue-800"
           >
             + ADD {KIND_LABEL_SINGULAR[kind].toUpperCase()}
           </button>
@@ -279,7 +279,7 @@ function SourceSubsection({
             <button
               type="button"
               onClick={onAdd}
-              className="mt-2 text-[11px] tracking-wider font-semibold text-emerald-700 hover:text-emerald-800"
+              className="mt-2 text-[11px] tracking-wider font-semibold text-blue-700 hover:text-blue-800"
             >
               + ADD {KIND_LABEL_SINGULAR[kind].toUpperCase()}
             </button>
@@ -305,7 +305,7 @@ function SourceSubsection({
                 </button>
               </div>
               {s.marketFilter && (
-                <div className="text-[11px] text-emerald-700 mb-1">
+                <div className="text-[11px] text-blue-700 mb-1">
                   fires on: {s.marketFilter}
                 </div>
               )}
@@ -396,7 +396,7 @@ function AddSourceModal({
         <form onSubmit={submit} className="px-5 py-4 space-y-4">
           <div>
             <label className="block text-[10px] tracking-wider text-stone-700 font-semibold mb-1">
-              LABEL <span className="text-emerald-700">*</span>
+              LABEL <span className="text-blue-700">*</span>
             </label>
             <input
               type="text"
@@ -411,7 +411,7 @@ function AddSourceModal({
 
           <div>
             <label className="block text-[10px] tracking-wider text-stone-700 font-semibold mb-1">
-              CONTENT <span className="text-emerald-700">*</span>
+              CONTENT <span className="text-blue-700">*</span>
               <span className="text-stone-400 normal-case font-normal"> · paste the text</span>
             </label>
             <textarea
@@ -459,7 +459,7 @@ function AddSourceModal({
             <button
               type="submit"
               disabled={busy}
-              className="rounded-full bg-emerald-500 text-black font-semibold px-5 py-2 text-sm tracking-wider hover:bg-emerald-400 transition disabled:opacity-50"
+              className="rounded-full bg-blue-600 text-white font-semibold px-5 py-2 text-sm tracking-wider hover:bg-blue-400 transition disabled:opacity-50"
             >
               {busy ? 'SAVING…' : 'SAVE'}
             </button>
@@ -479,4 +479,4 @@ function AddSourceModal({
 }
 
 const inputCls =
-  'w-full bg-white border border-stone-300 text-stone-900 px-3 py-2 rounded-lg text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-400/40 placeholder:text-stone-400 transition'
+  'w-full bg-white border border-stone-300 text-stone-900 px-3 py-2 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-400/40 placeholder:text-stone-400 transition'

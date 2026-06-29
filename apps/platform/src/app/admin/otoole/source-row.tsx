@@ -61,7 +61,7 @@ export function SourceRow({ source }: { source: GlobalSource }) {
           <span
             className={`text-[10px] tracking-wider px-1.5 py-0.5 ring-1 ${
               enabled
-                ? 'bg-emerald-100 text-emerald-800 ring-emerald-300'
+                ? 'bg-blue-100 text-blue-800 ring-blue-300'
                 : 'bg-stone-200 text-stone-600 ring-stone-300'
             }`}
           >
@@ -125,7 +125,7 @@ export function SourceRow({ source }: { source: GlobalSource }) {
         <div
           className={`px-3 py-1 text-[10px] border-t ${
             result.ok
-              ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+              ? 'bg-blue-50 text-blue-800 border-blue-200'
               : 'bg-red-50 text-red-800 border-red-200'
           }`}
         >

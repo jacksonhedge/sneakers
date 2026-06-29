@@ -195,7 +195,7 @@ export function BroadcastComposer() {
         <div
           className={`text-xs px-3 py-2 ${
             sendResult.ok
-              ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+              ? 'bg-blue-50 text-blue-800 border border-blue-200'
               : 'bg-red-50 text-red-800 border border-red-200'
           }`}
         >

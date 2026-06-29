@@ -73,7 +73,7 @@ export function PlatformsForm({
         <button
           type="submit"
           disabled={busy}
-          className="inline-block border border-emerald-400 bg-emerald-500 text-black font-semibold px-6 py-3 hover:bg-emerald-400 hover:border-emerald-300 transition disabled:opacity-50 tracking-wider"
+          className="inline-block border border-blue-400 bg-blue-600 text-white font-semibold px-6 py-3 hover:bg-blue-400 hover:border-blue-300 transition disabled:opacity-50 tracking-wider"
         >
           {busy ? 'SAVING…' : `CONTINUE → (${selected.size} selected)`}
         </button>
@@ -112,7 +112,7 @@ function Group({
 }) {
   return (
     <div>
-      <div className="text-[10px] tracking-[0.15em] text-emerald-300/70 font-semibold mb-2">
+      <div className="text-[10px] tracking-[0.15em] text-blue-300/70 font-semibold mb-2">
         {label}
       </div>
       <div className={`grid grid-cols-2 sm:grid-cols-3 gap-2 ${dim ? 'opacity-75' : ''}`}>
@@ -125,19 +125,19 @@ function Group({
               onClick={() => onToggle(v.id)}
               className={`text-left p-3 rounded border transition ${
                 active
-                  ? 'border-emerald-400 bg-emerald-500/10 ring-1 ring-emerald-400/40'
+                  ? 'border-blue-400 bg-blue-500/10 ring-1 ring-blue-400/40'
                   : 'border-white/20 bg-black/40 hover:border-white/40 hover:bg-black/60'
               }`}
             >
               <div className="flex items-start justify-between gap-2">
                 <span
-                  className={`text-sm font-semibold ${active ? 'text-emerald-300' : 'text-white'}`}
+                  className={`text-sm font-semibold ${active ? 'text-blue-300' : 'text-white'}`}
                 >
                   {v.name}
                 </span>
                 <span
                   className={`text-[10px] leading-none mt-0.5 ${
-                    active ? 'text-emerald-300' : 'text-white/30'
+                    active ? 'text-blue-300' : 'text-white/30'
                   }`}
                   aria-hidden
                 >

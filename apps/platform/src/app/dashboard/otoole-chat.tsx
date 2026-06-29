@@ -123,7 +123,7 @@ export function OTooleChat() {
         ))}
         {pending && (
           <div className="text-xs text-stone-500 px-3">
-            <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 mr-2 animate-pulse" />
+            <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mr-2 animate-pulse" />
             O&apos;Toole is thinking…
           </div>
         )}
@@ -156,7 +156,7 @@ export function OTooleChat() {
             {capInfo.used}/{isFinite(capInfo.limit) ? capInfo.limit : '∞'} today · {capInfo.tier} tier
           </span>
           {capInfo.used >= capInfo.limit * 0.8 && isFinite(capInfo.limit) && (
-            <a href="/dashboard/billing/credits" className="text-emerald-600 hover:underline">
+            <a href="/dashboard/billing/credits" className="text-blue-600 hover:underline">
               Buy credits →
             </a>
           )}
@@ -170,7 +170,7 @@ export function OTooleChat() {
         <select
           value={model}
           onChange={(e) => setModel(e.target.value as AIModelId)}
-          className="flex-1 text-[11px] bg-white ring-1 ring-stone-300 rounded px-2 py-1 focus:outline-none focus:ring-emerald-400"
+          className="flex-1 text-[11px] bg-white ring-1 ring-stone-300 rounded px-2 py-1 focus:outline-none focus:ring-blue-400"
           disabled={pending}
         >
           {AI_MODELS.map((m) => (
@@ -193,7 +193,7 @@ export function OTooleChat() {
         }}
         className="border-t border-stone-200 p-3"
       >
-        <div className="flex items-center gap-2 bg-stone-100 rounded px-3 py-2 focus-within:bg-white focus-within:ring-1 focus-within:ring-emerald-400/60 transition">
+        <div className="flex items-center gap-2 bg-stone-100 rounded px-3 py-2 focus-within:bg-white focus-within:ring-1 focus-within:ring-blue-400/60 transition">
           <input
             type="text"
             value={input}
@@ -205,7 +205,7 @@ export function OTooleChat() {
           <button
             type="submit"
             disabled={pending || !input.trim()}
-            className="w-6 h-6 rounded bg-emerald-500 text-white flex items-center justify-center text-xs disabled:opacity-40 disabled:cursor-not-allowed hover:bg-emerald-600 transition"
+            className="w-6 h-6 rounded bg-blue-500 text-white flex items-center justify-center text-xs disabled:opacity-40 disabled:cursor-not-allowed hover:bg-blue-600 transition"
           >
             →
           </button>

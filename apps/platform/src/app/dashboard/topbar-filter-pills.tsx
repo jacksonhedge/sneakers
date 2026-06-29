@@ -88,7 +88,7 @@ export function TopbarFilterPills() {
                 : p.hot
                   ? 'bg-gradient-to-r from-fuchsia-500 to-rose-500 text-white hover:from-fuchsia-600 hover:to-rose-600 font-semibold shadow-sm'
                   : p.accent
-                    ? 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 font-semibold'
+                    ? 'bg-blue-50 text-blue-800 hover:bg-blue-100 font-semibold'
                     : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
             }`}
           >

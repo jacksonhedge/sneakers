@@ -171,7 +171,7 @@ export default async function StrategiesPage() {
     <div className="px-6 py-5 space-y-8 max-w-6xl">
       <header className="flex items-end justify-between gap-4 flex-wrap">
         <div>
-          <div className="text-[10px] tracking-[0.2em] text-emerald-700 font-semibold mb-1">
+          <div className="text-[10px] tracking-[0.2em] text-blue-700 font-semibold mb-1">
             STRATEGIES
           </div>
           <h1 className="text-2xl font-bold text-stone-900">Your trading theses</h1>
@@ -196,7 +196,7 @@ export default async function StrategiesPage() {
         <div className="flex items-baseline justify-between mb-3">
           <h2 className="text-sm font-semibold text-stone-900 inline-flex items-center gap-2">
             <span
-              className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"
+              className="inline-block w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"
               aria-hidden
             />
             Active
@@ -266,7 +266,7 @@ function RuleCard({ rule, muted = false }: { rule: AlertRuleRow; muted?: boolean
         <span
           className={`text-[9px] tracking-wider font-bold rounded-full ring-1 px-1.5 py-0.5 shrink-0 ${
             rule.enabled
-              ? 'bg-emerald-50 text-emerald-700 ring-emerald-300'
+              ? 'bg-blue-50 text-blue-700 ring-blue-300'
               : 'bg-stone-100 text-stone-500 ring-stone-300'
           }`}
         >
@@ -284,7 +284,7 @@ function RuleCard({ rule, muted = false }: { rule: AlertRuleRow; muted?: boolean
         <Link
           href={`/dashboard/alerts/${rule.id}/edit`}
           prefetch={false}
-          className="text-emerald-700 hover:text-emerald-800 font-semibold tracking-wider"
+          className="text-blue-700 hover:text-blue-800 font-semibold tracking-wider"
         >
           EDIT →
         </Link>
@@ -309,7 +309,7 @@ function TemplateCard({ template: t }: { template: Template }) {
     <Link
       href={cloneHref}
       prefetch={false}
-      className="block rounded-xl ring-1 ring-stone-200 bg-white p-4 hover:ring-emerald-400/60 hover:shadow-sm transition"
+      className="block rounded-xl ring-1 ring-stone-200 bg-white p-4 hover:ring-blue-400/60 hover:shadow-sm transition"
     >
       <div className="flex items-start gap-2 mb-2">
         <span className="text-2xl leading-none" aria-hidden>
@@ -324,7 +324,7 @@ function TemplateCard({ template: t }: { template: Template }) {
       <div className="text-[12px] text-stone-600 leading-relaxed mb-3 line-clamp-3">
         {t.description}
       </div>
-      <div className="text-[10px] text-emerald-700 font-semibold tracking-wider">
+      <div className="text-[10px] text-blue-700 font-semibold tracking-wider">
         CLONE →
       </div>
     </Link>

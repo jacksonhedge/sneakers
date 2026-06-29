@@ -24,7 +24,7 @@ export function TerminalBackdrop() {
       {/* Topbar */}
       <div className="h-14 border-b border-stone-200 bg-white flex items-center justify-between px-6">
         <div className="flex items-center gap-4">
-          <div className="w-7 h-7 rounded-full bg-emerald-500 ring-1 ring-emerald-400" />
+          <div className="w-7 h-7 rounded-full bg-blue-500 ring-1 ring-blue-400" />
           <div className="text-sm font-bold tracking-tight">Sneakers Terminal</div>
           <div className="text-[10px] tracking-wider text-stone-400 ml-4">
             ALL · LIVE · 2,400+ MARKETS
@@ -32,7 +32,7 @@ export function TerminalBackdrop() {
         </div>
         <div className="flex items-center gap-3">
           <div className="text-[10px] tracking-wider text-stone-400">UPDATED 2m ago</div>
-          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600" />
+          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-400 to-blue-600" />
         </div>
       </div>
 
@@ -45,7 +45,7 @@ export function TerminalBackdrop() {
               key={item}
               className={`text-xs px-3 py-2 rounded ${
                 i === 0
-                  ? 'bg-emerald-100 text-emerald-800 font-semibold'
+                  ? 'bg-blue-100 text-blue-800 font-semibold'
                   : 'text-stone-600'
               }`}
             >
@@ -73,7 +73,7 @@ export function TerminalBackdrop() {
                 key={c}
                 className={`text-[10px] tracking-wider px-3 py-1.5 rounded-full ring-1 ${
                   i === 0
-                    ? 'bg-emerald-100 text-emerald-800 ring-emerald-300'
+                    ? 'bg-blue-100 text-blue-800 ring-blue-300'
                     : 'bg-white text-stone-600 ring-stone-200'
                 }`}
               >
@@ -94,10 +94,10 @@ export function TerminalBackdrop() {
                       className="flex items-center justify-between text-[11px]"
                     >
                       <div className="flex items-center gap-2">
-                        <div className="w-5 h-5 rounded-full bg-emerald-500/20" />
+                        <div className="w-5 h-5 rounded-full bg-blue-500/20" />
                         <div className="h-2 w-20 rounded bg-stone-200" />
                       </div>
-                      <div className="font-mono tabular-nums text-emerald-700 font-semibold">
+                      <div className="font-mono tabular-nums text-blue-700 font-semibold">
                         {Math.round(40 + Math.random() * 50)}%
                       </div>
                     </div>
@@ -127,7 +127,7 @@ export function TerminalBackdrop() {
                   </div>
                   <div
                     className={`font-mono tabular-nums text-[10px] ${
-                      r.delta.startsWith('+') ? 'text-emerald-600' : 'text-red-600'
+                      r.delta.startsWith('+') ? 'text-blue-600' : 'text-red-600'
                     }`}
                   >
                     {r.delta.startsWith('+') ? '▲' : '▼'} {r.delta.replace(/[+−]/, '')}
@@ -146,7 +146,7 @@ export function TerminalBackdrop() {
             Looking at 14 markets that moved &gt;5pp in the last hour. Want a quick
             breakdown?
           </div>
-          <div className="rounded bg-emerald-100 p-3 text-[11px] text-emerald-900 ml-6">
+          <div className="rounded bg-blue-100 p-3 text-[11px] text-blue-900 ml-6">
             Yeah, top 3.
           </div>
           <div className="space-y-1.5 pt-2">

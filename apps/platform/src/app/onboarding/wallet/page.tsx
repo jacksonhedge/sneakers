@@ -7,18 +7,18 @@ export default function WalletPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-emerald-300">
+        <h1 className="text-2xl font-semibold text-blue-300">
           Set up your wallet.
         </h1>
         <p className="text-sm text-white/70 mt-2 leading-relaxed">
-          Sneakers uses <span className="text-emerald-300 font-semibold">Crypto.com</span> as the
+          Sneakers uses <span className="text-blue-300 font-semibold">Crypto.com</span> as the
           on-ramp for site deposits and withdrawals. Install the app, fund it once, and
           every deposit + payout after that is one tap.
         </p>
       </div>
 
       <div className="space-y-3">
-        <div className="text-[10px] tracking-[0.15em] text-emerald-300/80 font-semibold">
+        <div className="text-[10px] tracking-[0.15em] text-blue-300/80 font-semibold">
           STEP 1 · INSTALL
         </div>
 
@@ -38,7 +38,7 @@ export default function WalletPage() {
           />
         </a>
         <div className="flex items-center justify-between text-xs">
-          <div className="text-emerald-300/80 tracking-[0.1em] font-semibold">
+          <div className="text-blue-300/80 tracking-[0.1em] font-semibold">
             RECOMMENDED · 1-TAP DEPOSITS
           </div>
           <div className="text-white/80 font-semibold">
@@ -55,15 +55,15 @@ export default function WalletPage() {
       <div className="border border-white/10 bg-white/5 p-4 text-xs text-white/70 leading-relaxed space-y-2">
         <div className="text-white/90 font-semibold text-sm">What happens next</div>
         <div>
-          <span className="text-emerald-300">1.</span> Fund the Crypto.com wallet with
+          <span className="text-blue-300">1.</span> Fund the Crypto.com wallet with
           USDC, ETH, or USD (bank / card).
         </div>
         <div>
-          <span className="text-emerald-300">2.</span> Come back to Sneakers — we&apos;ll
+          <span className="text-blue-300">2.</span> Come back to Sneakers — we&apos;ll
           detect the wallet on first deposit.
         </div>
         <div>
-          <span className="text-emerald-300">3.</span> Every subsequent deposit + payout
+          <span className="text-blue-300">3.</span> Every subsequent deposit + payout
           is one tap. Withdrawals settle back to the same wallet.
         </div>
         <div className="text-white/50 pt-1">
@@ -81,7 +81,7 @@ export default function WalletPage() {
         </Link>
         <Link
           href="/onboarding/platforms"
-          className="inline-block border border-emerald-400 bg-emerald-500 text-black font-semibold px-6 py-3 hover:bg-emerald-400 hover:border-emerald-300 transition"
+          className="inline-block border border-blue-400 bg-blue-600 text-white font-semibold px-6 py-3 hover:bg-blue-400 hover:border-blue-300 transition"
         >
           CONTINUE
         </Link>

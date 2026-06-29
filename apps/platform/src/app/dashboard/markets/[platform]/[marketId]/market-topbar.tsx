@@ -23,7 +23,7 @@ export function MarketTopbar({ latestTs }: { latestTs?: string | null }) {
     <header className="border-b border-[var(--border)] bg-[var(--panel)]/80 backdrop-blur-sm flex-shrink-0">
       <div className="flex items-center gap-4 px-4 py-2.5">
         <Link href="/dashboard" className="flex items-center gap-2.5 flex-shrink-0">
-          <div className="w-7 h-7 rounded-full bg-stone-950 flex items-center justify-center ring-1 ring-emerald-500/40 overflow-hidden p-1">
+          <div className="w-7 h-7 rounded-full bg-stone-950 flex items-center justify-center ring-1 ring-blue-500/40 overflow-hidden p-1">
             <Image
               src="/logo.png"
               alt="Sneakers"

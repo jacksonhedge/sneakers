@@ -12,7 +12,7 @@ import Image from 'next/image'
 // Pure CSS/SVG, no video. Three layers:
 //   - Top: scrolling ticker tape mixing crypto / sports lines / politics
 //     so the user immediately reads "this is a markets product."
-//   - Center: pulsing Sneakers disc with a soft emerald ring expanding
+//   - Center: pulsing Sneakers disc with a soft blue ring expanding
 //     out, terminal-style label underneath.
 //   - Bottom: cycling status line + dot tracker so a 3–6s wait still
 //     reads as progress, not lock-up.
@@ -62,7 +62,7 @@ export function TerminalLoadingSplash() {
           <span
             className={
               t.dir === '▲'
-                ? 'text-emerald-600 tabular-nums'
+                ? 'text-blue-600 tabular-nums'
                 : 'text-red-500 tabular-nums'
             }
           >
@@ -101,15 +101,15 @@ export function TerminalLoadingSplash() {
       <div className="flex-1 flex flex-col items-center justify-center px-6 py-12 gap-6">
         <div className="relative w-24 h-24">
           <span
-            className="sneakers-ring-pulse absolute inset-0 rounded-full bg-emerald-400/40"
+            className="sneakers-ring-pulse absolute inset-0 rounded-full bg-blue-400/40"
             aria-hidden
           />
           <span
-            className="sneakers-ring-pulse absolute inset-0 rounded-full bg-emerald-400/20"
+            className="sneakers-ring-pulse absolute inset-0 rounded-full bg-blue-400/20"
             style={{ animationDelay: '0.6s' }}
             aria-hidden
           />
-          <span className="relative w-24 h-24 rounded-full bg-stone-950 ring-2 ring-emerald-400/60 flex items-center justify-center overflow-hidden p-3.5">
+          <span className="relative w-24 h-24 rounded-full bg-stone-950 ring-2 ring-blue-400/60 flex items-center justify-center overflow-hidden p-3.5">
             <Image
               src="/logo.png"
               alt="Sneakers"
@@ -136,7 +136,7 @@ export function TerminalLoadingSplash() {
               key={i}
               aria-hidden
               className={`block w-1.5 h-1.5 rounded-full transition-colors duration-300 ${
-                i === statusIdx ? 'bg-emerald-500' : 'bg-stone-300'
+                i === statusIdx ? 'bg-blue-500' : 'bg-stone-300'
               }`}
             />
           ))}

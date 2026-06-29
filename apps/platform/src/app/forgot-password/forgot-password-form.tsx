@@ -39,7 +39,7 @@ export function ForgotPasswordForm() {
   if (sent) {
     return (
       <div className="space-y-3">
-        <div className="rounded-lg border border-emerald-300 bg-emerald-50 text-emerald-700 px-3 py-3 text-xs font-semibold">
+        <div className="rounded-lg border border-blue-300 bg-blue-50 text-blue-700 px-3 py-3 text-xs font-semibold">
           ✓ If an account exists for that email, we just sent a reset link.
           Check your inbox.
         </div>
@@ -67,12 +67,12 @@ export function ForgotPasswordForm() {
         onChange={(e) => setEmail(e.target.value)}
         placeholder="you@firm.com"
         autoComplete="email"
-        className="w-full bg-stone-50 border border-stone-300 text-stone-900 px-4 py-3 rounded-lg focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-400/40 placeholder:text-stone-400 transition"
+        className="w-full bg-stone-50 border border-stone-300 text-stone-900 px-4 py-3 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-400/40 placeholder:text-stone-400 transition"
       />
       <button
         type="submit"
         disabled={busy}
-        className="w-full rounded-full bg-emerald-500 text-black font-semibold px-6 py-3 ring-1 ring-emerald-400 hover:bg-emerald-400 transition disabled:opacity-50"
+        className="w-full rounded-full bg-blue-600 text-white font-semibold px-6 py-3 ring-1 ring-blue-400 hover:bg-blue-400 transition disabled:opacity-50"
       >
         {busy ? 'SENDING…' : 'SEND RESET LINK →'}
       </button>

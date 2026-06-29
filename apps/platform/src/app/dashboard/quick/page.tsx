@@ -55,7 +55,7 @@ function fmtChangePp(c: number | null, samples: number): string {
 
 function changeClass(c: number | null): string {
   if (c == null) return 'text-stone-400'
-  if (c > 0.005) return 'text-emerald-700'
+  if (c > 0.005) return 'text-blue-700'
   if (c < -0.005) return 'text-red-700'
   return 'text-stone-500'
 }
@@ -67,7 +67,7 @@ function bucketColor(b: Bucket | null): string {
     case '15m':
       return 'bg-amber-100 text-amber-800'
     case '30m':
-      return 'bg-emerald-100 text-emerald-800'
+      return 'bg-blue-100 text-blue-800'
     default:
       return 'bg-stone-100 text-stone-600'
   }
@@ -125,8 +125,8 @@ export default async function QuickMarketsPage({ searchParams }: PageProps) {
         <header className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-baseline gap-3">
             <h1 className="text-xl font-bold tracking-tight">Resolves in minutes</h1>
-            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold tracking-wider">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[10px] font-bold tracking-wider">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
               LIVE
             </span>
           </div>
@@ -251,10 +251,10 @@ function AssetFilter({
 
 function AutoTradeBanner() {
   return (
-    <div className="rounded-xl border border-emerald-200 bg-gradient-to-r from-emerald-50 via-emerald-50/50 to-white px-4 py-3 flex items-center justify-between gap-4 flex-wrap">
+    <div className="rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 via-blue-50/50 to-white px-4 py-3 flex items-center justify-between gap-4 flex-wrap">
       <div className="flex items-center gap-3 min-w-0 flex-1">
         <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#004225] text-white text-[10px] font-bold tracking-wider shrink-0">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse" />
+          <span className="w-1.5 h-1.5 rounded-full bg-blue-300 animate-pulse" />
           AUTO-TRADE
         </span>
         <div className="text-sm text-stone-700">
@@ -359,7 +359,7 @@ function MarketBox({
 
       <div className="flex items-baseline justify-between">
         <div className="flex items-baseline gap-2">
-          <span className="text-3xl font-bold text-emerald-700 font-mono tabular-nums leading-none">
+          <span className="text-3xl font-bold text-blue-700 font-mono tabular-nums leading-none">
             {ask == null ? (
               '—'
             ) : (

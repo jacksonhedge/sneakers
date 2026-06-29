@@ -72,7 +72,7 @@ const VENUE_INFO: Record<Venue, VenueDef> = {
     name: 'Hyperliquid',
     logo: '',
     fallback: 'H',
-    tint: 'bg-emerald-700',
+    tint: 'bg-blue-700',
     signupUrl: 'https://app.hyperliquid.xyz/?ref=SNEAKERS',
     identifierLabel: 'Hyperliquid wallet address',
     identifierPlaceholder: '0x123…',
@@ -81,7 +81,7 @@ const VENUE_INFO: Record<Venue, VenueDef> = {
     name: 'Kalshi',
     logo: '/SneakersLogos/partners/kalshi.png',
     fallback: 'K',
-    tint: 'bg-emerald-600',
+    tint: 'bg-blue-600',
     signupUrl: 'https://kalshi.com/signup?referral=SNEAKERS',
     identifierLabel: 'Kalshi email',
     identifierPlaceholder: 'you@example.com',
@@ -378,13 +378,13 @@ export function HorseRaceLobby({
                     who want their own read on which way BTC is heading.
                   </p>
                 </div>
-                <div className="rounded-xl bg-gradient-to-br from-emerald-50 via-emerald-50/60 to-white ring-1 ring-emerald-200 p-5 space-y-2">
+                <div className="rounded-xl bg-gradient-to-br from-blue-50 via-blue-50/60 to-white ring-1 ring-blue-200 p-5 space-y-2">
                   <div className="flex items-center gap-2">
                     <span className="w-7 h-7 rounded-full bg-[#00703c] text-white inline-flex items-center justify-center text-sm">
                       🤖
                     </span>
                     <span className="text-sm font-bold text-stone-900">Auto Bot</span>
-                    <span className="text-[9px] tracking-wider px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold">
+                    <span className="text-[9px] tracking-wider px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-bold">
                       O&apos;TOOLE TRADES
                     </span>
                   </div>
@@ -406,12 +406,12 @@ export function HorseRaceLobby({
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
                 <Stat label="Buy-in" value="$20" />
                 <Stat label="Sneakers fee (10%)" value="$2" tone="text-stone-600" />
-                <Stat label="Net to prize pool" value="$18" tone="text-emerald-700" />
+                <Stat label="Net to prize pool" value="$18" tone="text-blue-700" />
                 <Stat label="Your starting cash" value="$18" tone="text-rose-700" mono />
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm pt-2 border-t border-rose-200/60">
                 <Stat label="Players (cap)" value="10" />
-                <Stat label="Total prize pool" value="$180" tone="text-emerald-700" sub={`≈ ${fmtBtc(180)}`} />
+                <Stat label="Total prize pool" value="$180" tone="text-blue-700" sub={`≈ ${fmtBtc(180)}`} />
                 <Stat label="1st place (40%)" value="$72" mono sub={`≈ ${fmtBtc(72)}`} />
                 <Stat label="Top 5 paid" value="40 / 25 / 15 / 12 / 8" tone="text-stone-600 text-xs" />
               </div>
@@ -599,7 +599,7 @@ function Stat({
 
 const STATUS_PILL: Record<TournamentStatus, { label: string; cls: string }> = {
   waiting: { label: 'WAITING', cls: 'bg-stone-100 text-stone-600' },
-  locked: { label: 'LOCKED · WILL RUN', cls: 'bg-emerald-100 text-emerald-800' },
+  locked: { label: 'LOCKED · WILL RUN', cls: 'bg-blue-100 text-blue-800' },
   underfilled: { label: 'UNDERFILLED · REFUND', cls: 'bg-amber-100 text-amber-800' },
   starting: { label: 'STARTING', cls: 'bg-rose-500 text-white animate-pulse' },
   live: { label: 'LIVE', cls: 'bg-rose-600 text-white' },
@@ -642,7 +642,7 @@ function TournamentRow({
           : isLive
             ? 'ring-rose-300 shadow-md shadow-rose-100'
             : isLocked
-              ? 'ring-emerald-300 shadow-sm'
+              ? 'ring-blue-300 shadow-sm'
               : 'ring-stone-200 hover:shadow-md hover:ring-stone-300'
       }`}
     >
@@ -706,7 +706,7 @@ function TournamentRow({
             <div
               className={`absolute inset-y-0 left-0 transition-all duration-500 ${
                 t.registered >= t.cap
-                  ? 'bg-gradient-to-r from-emerald-400 to-emerald-600'
+                  ? 'bg-gradient-to-r from-blue-400 to-blue-600'
                   : isUnderfilled
                     ? 'bg-gradient-to-r from-amber-300 to-amber-500'
                     : 'bg-gradient-to-r from-stone-400 to-stone-500'
@@ -774,7 +774,7 @@ function TournamentRow({
                 }
                 className={`text-[11px] tracking-wider font-bold px-4 py-2 rounded-full transition shadow-sm cursor-pointer inline-flex items-center gap-1.5 ${
                   venueVerified
-                    ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 hover:shadow-md ring-1 ring-emerald-200'
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 hover:shadow-md ring-1 ring-blue-200'
                     : 'bg-gradient-to-r from-fuchsia-500 to-rose-500 text-white hover:from-fuchsia-600 hover:to-rose-600 hover:shadow-md'
                 }`}
                 title={
@@ -814,7 +814,7 @@ function ModePill({ mode }: { mode: TournamentMode }) {
     <span
       className={`text-[10px] tracking-wider px-1.5 py-0.5 rounded-full font-bold inline-flex items-center gap-1 ${
         mode === 'autobot'
-          ? 'bg-emerald-100 text-emerald-800'
+          ? 'bg-blue-100 text-blue-800'
           : 'bg-stone-100 text-stone-700'
       }`}
     >
@@ -886,7 +886,7 @@ function ToastStack({ toasts }: { toasts: Toast[] }) {
 
 function ToastCard({ toast }: { toast: Toast }) {
   const kindCls: Record<ToastKind, string> = {
-    success: 'bg-emerald-50 ring-emerald-200 text-emerald-900',
+    success: 'bg-blue-50 ring-blue-200 text-blue-900',
     info: 'bg-stone-900 ring-stone-700 text-white',
     warn: 'bg-amber-50 ring-amber-200 text-amber-900',
   }
@@ -929,13 +929,13 @@ function BrandStrip() {
   return (
     <div className="rounded-2xl bg-gradient-to-r from-stone-950 via-stone-900 to-stone-950 ring-1 ring-stone-800 px-5 py-3 flex items-center gap-3 flex-wrap">
       <div className="flex items-center gap-2.5">
-        <span className="w-9 h-9 rounded-xl bg-stone-950 ring-1 ring-emerald-500/40 inline-flex items-center justify-center overflow-hidden p-1.5">
+        <span className="w-9 h-9 rounded-xl bg-stone-950 ring-1 ring-blue-500/40 inline-flex items-center justify-center overflow-hidden p-1.5">
           {/* Sneakers logo lives at /logo.png; render via plain img so this
               file stays free of next/image setup overhead for a teaser. */}
           <img src="/logo.png" alt="Sneakers" className="w-full h-full object-contain" />
         </span>
         <div className="leading-tight">
-          <div className="text-[9px] font-bold tracking-[0.25em] text-emerald-400">
+          <div className="text-[9px] font-bold tracking-[0.25em] text-blue-400">
             SNEAKERS
           </div>
           <div className="text-base font-extrabold tracking-tight text-white">
@@ -989,14 +989,14 @@ function SettlementCard({
     <div
       className={`rounded-xl ring-1 p-4 space-y-2.5 ${
         accent
-          ? 'bg-gradient-to-br from-emerald-50 via-emerald-50/50 to-white ring-emerald-300'
+          ? 'bg-gradient-to-br from-blue-50 via-blue-50/50 to-white ring-blue-300'
           : 'bg-white ring-stone-200'
       }`}
     >
       <div className="flex items-center gap-2">
         <span
           className={`text-[9px] font-bold tracking-wider px-1.5 py-0.5 rounded uppercase ${
-            accent ? 'bg-emerald-600 text-white' : 'bg-stone-900 text-white'
+            accent ? 'bg-blue-600 text-white' : 'bg-stone-900 text-white'
           }`}
         >
           {badge}
@@ -1006,7 +1006,7 @@ function SettlementCard({
       <p className="text-[11px] text-stone-600 leading-relaxed">{body}</p>
       <div className="grid grid-cols-2 gap-2 text-[10px]">
         <div>
-          <div className="text-emerald-700 font-bold tracking-wider mb-0.5">PROS</div>
+          <div className="text-blue-700 font-bold tracking-wider mb-0.5">PROS</div>
           <ul className="space-y-0.5 text-stone-600">
             {pros.map((p) => (
               <li key={p}>+ {p}</li>
@@ -1325,7 +1325,7 @@ function ChooseStep({
       <button
         type="button"
         onClick={onSignup}
-        className="w-full text-left rounded-xl ring-1 ring-emerald-200 bg-emerald-50 hover:bg-emerald-100 transition px-4 py-3 flex items-center gap-3"
+        className="w-full text-left rounded-xl ring-1 ring-blue-200 bg-blue-50 hover:bg-blue-100 transition px-4 py-3 flex items-center gap-3"
       >
         <span
           className={`w-9 h-9 rounded-lg ring-1 ring-stone-200 inline-flex items-center justify-center text-white font-bold shrink-0 ${
@@ -1341,11 +1341,11 @@ function ChooseStep({
           )}
         </span>
         <div className="flex-1 min-w-0">
-          <div className="text-sm font-bold text-emerald-900 flex items-center gap-2 flex-wrap">
+          <div className="text-sm font-bold text-blue-900 flex items-center gap-2 flex-wrap">
             Sign up via Sneakers
             {promoCode && (
               <span
-                className="text-[10px] tracking-wider px-1.5 py-0.5 rounded bg-emerald-600 text-white font-mono"
+                className="text-[10px] tracking-wider px-1.5 py-0.5 rounded bg-blue-600 text-white font-mono"
                 title={`Use promo code ${promoCode} during signup`}
               >
                 CODE {promoCode}
@@ -1357,7 +1357,7 @@ function ChooseStep({
             takes ~2 minutes.
           </div>
         </div>
-        <span className="text-emerald-700 text-lg" aria-hidden>
+        <span className="text-blue-700 text-lg" aria-hidden>
           →
         </span>
       </button>
@@ -1445,7 +1445,7 @@ function ConnectStep({
           onChange={(e) => setIdentifier(e.target.value)}
           placeholder={venue.identifierPlaceholder}
           disabled={isValidating}
-          className="w-full px-3 py-2.5 rounded-lg ring-1 ring-stone-300 bg-white text-sm font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none disabled:opacity-50"
+          className="w-full px-3 py-2.5 rounded-lg ring-1 ring-stone-300 bg-white text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:opacity-50"
           autoFocus
           onKeyDown={(e) => {
             if (e.key === 'Enter') onValidate()
@@ -1498,18 +1498,18 @@ function FastTrackStep({
 }) {
   return (
     <div className="space-y-3">
-      <div className="rounded-xl ring-1 ring-emerald-200 bg-emerald-50 px-4 py-3 flex items-center gap-3">
+      <div className="rounded-xl ring-1 ring-blue-200 bg-blue-50 px-4 py-3 flex items-center gap-3">
         <span
-          className="w-9 h-9 rounded-lg bg-emerald-600 text-white inline-flex items-center justify-center font-bold shrink-0 text-base"
+          className="w-9 h-9 rounded-lg bg-blue-600 text-white inline-flex items-center justify-center font-bold shrink-0 text-base"
           aria-hidden
         >
           ✓
         </span>
         <div className="flex-1 min-w-0">
-          <div className="text-sm font-bold text-emerald-900">
+          <div className="text-sm font-bold text-blue-900">
             {venue.name} already connected
           </div>
-          <div className="text-[11px] text-emerald-900/80 truncate">
+          <div className="text-[11px] text-blue-900/80 truncate">
             Account {truncateIdentifier(identifier)} · verified this session
           </div>
         </div>
@@ -1536,7 +1536,7 @@ function FastTrackStep({
       <button
         type="button"
         onClick={onConfirm}
-        className="w-full rounded-xl px-4 py-3 text-sm font-bold text-white bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 transition shadow-sm hover:shadow-md tracking-wide"
+        className="w-full rounded-xl px-4 py-3 text-sm font-bold text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition shadow-sm hover:shadow-md tracking-wide"
       >
         CONFIRM BUY-IN — ${tournament.buyInUsd}
       </button>

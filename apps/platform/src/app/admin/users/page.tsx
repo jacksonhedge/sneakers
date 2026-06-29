@@ -32,7 +32,7 @@ type Row = {
 
 const PLAN_TIER_CLS: Record<string, string> = {
   free: 'bg-stone-100 text-stone-600',
-  pro: 'bg-emerald-100 text-emerald-700',
+  pro: 'bg-blue-100 text-blue-700',
   elite: 'bg-amber-100 text-amber-800',
   business: 'bg-violet-100 text-violet-700',
 }
@@ -44,7 +44,7 @@ function fmt(ts: string | null): string {
 }
 
 function statusOf(r: Row): { label: string; cls: string } {
-  if (r.invite_used_at) return { label: 'AUTHED', cls: 'bg-emerald-100 text-emerald-700' }
+  if (r.invite_used_at) return { label: 'AUTHED', cls: 'bg-blue-100 text-blue-700' }
   if (r.invite_code) return { label: 'INVITED', cls: 'bg-amber-100 text-amber-800' }
   return { label: 'WAITLIST', cls: 'bg-stone-100 text-stone-600' }
 }

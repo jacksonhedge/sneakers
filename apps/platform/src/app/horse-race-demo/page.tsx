@@ -82,7 +82,7 @@ const PLAYER_NAMES = [
   'cyan_otter_4291',
   'amber_falcon_812',
   'rose_lynx_2204',
-  'lime_orca_991',
+  'blue_orca_991',
   'violet_puma_645',
   'teal_heron_3308',
   'sky_ibex_770',
@@ -90,7 +90,7 @@ const PLAYER_NAMES = [
   'orange_badger_1148',
 ]
 const PLAYER_EMOJIS = ['🦊', '🦅', '🐺', '🐲', '🐯', '🦌', '🦬', '🦁', '🐆']
-const PLAYER_COLORS = ['cyan', 'amber', 'rose', 'lime', 'violet', 'teal', 'sky', 'fuchsia', 'orange'] as const
+const PLAYER_COLORS = ['cyan', 'amber', 'rose', 'blue', 'violet', 'teal', 'sky', 'fuchsia', 'orange'] as const
 
 // O'Toole's autobot decision policy. Pure function — given current
 // strikes + cash + remaining seconds, returns one trade decision (or
@@ -405,7 +405,7 @@ export default function HorseRaceDemoPage() {
         id: 'me',
         name: 'you',
         emoji: '🏇',
-        color: 'emerald',
+        color: 'blue',
         score: userEquity,
         prevRank: 99,
         changedAt: 0,
@@ -512,7 +512,7 @@ export default function HorseRaceDemoPage() {
                   className={`text-[10px] tracking-wider font-bold px-3 py-1 rounded-full transition uppercase disabled:opacity-50 inline-flex items-center gap-1 ${
                     tournamentMode === m
                       ? m === 'autobot'
-                        ? 'bg-emerald-600 text-white shadow-sm'
+                        ? 'bg-blue-600 text-white shadow-sm'
                         : 'bg-stone-900 text-white shadow-sm'
                       : 'text-stone-700 hover:text-stone-900'
                   }`}
@@ -558,8 +558,8 @@ export default function HorseRaceDemoPage() {
 
         {/* Resolved banner */}
         {resolved && winnerId && (
-          <div className="rounded-2xl bg-gradient-to-r from-emerald-100 via-emerald-50 to-white ring-1 ring-emerald-300 p-4 text-sm">
-            <div className="font-bold text-emerald-900 text-base">
+          <div className="rounded-2xl bg-gradient-to-r from-blue-100 via-blue-50 to-white ring-1 ring-blue-300 p-4 text-sm">
+            <div className="font-bold text-blue-900 text-base">
               Round resolved — winner:{' '}
               {STRIKE_DEFS.find((s) => s.id === winnerId)?.label}
             </div>
@@ -569,7 +569,7 @@ export default function HorseRaceDemoPage() {
               <span
                 className={
                   cash >= STARTING_CASH
-                    ? 'text-emerald-700 font-bold'
+                    ? 'text-blue-700 font-bold'
                     : 'text-red-700 font-bold'
                 }
               >
@@ -600,10 +600,10 @@ export default function HorseRaceDemoPage() {
                 what the bot is actually doing on their behalf. */}
             {isAutobot && (
               <div className="rounded-2xl bg-white ring-1 ring-stone-200 overflow-hidden">
-                <header className="px-4 py-2.5 border-b border-stone-200 flex items-center justify-between bg-emerald-50/60">
+                <header className="px-4 py-2.5 border-b border-stone-200 flex items-center justify-between bg-blue-50/60">
                   <div className="flex items-center gap-2">
                     <span aria-hidden>🤖</span>
-                    <span className="text-[10px] font-bold tracking-wider text-emerald-900">
+                    <span className="text-[10px] font-bold tracking-wider text-blue-900">
                       O&apos;TOOLE STRATEGY LOG
                     </span>
                   </div>
@@ -625,7 +625,7 @@ export default function HorseRaceDemoPage() {
                         <span
                           className={`text-[9px] font-bold tracking-wider px-1.5 py-0.5 rounded shrink-0 ${
                             entry.tone === 'buy'
-                              ? 'bg-emerald-100 text-emerald-800'
+                              ? 'bg-blue-100 text-blue-800'
                               : entry.tone === 'sell'
                                 ? 'bg-rose-100 text-rose-800'
                                 : 'bg-stone-100 text-stone-700'

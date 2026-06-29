@@ -61,7 +61,7 @@ export function UpcomingResolutions({
                   <VenueCountBadge count={venueCounts?.[`${m.platform}:${m.platform_market_id}`]} />
                   <span className="text-xs text-stone-800 truncate">{m.question}</span>
                 </div>
-                <div className="text-xs font-semibold text-emerald-600 font-mono tabular-nums tracking-tight text-right">
+                <div className="text-xs font-semibold text-blue-600 font-mono tabular-nums tracking-tight text-right">
                   {p !== null ? `${Math.round(p * 100)}%` : '—'}
                 </div>
                 <div className="text-[10px] text-stone-400 text-right">—</div>

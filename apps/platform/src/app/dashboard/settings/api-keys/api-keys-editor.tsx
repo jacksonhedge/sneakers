@@ -110,7 +110,7 @@ export function ApiKeysEditor({
           <div className="flex items-baseline gap-2">
             <h3 className="font-semibold text-stone-900">{name}</h3>
             {existing ? (
-              <span className="text-[10px] tracking-wider rounded-full ring-1 px-2 py-0.5 bg-emerald-50 text-emerald-700 ring-emerald-300">
+              <span className="text-[10px] tracking-wider rounded-full ring-1 px-2 py-0.5 bg-blue-50 text-blue-700 ring-blue-300">
                 KEY ON FILE
               </span>
             ) : (
@@ -175,7 +175,7 @@ export function ApiKeysEditor({
             value={apiKey}
             onChange={(e) => setApiKey(e.target.value)}
             placeholder={`Paste your ${name} key (${keyFormat})`}
-            className="w-full text-sm rounded ring-1 ring-stone-300 px-3 py-2 bg-stone-50 focus:outline-none focus:ring-emerald-400 font-mono"
+            className="w-full text-sm rounded ring-1 ring-stone-300 px-3 py-2 bg-stone-50 focus:outline-none focus:ring-blue-400 font-mono"
             autoComplete="off"
             spellCheck={false}
           />
@@ -184,7 +184,7 @@ export function ApiKeysEditor({
             value={label}
             onChange={(e) => setLabel(e.target.value)}
             placeholder="Label (optional, e.g. 'personal' or 'team')"
-            className="w-full text-xs rounded ring-1 ring-stone-300 px-3 py-2 focus:outline-none focus:ring-emerald-400"
+            className="w-full text-xs rounded ring-1 ring-stone-300 px-3 py-2 focus:outline-none focus:ring-blue-400"
           />
           <div className="flex items-center gap-2">
             <button
@@ -222,7 +222,7 @@ export function ApiKeysEditor({
         <div
           className={`mt-3 text-xs rounded px-3 py-2 ${
             message.kind === 'success'
-              ? 'bg-emerald-50 text-emerald-900 ring-1 ring-emerald-200'
+              ? 'bg-blue-50 text-blue-900 ring-1 ring-blue-200'
               : message.kind === 'error'
                 ? 'bg-red-50 text-red-900 ring-1 ring-red-200'
                 : 'bg-stone-100 text-stone-700 ring-1 ring-stone-200'

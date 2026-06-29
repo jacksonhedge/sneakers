@@ -65,7 +65,7 @@ export function MemoryEditor({
             <span
               className={`text-[10px] px-2 py-1 ${
                 result.ok
-                  ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                  ? 'bg-blue-50 text-blue-800 border border-blue-200'
                   : 'bg-red-50 text-red-800 border border-red-200'
               }`}
             >

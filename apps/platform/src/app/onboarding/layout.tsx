@@ -47,18 +47,18 @@ export default async function OnboardingLayout({
 
   return (
     <div className="min-h-screen flex flex-col bg-black text-white">
-      <header className="px-6 py-4 border-b border-emerald-400/20">
+      <header className="px-6 py-4 border-b border-blue-400/20">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <div className="text-xs tracking-wider text-emerald-300/80">
+          <div className="text-xs tracking-wider text-blue-300/80">
             SNEAKERS TERMINAL / SETUP
           </div>
           <div className="text-xs text-white/60 tabular-nums">
             STEP {stepNumber} OF {totalSteps} · {currentLabel.toUpperCase()}
           </div>
         </div>
-        <div className="max-w-2xl mx-auto mt-3 h-1 bg-emerald-500/15 overflow-hidden">
+        <div className="max-w-2xl mx-auto mt-3 h-1 bg-blue-500/15 overflow-hidden">
           <div
-            className="h-full bg-emerald-400 transition-all duration-300"
+            className="h-full bg-blue-400 transition-all duration-300"
             style={{ width: `${progressPct}%` }}
           />
         </div>
@@ -69,11 +69,11 @@ export default async function OnboardingLayout({
       </main>
 
       {nextSlug && currentSlug !== 'done' && (
-        <footer className="px-6 py-4 border-t border-emerald-400/20">
+        <footer className="px-6 py-4 border-t border-blue-400/20">
           <div className="max-w-2xl mx-auto flex justify-end">
             <Link
               href={`/onboarding/${nextSlug}`}
-              className="text-xs text-white/60 hover:text-emerald-300 tracking-wider"
+              className="text-xs text-white/60 hover:text-blue-300 tracking-wider"
             >
               SKIP FOR NOW →
             </Link>

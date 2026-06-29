@@ -20,13 +20,13 @@ const NAMES_PREFIX = [
   'cyan',
   'amber',
   'rose',
-  'lime',
+  'blue',
   'violet',
   'teal',
   'sky',
   'fuchsia',
   'orange',
-  'emerald',
+  'blue',
 ]
 const NAMES_NOUN = [
   'otter',
@@ -53,14 +53,14 @@ const NAMES_NOUN = [
 const EMOJIS = ['🦊', '🐺', '🦅', '🦉', '🐆', '🐅', '🦌', '🦁', '🐯', '🐻', '🦘', '🐲', '🦏', '🦬']
 
 const COLORS = [
-  'emerald',
+  'blue',
   'rose',
   'amber',
   'sky',
   'violet',
   'cyan',
   'fuchsia',
-  'lime',
+  'blue',
   'orange',
   'teal',
 ] as const
@@ -153,8 +153,8 @@ export default function LeaderboardDemoPage() {
     <main className="min-h-screen bg-stone-50 text-stone-900 px-6 py-10">
       <div className="max-w-6xl mx-auto space-y-8">
         <header className="space-y-3">
-          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold tracking-wider">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[10px] font-bold tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
             LEADERBOARD RACE — PROTOTYPE
           </div>
           <h1 className="text-3xl font-bold tracking-tight">
@@ -245,7 +245,7 @@ export default function LeaderboardDemoPage() {
         <footer className="border-t border-stone-200 pt-4 text-[11px] text-stone-500 max-w-3xl">
           Animation tokens: spring stiffness 350, damping 32 (table) / 380, 30
           (race lanes) · horse pill slide 800ms · rank-change badge 6s TTL ·
-          streak threshold 3 consecutive climbs · brand-emerald glow ring.
+          streak threshold 3 consecutive climbs · brand-blue glow ring.
           Respects prefers-reduced-motion (motion library handles it).
         </footer>
       </div>

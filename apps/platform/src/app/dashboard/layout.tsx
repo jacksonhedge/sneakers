@@ -74,7 +74,7 @@ const getChromeData = cache(
       inviteUsedAt: (waitlistRes.data.invite_used_at as string | null) ?? null,
       planTier: effectiveTier,
       // configuredVenueIds is now "verified credentials only" — the
-      // green-check badge in the topbar reflects working creds, not
+      // blue-check badge in the topbar reflects working creds, not
       // just-saved-but-failed ones.
       configuredVenueIds: (credsRes.data ?? [])
         .filter((r) => r.test_connection_ok === true)

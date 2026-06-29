@@ -27,9 +27,9 @@ export function StudentDiscountCard({ status, defaultEduEmail }: Props) {
 
   return (
     <>
-      <section className="mt-12 rounded-lg ring-1 ring-emerald-200 bg-emerald-50 p-6 flex items-center justify-between flex-wrap gap-4">
+      <section className="mt-12 rounded-lg ring-1 ring-blue-200 bg-blue-50 p-6 flex items-center justify-between flex-wrap gap-4">
         <div>
-          <div className="text-[10px] text-emerald-700 tracking-wider mb-1">{'>'} STUDENT DISCOUNT</div>
+          <div className="text-[10px] text-blue-700 tracking-wider mb-1">{'>'} STUDENT DISCOUNT</div>
           <h2 className="text-lg font-bold text-stone-900">
             {isApproved
               ? '75% off applied at checkout'
@@ -76,7 +76,7 @@ export function StudentDiscountCard({ status, defaultEduEmail }: Props) {
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="px-4 py-2 text-xs tracking-wider font-semibold rounded bg-emerald-700 text-white hover:bg-emerald-800"
+            className="px-4 py-2 text-xs tracking-wider font-semibold rounded bg-blue-700 text-white hover:bg-blue-800"
           >
             {isPending ? 'UPDATE SUBMISSION' : 'GET STUDENT DISCOUNT'}
           </button>
@@ -154,7 +154,7 @@ function StudentSubmitModal({ defaultEduEmail, onClose, onSubmitted }: ModalProp
       >
         <div className="flex items-start justify-between mb-4">
           <div>
-            <div className="text-[10px] text-emerald-700 tracking-wider mb-1">{'>'} STUDENT DISCOUNT</div>
+            <div className="text-[10px] text-blue-700 tracking-wider mb-1">{'>'} STUDENT DISCOUNT</div>
             <h2 className="text-xl font-bold text-stone-900">Verify your student status</h2>
             <p className="text-sm text-stone-600 mt-1">
               All three are required. We don&apos;t auto-verify Instagram or LinkedIn — admin spot-checks each submission.
@@ -218,7 +218,7 @@ function StudentSubmitModal({ defaultEduEmail, onClose, onSubmitted }: ModalProp
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-xs tracking-wider font-semibold rounded bg-emerald-700 text-white hover:bg-emerald-800 disabled:opacity-50"
+              className="px-4 py-2 text-xs tracking-wider font-semibold rounded bg-blue-700 text-white hover:bg-blue-800 disabled:opacity-50"
             >
               {submitting ? 'SENDING…' : 'SUBMIT'}
             </button>

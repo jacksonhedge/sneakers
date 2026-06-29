@@ -79,22 +79,22 @@ export function ChanceWidget({
     <>
       <button
         onClick={() => setOpen(true)}
-        className="group flex w-full items-center justify-between gap-3 rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-left transition hover:border-emerald-500 hover:bg-emerald-100"
+        className="group flex w-full items-center justify-between gap-3 rounded-xl border border-blue-300 bg-blue-50 px-4 py-3 text-left transition hover:border-blue-500 hover:bg-blue-100"
       >
         <span className="flex items-center gap-2">
-          <span className="grid h-7 w-7 place-items-center rounded-lg bg-emerald-600 text-sm font-bold text-white">
+          <span className="grid h-7 w-7 place-items-center rounded-lg bg-blue-600 text-sm font-bold text-white">
             ⤺
           </span>
           <span>
-            <span className="block text-sm font-semibold text-emerald-900">
+            <span className="block text-sm font-semibold text-blue-900">
               Add Chance™ — pay nothing?
             </span>
-            <span className="block text-xs text-emerald-700">
+            <span className="block text-xs text-blue-700">
               Pay a little more for a real shot at ${'​'}0
             </span>
           </span>
         </span>
-        <span className="text-emerald-600 transition group-hover:translate-x-0.5">→</span>
+        <span className="text-blue-600 transition group-hover:translate-x-0.5">→</span>
       </button>
 
       {open && (
@@ -186,7 +186,7 @@ export function ChanceWidget({
                           onClick={() => setPicked(i)}
                           className={`flex w-full flex-col gap-1 rounded-xl border p-3 text-left transition ${
                             picked === i
-                              ? 'border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500'
+                              ? 'border-blue-500 bg-blue-50 ring-1 ring-blue-500'
                               : 'border-gray-200 hover:border-gray-300'
                           }`}
                         >
@@ -196,7 +196,7 @@ export function ChanceWidget({
                                 ? `Risk $${o.premium}`
                                 : `${(o.targetProb * 100).toFixed(0)}% to pay $0`}
                             </span>
-                            <span className="rounded-md bg-emerald-600 px-2 py-0.5 text-xs font-bold text-white">
+                            <span className="rounded-md bg-blue-600 px-2 py-0.5 text-xs font-bold text-white">
                               {o.oddsLabel}
                             </span>
                           </div>
@@ -217,7 +217,7 @@ export function ChanceWidget({
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={(e) => e.stopPropagation()}
-                                className="text-emerald-600 underline"
+                                className="text-blue-600 underline"
                               >
                                 view on {data.brand?.name} ↗
                               </a>
@@ -229,10 +229,10 @@ export function ChanceWidget({
                   </div>
 
                   {submitted && (
-                    <div className="mt-4 rounded-xl bg-emerald-50 p-3 text-center text-xs text-emerald-800">
+                    <div className="mt-4 rounded-xl bg-blue-50 p-3 text-center text-xs text-blue-800">
                       Routing ${submitted.premium} to {data.brand?.name} on “{submitted.outcome}”.
                       <br />
-                      <span className="text-emerald-600">
+                      <span className="text-blue-600">
                         (Execution coming next — this is the sourcing demo.)
                       </span>
                     </div>
@@ -247,7 +247,7 @@ export function ChanceWidget({
                 <button
                   disabled={!selected}
                   onClick={() => selected && setSubmitted(selected)}
-                  className="w-full rounded-xl bg-emerald-600 py-3 text-sm font-bold text-white transition hover:bg-emerald-700 disabled:opacity-40"
+                  className="w-full rounded-xl bg-blue-600 py-3 text-sm font-bold text-white transition hover:bg-blue-700 disabled:opacity-40"
                 >
                   Add Chance · Pay ${payNow.toFixed(2)}
                 </button>

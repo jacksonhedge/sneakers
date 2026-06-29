@@ -48,7 +48,7 @@ export default async function AutotradeSettingsPage() {
         </Link>
 
         <div className="mt-6 mb-8">
-          <div className="text-xs text-emerald-700 tracking-wider font-semibold mb-2">
+          <div className="text-xs text-blue-700 tracking-wider font-semibold mb-2">
             TRADE SETTINGS
           </div>
           <h1 className="text-3xl font-bold mb-2">Connect your trading accounts.</h1>
@@ -63,7 +63,7 @@ export default async function AutotradeSettingsPage() {
         <section className="rounded-lg bg-white ring-1 ring-stone-200 p-6 mb-6">
           <div className="flex items-baseline justify-between mb-1">
             <h2 className="text-lg font-semibold">Polymarket</h2>
-            <span className="text-[10px] tracking-wider font-semibold text-emerald-700">
+            <span className="text-[10px] tracking-wider font-semibold text-blue-700">
               MANUAL TRADING · LIVE
             </span>
           </div>
@@ -88,7 +88,7 @@ export default async function AutotradeSettingsPage() {
         <section className="rounded-lg bg-white ring-1 ring-stone-200 p-6 mb-6">
           <div className="flex items-baseline justify-between mb-3">
             <h2 className="text-lg font-semibold">O&apos;Toole co-pilot</h2>
-            <span className="text-[10px] tracking-wider font-semibold text-emerald-700">
+            <span className="text-[10px] tracking-wider font-semibold text-blue-700">
               LIVE — PROPOSE / CONFIRM
             </span>
           </div>
@@ -114,7 +114,7 @@ export default async function AutotradeSettingsPage() {
               body="Caps are adjustable in settings, enforced on every trade. The kill switch (one click) cancels every pending draft and pauses all future proposals until you turn it back on."
             />
           </ol>
-          <div className="rounded border border-emerald-300 bg-emerald-50 px-4 py-3 text-xs text-emerald-900 leading-relaxed">
+          <div className="rounded border border-blue-300 bg-blue-50 px-4 py-3 text-xs text-blue-900 leading-relaxed">
             <strong>Coming next:</strong> always-on auto-pilot that watches
             the markets and proposes 24/7 (no chat needed). For now the
             co-pilot only proposes when you ask it to.
@@ -135,7 +135,7 @@ export default async function AutotradeSettingsPage() {
             risk gates and audit trail as the co-pilot above.
           </p>
           {alreadyOnList ? (
-            <div className="rounded border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+            <div className="rounded border border-blue-300 bg-blue-50 px-4 py-3 text-sm text-blue-800">
               ✓ You&apos;re on the autotrade waitlist.
             </div>
           ) : (
@@ -159,7 +159,7 @@ export default async function AutotradeSettingsPage() {
 function Step({ n, title, body }: { n: number; title: string; body: string }) {
   return (
     <li className="flex gap-3">
-      <span className="flex-shrink-0 w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center">
+      <span className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-100 text-blue-800 font-bold text-xs flex items-center justify-center">
         {n}
       </span>
       <div>

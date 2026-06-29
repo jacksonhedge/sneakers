@@ -74,16 +74,16 @@ const PLAYER_NAMES = [
   'cyan_otter_4291',
   'amber_falcon_812',
   'rose_lynx_2204',
-  'lime_orca_991',
+  'blue_orca_991',
   'violet_puma_645',
   'teal_heron_3308',
   'sky_ibex_770',
   'fuchsia_mantis_5512',
   'orange_badger_1148',
-  'emerald_kestrel_3072',
+  'blue_kestrel_3072',
 ]
 const PLAYER_EMOJIS = ['🦊', '🦅', '🐺', '🐲', '🐯', '🦌', '🦬', '🦁', '🐆', '🐻']
-const PLAYER_COLORS = ['cyan', 'amber', 'rose', 'lime', 'violet', 'teal', 'sky', 'fuchsia', 'orange', 'emerald']
+const PLAYER_COLORS = ['cyan', 'amber', 'rose', 'blue', 'violet', 'teal', 'sky', 'fuchsia', 'orange', 'blue']
 
 interface SimPlayer extends LeaderEntry {
   vol: number
@@ -295,25 +295,25 @@ export function SpectatorRace({ tournamentId }: { tournamentId: string }) {
             resolution doesn't fly by. Persists until the user navigates. */}
         {resolved && winnerId && (
           <div
-            className="rounded-2xl bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-700 text-white p-5 shadow-lg ring-2 ring-emerald-400 flex items-center gap-4 flex-wrap"
+            className="rounded-2xl bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 text-white p-5 shadow-lg ring-2 ring-blue-400 flex items-center gap-4 flex-wrap"
             style={{ animation: 'spec-finale-in 320ms cubic-bezier(0.16, 1, 0.3, 1)' }}
           >
             <style>{`@keyframes spec-finale-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }`}</style>
             <span className="text-3xl" aria-hidden>🏁</span>
             <div className="min-w-0 flex-1">
-              <div className="text-[10px] font-bold tracking-[0.2em] text-emerald-100 uppercase">
+              <div className="text-[10px] font-bold tracking-[0.2em] text-blue-100 uppercase">
                 Final
               </div>
               <div className="font-extrabold text-lg leading-tight tracking-tight">
                 Winning strike: {STRIKE_DEFS.find((s) => s.id === winnerId)?.label}
               </div>
-              <div className="text-[12px] text-emerald-50 mt-0.5">
+              <div className="text-[12px] text-blue-50 mt-0.5">
                 Top finishers split the prize pool. Want in on the next round?
               </div>
             </div>
             <Link
               href="/dashboard/horse-race"
-              className="bg-white text-emerald-700 hover:bg-emerald-50 font-bold tracking-wider text-xs px-4 py-2 rounded-full shadow-sm shrink-0"
+              className="bg-white text-blue-700 hover:bg-blue-50 font-bold tracking-wider text-xs px-4 py-2 rounded-full shadow-sm shrink-0"
             >
               NEXT ROUND →
             </Link>

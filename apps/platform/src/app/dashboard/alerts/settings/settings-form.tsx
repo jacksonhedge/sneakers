@@ -197,7 +197,7 @@ export function SettingsForm({ initial }: { initial: Initial }) {
                   type="button"
                   onClick={enablePush}
                   disabled={pushBusy}
-                  className="text-xs tracking-wider font-semibold px-3 py-2 rounded bg-emerald-700 text-white hover:bg-emerald-800 disabled:opacity-50"
+                  className="text-xs tracking-wider font-semibold px-3 py-2 rounded bg-blue-700 text-white hover:bg-blue-800 disabled:opacity-50"
                 >
                   ENABLE BROWSER PUSH
                 </button>
@@ -312,7 +312,7 @@ export function SettingsForm({ initial }: { initial: Initial }) {
         </div>
       )}
       {testStatus.kind === 'sent' && (
-        <div className="rounded border border-emerald-300 bg-emerald-50 px-4 py-2 text-sm text-emerald-800">
+        <div className="rounded border border-blue-300 bg-blue-50 px-4 py-2 text-sm text-blue-800">
           ✓ Test {testStatus.channel === 'email' ? 'email' : 'push'} sent.{' '}
           {testStatus.channel === 'email' ? 'Check your inbox.' : 'Check your notifications.'}
         </div>
@@ -331,7 +331,7 @@ export function SettingsForm({ initial }: { initial: Initial }) {
 
       <div className="flex items-center justify-end gap-3">
         {savedAt && (
-          <span className="text-xs text-emerald-700">
+          <span className="text-xs text-blue-700">
             ✓ Saved {new Date(savedAt).toLocaleTimeString()}
           </span>
         )}
@@ -365,7 +365,7 @@ function Toggle({ label, checked, onChange }: { label: string; checked: boolean;
         aria-checked={checked}
         onClick={() => onChange(!checked)}
         className={`inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-          checked ? 'bg-emerald-600' : 'bg-stone-300'
+          checked ? 'bg-blue-600' : 'bg-stone-300'
         }`}
       >
         <span

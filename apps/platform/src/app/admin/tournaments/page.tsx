@@ -29,7 +29,7 @@ const VISIBLE = 30
 
 const STATUS_PILL: Record<TournamentStatus, { label: string; cls: string }> = {
   waiting: { label: 'WAITING', cls: 'bg-stone-100 text-stone-700 ring-stone-300' },
-  locked: { label: 'LOCKED', cls: 'bg-emerald-100 text-emerald-800 ring-emerald-300' },
+  locked: { label: 'LOCKED', cls: 'bg-blue-100 text-blue-800 ring-blue-300' },
   underfilled: { label: 'UNDERFILLED', cls: 'bg-amber-100 text-amber-800 ring-amber-300' },
   starting: { label: 'STARTING', cls: 'bg-rose-100 text-rose-800 ring-rose-300 animate-pulse' },
   live: { label: 'LIVE', cls: 'bg-rose-600 text-white ring-rose-700' },
@@ -165,7 +165,7 @@ function TournamentAdminRow({ t }: { t: Tournament }) {
         <span
           className={`text-[10px] tracking-wider px-1.5 py-0.5 rounded font-bold ${
             t.mode === 'autobot'
-              ? 'bg-emerald-100 text-emerald-800'
+              ? 'bg-blue-100 text-blue-800'
               : 'bg-stone-100 text-stone-700'
           }`}
         >
@@ -186,7 +186,7 @@ function TournamentAdminRow({ t }: { t: Tournament }) {
         ${cashFor(t.buyInUsd).toFixed(2)}
       </td>
       <td className="px-3 py-2 text-right font-mono tabular-nums whitespace-nowrap">
-        <span className={t.registered >= t.cap ? 'text-emerald-700 font-bold' : 'text-stone-700'}>
+        <span className={t.registered >= t.cap ? 'text-blue-700 font-bold' : 'text-stone-700'}>
           {t.registered}/{t.cap}
         </span>
         <span className="text-stone-400 ml-1">({fillPct}%)</span>

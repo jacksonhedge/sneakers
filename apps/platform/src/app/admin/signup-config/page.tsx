@@ -48,7 +48,7 @@ export default async function AdminSignupConfigPage() {
         </Link>
 
         <div className="mt-6 mb-8">
-          <div className="text-xs text-emerald-700 tracking-wider font-semibold mb-2">
+          <div className="text-xs text-blue-700 tracking-wider font-semibold mb-2">
             ADMIN · SIGNUP CONFIG
           </div>
           <h1 className="text-3xl font-bold mb-2">Signup feature flags.</h1>
@@ -68,7 +68,7 @@ export default async function AdminSignupConfigPage() {
                 ? 'bg-red-50 ring-red-300'
                 : !cfg.individualEnabled || !cfg.organizationEnabled
                   ? 'bg-amber-50 ring-amber-300'
-                  : 'bg-emerald-50 ring-emerald-300'
+                  : 'bg-blue-50 ring-blue-300'
             }`}
           >
             <div
@@ -77,7 +77,7 @@ export default async function AdminSignupConfigPage() {
                   ? 'bg-red-500'
                   : !cfg.individualEnabled || !cfg.organizationEnabled
                     ? 'bg-amber-500'
-                    : 'bg-emerald-500'
+                    : 'bg-blue-500'
               }`}
               aria-hidden
             />
@@ -113,7 +113,7 @@ export default async function AdminSignupConfigPage() {
                   <span
                     className={`text-[10px] tracking-[0.15em] font-bold px-2 py-0.5 rounded-full ring-1 ${
                       row.enabled
-                        ? 'bg-emerald-100 text-emerald-800 ring-emerald-300'
+                        ? 'bg-blue-100 text-blue-800 ring-blue-300'
                         : 'bg-stone-200 text-stone-700 ring-stone-300'
                     }`}
                   >

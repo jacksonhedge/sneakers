@@ -45,17 +45,17 @@ export default async function StudentsPage() {
 
       <Link
         href="/"
-        className="absolute top-4 left-4 z-10 text-xs text-emerald-300/80 tracking-wider hover:text-emerald-300"
+        className="absolute top-4 left-4 z-10 text-xs text-blue-300/80 tracking-wider hover:text-blue-300"
       >
         ← BACK
       </Link>
 
       <div className="max-w-2xl w-full space-y-8 text-center text-white">
         <div className="flex flex-col items-center">
-          <div className="text-xs text-emerald-300/80 mb-6 tracking-wider">
+          <div className="text-xs text-blue-300/80 mb-6 tracking-wider">
             🎓 STUDENT PROGRAM
           </div>
-          <div className="text-5xl md:text-6xl font-bold text-emerald-400 drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] mb-4">
+          <div className="text-5xl md:text-6xl font-bold text-blue-400 drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] mb-4">
             2 weeks free, then 75% off.
           </div>
           <div className="text-white/90 text-xl md:text-2xl font-semibold drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
@@ -63,27 +63,27 @@ export default async function StudentsPage() {
           </div>
           <div className="mt-3 text-white/70 text-sm md:text-base italic drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
             14-day free trial, then Pro at{' '}
-            <span className="text-emerald-300 font-semibold">$10/mo</span> · Elite at{' '}
-            <span className="text-emerald-300 font-semibold">$25/mo</span>
+            <span className="text-blue-300 font-semibold">$10/mo</span> · Elite at{' '}
+            <span className="text-blue-300 font-semibold">$25/mo</span>
           </div>
         </div>
 
-        <div className="mx-auto max-w-md border border-emerald-400/50 bg-black/40 backdrop-blur-sm px-5 py-4 text-left text-sm text-white/90 space-y-2">
-          <div className="text-xs text-emerald-300 tracking-wider mb-2">VERIFICATION REQUIRES</div>
+        <div className="mx-auto max-w-md border border-blue-400/50 bg-black/40 backdrop-blur-sm px-5 py-4 text-left text-sm text-white/90 space-y-2">
+          <div className="text-xs text-blue-300 tracking-wider mb-2">VERIFICATION REQUIRES</div>
           <div className="flex items-start gap-2">
-            <span className="text-emerald-400 mt-0.5">✓</span>
+            <span className="text-blue-400 mt-0.5">✓</span>
             <span>
               <span className="font-semibold">.edu email</span> from a US university
             </span>
           </div>
           <div className="flex items-start gap-2">
-            <span className="text-emerald-400 mt-0.5">✓</span>
+            <span className="text-blue-400 mt-0.5">✓</span>
             <span>
               <span className="font-semibold">Instagram handle</span> — to confirm you're a real person
             </span>
           </div>
           <div className="flex items-start gap-2">
-            <span className="text-emerald-400 mt-0.5">✓</span>
+            <span className="text-blue-400 mt-0.5">✓</span>
             <span>
               <span className="font-semibold">LinkedIn URL</span> — to confirm current enrollment
             </span>
@@ -94,23 +94,23 @@ export default async function StudentsPage() {
         </div>
 
         {referralCode && (
-          <div className="mx-auto max-w-md border border-emerald-400/50 bg-black/40 backdrop-blur-sm px-4 py-3 text-xs text-white/90">
+          <div className="mx-auto max-w-md border border-blue-400/50 bg-black/40 backdrop-blur-sm px-4 py-3 text-xs text-white/90">
             <div>
               {'>'} Referred by{' '}
-              <span className="text-emerald-400 tracking-wider font-semibold">{referralCode}</span>
+              <span className="text-blue-400 tracking-wider font-semibold">{referralCode}</span>
             </div>
           </div>
         )}
 
         <div className="mx-auto max-w-md w-full">
-          <div className="text-xs text-emerald-300 tracking-wider mb-3 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
+          <div className="text-xs text-blue-300 tracking-wider mb-3 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
             {'>'} START BY JOINING THE WAITLIST
           </div>
           <WaitlistForm referralCode={referralCode} />
         </div>
 
         <div className="text-xs text-white/60 tracking-wide max-w-md mx-auto">
-          Once approved, Pro and Elite start with a <span className="text-emerald-300 font-semibold">14-day free trial</span> — no charge until day 15 — then
+          Once approved, Pro and Elite start with a <span className="text-blue-300 font-semibold">14-day free trial</span> — no charge until day 15 — then
           75% off forever while you&apos;re enrolled. Verification is human-reviewed;
           we&apos;ll email once you&apos;re approved.
         </div>
@@ -122,7 +122,7 @@ export default async function StudentsPage() {
           id="alumni"
           className="scroll-mt-8 mx-auto max-w-md w-full border-t border-white/10 pt-10 mt-6"
         >
-          <div className="text-xs text-emerald-300/80 tracking-wider mb-2">
+          <div className="text-xs text-blue-300/80 tracking-wider mb-2">
             RECENT GRADS (0–5 YEARS OUT)
           </div>
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 tracking-tight">
@@ -133,9 +133,9 @@ export default async function StudentsPage() {
             discount; recent grads get the next-best tier. Verification is a LinkedIn link
             showing your graduation year — we confirm it was within the last 5 years.
           </p>
-          <div className="rounded-lg border border-emerald-400/30 bg-black/40 backdrop-blur-sm px-5 py-4 text-left space-y-3">
+          <div className="rounded-lg border border-blue-400/30 bg-black/40 backdrop-blur-sm px-5 py-4 text-left space-y-3">
             <div className="flex items-start gap-3">
-              <span className="text-emerald-400 mt-0.5">✓</span>
+              <span className="text-blue-400 mt-0.5">✓</span>
               <div>
                 <div className="text-sm font-semibold text-white">50% off Pro, 50% off Elite</div>
                 <div className="text-xs text-white/60 mt-0.5">
@@ -144,7 +144,7 @@ export default async function StudentsPage() {
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <span className="text-emerald-400 mt-0.5">✓</span>
+              <span className="text-blue-400 mt-0.5">✓</span>
               <div>
                 <div className="text-sm font-semibold text-white">
                   Join alumni groups + legacy frat competitions
@@ -155,7 +155,7 @@ export default async function StudentsPage() {
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <span className="text-emerald-400 mt-0.5">✓</span>
+              <span className="text-blue-400 mt-0.5">✓</span>
               <div>
                 <div className="text-sm font-semibold text-white">Verification via LinkedIn</div>
                 <div className="text-xs text-white/60 mt-0.5">
@@ -168,7 +168,7 @@ export default async function StudentsPage() {
             Beyond 5 years out? Contact us —{' '}
             <a
               href="mailto:hi@sneakersterminal.com?subject=Recent%20grad%20%E2%80%94%20access"
-              className="text-emerald-300/90 hover:text-emerald-300 underline underline-offset-4"
+              className="text-blue-300/90 hover:text-blue-300 underline underline-offset-4"
             >
               hi@sneakersterminal.com
             </a>{' '}

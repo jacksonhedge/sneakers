@@ -115,7 +115,7 @@ export function LoginForm() {
         onChange={(e) => setEmail(e.target.value)}
         placeholder="you@firm.com"
         autoComplete="email"
-        className="w-full bg-stone-50 border border-stone-300 text-stone-900 px-4 py-3 rounded-lg focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-400/40 placeholder:text-stone-400 transition"
+        className="w-full bg-stone-50 border border-stone-300 text-stone-900 px-4 py-3 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-400/40 placeholder:text-stone-400 transition"
       />
       <div className="relative">
         <input
@@ -125,12 +125,12 @@ export function LoginForm() {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="password"
           autoComplete="current-password"
-          className="w-full bg-stone-50 border border-stone-300 text-stone-900 px-4 py-3 rounded-lg focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-400/40 placeholder:text-stone-400 transition"
+          className="w-full bg-stone-50 border border-stone-300 text-stone-900 px-4 py-3 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-400/40 placeholder:text-stone-400 transition"
         />
         <button
           type="button"
           onClick={() => setShowPw((s) => !s)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] tracking-wider text-emerald-700 hover:text-emerald-800 font-semibold"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] tracking-wider text-blue-700 hover:text-blue-800 font-semibold"
         >
           {showPw ? 'HIDE' : 'SHOW'}
         </button>
@@ -140,7 +140,7 @@ export function LoginForm() {
           type="checkbox"
           checked={remember}
           onChange={(e) => setRemember(e.target.checked)}
-          className="w-4 h-4 rounded border-stone-300 text-emerald-600 focus:ring-emerald-400/40"
+          className="w-4 h-4 rounded border-stone-300 text-blue-600 focus:ring-blue-400/40"
         />
         <span>
           Remember me
@@ -150,7 +150,7 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={busy}
-        className="w-full rounded-full bg-emerald-500 text-black font-semibold px-6 py-3 ring-1 ring-emerald-400 hover:bg-emerald-400 transition disabled:opacity-50 flex items-center justify-center gap-2"
+        className="w-full rounded-full bg-blue-600 text-white font-semibold px-6 py-3 ring-1 ring-blue-400 hover:bg-blue-400 transition disabled:opacity-50 flex items-center justify-center gap-2"
       >
         {busy && (
           <span
@@ -168,7 +168,7 @@ export function LoginForm() {
       <div className="text-[11px] text-stone-600 text-center pt-1">
         <a
           href="/forgot-password"
-          className="text-emerald-700 hover:text-emerald-800 font-semibold underline"
+          className="text-blue-700 hover:text-blue-800 font-semibold underline"
         >
           Forgot your password? →
         </a>

@@ -8,13 +8,13 @@ export function RightSidebar({ stats }: { stats: Record<TerminalCategory, Catego
       {/* O'Toole header */}
       <div className="p-4 border-b border-stone-200">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-stone-950 flex items-center justify-center text-[10px] text-emerald-400 font-bold ring-1 ring-emerald-400/30">
+          <div className="w-9 h-9 rounded-full bg-stone-950 flex items-center justify-center text-[10px] text-blue-400 font-bold ring-1 ring-blue-400/30">
             Ø
           </div>
           <div className="flex-1">
             <div className="text-sm font-semibold text-stone-900">O&apos;Toole</div>
-            <div className="text-[11px] text-emerald-600 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <div className="text-[11px] text-blue-600 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
               Active · AI Analyst
             </div>
           </div>
@@ -53,7 +53,7 @@ export function RightSidebar({ stats }: { stats: Record<TerminalCategory, Catego
                 </span>
                 <div className="flex-1 h-1.5 bg-stone-100 rounded overflow-hidden">
                   <div
-                    className="h-full bg-emerald-500"
+                    className="h-full bg-blue-500"
                     style={{ width: `${Math.min(100, pct * 100)}%` }}
                   />
                 </div>

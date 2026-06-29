@@ -163,7 +163,7 @@ export function PolymarketConnectForm({ initial }: { initial: InitialState }) {
 function StatusPill({ status }: { status: Status }) {
   if (status === 'connected') {
     return (
-      <span className="inline-flex items-center gap-1.5 text-[11px] tracking-wider font-bold bg-emerald-400 text-black ring-1 ring-emerald-300 px-2.5 py-1 rounded-full">
+      <span className="inline-flex items-center gap-1.5 text-[11px] tracking-wider font-bold bg-blue-500 text-white ring-1 ring-blue-300 px-2.5 py-1 rounded-full">
         <span className="w-1.5 h-1.5 rounded-full bg-black animate-pulse" />
         CONNECTED
       </span>
@@ -204,7 +204,7 @@ function ConnectedCard({
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <Stat label="TRADING">
           {initial.hasPrivateKey ? (
-            <span className="inline-flex items-center gap-1 text-emerald-700 font-semibold">
+            <span className="inline-flex items-center gap-1 text-blue-700 font-semibold">
               ✓ Live
             </span>
           ) : (
@@ -398,7 +398,7 @@ function ConnectForm(props: {
         <button
           type="submit"
           disabled={props.busy || !ready}
-          className="inline-flex items-center gap-2 rounded-full bg-emerald-500 ring-1 ring-emerald-400 text-black font-semibold px-5 py-2.5 text-sm tracking-wider hover:bg-emerald-400 transition disabled:opacity-50"
+          className="inline-flex items-center gap-2 rounded-full bg-blue-500 ring-1 ring-blue-400 text-black font-semibold px-5 py-2.5 text-sm tracking-wider hover:bg-blue-400 transition disabled:opacity-50"
         >
           {props.busy && (
             <span
@@ -427,7 +427,7 @@ function ConnectForm(props: {
             type="checkbox"
             checked={props.showSecrets}
             onChange={(e) => props.onShowSecrets(e.target.checked)}
-            className="accent-emerald-500"
+            className="accent-blue-500"
           />
           Show secrets
         </label>
@@ -437,7 +437,7 @@ function ConnectForm(props: {
         <div
           className={`rounded-lg px-3 py-2.5 text-xs font-semibold leading-relaxed ${
             props.feedback.kind === 'ok'
-              ? 'bg-emerald-50 text-emerald-800 border border-emerald-300'
+              ? 'bg-blue-50 text-blue-800 border border-blue-300'
               : 'bg-red-50 text-red-700 border border-red-300'
           }`}
         >
@@ -478,7 +478,7 @@ function Section({
             href={helpHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[11px] text-emerald-700 hover:text-emerald-800 font-semibold whitespace-nowrap"
+            className="text-[11px] text-blue-700 hover:text-blue-800 font-semibold whitespace-nowrap"
           >
             open polymarket.com →
           </a>
@@ -528,7 +528,7 @@ function TrustSignals() {
 function TrustItem({ title, body }: { title: string; body: string }) {
   return (
     <div className="rounded-lg bg-stone-50/60 px-3 py-2.5">
-      <div className="text-[10px] tracking-wider text-emerald-700 font-bold mb-0.5">
+      <div className="text-[10px] tracking-wider text-blue-700 font-bold mb-0.5">
         ✓ {title}
       </div>
       <div className="text-[11px] text-stone-600 leading-snug">{body}</div>
@@ -537,7 +537,7 @@ function TrustItem({ title, body }: { title: string; body: string }) {
 }
 
 const inputCls =
-  'w-full bg-white border border-stone-300 text-stone-900 px-3 py-2 rounded-lg text-sm font-mono focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-400/40 placeholder:text-stone-400 transition'
+  'w-full bg-white border border-stone-300 text-stone-900 px-3 py-2 rounded-lg text-sm font-mono focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-400/40 placeholder:text-stone-400 transition'
 
 function Field({
   label,
@@ -554,7 +554,7 @@ function Field({
     <div>
       <label className="block text-[10px] tracking-wider text-stone-700 font-semibold mb-1">
         {label}
-        {required && <span className="text-emerald-700"> *</span>}
+        {required && <span className="text-blue-700"> *</span>}
         {hint && <span className="text-stone-400 normal-case font-normal"> · {hint}</span>}
       </label>
       {children}

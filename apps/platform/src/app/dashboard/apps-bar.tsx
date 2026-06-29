@@ -130,7 +130,7 @@ export function AppsBar({ configuredIds = [] }: Props) {
           setPickerOpen((o) => !o)
         }}
         aria-label="Connect more apps"
-        className="w-9 h-9 inline-flex items-center justify-center rounded-full bg-emerald-50 text-emerald-700 ring-1 ring-emerald-300 hover:bg-emerald-100 hover:ring-emerald-400 transition text-lg font-semibold shrink-0"
+        className="w-9 h-9 inline-flex items-center justify-center rounded-full bg-blue-50 text-blue-700 ring-1 ring-blue-300 hover:bg-blue-100 hover:ring-blue-400 transition text-lg font-semibold shrink-0"
       >
         +
       </button>
@@ -156,7 +156,7 @@ export function AppsBar({ configuredIds = [] }: Props) {
               {configured && (
                 <span
                   aria-hidden
-                  className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 text-white ring-2 ring-white inline-flex items-center justify-center"
+                  className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-blue-500 text-white ring-2 ring-white inline-flex items-center justify-center"
                 >
                   <svg width="9" height="9" viewBox="0 0 24 24" fill="none">
                     <path
@@ -241,7 +241,7 @@ export function AppsBar({ configuredIds = [] }: Props) {
             href="/venues"
             onClick={() => setPickerOpen(false)}
             prefetch={false}
-            className="block px-4 py-2.5 text-xs text-emerald-700 hover:text-emerald-800 hover:bg-stone-50 border-t border-stone-100 font-semibold"
+            className="block px-4 py-2.5 text-xs text-blue-700 hover:text-blue-800 hover:bg-stone-50 border-t border-stone-100 font-semibold"
           >
             See all venues →
           </Link>

@@ -54,7 +54,7 @@ function fmtRefreshTs(ms: number): string {
 
 function pctClass(n: number | null): string {
   if (n == null || n === 0) return 'text-stone-600'
-  return n > 0 ? 'text-emerald-700' : 'text-red-700'
+  return n > 0 ? 'text-blue-700' : 'text-red-700'
 }
 
 export default async function DashboardHyperliquidPage() {
@@ -152,7 +152,7 @@ function RefreshBadge({ isPaid, fetchedAt }: { isPaid: boolean; fetchedAt: numbe
     <div className="flex items-center gap-2 text-xs text-stone-500">
       <span
         className={`inline-block h-1.5 w-1.5 rounded-full ${
-          isPaid ? 'bg-emerald-500' : 'bg-stone-400'
+          isPaid ? 'bg-blue-500' : 'bg-stone-400'
         }`}
       />
       <span>{isPaid ? LIVE_REFRESH_LABEL : FREE_TIER_REFRESH_LABEL}</span>
@@ -163,9 +163,9 @@ function RefreshBadge({ isPaid, fetchedAt }: { isPaid: boolean; fetchedAt: numbe
 
 function FreeTierBanner() {
   return (
-    <div className="border border-emerald-200 bg-emerald-50 rounded-lg px-4 py-3 flex items-center justify-between gap-4 flex-wrap">
+    <div className="border border-blue-200 bg-blue-50 rounded-lg px-4 py-3 flex items-center justify-between gap-4 flex-wrap">
       <div className="text-sm text-stone-800">
-        <span className="font-semibold text-emerald-900">15-minute delayed snapshot.</span>{' '}
+        <span className="font-semibold text-blue-900">15-minute delayed snapshot.</span>{' '}
         Pro unlocks live prices, the full 200+ market table, funding outliers, and search.
       </div>
       <Link
@@ -276,7 +276,7 @@ function FundingOutlierCard({
   tone: 'positive' | 'negative'
   tradeUrl: string
 }) {
-  const toneClass = tone === 'positive' ? 'text-emerald-700' : 'text-red-700'
+  const toneClass = tone === 'positive' ? 'text-blue-700' : 'text-red-700'
   return (
     <div className="border border-stone-200 bg-white rounded-lg overflow-hidden">
       <div className="px-4 py-3 border-b border-stone-100">

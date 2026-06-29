@@ -165,7 +165,7 @@ function CreditAdjuster({
             <div
               className={`text-xs px-3 py-2 inline-block ${
                 result.ok
-                  ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                  ? 'bg-blue-50 text-blue-800 border border-blue-200'
                   : 'bg-red-50 text-red-800 border border-red-200'
               }`}
             >
@@ -182,7 +182,7 @@ function CreditAdjuster({
 
 const TIER_OPTIONS: Array<{ value: Tier; label: string; cls: string }> = [
   { value: 'free', label: 'Free', cls: 'bg-stone-200 text-stone-700' },
-  { value: 'pro', label: 'Pro', cls: 'bg-emerald-500/20 text-emerald-700 ring-1 ring-emerald-400/40' },
+  { value: 'pro', label: 'Pro', cls: 'bg-blue-500/20 text-blue-700 ring-1 ring-blue-400/40' },
   { value: 'elite', label: 'Elite', cls: 'bg-amber-500/20 text-amber-700 ring-1 ring-amber-400/40' },
   { value: 'business', label: 'Business', cls: 'bg-violet-500/20 text-violet-700 ring-1 ring-violet-400/40' },
 ]
@@ -307,7 +307,7 @@ function TierAdjuster({
           <div
             className={`text-xs px-3 py-2 inline-block ${
               result.ok
-                ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                ? 'bg-blue-50 text-blue-800 border border-blue-200'
                 : 'bg-red-50 text-red-800 border border-red-200'
             }`}
           >

@@ -73,7 +73,7 @@ export function JoinForm() {
             maxLength={20}
             required
             autoComplete="off"
-            className="w-full pl-8 pr-3 py-2.5 text-sm border border-stone-300 rounded font-mono focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-500"
+            className="w-full pl-8 pr-3 py-2.5 text-sm border border-stone-300 rounded font-mono focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500"
           />
         </div>
         <div className="mt-1 text-[11px] text-stone-500">
@@ -94,7 +94,7 @@ export function JoinForm() {
           maxLength={80}
           required
           autoComplete="organization"
-          className="w-full px-3 py-2.5 text-sm border border-stone-300 rounded focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-500"
+          className="w-full px-3 py-2.5 text-sm border border-stone-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500"
         />
         <div className="mt-1 text-[11px] text-stone-500">
           Full name — the per-school leaderboard groups on exact match.
@@ -110,7 +110,7 @@ export function JoinForm() {
       <button
         type="submit"
         disabled={submitting || !handle || !college}
-        className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-stone-300 disabled:cursor-not-allowed text-white text-sm font-semibold tracking-wider px-6 py-3 rounded transition"
+        className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-stone-300 disabled:cursor-not-allowed text-white text-sm font-semibold tracking-wider px-6 py-3 rounded transition"
       >
         {submitting ? 'JOINING…' : 'JOIN LEADERBOARD →'}
       </button>

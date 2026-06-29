@@ -423,7 +423,7 @@ export default async function AdminMarketsPage({ searchParams }: PageProps) {
                         </div>
                       </td>
                       <td className="px-3 py-1.5 font-mono text-stone-600">{r.sport ?? '—'}</td>
-                      <td className="px-3 py-1.5 text-right tabular-nums text-emerald-700">
+                      <td className="px-3 py-1.5 text-right tabular-nums text-blue-700">
                         {fmtAsk(r.yesAsk)}
                       </td>
                       <td className="px-3 py-1.5 text-right tabular-nums text-stone-700">
