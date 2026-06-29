@@ -110,22 +110,24 @@ export function LoginForm() {
     <form onSubmit={submit} className="space-y-3">
       <input
         type="email"
+        name="username"
         required
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="you@firm.com"
-        autoComplete="email"
-        className="w-full bg-stone-50 border border-stone-300 text-stone-900 px-4 py-3 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-400/40 placeholder:text-stone-400 transition"
+        autoComplete="username"
+        className="w-full bg-stone-50 border border-stone-300 text-stone-900 px-4 py-3 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-400/40 placeholder:text-stone-400 transition text-base"
       />
       <div className="relative">
         <input
           type={showPw ? 'text' : 'password'}
+          name="password"
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="password"
           autoComplete="current-password"
-          className="w-full bg-stone-50 border border-stone-300 text-stone-900 px-4 py-3 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-400/40 placeholder:text-stone-400 transition"
+          className="w-full bg-stone-50 border border-stone-300 text-stone-900 px-4 py-3 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-400/40 placeholder:text-stone-400 transition text-base"
         />
         <button
           type="button"

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { headers } from "next/headers";
 import { Suspense } from "react";
@@ -22,6 +22,12 @@ const peaceSans = localFont({
   display: "swap",
   src: [{ path: "../fonts/PeaceSans.otf", weight: "400", style: "normal" }],
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://sneakersterminal.com"),

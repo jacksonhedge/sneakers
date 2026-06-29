@@ -104,7 +104,7 @@ export default async function LoginPage({
   const passwordJustReset = sp.reset === 'success'
 
   return (
-    <main className="relative min-h-screen flex items-center justify-center p-8 overflow-hidden isolate bg-stone-50">
+    <main className="relative min-h-screen flex items-center justify-center p-4 sm:p-8 overflow-hidden isolate bg-stone-50">
       {/* Soft cream wash + subtle blue glow — way lighter than the
           previous dark hero-bg + black overlay setup. */}
       <div

@@ -161,6 +161,7 @@ export function SignupForm({
       <Field label="EMAIL" hint=".edu preferred">
         <input
           type="email"
+          name="email"
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -178,6 +179,7 @@ export function SignupForm({
       <Field label="YOUR NAME">
         <input
           type="text"
+          name="name"
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -192,6 +194,7 @@ export function SignupForm({
         <div className="relative">
           <input
             type={showPw ? 'text' : 'password'}
+            name="password"
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -274,7 +277,7 @@ function ErrorBox({
 }
 
 const inputCls =
-  'w-full bg-black/40 backdrop-blur-sm border border-white/30 text-white px-4 py-3 rounded focus:outline-none focus:border-blue-400 focus:bg-black/60 placeholder:text-white/30 transition'
+  'w-full bg-black/40 backdrop-blur-sm border border-white/30 text-white px-4 py-3 rounded focus:outline-none focus:border-blue-400 focus:bg-black/60 placeholder:text-white/30 transition text-base'
 
 function Field({
   label,
