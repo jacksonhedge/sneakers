@@ -82,7 +82,7 @@ export default async function HardwarePage() {
           <div className="text-xs text-blue-300/80 tracking-wider mb-4">
             SNEAKERS TERMINAL · HARDWARE
           </div>
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4 text-white">
+          <h1 className="text-4xl md:text-6xl font-display tracking-tight mb-4 text-white">
             Bring the terminal home.
           </h1>
           <p className="text-base md:text-lg text-white/75 max-w-2xl mx-auto leading-relaxed">

@@ -50,7 +50,7 @@ export default async function PricingPage() {
             ← HOME
           </Link>
           <div className="text-xs text-[#1E3A8A] tracking-wider mt-6 mb-2">{'>'} PRICING</div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-3">Built for college.</h1>
+          <h1 className="text-4xl md:text-5xl font-display mb-3">Built for college.</h1>
           <p className="text-base text-stone-600 max-w-2xl mx-auto">
             Free to browse. $39/mo unlocks real-time prices, cross-venue arb, alerts, and the
             college leaderboard. Verified .edu students get <span className="font-semibold text-[#1E3A8A]">2 weeks free + 75% off forever</span>.

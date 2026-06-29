@@ -85,7 +85,7 @@ export default async function LandingPage() {
             />
           </div>
           <h1 className="sr-only">Sneakers Terminal — the prediction market terminal for college</h1>
-          <div className="text-blue-400 text-2xl md:text-3xl font-bold tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
+          <div className="font-display text-blue-400 text-4xl md:text-6xl tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
             The prediction terminal for college.
           </div>
           <div className="mt-3 text-white/85 text-base md:text-lg drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] max-w-lg">

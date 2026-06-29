@@ -75,10 +75,10 @@ export default async function CollegePage() {
           <h1 className="sr-only">
             A personal trading terminal for the college user
           </h1>
-          <div className="text-white/90 text-2xl md:text-3xl font-semibold leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
+          <div className="text-white/90 text-2xl md:text-3xl font-display leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
             A personal trading terminal
           </div>
-          <div className="text-blue-400 text-2xl md:text-3xl font-semibold leading-tight mt-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
+          <div className="text-blue-400 text-2xl md:text-3xl font-display leading-tight mt-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
             for the college user.
           </div>
           <div className="mt-4 text-white/70 text-sm md:text-base italic drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">

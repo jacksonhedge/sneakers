@@ -55,7 +55,7 @@ export default async function StudentsPage() {
           <div className="text-xs text-blue-300/80 mb-6 tracking-wider">
             🎓 STUDENT PROGRAM
           </div>
-          <div className="text-5xl md:text-6xl font-bold text-blue-400 drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] mb-4">
+          <div className="text-5xl md:text-6xl font-display text-blue-400 drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] mb-4">
             2 weeks free, then 75% off.
           </div>
           <div className="text-white/90 text-xl md:text-2xl font-semibold drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">

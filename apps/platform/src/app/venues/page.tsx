@@ -33,7 +33,7 @@ export default function VenuesPage() {
           >
             ← SNEAKERS TERMINAL
           </Link>
-          <h1 className="mt-6 text-3xl md:text-4xl font-bold">
+          <h1 className="mt-6 text-3xl md:text-4xl font-display">
             Every book, one terminal.
           </h1>
           <p className="mt-4 text-stone-400 max-w-2xl mx-auto text-sm md:text-base">
