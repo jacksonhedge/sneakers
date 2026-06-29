@@ -64,6 +64,9 @@
   .badge.live{color:var(--green);background:var(--green-soft)}
   .badge.settling{color:var(--amber);background:rgba(255,176,32,.12)}
   .badge.upcoming{color:var(--dim);background:var(--surface-2)}
+  .badge.thin{color:var(--faint);background:var(--surface-2)}
+  .px.dim{color:var(--faint);border-style:dashed}
+  .px.dim b{color:var(--faint);font-weight:600}
 
   .c-clock{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
   .c-clock .lbl{font-size:11px;color:var(--faint)}
@@ -168,8 +171,10 @@
     serverNow=j.now||j.fetchedAt||Date.now(); localAtFetch=Date.now();
     return (j.markets||[]).map(x=>({
       asset:x.asset, ivl:x.intervalSec, slug:x.id, title:x.title, venue:x.venue||"polymarket",
-      endMs:Date.parse(x.endDate), startMs:Date.parse(x.startDate), yes:Math.round(x.up*100)
-    })).filter(m=>m.endMs && m.yes>=0 && m.yes<=100);
+      endMs:Date.parse(x.endDate), startMs:Date.parse(x.startDate),
+      priceKnown: x.priceKnown!==false && x.up!=null,
+      yes: x.up!=null ? Math.round(x.up*100) : null
+    })).filter(m=>m.endMs);
   }
 
   function skeleton(){
@@ -191,8 +196,14 @@
     const shown=MARKETS.filter(m=>(filter==="all"||String(m.ivl)===filter)&&(venueFilter==="all"||m.venue===venueFilter));
     if(!shown.length){ grid.innerHTML='<div class="empty">No live markets for this filter right now.</div>'; }
     shown.forEach(m=>{
-      const yesLead=m.yes>=50, status=statusOf(m), c=closesIn(m), v=VENUE[m.venue]||VENUE.polymarket;
+      const known=m.priceKnown && m.yes!=null;
+      const yesLead=known && m.yes>=50, status=statusOf(m), c=closesIn(m), v=VENUE[m.venue]||VENUE.polymarket;
+      const badgeCls=known?status:"thin", badgeTxt=known?status:"no book";
       const pct=Math.max(0,Math.min(100,100*(1-c/m.ivl)));
+      const prices=known
+        ? `<span class="px yes${yesLead?' lead':''}">YES<b><span class="num">.${String(m.yes).padStart(2,'0')}</span></b></span>
+           <span class="px no${!yesLead?' lead':''}">NO<b><span class="num">.${String(100-m.yes).padStart(2,'0')}</span></b></span>`
+        : `<span class="px dim">YES<b>—</b></span><span class="px dim">NO<b>—</b></span>`;
       const card=document.createElement("div"); card.className="card"; card.dataset.ivl=m.ivl;
       card.innerHTML=`
         <div class="c-top">
@@ -203,23 +214,23 @@
         <div class="c-src">
           <img src="${v.logo}" alt="${v.nm}" />
           <span class="nm">${v.nm}</span>
-          <span class="badge ${status}">${status}</span>
+          <span class="badge ${badgeCls}">${badgeTxt}</span>
         </div>
         <div class="c-clock"><span class="lbl">closes in</span><span class="cd" data-cd>${fmt(c)}</span></div>
         <div class="bar"><i style="width:${pct}%"></i></div>
-        <div class="c-prices">
-          <span class="px yes${yesLead?' lead':''}">YES<b><span class="num">.${String(m.yes).padStart(2,'0')}</span></b></span>
-          <span class="px no${!yesLead?' lead':''}">NO<b><span class="num">.${String(100-m.yes).padStart(2,'0')}</span></b></span>
-        </div>`;
+        <div class="c-prices">${prices}</div>`;
       grid.appendChild(card);
       m._cd=card.querySelector("[data-cd]"); m._bar=card.querySelector(".bar > i");
-      m._yesPx=card.querySelector(".px.yes"); m._noPx=card.querySelector(".px.no");
-      m._yesNum=card.querySelector(".px.yes .num"); m._noNum=card.querySelector(".px.no .num");
+      if(known){
+        m._yesPx=card.querySelector(".px.yes"); m._noPx=card.querySelector(".px.no");
+        m._yesNum=card.querySelector(".px.yes .num"); m._noNum=card.querySelector(".px.no .num");
+      } else { m._yesPx=m._noPx=m._yesNum=m._noNum=null; }
     });
     const pm=MARKETS.filter(m=>m.venue==="polymarket").length, ka=MARKETS.filter(m=>m.venue==="kalshi").length;
+    const priced=MARKETS.filter(m=>m.priceKnown).length;
     document.getElementById("liveCount").textContent=MARKETS.filter(m=>statusOf(m)==="live").length;
-    document.getElementById("count").textContent=shown.length+" shown · Polymarket "+pm+" · Kalshi "+ka;
-    document.getElementById("note").textContent="● Live — Polymarket (5m+15m) + Kalshi (15m). Countdowns real-time, prices polled every 6s.";
+    document.getElementById("count").textContent=shown.length+" shown · "+priced+" priced · Polymarket "+pm+" · Kalshi "+ka;
+    document.getElementById("note").textContent="● Live — Polymarket (5m+15m, real odds) + Kalshi (15m, often no book yet). Countdowns real-time, prices polled every 6s.";
   }
 
   function flash(px,up){
@@ -243,7 +254,8 @@
   async function poll(){
     let fresh; try{ fresh=await fetchMarkets(); }catch(e){ return; }
     const bySlug=new Map(MARKETS.map(m=>[m.slug,m]));
-    let rolled = fresh.length!==MARKETS.length || !fresh.every(f=>bySlug.has(f.slug));
+    let rolled = fresh.length!==MARKETS.length || !fresh.every(f=>bySlug.has(f.slug))
+      || fresh.some(f=>{const c=bySlug.get(f.slug); return c && c.priceKnown!==f.priceKnown;});
     if(rolled){ MARKETS=fresh; render(); return; }
     fresh.forEach(f=>{
       const cur=bySlug.get(f.slug); if(!cur||!cur._yesNum||!cur._yesNum.isConnected) return;

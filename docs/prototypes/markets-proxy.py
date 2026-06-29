@@ -78,18 +78,19 @@ def fetch_polymarket():
                 "intervalSec": INTERVAL_SEC[interval], "title": e.get("title", ""),
                 "id": slug, "startDate": m.get("startDate") or e.get("startDate"),
                 "endDate": m.get("endDate") or e.get("endDate"), "endMs": em,
-                "up": float(px[0]), "down": float(px[1]),
+                "up": float(px[0]), "down": float(px[1]), "priceKnown": True,
             })
     return out, server_now
 
 
 def _kalshi_yes(m):
+    """(up_fraction, price_known) — None when the market has no book/last trade."""
     yb, ya, lp = m.get("yes_bid"), m.get("yes_ask"), m.get("last_price")
     if yb is not None and ya is not None:
-        return (yb + ya) / 200.0          # cents → fraction
+        return (yb + ya) / 200.0, True    # cents → fraction
     if lp is not None:
-        return lp / 100.0
-    return 0.5                            # no book yet → even
+        return lp / 100.0, True
+    return None, False                    # genuinely no market yet
 
 
 def fetch_kalshi():
@@ -105,12 +106,13 @@ def fetch_kalshi():
             em = to_ms(m.get("close_time"))
             if em is None:
                 continue
-            up = _kalshi_yes(m)
+            up, known = _kalshi_yes(m)
             out.append({
                 "venue": "kalshi", "asset": asset, "interval": "15m",
                 "intervalSec": 900, "title": m.get("title", ""), "id": m.get("ticker"),
                 "startDate": m.get("open_time"), "endDate": m.get("close_time"),
-                "endMs": em, "up": up, "down": 1.0 - up,
+                "endMs": em, "up": up, "down": (None if up is None else 1.0 - up),
+                "priceKnown": known,
             })
     return out
 
@@ -126,7 +128,7 @@ def build_feed():
         # live or imminent: closing within next 30 min (small grace for just-settling)
         markets = [m for m in markets if -15_000 <= (m["endMs"] - server_now) <= 1_800_000]
     markets.sort(key=lambda m: m["endMs"])
-    return markets[:40], server_now
+    return markets[:60], server_now
 
 
 class Handler(SimpleHTTPRequestHandler):

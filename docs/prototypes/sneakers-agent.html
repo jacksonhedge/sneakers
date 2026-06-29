@@ -208,6 +208,32 @@
   .btn-primary:hover { background: var(--blue-deep); }
   .vsub.ok { color: var(--green) !important; }
 
+  /* ---------- turn-on flow: badge modes, banner, rules editor ---------- */
+  button.badge { font: inherit; cursor: pointer; }
+  .badge.live { color: var(--red); border-color: rgba(224,38,58,.4); background: var(--red-soft); }
+  .badge.live .dot { background: var(--red); }
+  .badge.halted { color: var(--amber); border-color: rgba(255,176,32,.45); background: rgba(255,176,32,.1); }
+  .badge.halted .dot { background: var(--amber); animation: none; }
+  .banner { margin: 0 0 16px; padding: 11px 15px; border-radius: 12px; font-size: 13px; font-weight: 600;
+    display: flex; align-items: center; gap: 10px; }
+  .banner[hidden] { display: none; }
+  .banner.live { background: var(--red-soft); color: var(--red); border: 1px solid rgba(224,38,58,.25); }
+  .banner.halted { background: rgba(255,176,32,.12); color: #8a5a00; border: 1px solid rgba(255,176,32,.32); }
+  .banner .bx { margin-left: auto; font-family: var(--sans); font-size: 12px; font-weight: 600; cursor: pointer;
+    background: var(--bg); border: 1px solid currentColor; color: inherit; padding: 5px 11px; border-radius: 8px; }
+  .preset-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .preset-chip { font-family: var(--sans); font-size: 12.5px; font-weight: 600; color: var(--dim); background: var(--surface);
+    border: 1px solid var(--border); padding: 8px 11px; border-radius: 9px; cursor: pointer; transition: .15s; }
+  .preset-chip:hover { color: var(--ink); border-color: #cdd8ea; }
+  .preset-chip.active { color: var(--blue); background: var(--blue-soft); border-color: rgba(27,73,214,.35); }
+  .preset-desc { font-size: 12px; color: var(--faint); margin-top: 8px; min-height: 16px; }
+  .rng { width: 100%; accent-color: var(--blue); margin-top: 2px; }
+  .ack { display: flex; gap: 9px; align-items: flex-start; font-size: 13px; color: var(--ink); margin: 4px 0 0; line-height: 1.5; }
+  .ack input { margin-top: 3px; flex: none; }
+  .live-summary { font-family: var(--mono); font-size: 12.5px; color: var(--dim); background: var(--surface);
+    border: 1px solid var(--border); border-radius: 10px; padding: 12px; line-height: 1.8; }
+  .speed.disabled { opacity: .4; pointer-events: none; }
+
   :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 6px; }
 
   @media (max-width: 640px) {
@@ -225,7 +251,7 @@
       <div class="brand"><img class="brandlogo" src="../../apps/platform/public/logo.png" alt="Sneakers" /><small>Agent</small></div>
       <div class="hright">
         <div class="status-col">
-          <span class="badge"><span class="dot"></span>Dry-run</span>
+          <button class="badge" id="modeBadge" title="Click to go live / back to dry-run"><span class="dot"></span><span class="lbl">Dry-run</span></button>
           <div class="speed" id="speed">
             <span class="slabel">Speed</span>
             <button data-speed="off">Off</button>
@@ -237,6 +263,8 @@
         <button class="gear" id="openSettings" aria-label="API keys and settings" title="API keys">&#9881;</button>
       </div>
     </header>
+
+    <div class="banner" id="banner" hidden></div>
 
     <!-- venue desk: logos light green/red as trades fire -->
     <div class="desk" id="desk">
@@ -302,13 +330,13 @@
 
   <div class="rules">
     <div class="rules-inner">
-      <div class="rule"><span class="k">Risk</span><span class="v"><span class="preset-dot"></span>Balanced</span></div>
-      <div class="rule hide-sm"><span class="k">Loss cap</span><span class="v">$150 / day</span></div>
-      <div class="rule"><span class="k">Deposit (sim)</span><span class="v">$2,000</span></div>
-      <div class="rule hide-sm"><span class="k">Liquidity live</span><span class="v">$500</span></div>
+      <div class="rule"><span class="k">Risk</span><span class="v" id="rvRisk"><span class="preset-dot"></span>Balanced</span></div>
+      <div class="rule hide-sm"><span class="k">Loss cap</span><span class="v" id="rvCap">$150 / day</span></div>
+      <div class="rule"><span class="k">Deposit (sim)</span><span class="v" id="rvDeposit">$2,000</span></div>
+      <div class="rule hide-sm"><span class="k">Liquidity live</span><span class="v" id="rvLiq">$500</span></div>
       <span class="spacer"></span>
-      <button class="edit-btn kill">Kill</button>
-      <button class="edit-btn">Edit rules</button>
+      <button class="edit-btn kill" id="killBtn">Kill</button>
+      <button class="edit-btn" id="editRules">Edit rules</button>
     </div>
   </div>
 
@@ -357,6 +385,63 @@
     </div>
   </div>
 
+  <!-- ===== rules editor modal ===== -->
+  <div class="modal-overlay" id="rulesModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="mhead"><h3>Bot rules</h3><button class="mclose" data-close="rulesModal">&times;</button></div>
+      <p class="msub">Your <b style="color:var(--ink)">risk profile</b> is the bot's only real dial — it expands into edge threshold, act-window, size, and caps.</p>
+      <div class="mbody">
+        <div class="field">
+          <label>Risk preset</label>
+          <div class="preset-row" id="presetRow">
+            <button class="preset-chip" data-preset="bunker">🛡️ Bunker</button>
+            <button class="preset-chip" data-preset="cautious">🪨 Cautious</button>
+            <button class="preset-chip active" data-preset="balanced">⚖️ Balanced</button>
+            <button class="preset-chip" data-preset="aggressive">🔥 Aggressive</button>
+            <button class="preset-chip" data-preset="max">⚡ Max</button>
+          </div>
+          <div class="preset-desc" id="presetDesc"></div>
+        </div>
+        <div class="field"><label>Loss cap (per day) — $<span id="capOut">150</span></label>
+          <input class="rng" id="capRange" type="range" min="25" max="1000" step="25" value="150" /></div>
+        <div class="field"><label>Simulated deposit — $<span id="depOut">2,000</span></label>
+          <input class="rng" id="depRange" type="range" min="500" max="10000" step="250" value="2000" /></div>
+        <div class="field"><label>Live liquidity — $<span id="liqOut">500</span></label>
+          <input class="rng" id="liqRange" type="range" min="100" max="5000" step="100" value="500" /></div>
+      </div>
+      <div class="mfoot"><span class="note">Dry-run — no real money.</span>
+        <button class="btn-secondary" data-close="rulesModal">Cancel</button>
+        <button class="btn-primary" id="saveRules">Save rules</button></div>
+    </div>
+  </div>
+
+  <!-- ===== go-live confirm modal ===== -->
+  <div class="modal-overlay" id="liveModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="mhead"><h3>Go live?</h3><button class="mclose" data-close="liveModal">&times;</button></div>
+      <p class="msub">Switching off dry-run lets the bot place <b style="color:var(--red)">real orders</b> on your connected venues, automatically, within your risk rules.</p>
+      <div class="mbody">
+        <div class="live-summary" id="liveSummary"></div>
+        <label class="ack"><input type="checkbox" id="ackLive" /> I understand real money is at stake and the bot trades automatically within my loss cap.</label>
+        <div class="oauth-banner"><span>&#9888;</span><span>Live execution isn't built yet (Plan 4) — this prototype shows the LIVE state but places <b>no real orders</b>.</span></div>
+      </div>
+      <div class="mfoot">
+        <button class="btn-secondary" data-close="liveModal">Cancel</button>
+        <button class="btn-primary" id="confirmLive" disabled>Go live</button></div>
+    </div>
+  </div>
+
+  <!-- ===== kill confirm modal ===== -->
+  <div class="modal-overlay" id="killModal" hidden>
+    <div class="modal" style="max-width:390px">
+      <div class="mhead"><h3>Stop the bot?</h3><button class="mclose" data-close="killModal">&times;</button></div>
+      <p class="msub">This halts all trading immediately, sets speed to <b style="color:var(--ink)">Off</b>, and cancels pending actions. You can resume manually.</p>
+      <div class="mfoot">
+        <button class="btn-secondary" data-close="killModal">Cancel</button>
+        <button class="btn-primary" id="confirmKill" style="background:var(--red)">Stop everything</button></div>
+    </div>
+  </div>
+
 <script>
 (function () {
   "use strict";
@@ -377,7 +462,8 @@
   const W = 800, H = 220, PAD = 8;
   const money = (n) => (n < 0 ? "-$" : "$") + Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-  let current = "1D", pts = [];
+  let current = "1D", pts = [], scrubbing = false;
+  let liveValue = SERIES["1D"].data[SERIES["1D"].data.length - 1];
   const $ = (id) => document.getElementById(id);
   const line = $("chartLine"), fill = $("chartFill"), zero = $("zeroLine"),
         scrubLine = $("scrubLine"), scrubDot = $("scrubDot"), scrubTime = $("scrubTime"), chart = $("chart");
@@ -392,7 +478,7 @@
     fill.setAttribute("d", p + " L" + pts[pts.length-1].x.toFixed(1) + " " + H + " L" + pts[0].x.toFixed(1) + " " + H + " Z");
     const yBase = PAD + (1 - (base - min) / span) * (H - PAD * 2);
     zero.setAttribute("y1", yBase); zero.setAttribute("y2", yBase);
-    setHero(d[d.length-1], base, SERIES[range].label, false);
+    setHero(range === "1D" ? liveValue : d[d.length-1], base, SERIES[range].label, false);
   }
   function setHero(value, base, periodLabel, scrubbing) {
     const delta = value - base, pct = base !== 0 ? (delta / Math.abs(base)) * 100 : 100, up = delta >= 0;
@@ -403,12 +489,17 @@
     $("heroPeriod").textContent = scrubbing ? "" : periodLabel;
     $("heroLabel").textContent = "Returns · " + periodLabel;
   }
+  function bumpLive(delta) {
+    liveValue += delta;
+    if (current === "1D" && !scrubbing) setHero(liveValue, SERIES["1D"].data[0], "Today", false);
+  }
   $("ranges").addEventListener("click", (e) => {
     const b = e.target.closest("button"); if (!b) return;
     [...e.currentTarget.children].forEach((c) => c.classList.toggle("active", c === b));
     render(b.dataset.range);
   });
   chart.addEventListener("pointermove", (e) => {
+    scrubbing = true;
     const r = chart.getBoundingClientRect(), svgX = ((e.clientX - r.left) / r.width) * W;
     let nearest = pts[0], dist = Infinity;
     for (const q of pts) { const dd = Math.abs(q.x - svgX); if (dd < dist) { dist = dd; nearest = q; } }
@@ -419,8 +510,9 @@
     scrubTime.style.opacity = 1; scrubTime.style.left = (nearest.x / W) * r.width + "px"; scrubTime.textContent = money(nearest.v);
   });
   chart.addEventListener("pointerleave", () => {
+    scrubbing = false;
     scrubLine.style.opacity = 0; scrubDot.style.opacity = 0; scrubTime.style.opacity = 0;
-    const d = SERIES[current].data; setHero(d[d.length-1], d[0], SERIES[current].label, false);
+    const d = SERIES[current].data; setHero(current === "1D" ? liveValue : d[d.length-1], d[0], SERIES[current].label, false);
   });
   render("1D");
 
@@ -491,6 +583,7 @@
   function fireOn(name, hold) {
     const up = rand() < 0.6, amt = 3 + Math.floor(rand() * 15);
     venuesFor(name).forEach((el, i) => flash(el, up, amt, i === 0, hold)); // spark on the primary tile only
+    bumpLive(up ? amt : -amt);  // running P&L moves the headline in real time
   }
   function loop() {
     const cfg = SPEEDS[currentSpeed];
@@ -524,6 +617,107 @@
     document.querySelectorAll(".venue:not(.mirror) .vsub").forEach((sub) => { sub.textContent = "✓ connected"; sub.classList.add("ok"); });
     closeModal();
   });
+
+  // ===== turn-on flow: rules editor, go-live ceremony, kill =====
+  const PRESETS = {
+    bunker:     { label: "🛡️ Bunker",     desc: "Snipe only near-certain outcomes in the final 2s. Fewest, safest trades." },
+    cautious:   { label: "🪨 Cautious",   desc: "Act in the last 4s on sizeable lags." },
+    balanced:   { label: "⚖️ Balanced",   desc: "Act in the last 7s on moderate lags." },
+    aggressive: { label: "🔥 Aggressive", desc: "Act earlier (≤11s) on smaller lags — more trades, more risk." },
+    max:        { label: "⚡ Max",         desc: "Act up to 20s out on marginal lags — most trades, most risk." }
+  };
+  const st = { connected: false, live: false, halted: false, preset: "balanced", cap: 150, deposit: 2000, liq: 500 };
+  const usd = (n) => "$" + Number(n).toLocaleString("en-US");
+  const openOv = (id) => { $(id).hidden = false; };
+  const closeOv = (id) => { $(id).hidden = true; };
+  document.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", () => closeOv(b.dataset.close)));
+  document.querySelectorAll(".modal-overlay").forEach((o) => o.addEventListener("click", (e) => { if (e.target === o) o.hidden = true; }));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") document.querySelectorAll(".modal-overlay:not([hidden])").forEach((o) => o.hidden = true); });
+
+  // --- rules bar + editor ---
+  function syncRules() {
+    $("rvRisk").innerHTML = '<span class="preset-dot"></span>' + PRESETS[st.preset].label.replace(/^\S+\s/, "");
+    $("rvCap").textContent = usd(st.cap) + " / day";
+    $("rvDeposit").textContent = usd(st.deposit);
+    $("rvLiq").textContent = usd(st.liq);
+  }
+  let pendPreset = st.preset;
+  $("editRules").addEventListener("click", () => {
+    pendPreset = st.preset;
+    [...$("presetRow").children].forEach((c) => c.classList.toggle("active", c.dataset.preset === st.preset));
+    $("presetDesc").textContent = PRESETS[st.preset].desc;
+    $("capRange").value = st.cap; $("capOut").textContent = Number(st.cap).toLocaleString();
+    $("depRange").value = st.deposit; $("depOut").textContent = Number(st.deposit).toLocaleString();
+    $("liqRange").value = st.liq; $("liqOut").textContent = Number(st.liq).toLocaleString();
+    openOv("rulesModal");
+  });
+  $("presetRow").addEventListener("click", (e) => {
+    const b = e.target.closest(".preset-chip"); if (!b) return;
+    pendPreset = b.dataset.preset;
+    [...$("presetRow").children].forEach((c) => c.classList.toggle("active", c === b));
+    $("presetDesc").textContent = PRESETS[pendPreset].desc;
+  });
+  $("capRange").addEventListener("input", (e) => $("capOut").textContent = Number(e.target.value).toLocaleString());
+  $("depRange").addEventListener("input", (e) => $("depOut").textContent = Number(e.target.value).toLocaleString());
+  $("liqRange").addEventListener("input", (e) => $("liqOut").textContent = Number(e.target.value).toLocaleString());
+  $("saveRules").addEventListener("click", () => {
+    st.preset = pendPreset; st.cap = +$("capRange").value; st.deposit = +$("depRange").value; st.liq = +$("liqRange").value;
+    syncRules(); closeOv("rulesModal");
+  });
+
+  // --- mode badge / go-live ceremony ---
+  const modeBadge = $("modeBadge");
+  function setMode() {
+    modeBadge.className = "badge" + (st.halted ? " halted" : st.live ? " live" : "");
+    modeBadge.querySelector(".lbl").textContent = st.halted ? "Halted" : st.live ? "Live" : "Dry-run";
+  }
+  modeBadge.addEventListener("click", () => {
+    if (st.halted) return;
+    if (st.live) { st.live = false; setMode(); hideBanner(); return; }
+    if (!st.connected) { openModal(); return; }   // must connect venue keys first
+    $("liveSummary").innerHTML =
+      "Mode &nbsp;&nbsp; <b>" + PRESETS[st.preset].label + "</b><br>" +
+      "Loss cap &nbsp; <b>" + usd(st.cap) + " / day</b><br>" +
+      "Venues &nbsp;&nbsp; <b>Polymarket + Kalshi (connected)</b>";
+    $("ackLive").checked = false; $("confirmLive").disabled = true;
+    openOv("liveModal");
+  });
+  $("ackLive").addEventListener("change", (e) => { $("confirmLive").disabled = !e.target.checked; });
+  $("confirmLive").addEventListener("click", () => {
+    st.live = true; setMode(); closeOv("liveModal");
+    showBanner("live", "● LIVE — the bot is armed and trading within your rules. (Plan 4: real order execution still to come — no real orders fire yet.)",
+      "Back to dry-run", () => { st.live = false; setMode(); hideBanner(); });
+  });
+
+  // --- kill / halt ---
+  $("killBtn").addEventListener("click", () => openOv("killModal"));
+  $("confirmKill").addEventListener("click", () => {
+    closeOv("killModal");
+    st.halted = true; st.live = false; setMode();
+    currentSpeed = "off"; restart();
+    [...document.querySelectorAll("#speed button")].forEach((b) => b.classList.toggle("active", b.dataset.speed === "off"));
+    $("speed").classList.add("disabled");
+    showBanner("halted", "Bot halted — all trading stopped, speed set to Off.", "Resume", () => {
+      st.halted = false; setMode(); $("speed").classList.remove("disabled");
+      currentSpeed = "active";
+      [...document.querySelectorAll("#speed button")].forEach((b) => b.classList.toggle("active", b.dataset.speed === "active"));
+      restart(); hideBanner();
+    });
+  });
+
+  // --- banner ---
+  const bannerEl = $("banner");
+  function showBanner(type, text, btnText, onBtn) {
+    bannerEl.className = "banner " + type; bannerEl.hidden = false;
+    bannerEl.innerHTML = "<span>" + text + "</span>";
+    if (btnText) { const b = document.createElement("button"); b.className = "bx"; b.textContent = btnText; b.addEventListener("click", onBtn); bannerEl.appendChild(b); }
+  }
+  function hideBanner() { bannerEl.hidden = true; }
+
+  // mark connected when keys are saved (additive to the existing handler above)
+  $("saveSettings").addEventListener("click", () => { st.connected = true; });
+
+  setMode(); syncRules();
 })();
 </script>
 </body>
