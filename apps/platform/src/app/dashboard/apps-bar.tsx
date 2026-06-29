@@ -80,7 +80,9 @@ function VenueIcon({
 // (manage / view markets / connect). Click the + → drawer with every
 // supported venue.
 
-const FEATURED_IDS = ['polymarket', 'kalshi', 'og', 'novig', 'prophetx'] as const
+// Crypto-forward featured set: Polymarket/Kalshi/Limitless (short-interval
+// crypto up/down) + Hyperliquid (perps) + OG (crypto + forex binaries).
+const FEATURED_IDS = ['polymarket', 'kalshi', 'limitless', 'hyperliquid', 'og'] as const
 
 interface Props {
   configuredIds?: string[]
