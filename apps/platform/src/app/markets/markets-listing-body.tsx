@@ -52,7 +52,6 @@ const PAGE_SIZE = 50
 export interface MarketsListingParams {
   q?: string
   platform?: string
-  sport?: string
   category?: string
   phase?: string
   sort?: string
@@ -87,7 +86,6 @@ export async function MarketsListingBody({
   const sp = searchParams
   const q = (sp.q ?? '').trim()
   const platform = (sp.platform ?? '').trim().toLowerCase()
-  const sport = (sp.sport ?? '').trim().toLowerCase()
   const categoryRaw = (sp.category ?? '').trim().toLowerCase()
   const phaseRaw = (sp.phase ?? '').trim().toLowerCase()
   const sortRaw = (sp.sort ?? '').trim().toLowerCase()
@@ -109,7 +107,6 @@ export async function MarketsListingBody({
   const result = await loadMarketsPage({
     q: q || undefined,
     platform: platform || undefined,
-    sport: sport || undefined,
     category,
     phase,
     sort,
@@ -117,7 +114,7 @@ export async function MarketsListingBody({
     pageSize: PAGE_SIZE,
   })
 
-  const { markets: paged, total, availablePlatforms, availableSports, dataDate, perBook } = result
+  const { markets: paged, total, availablePlatforms, dataDate, perBook } = result
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
 
@@ -125,7 +122,6 @@ export async function MarketsListingBody({
     const params = new URLSearchParams()
     if (q) params.set('q', q)
     if (platform) params.set('platform', platform)
-    if (sport) params.set('sport', sport)
     if (category) params.set('category', category)
     if (phase) params.set('phase', phase)
     if (sort !== 'volume') params.set('sort', sort)
@@ -137,7 +133,7 @@ export async function MarketsListingBody({
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between gap-4">
-        <h1 className="text-xl font-bold text-stone-900">All markets</h1>
+        <h1 className="text-xl font-bold text-stone-900">Crypto markets</h1>
         <div className="text-[11px] text-stone-500 tracking-wider font-mono tabular-nums">
           {total.toLocaleString()} markets
           {dataDate && (
@@ -153,10 +149,8 @@ export async function MarketsListingBody({
 
       <FilterBar
         platforms={availablePlatforms}
-        sports={availableSports}
         currentQuery={q}
         currentPlatform={platform}
-        currentSport={sport}
         currentCategory={category ?? ''}
         currentPhase={phase ?? ''}
         currentSort={sort}
@@ -170,7 +164,7 @@ export async function MarketsListingBody({
           <div className="text-xs text-stone-500">
             {total === 0 && availablePlatforms.length === 0
               ? 'No live data yet — markets will populate shortly.'
-              : 'Try a different search, platform, or sport.'}
+              : 'Try a different search or platform.'}
           </div>
         </div>
       ) : (
@@ -214,9 +208,10 @@ export async function MarketsListingBody({
       )}
 
       <footer className="pt-6 border-t border-stone-200 text-[11px] text-stone-500">
-        Each card is a market on one or more books. Click through to the detail
-        view for per-venue prices and sparklines. Sneakers is not an exchange;
-        trades execute on the venue you select.
+        Crypto markets only — BTC, ETH, SOL, and other digital assets across
+        all connected books. Click through to the detail view for per-venue
+        prices and sparklines. Sneakers is not an exchange; trades execute on
+        the venue you select.
       </footer>
     </div>
   )

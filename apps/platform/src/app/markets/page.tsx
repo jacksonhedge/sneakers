@@ -24,7 +24,6 @@ export default async function MarketsPage({
   const params = new URLSearchParams()
   if (sp.q) params.set('q', sp.q)
   if (sp.platform) params.set('platform', sp.platform)
-  if (sp.sport) params.set('sport', sp.sport)
   if (sp.category) params.set('category', sp.category)
   if (sp.phase) params.set('phase', sp.phase)
   if (sp.sort) params.set('sort', sp.sort)

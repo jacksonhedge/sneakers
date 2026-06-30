@@ -3,71 +3,16 @@
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useState, useTransition } from 'react'
 import type { MarketPhase, MarketSort } from '@/lib/markets-data'
-import type { TerminalCategory } from '@/lib/market-stats'
-import { displaySport } from '@/lib/display-names'
 import { PlatformLogo } from '../dashboard/platform-logo'
-
-// Sport-id (lowercased, scraper-canonical) → display emoji. Unknown
-// sports fall through to a neutral "•" so the chip still renders.
-const SPORT_EMOJI: Record<string, string> = {
-  nba: '🏀',
-  basketball: '🏀',
-  ncaab: '🏀',
-  cbb: '🏀',
-  wnba: '🏀',
-  nfl: '🏈',
-  football: '🏈',
-  ncaaf: '🏈',
-  cfb: '🏈',
-  mlb: '⚾',
-  baseball: '⚾',
-  nhl: '🏒',
-  hockey: '🏒',
-  soccer: '⚽',
-  mls: '⚽',
-  epl: '⚽',
-  laliga: '⚽',
-  champions_league: '⚽',
-  tennis: '🎾',
-  atp: '🎾',
-  wta: '🎾',
-  golf: '⛳',
-  pga: '⛳',
-  lpga: '⛳',
-  ufc: '🥊',
-  mma: '🥊',
-  boxing: '🥊',
-  f1: '🏎️',
-  nascar: '🏎️',
-  motorsport: '🏎️',
-  cricket: '🏏',
-  rugby: '🏉',
-  esports: '🎮',
-}
-
-function emojiFor(sport: string): string {
-  return SPORT_EMOJI[sport.toLowerCase()] ?? '•'
-}
 
 type Props = {
   platforms: string[]
-  sports: string[]
   currentQuery: string
   currentPlatform: string
-  currentSport: string
   currentCategory: string
   currentPhase: string
   currentSort: MarketSort
 }
-
-const CATEGORIES: Array<{ id: TerminalCategory; label: string }> = [
-  { id: 'politics', label: 'Politics' },
-  { id: 'economics', label: 'Economics' },
-  { id: 'crypto', label: 'Crypto' },
-  { id: 'sports', label: 'Sports' },
-  { id: 'tech', label: 'Tech' },
-  { id: 'other', label: 'Other' },
-]
 
 const PHASES: Array<{ id: MarketPhase; label: string }> = [
   { id: 'live', label: 'Live' },
@@ -84,10 +29,8 @@ const SORTS: Array<{ id: MarketSort; label: string }> = [
 
 export function FilterBar({
   platforms,
-  sports,
   currentQuery,
   currentPlatform,
-  currentSport,
   currentCategory,
   currentPhase,
   currentSort,
@@ -100,7 +43,7 @@ export function FilterBar({
 
   // Filters are collapsed by default to cut vertical space. Auto-expand if any
   // filter is currently active so users always see what's filtering their view.
-  const anyActive = !!(currentPlatform || currentSport || currentCategory || currentPhase)
+  const anyActive = !!(currentPlatform || currentCategory || currentPhase)
   const [expanded, setExpanded] = useState(anyActive)
 
   function buildUrl(overrides: Record<string, string | null>) {
@@ -125,7 +68,6 @@ export function FilterBar({
       router.push(buildUrl({
         q: null,
         platform: null,
-        sport: null,
         category: null,
         phase: null,
       }))
@@ -173,28 +115,6 @@ export function FilterBar({
     )
   }
 
-  // Sport chip = sport emoji + display name. Falls back to "•" for sports
-  // we don't have an emoji for yet. Display name pulls from displaySport()
-  // so raw scraper ids like ICE_HOCKEY render as "Hockey".
-  function sportChip(value: string, current: string) {
-    const active = current === value
-    return (
-      <button
-        key={`sport:${value}`}
-        type="button"
-        onClick={() => go({ sport: active ? null : value })}
-        className={`inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-full ring-1 transition ${
-          active
-            ? 'bg-[#004225] text-white ring-[#004225]'
-            : 'bg-white ring-stone-300 text-stone-700 hover:ring-stone-400 hover:text-stone-900'
-        }`}
-      >
-        <span aria-hidden>{emojiFor(value)}</span>
-        <span>{displaySport(value)}</span>
-      </button>
-    )
-  }
-
   // Active-filter summary pills shown in the collapsed bar. Each pill has a
   // tiny × to clear that single filter without opening the full panel.
   function activePill(param: string, label: string, value: string) {
@@ -221,7 +141,6 @@ export function FilterBar({
   if (currentCategory) activeFilters.push({ param: 'category', label: 'Category', value: currentCategory })
   if (currentPhase) activeFilters.push({ param: 'phase', label: 'Phase', value: currentPhase })
   if (currentPlatform) activeFilters.push({ param: 'platform', label: 'Book', value: currentPlatform })
-  if (currentSport) activeFilters.push({ param: 'sport', label: 'Sport', value: currentSport })
   if (currentSort && currentSort !== 'volume') activeFilters.push({ param: 'sort', label: 'Sort', value: currentSort.replace('_', ' ') })
 
   return (
@@ -238,7 +157,7 @@ export function FilterBar({
           type="text"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Search player, team, question…"
+          placeholder="Search asset, question…"
           className="flex-1 min-w-[240px] bg-white ring-1 ring-stone-300 focus:ring-[#004225]/60 focus:outline-none px-3 py-2 text-sm text-stone-900 placeholder:text-stone-400 transition rounded"
         />
         <button
@@ -279,12 +198,6 @@ export function FilterBar({
       {expanded && (
         <div className="space-y-3 rounded-lg bg-white ring-1 ring-stone-200 p-4">
           <div className="flex flex-wrap gap-2 items-center">
-            <span className="text-[10px] text-stone-500 tracking-wider pr-1 w-16">CATEGORY</span>
-            {chip('', 'ALL', 'category', currentCategory)}
-            {CATEGORIES.map((c) => chip(c.id, c.label, 'category', currentCategory))}
-          </div>
-
-          <div className="flex flex-wrap gap-2 items-center">
             <span className="text-[10px] text-stone-500 tracking-wider pr-1 w-16">PHASE</span>
             {chip('', 'ALL', 'phase', currentPhase)}
             {PHASES.map((p) => chip(p.id, p.label, 'phase', currentPhase))}
@@ -295,14 +208,6 @@ export function FilterBar({
             {chip('', 'ALL', 'platform', currentPlatform)}
             {platforms.map((p) => bookChip(p, currentPlatform))}
           </div>
-
-          {sports.length > 0 && (
-            <div className="flex flex-wrap gap-2 items-center">
-              <span className="text-[10px] text-stone-500 tracking-wider pr-1 w-16">SPORT</span>
-              {chip('', 'ALL', 'sport', currentSport)}
-              {sports.map((s) => sportChip(s, currentSport))}
-            </div>
-          )}
 
           <div className="flex flex-wrap gap-2 items-center">
             <span className="text-[10px] text-stone-500 tracking-wider pr-1 w-16">SORT</span>

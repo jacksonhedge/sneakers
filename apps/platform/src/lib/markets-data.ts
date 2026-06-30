@@ -654,7 +654,13 @@ export async function loadMarketsPage(filter: MarketFilter = {}): Promise<Market
   // -----------------------------------------------------------------------
   // Build the WHERE clauses shared between the data query and the COUNT query
   // -----------------------------------------------------------------------
-  const whereClauses: string[] = ["m.status <> 'closed'"]
+  const whereClauses: string[] = [
+    "m.status <> 'closed'",
+    // Crypto-only listing — mirrors CRYPTO_SPORTS from minute-markets.ts.
+    // Uses the indexed `category` column (markets_category_idx), not the
+    // slow JSONB raw_metadata->>'sport' extract that caused the 503.
+    "m.category = ANY(ARRAY['crypto','bitcoin','ethereum','solana','daily'])",
+  ]
   // params index starts at 1; we'll push values in parallel with clauses.
   const params: unknown[] = []
   let p = 1
@@ -844,28 +850,17 @@ export async function loadMarketsPage(filter: MarketFilter = {}): Promise<Market
       if (Number.isFinite(n)) total = n
     }
 
-    // Facets — bounded with a hard 5s timeout. The sport facet is a JSONB
-    // extract with no index and was seq-scanning for MINUTES under load,
-    // 503-ing the whole page (this was the real cause of the markets hang).
-    // On timeout these return null and the UI falls back (platforms →
-    // perBook keys, sports → empty).
-    const [platformRes, sportRes] = await Promise.all([
-      safeQueryWithTimeout<{ source: string }>(
-        "SELECT DISTINCT source FROM markets WHERE status <> 'closed' ORDER BY source",
-        undefined,
-        5_000,
-      ),
-      safeQueryWithTimeout<{ sport: string }>(
-        `SELECT DISTINCT raw_metadata->>'sport' AS sport
-         FROM markets
-         WHERE status <> 'closed' AND raw_metadata->>'sport' IS NOT NULL
-         ORDER BY sport`,
-        undefined,
-        5_000,
-      ),
-    ])
+    // Facets — platform list only. Sports facet removed: the listing is
+    // crypto-only so sports are not relevant, and the JSONB
+    // raw_metadata->>'sport' extract has no index and was seq-scanning for
+    // MINUTES under load, 503-ing the whole page.
+    const platformRes = await safeQueryWithTimeout<{ source: string }>(
+      "SELECT DISTINCT source FROM markets WHERE status <> 'closed' ORDER BY source",
+      undefined,
+      5_000,
+    )
     const availablePlatforms = platformRes ? platformRes.rows.map((r) => r.source) : Object.keys(perBook).sort()
-    const availableSports = sportRes ? sportRes.rows.map((r) => r.sport).filter(Boolean) : []
+    const availableSports: string[] = []
 
     return {
       markets,
@@ -886,10 +881,12 @@ export async function loadMarketsPage(filter: MarketFilter = {}): Promise<Market
   console.warn('[loadMarketsPage] DB returned no rows, falling back to JSONL')
   const { snapshots: all, latestDate } = await loadAllLatestSnapshots()
 
+  // CRYPTO_SPORTS mirrors the set in minute-markets.ts — same definition here.
+  const CRYPTO_SPORTS_JSONL = new Set(['crypto', 'bitcoin', 'ethereum', 'solana', 'daily'])
+
   const availablePlatforms = [...new Set(all.map((m) => m.platform))].sort()
-  const availableSports = [
-    ...new Set(all.map((m) => m.sport).filter((s): s is string => typeof s === 'string')),
-  ].sort()
+  // Sport facet removed — listing is crypto-only.
+  const availableSports: string[] = []
   const perBook: Record<string, BookFreshness> = {}
   for (const s of all) {
     const b = perBook[s.platform]
@@ -901,11 +898,9 @@ export async function loadMarketsPage(filter: MarketFilter = {}): Promise<Market
   }
 
   let filtered = all
+  // Crypto-only filter: mirror CRYPTO_SPORTS from minute-markets.ts.
+  filtered = filtered.filter((m) => CRYPTO_SPORTS_JSONL.has(m.sport ?? ''))
   if (filter.platform) filtered = filtered.filter((m) => m.platform === filter.platform!.toLowerCase())
-  if (filter.sport) {
-    const sport = filter.sport.toLowerCase()
-    filtered = filtered.filter((m) => (m.sport ?? '').toLowerCase() === sport)
-  }
   if (filter.category) filtered = filtered.filter((m) => categoryOf(m) === filter.category)
   if (filter.phase) filtered = filtered.filter((m) => m.phase === filter.phase)
   if (filter.q && filter.q.trim()) {
