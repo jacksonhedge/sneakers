@@ -32,8 +32,8 @@ const DRY_RUN_BOT_CONFIG: Omit<BotConfigRow, 'userId' | 'createdAt'> & {
   userId: null,
   enabled: true,
   mode: 'dry_run',
-  simDepositUsdc: 1000,
-  simLiquidityUsdc: 1000,
+  simDepositUsdc: 10,
+  simLiquidityUsdc: 10,
   riskPreset: 'balanced',
   assets: ['BTC'],
   enabledVenues: ['polymarket'],
@@ -79,10 +79,26 @@ class LiveRefPriceSource {
 
 let tickCount = 0
 
+/** Cumulative paper-trading P&L from the in-memory ledger. */
+async function logStats(store: InMemoryStore): Promise<void> {
+  const trades = await store.allTrades()
+  const settled = trades.filter(t => t.status === 'won' || t.status === 'lost')
+  const wins = settled.filter(t => t.status === 'won').length
+  const losses = settled.filter(t => t.status === 'lost').length
+  const open = trades.filter(t => t.status === 'open').length
+  const net = settled.reduce((s, t) => s + (t.pnlUsdc ?? 0), 0)
+  const winRate = settled.length ? ((wins / settled.length) * 100).toFixed(0) : '—'
+  console.log(
+    `[DRY-RUN][P&L] paper trades=${trades.length} open=${open} settled=${settled.length} ` +
+      `W/L=${wins}/${losses} winRate=${winRate}% netPnl=$${net.toFixed(2)} (sim balance started at $10)`,
+  )
+}
+
 async function runTick(
   loop: AgentLoop,
   feed: LivePolymarketFeed,
   spotFeed: LiveSpotFeed,
+  store: InMemoryStore,
 ): Promise<void> {
   tickCount++
   const ts = new Date().toISOString()
@@ -118,13 +134,9 @@ async function runTick(
 
   try {
     await loop.discoverTick()
-    console.log('[DRY-RUN] discoverTick complete')
-
     await loop.priceTick()
-    console.log('[DRY-RUN] priceTick complete')
-
     await loop.settleTick()
-    console.log('[DRY-RUN] settleTick complete')
+    await logStats(store)
   } catch (err) {
     console.error(`[DRY-RUN] loop tick error: ${(err as Error).message}`)
   }
@@ -164,10 +176,10 @@ async function main(): Promise<void> {
   console.log(`[DRY-RUN] Loop started. Running every ${LOOP_INTERVAL_MS / 1000}s. Press Ctrl+C to stop.`)
 
   // Run immediately, then on interval
-  await runTick(loop, feed, spotFeed)
+  await runTick(loop, feed, spotFeed, store)
 
   const handle = setInterval(async () => {
-    await runTick(loop, feed, spotFeed)
+    await runTick(loop, feed, spotFeed, store)
   }, LOOP_INTERVAL_MS)
 
   // Clean shutdown
