@@ -49,7 +49,15 @@ export async function GET() {
       const adapter = getBalanceAdapter(venue)
       if (!adapter) return { venue, status: 'unsupported' }
       try {
-        const res = await adapter.fetch(user.id)
+        // Bound each venue fetch — a stale/slow credential must NOT hang the
+        // whole balance call. A dead venue connection was freezing the page
+        // for ~2 min on accounts with one. 8s cap, then mark it errored.
+        const res = await Promise.race([
+          adapter.fetch(user.id),
+          new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error('balance fetch timed out after 8s')), 8000),
+          ),
+        ])
         if (res.status === 'no_credentials') return { venue, status: 'no_credentials' }
         return { venue, status: 'ok', cents: res.cents }
       } catch (err) {

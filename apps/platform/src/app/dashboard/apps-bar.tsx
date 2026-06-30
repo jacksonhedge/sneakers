@@ -215,9 +215,7 @@ export function AppsBar({ configuredIds = [] }: Props) {
             {VENUES.slice(0, 24).map((v) => (
               <Link
                 key={v.id}
-                href={
-                  v.id === 'polymarket' ? '/dashboard/settings/autotrade' : '/dashboard/connections'
-                }
+                href="/dashboard/connections"
                 onClick={() => setPickerOpen(false)}
                 prefetch={false}
                 className="flex items-center gap-3 px-4 py-2.5 hover:bg-stone-50 transition"
@@ -262,8 +260,10 @@ function VenuePopover({
   configured: boolean
   onClose: () => void
 }) {
-  const manageHref =
-    venue.id === 'polymarket' ? '/dashboard/settings/autotrade' : '/dashboard/connections'
+  // All venues (incl. Polymarket) go to the Connections modal — it offers the
+  // safer read-only scope first. The full trade form still lives at
+  // /dashboard/settings/autotrade (reachable via the menu) for live BUY/SELL.
+  const manageHref = '/dashboard/connections'
   return (
     <div
       role="dialog"
