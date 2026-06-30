@@ -73,7 +73,7 @@ export async function POST(req: Request) {
 
   let bundle: CredentialBundle
   if (venue === 'polymarket') {
-    const parsed = parsePolymarket(body)
+    const parsed = parsePolymarket(body, scope)
     if ('error' in parsed) return Response.json(parsed.error, { status: 400 })
     bundle = parsed.bundle
   } else if (venue === 'kalshi') {
@@ -160,21 +160,46 @@ type ParseResult =
   | { bundle: CredentialBundle }
   | { error: { error: string; message: string } }
 
-function parsePolymarket(body: Record<string, unknown>): ParseResult {
-  const apiKey = strField(body.apiKey)
-  const apiSecret = strField(body.apiSecret)
-  const passphrase = strField(body.passphrase)
+function parsePolymarket(
+  body: Record<string, unknown>,
+  scope: CredentialScope,
+): ParseResult {
+  const apiKey = optStrField(body.apiKey)
+  const apiSecret = optStrField(body.apiSecret)
+  const passphrase = optStrField(body.passphrase)
   const privateKey = optStrField(body.privateKey)
   const funderAddress = optStrField(body.funderAddress)
 
-  if (!apiKey || !apiSecret || !passphrase) {
-    return {
-      error: {
-        error: 'missing_fields',
-        message: 'API key, secret, and passphrase are all required.',
-      },
+  const hasFullTrio = Boolean(apiKey && apiSecret && passphrase)
+  const hasKeyPath = Boolean(privateKey)
+
+  if (scope === 'read') {
+    // Read-only connections must supply the CLOB API trio — there is no
+    // private key to derive it from (and we don't want to store a private
+    // key that's only needed for trading).
+    if (!hasFullTrio) {
+      return {
+        error: {
+          error: 'missing_fields',
+          message:
+            'Read-only connections require your API key, secret, and passphrase.',
+        },
+      }
+    }
+  } else {
+    // Trade-scope: accept EITHER the full CLOB trio OR a private key
+    // (the adapter derives the trio from the key via L1 auth).
+    if (!hasFullTrio && !hasKeyPath) {
+      return {
+        error: {
+          error: 'missing_fields',
+          message:
+            'Provide your API key + secret + passphrase, OR your wallet private key + funder address.',
+        },
+      }
     }
   }
+
   if (privateKey && !/^(0x)?[0-9a-fA-F]{64}$/.test(privateKey)) {
     return {
       error: {
@@ -191,7 +216,19 @@ function parsePolymarket(body: Record<string, unknown>): ParseResult {
       },
     }
   }
-  return { bundle: { apiKey, apiSecret, passphrase, privateKey, funderAddress } }
+
+  // Build the bundle. For a key-only (trio-less) trade bundle, apiKey is
+  // stored as '' — resolveApiCreds in polymarket.ts treats an empty apiKey
+  // as "no trio" and falls through to the key-derivation path.
+  return {
+    bundle: {
+      apiKey: apiKey ?? '',
+      apiSecret,
+      passphrase,
+      privateKey,
+      funderAddress,
+    },
+  }
 }
 
 function parseOpinion(body: Record<string, unknown>): ParseResult {
