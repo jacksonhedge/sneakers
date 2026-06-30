@@ -364,37 +364,37 @@ function ConnectForm(props: {
       {/* Step 2 — API credentials (optional — only needed if you want read-only or already have them) */}
       <Section
         index={2}
-        title="API credentials (optional)"
-        subtitle="Leave blank — automatically derived from your private key. Or paste them from Polymarket → Settings → API for read-only access."
+        title="API credentials — for read-only access"
+        subtitle="Read-only? Paste your 3 CLOB credentials below — the key + secret + passphrase Polymarket shows ONCE with a 'save these now, you won't see them again' warning. ⚠️ NOT the single 'Relayer API Key' (that's a different thing and is unused here). Using a private key above instead? Leave these blank — they auto-derive."
         helpHref="https://polymarket.com"
       >
-        <Field label="API KEY" hint="automatically derived if left blank">
+        <Field label="API KEY" hint="CLOB apiKey — the UUID (019f…) from Polymarket's 'save these now' API popup. NOT the single Relayer API Key.">
           <input
             type={props.showSecrets ? 'text' : 'password'}
             autoComplete="off"
             value={props.apiKey}
             onChange={(e) => props.onApiKey(e.target.value)}
-            placeholder="poly_… (optional)"
+            placeholder="019f192e-… (CLOB apiKey, a UUID)"
             className={inputCls}
           />
         </Field>
-        <Field label="API SECRET" hint="automatically derived if left blank">
+        <Field label="API SECRET" hint="CLOB secret — the 2nd value in that same 'save these now' popup (ends in '='). NOT the relayer key.">
           <input
             type={props.showSecrets ? 'text' : 'password'}
             autoComplete="off"
             value={props.apiSecret}
             onChange={(e) => props.onApiSecret(e.target.value)}
-            placeholder="(optional)"
+            placeholder="CLOB secret (ends in =)"
             className={inputCls}
           />
         </Field>
-        <Field label="PASSPHRASE" hint="automatically derived if left blank">
+        <Field label="PASSPHRASE" hint="CLOB passphrase — the 3rd value in that same popup (a long hex string).">
           <input
             type={props.showSecrets ? 'text' : 'password'}
             autoComplete="off"
             value={props.passphrase}
             onChange={(e) => props.onPassphrase(e.target.value)}
-            placeholder="(optional)"
+            placeholder="CLOB passphrase (long hex)"
             className={inputCls}
           />
         </Field>
@@ -406,7 +406,7 @@ function ConnectForm(props: {
         {hasTrio && (
           <Field
             label="WALLET ADDRESS"
-            hint='your Polymarket signer / EOA address — find it under Polymarket → Settings → "Signer Address"'
+            hint='Your Signer Address — Polymarket → Relayer API keys → "Signer Address" (0x…, 40 hex). A PUBLIC address, not a key.'
             required
           >
             <input
