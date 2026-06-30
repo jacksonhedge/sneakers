@@ -21,8 +21,11 @@ interface Settings {
   killSwitchActive: boolean
 }
 
-const DAILY_PRESETS = [50, 100, 200, 500]
-const PER_TRADE_PRESETS = [10, 25, 50, 100]
+// Low presets included so a small "$10 budget" bot is one-click settable
+// (the custom input + server both allow any value >0; presets are just
+// convenience). Daily floor preset $10, per-trade floor $2.
+const DAILY_PRESETS = [10, 25, 50, 100, 200, 500]
+const PER_TRADE_PRESETS = [2, 5, 10, 25, 50, 100]
 
 export function QuickActions() {
   const [settings, setSettings] = useState<Settings | null>(null)
