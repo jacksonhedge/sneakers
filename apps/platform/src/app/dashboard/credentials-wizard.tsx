@@ -51,6 +51,7 @@ export function CredentialsWizard({
   const [pmPassphrase, setPmPassphrase] = useState('')
   const [pmPrivateKey, setPmPrivateKey] = useState('')
   const [pmFunder, setPmFunder] = useState('')
+  const [pmWalletAddress, setPmWalletAddress] = useState('')
 
   // Kalshi fields
   const [kAccessKey, setKAccessKey] = useState('')
@@ -105,6 +106,7 @@ export function CredentialsWizard({
             passphrase: pmPassphrase,
             privateKey: scope === 'trade' && pmPrivateKey.trim() ? pmPrivateKey : undefined,
             funderAddress: scope === 'trade' && pmFunder.trim() ? pmFunder : undefined,
+            walletAddress: scope === 'read' && pmWalletAddress.trim() ? pmWalletAddress : undefined,
           }
         : venueId === 'kalshi'
           ? {
@@ -196,11 +198,13 @@ export function CredentialsWizard({
               passphrase={pmPassphrase}
               privateKey={pmPrivateKey}
               funder={pmFunder}
+              walletAddress={pmWalletAddress}
               onApiKey={setPmApiKey}
               onApiSecret={setPmApiSecret}
               onPassphrase={setPmPassphrase}
               onPrivateKey={setPmPrivateKey}
               onFunder={setPmFunder}
+              onWalletAddress={setPmWalletAddress}
             />
           ) : venueId === 'kalshi' ? (
             <KalshiFields
@@ -399,29 +403,45 @@ function PolymarketFields(props: {
   passphrase: string
   privateKey: string
   funder: string
+  walletAddress: string
   onApiKey: (v: string) => void
   onApiSecret: (v: string) => void
   onPassphrase: (v: string) => void
   onPrivateKey: (v: string) => void
   onFunder: (v: string) => void
+  onWalletAddress: (v: string) => void
 }) {
   return (
     <>
       <div className="text-[11px] text-stone-600 leading-relaxed">
-        Generate these in Polymarket → Settings → API.
+        {props.scope === 'read' ? (
+          <>
+            Paste your <strong>3 CLOB API credentials</strong> — the key + secret +
+            passphrase Polymarket shows ONCE with a &ldquo;save these now&rdquo; warning
+            (<strong>Builders → API Keys → + Create New</strong>). ⚠️ <strong>NOT</strong>{' '}
+            the single <em>Relayer API Key</em> — that&apos;s a different thing and is
+            unused here.
+          </>
+        ) : (
+          <>Paste your CLOB API trio, or leave blank to auto-derive from the private key below.</>
+        )}
       </div>
-      <Field label="API KEY" required>
+      <Field
+        label="API KEY"
+        hint="CLOB apiKey — the UUID (019f…) from the 'save these now' popup. NOT the Relayer API Key."
+        required
+      >
         <input
           type="password"
           required
           autoComplete="off"
           value={props.apiKey}
           onChange={(e) => props.onApiKey(e.target.value)}
-          placeholder="poly_…"
+          placeholder="019f192e-… (CLOB apiKey)"
           className={inputCls}
         />
       </Field>
-      <Field label="API SECRET" required>
+      <Field label="API SECRET" hint="CLOB secret — the 2nd value in that popup (ends in =)." required>
         <input
           type="password"
           required
@@ -431,7 +451,7 @@ function PolymarketFields(props: {
           className={inputCls}
         />
       </Field>
-      <Field label="PASSPHRASE" required>
+      <Field label="PASSPHRASE" hint="CLOB passphrase — the 3rd value in that popup (long hex)." required>
         <input
           type="password"
           required
@@ -441,6 +461,23 @@ function PolymarketFields(props: {
           className={inputCls}
         />
       </Field>
+      {props.scope === 'read' && (
+        <Field
+          label="WALLET ADDRESS"
+          hint='Your Signer Address — Polymarket → Relayer API keys → "Signer Address" (0x…, a public address, not a key).'
+          required
+        >
+          <input
+            type="text"
+            required
+            autoComplete="off"
+            value={props.walletAddress}
+            onChange={(e) => props.onWalletAddress(e.target.value)}
+            placeholder="0x9dac50f0…"
+            className={inputCls}
+          />
+        </Field>
+      )}
       {props.scope === 'trade' && (
         <>
           <div className="rounded-lg bg-amber-50 border border-amber-200 px-3 py-2 text-[11px] text-amber-900 leading-relaxed">
