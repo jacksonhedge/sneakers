@@ -50,6 +50,14 @@ const POLY_CHAIN = Chain.POLYGON
 
 type ReadClient = InstanceType<typeof ClobClient>
 type WriteClient = InstanceType<typeof ClobClient>
+type ApiTrio = { key: string; secret: string; passphrase: string }
+
+// In-process cache of derived CLOB creds, keyed by privateKey. Avoids
+// re-deriving (a signed L1 round-trip) on every 60s balance poll, and —
+// by caching the in-flight PROMISE — prevents a nonce race when a balance
+// poll and a trade derive concurrently for the same user.
+const derivedCredsCache = new Map<string, { promise: Promise<ApiTrio>; at: number }>()
+const DERIVED_CREDS_TTL_MS = 10 * 60 * 1000 // 10 min
 
 /**
  * Resolve the CLOB API trio ({ key, secret, passphrase }) from a CredentialBundle.
@@ -71,19 +79,32 @@ async function resolveApiCreds(creds: CredentialBundle): Promise<{
   }
   // Derivation path: use the private key to obtain the CLOB API trio via L1 auth.
   if (creds.privateKey) {
-    const signer = v5SignerFromV6(new Wallet(creds.privateKey))
-    // Build an L1-auth client (no creds yet) with the same signatureType + funderAddress
-    // that writeClient uses — important: the derived creds are tied to this proxy identity.
-    const l1Client = new ClobClient(
-      POLY_CLOB_HOST,
-      POLY_CHAIN,
-      signer,
-      undefined,
-      SignatureType.POLY_PROXY,
-      creds.funderAddress,
-    )
-    const derived = await l1Client.createOrDeriveApiKey()
-    return { key: derived.key, secret: derived.secret, passphrase: derived.passphrase }
+    const cacheKey = creds.privateKey
+    const cached = derivedCredsCache.get(cacheKey)
+    if (cached && Date.now() - cached.at < DERIVED_CREDS_TTL_MS) {
+      return cached.promise
+    }
+    const pk = creds.privateKey
+    const funder = creds.funderAddress
+    const promise = (async (): Promise<ApiTrio> => {
+      const signer = v5SignerFromV6(new Wallet(pk))
+      // L1-auth client (no creds yet) with the same signatureType + funderAddress
+      // that writeClient uses — the derived creds are tied to this proxy identity.
+      const l1Client = new ClobClient(
+        POLY_CLOB_HOST,
+        POLY_CHAIN,
+        signer,
+        undefined,
+        SignatureType.POLY_PROXY,
+        funder,
+      )
+      const derived = await l1Client.createOrDeriveApiKey()
+      return { key: derived.key, secret: derived.secret, passphrase: derived.passphrase }
+    })()
+    // Don't cache a failure — let the next call retry a fresh derivation.
+    promise.catch(() => derivedCredsCache.delete(cacheKey))
+    derivedCredsCache.set(cacheKey, { promise, at: Date.now() })
+    return promise
   }
   throw new Error('polymarket: need API credentials (key+secret+passphrase) or a private key')
 }

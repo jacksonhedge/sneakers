@@ -134,7 +134,12 @@ export async function runRiskGates(draft: DraftForGates): Promise<GateResult> {
     })
     return { allPassed: false, verdicts }
   }
-  const outcome = snap.outcomes.find((o) => o.name === draft.outcome_name)
+  // Case-insensitive match: the trade route sends 'YES'/'NO' (uppercase) but
+  // Polymarket's API + scraper store 'Yes'/'No' (title case). A strict === here
+  // was blocking EVERY manual trade at this gate.
+  const outcome = snap.outcomes.find(
+    (o) => o.name.toUpperCase() === draft.outcome_name.toUpperCase(),
+  )
   if (!outcome) {
     verdicts.push({
       gate: 'market_tradeable',

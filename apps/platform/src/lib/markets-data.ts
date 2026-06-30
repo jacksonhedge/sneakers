@@ -844,16 +844,24 @@ export async function loadMarketsPage(filter: MarketFilter = {}): Promise<Market
       if (Number.isFinite(n)) total = n
     }
 
-    // Facets — cheap index-only queries on the markets table.
+    // Facets — bounded with a hard 5s timeout. The sport facet is a JSONB
+    // extract with no index and was seq-scanning for MINUTES under load,
+    // 503-ing the whole page (this was the real cause of the markets hang).
+    // On timeout these return null and the UI falls back (platforms →
+    // perBook keys, sports → empty).
     const [platformRes, sportRes] = await Promise.all([
-      safeQuery<{ source: string }>(
+      safeQueryWithTimeout<{ source: string }>(
         "SELECT DISTINCT source FROM markets WHERE status <> 'closed' ORDER BY source",
+        undefined,
+        5_000,
       ),
-      safeQuery<{ sport: string }>(
+      safeQueryWithTimeout<{ sport: string }>(
         `SELECT DISTINCT raw_metadata->>'sport' AS sport
          FROM markets
          WHERE status <> 'closed' AND raw_metadata->>'sport' IS NOT NULL
          ORDER BY sport`,
+        undefined,
+        5_000,
       ),
     ])
     const availablePlatforms = platformRes ? platformRes.rows.map((r) => r.source) : Object.keys(perBook).sort()
