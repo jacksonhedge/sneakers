@@ -22,8 +22,10 @@ interface Settings {
   killSwitchActive: boolean
 }
 
-const DAILY_PRESETS = [50, 100, 200, 500]
-const PER_TRADE_PRESETS = [10, 25, 50, 100]
+// Low presets so a $10-budget bot is one-click settable (matches
+// quick-actions.tsx; server + custom input both allow any value >0).
+const DAILY_PRESETS = [10, 25, 50, 100, 200, 500]
+const PER_TRADE_PRESETS = [2, 5, 10, 25, 50, 100]
 
 export function AutoTradePanel() {
   const [settings, setSettings] = useState<Settings | null>(null)
