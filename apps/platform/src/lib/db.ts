@@ -74,3 +74,40 @@ export async function safeQuery<T extends pg.QueryResultRow>(
     return null
   }
 }
+
+/**
+ * Like safeQuery but wraps the statement in a per-session statement_timeout.
+ * Use for potentially heavy queries (e.g. the markets-listing page) where we
+ * want hard cancellation before the Vercel function budget is exhausted.
+ * `timeoutMs` defaults to 8 000ms — enough for a multi-thousand-row LATERAL
+ * join but short enough to leave time for the JSONL fallback to render a page.
+ */
+export async function safeQueryWithTimeout<T extends pg.QueryResultRow>(
+  sql: string,
+  params?: unknown[],
+  timeoutMs = 8_000,
+): Promise<pg.QueryResult<T> | null> {
+  const t0 = Date.now()
+  let client: pg.PoolClient | null = null
+  try {
+    const pool = getDbPool()
+    client = await pool.connect()
+    await client.query(`SET LOCAL statement_timeout = ${timeoutMs}`)
+    const res = await client.query<T>(sql, params)
+    const dur = Date.now() - t0
+    if (dur > 3000) {
+      const tag = sql.replace(/\s+/g, ' ').trim().slice(0, 80)
+      console.warn(`[db] slow query ${dur}ms rows=${res.rowCount} sql="${tag}..."`)
+    }
+    return res
+  } catch (e) {
+    const dur = Date.now() - t0
+    const tag = sql.replace(/\s+/g, ' ').trim().slice(0, 80)
+    console.warn(
+      `[db] query failed after ${dur}ms, falling back: ${(e as Error).message} sql="${tag}..."`,
+    )
+    return null
+  } finally {
+    client?.release()
+  }
+}

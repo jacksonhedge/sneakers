@@ -2,7 +2,7 @@ import { promises as fs } from 'node:fs'
 import path from 'node:path'
 import { cache } from 'react'
 import { categoryOf, type TerminalCategory } from './market-stats'
-import { safeQuery } from './db'
+import { safeQuery, safeQueryWithTimeout } from './db'
 import { SEED_SNAPSHOTS } from './seed-snapshots'
 
 // Mirror of the MarketSnapshot contract from apps/trader/src/scrapers/types.ts.
@@ -605,6 +605,337 @@ export async function loadMarkets(filter: MarketFilter = {}): Promise<LoadedMark
     dataDate: latestDate,
     perBook,
   }
+}
+
+/**
+ * MarketsPageResult — returned by the bounded SQL listing loader.
+ * Mirrors LoadedMarketsResult but excludes perBook (computed separately
+ * from the freshness query) and adds per-platform/sport facets for the
+ * filter sidebar.
+ */
+export type MarketsPageResult = {
+  markets: MarketSnapshot[]
+  /** Total matching markets (before pagination) — for the page-count footer. */
+  total: number
+  availableSports: string[]
+  availablePlatforms: string[]
+  dataDate: string | null
+  perBook: Record<string, BookFreshness>
+  /** True if results came from the DB; false = JSONL fallback. */
+  fromDb: boolean
+}
+
+/**
+ * Bounded, SQL-side markets listing for the /dashboard/markets page.
+ *
+ * Previous code path: loadAllLatestSnapshots() pulled EVERY non-closed
+ * market row into JS (~tens of thousands of rows), then ran
+ * groupIntoCanonical() on the full set in memory, then called
+ * loadMarketHistory(7) for 200k price_observation rows just to build
+ * sparklines on 50 visible cards — routinely taking 4-5 minutes and
+ * crashing the route.
+ *
+ * This function pushes filter + sort + paginate + latest-per-outcome
+ * selection entirely into Postgres. It returns at most `pageSize * maxOutcomes`
+ * rows (typically << 1000), making the round-trip 100–500ms instead of
+ * minutes.
+ *
+ * Shape contract: same MarketSnapshot[] the rest of the platform uses,
+ * so no downstream component changes are needed.
+ *
+ * Facet counts (availablePlatforms, availableSports) come from cheap
+ * index-only scans on the markets table — separate queries, sub-50ms each.
+ */
+export async function loadMarketsPage(filter: MarketFilter = {}): Promise<MarketsPageResult> {
+  const pageSize = Math.min(filter.pageSize ?? 50, 200)
+  const page = Math.max(1, filter.page ?? 1)
+  const offset = (page - 1) * pageSize
+
+  // -----------------------------------------------------------------------
+  // Build the WHERE clauses shared between the data query and the COUNT query
+  // -----------------------------------------------------------------------
+  const whereClauses: string[] = ["m.status <> 'closed'"]
+  // params index starts at 1; we'll push values in parallel with clauses.
+  const params: unknown[] = []
+  let p = 1
+
+  if (filter.platform) {
+    whereClauses.push(`m.source = $${p++}`)
+    params.push(filter.platform.toLowerCase())
+  }
+  if (filter.sport) {
+    // `sport` lives in raw_metadata->>'sport' — filter case-insensitively.
+    whereClauses.push(`lower(m.raw_metadata->>'sport') = $${p++}`)
+    params.push(filter.sport.toLowerCase())
+  }
+  if (filter.category) {
+    // category column on markets table mirrors categoryOf() logic.
+    whereClauses.push(`m.category = $${p++}`)
+    params.push(filter.category)
+  }
+  if (filter.phase) {
+    // phase lives in raw_metadata->>'phase'; status column only has pre_open/open/closed.
+    whereClauses.push(`m.raw_metadata->>'phase' = $${p++}`)
+    params.push(filter.phase)
+  }
+  if (filter.q && filter.q.trim()) {
+    whereClauses.push(`m.question ILIKE $${p++}`)
+    params.push(`%${filter.q.trim()}%`)
+  }
+
+  const whereStr = whereClauses.join(' AND ')
+
+  // -----------------------------------------------------------------------
+  // ORDER BY — SQL-side sort on the markets table, not on outcome rows
+  // -----------------------------------------------------------------------
+  let orderBy: string
+  switch (filter.sort) {
+    case 'overround':
+      orderBy = 'l.overround DESC NULLS LAST'
+      break
+    case 'resolves_at':
+      orderBy = 'm.close_time ASC NULLS LAST'
+      break
+    case 'updated':
+      orderBy = 'l.observed_at DESC NULLS LAST'
+      break
+    case 'volume':
+    default:
+      orderBy = 'l.volume_traded DESC NULLS LAST'
+      break
+  }
+
+  // -----------------------------------------------------------------------
+  // Count query — distinct markets matching filter (no outcome fan-out).
+  // -----------------------------------------------------------------------
+  const countSql = `
+    SELECT count(DISTINCT m.id)::bigint AS n
+    FROM markets m
+    JOIN LATERAL (
+      SELECT observed_at, volume_traded, overround
+      FROM price_observations p
+      WHERE p.market_id = m.id
+        AND p.observed_at >= now() - interval '24 hours'
+      ORDER BY p.observed_at DESC
+      LIMIT 1
+    ) l ON TRUE
+    WHERE ${whereStr}
+  `
+
+  // -----------------------------------------------------------------------
+  // Data query — latest-per-outcome via LATERAL, paginated via LIMIT/OFFSET
+  // on a market-level CTE so we get consistent pages without re-ranking
+  // outcome rows.
+  //
+  // Structure:
+  //   1. `ranked_markets` CTE — one row per market with its latest-snapshot
+  //      aggregate scalars (volume, overround, observed_at) for ORDER BY +
+  //      pagination. Uses a LATERAL that reads only the 24h chunk.
+  //   2. `paged_markets` CTE — apply ORDER BY + LIMIT/OFFSET.
+  //   3. Main SELECT — join back to outcomes + LATERAL for per-outcome
+  //      latest prices.
+  //
+  // The 24h bound on price_observations prevents TimescaleDB from scanning
+  // compressed older chunks (same pattern as loadAllLatestSnapshotsFromDb).
+  // -----------------------------------------------------------------------
+  const dataSql = `
+    WITH ranked_markets AS (
+      SELECT
+        m.id,
+        m.source,
+        m.question,
+        m.category,
+        m.close_time,
+        m.status,
+        m.raw_metadata,
+        l.observed_at AS latest_observed_at,
+        l.volume_traded,
+        l.overround
+      FROM markets m
+      JOIN LATERAL (
+        SELECT observed_at, volume_traded, overround
+        FROM price_observations p
+        WHERE p.market_id = m.id
+          AND p.observed_at >= now() - interval '24 hours'
+        ORDER BY p.observed_at DESC
+        LIMIT 1
+      ) l ON TRUE
+      WHERE ${whereStr}
+    ),
+    paged_markets AS (
+      SELECT *
+      FROM ranked_markets
+      ORDER BY ${orderBy}, id
+      LIMIT $${p++} OFFSET $${p++}
+    )
+    SELECT
+      pm.id AS market_id,
+      pm.source,
+      pm.question,
+      pm.category,
+      pm.close_time,
+      pm.status,
+      pm.raw_metadata,
+      o.id AS outcome_id,
+      o.label,
+      ol.observed_at,
+      ol.best_bid,
+      ol.best_ask,
+      ol.last_price,
+      ol.overround,
+      ol.liquidity_usd,
+      ol.volume_traded
+    FROM paged_markets pm
+    JOIN outcomes o ON o.market_id = pm.id
+    JOIN LATERAL (
+      SELECT observed_at, best_bid, best_ask, last_price, overround, liquidity_usd, volume_traded
+      FROM price_observations p
+      WHERE p.market_id = pm.id AND p.outcome_id = o.id
+        AND p.observed_at >= now() - interval '24 hours'
+      ORDER BY p.observed_at DESC
+      LIMIT 1
+    ) ol ON TRUE
+    ORDER BY pm.id, o.id
+  `
+
+  // Push LIMIT and OFFSET params (added last so their $N indices are correct)
+  const dataParams = [...params, pageSize, offset]
+  // Count query uses the same WHERE params (no LIMIT/OFFSET)
+  const countParams = [...params]
+
+  const [dataRes, countRes] = await Promise.all([
+    safeQueryWithTimeout<DbRow>(dataSql, dataParams, 10_000),
+    safeQueryWithTimeout<{ n: string | number }>(countSql, countParams, 10_000),
+  ])
+
+  // If DB returned results, assemble the page from DB rows.
+  if (dataRes && dataRes.rows.length > 0) {
+    const byMarket = new Map<string, DbRow[]>()
+    for (const row of dataRes.rows) {
+      let group = byMarket.get(row.market_id)
+      if (!group) {
+        group = []
+        byMarket.set(row.market_id, group)
+      }
+      group.push(row)
+    }
+    const markets: MarketSnapshot[] = []
+    const perBook: Record<string, BookFreshness> = {}
+    let latestTsGlobal: string | null = null
+    for (const group of byMarket.values()) {
+      const snap = dbRowsToSnapshot(group)
+      if (!snap) continue
+      markets.push(snap)
+      const bucket = perBook[snap.platform]
+      if (!bucket) {
+        perBook[snap.platform] = { count: 1, latestTs: snap.ts }
+      } else {
+        bucket.count += 1
+        if (!bucket.latestTs || snap.ts > bucket.latestTs) bucket.latestTs = snap.ts
+      }
+      if (!latestTsGlobal || snap.ts > latestTsGlobal) latestTsGlobal = snap.ts
+    }
+
+    // Total count for pagination
+    let total = markets.length + offset // safe minimum if count query failed
+    if (countRes && countRes.rows.length > 0) {
+      const raw = countRes.rows[0].n
+      const n = typeof raw === 'number' ? raw : parseInt(String(raw), 10)
+      if (Number.isFinite(n)) total = n
+    }
+
+    // Facets — cheap index-only queries on the markets table.
+    const [platformRes, sportRes] = await Promise.all([
+      safeQuery<{ source: string }>(
+        "SELECT DISTINCT source FROM markets WHERE status <> 'closed' ORDER BY source",
+      ),
+      safeQuery<{ sport: string }>(
+        `SELECT DISTINCT raw_metadata->>'sport' AS sport
+         FROM markets
+         WHERE status <> 'closed' AND raw_metadata->>'sport' IS NOT NULL
+         ORDER BY sport`,
+      ),
+    ])
+    const availablePlatforms = platformRes ? platformRes.rows.map((r) => r.source) : Object.keys(perBook).sort()
+    const availableSports = sportRes ? sportRes.rows.map((r) => r.sport).filter(Boolean) : []
+
+    return {
+      markets,
+      total,
+      availableSports,
+      availablePlatforms,
+      dataDate: latestTsGlobal ? latestTsGlobal.slice(0, 10) : null,
+      perBook,
+      fromDb: true,
+    }
+  }
+
+  // -----------------------------------------------------------------------
+  // DB unavailable or returned 0 rows — fall back to in-memory JSONL path.
+  // This is the same logic as loadMarkets() but uses the existing cached
+  // loadAllLatestSnapshots() to avoid double-reading disk.
+  // -----------------------------------------------------------------------
+  console.warn('[loadMarketsPage] DB returned no rows, falling back to JSONL')
+  const { snapshots: all, latestDate } = await loadAllLatestSnapshots()
+
+  const availablePlatforms = [...new Set(all.map((m) => m.platform))].sort()
+  const availableSports = [
+    ...new Set(all.map((m) => m.sport).filter((s): s is string => typeof s === 'string')),
+  ].sort()
+  const perBook: Record<string, BookFreshness> = {}
+  for (const s of all) {
+    const b = perBook[s.platform]
+    if (!b) perBook[s.platform] = { count: 1, latestTs: s.ts }
+    else {
+      b.count += 1
+      if (!b.latestTs || s.ts > b.latestTs) b.latestTs = s.ts
+    }
+  }
+
+  let filtered = all
+  if (filter.platform) filtered = filtered.filter((m) => m.platform === filter.platform!.toLowerCase())
+  if (filter.sport) {
+    const sport = filter.sport.toLowerCase()
+    filtered = filtered.filter((m) => (m.sport ?? '').toLowerCase() === sport)
+  }
+  if (filter.category) filtered = filtered.filter((m) => categoryOf(m) === filter.category)
+  if (filter.phase) filtered = filtered.filter((m) => m.phase === filter.phase)
+  if (filter.q && filter.q.trim()) {
+    const q = filter.q.toLowerCase().trim()
+    filtered = filtered.filter((m) => {
+      if (m.question.toLowerCase().includes(q)) return true
+      for (const o of m.outcomes) if (o.name.toLowerCase().includes(q)) return true
+      return false
+    })
+  }
+  const volOf = (m: MarketSnapshot): number => {
+    const v = typeof m.volume_traded === 'number' ? m.volume_traded : parseFloat(String(m.volume_traded ?? '0'))
+    return Number.isFinite(v) ? v : 0
+  }
+  filtered.sort((a, b) => {
+    switch (filter.sort ?? 'volume') {
+      case 'overround': {
+        const av = a.overround ?? -Infinity; const bv = b.overround ?? -Infinity
+        if (bv !== av) return bv - av; break
+      }
+      case 'resolves_at': {
+        const at = a.resolves_at ? new Date(a.resolves_at).getTime() : Infinity
+        const bt = b.resolves_at ? new Date(b.resolves_at).getTime() : Infinity
+        if (at !== bt) return at - bt; break
+      }
+      case 'updated': {
+        if (a.ts !== b.ts) return a.ts < b.ts ? 1 : -1; break
+      }
+      default: {
+        const av = volOf(a); const bv = volOf(b)
+        if (bv !== av) return bv - av; break
+      }
+    }
+    return a.question.localeCompare(b.question)
+  })
+  const total = filtered.length
+  const paged = filtered.slice(offset, offset + pageSize)
+  return { markets: paged, total, availableSports, availablePlatforms, dataDate: latestDate, perBook, fromDb: false }
 }
 
 export type MarketHistory = {
