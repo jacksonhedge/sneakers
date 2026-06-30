@@ -436,33 +436,39 @@ function PolymarketFields(props: {
         required
       >
         <input
-          type="password"
+          type="text"
           required
           autoComplete="off"
+          data-1p-ignore
+          data-lpignore="true"
           value={props.apiKey}
           onChange={(e) => props.onApiKey(e.target.value)}
           placeholder="019f192e-… (CLOB apiKey)"
-          className={inputCls}
+          className={`${inputCls} [-webkit-text-security:disc]`}
         />
       </Field>
       <Field label="API SECRET" hint="CLOB secret — the 2nd value in that popup (ends in =)." required>
         <input
-          type="password"
+          type="text"
           required
           autoComplete="off"
+          data-1p-ignore
+          data-lpignore="true"
           value={props.apiSecret}
           onChange={(e) => props.onApiSecret(e.target.value)}
-          className={inputCls}
+          className={`${inputCls} [-webkit-text-security:disc]`}
         />
       </Field>
       <Field label="PASSPHRASE" hint="CLOB passphrase — the 3rd value in that popup (long hex)." required>
         <input
-          type="password"
+          type="text"
           required
           autoComplete="off"
+          data-1p-ignore
+          data-lpignore="true"
           value={props.passphrase}
           onChange={(e) => props.onPassphrase(e.target.value)}
-          className={inputCls}
+          className={`${inputCls} [-webkit-text-security:disc]`}
         />
       </Field>
       {props.scope === 'read' && (
