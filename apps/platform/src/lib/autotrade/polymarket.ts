@@ -147,8 +147,12 @@ export async function testConnection(creds: CredentialBundle): Promise<{
 }> {
   try {
     const client = await readClient(creds)
-    // Smoke-test: list api keys (cheap, requires valid creds).
-    await client.getApiKeys()
+    // Smoke-test with an L2-authed balance read. getApiKeys() requires an L1
+    // *signer*, which read-only (API-creds-only) connections don't have — so
+    // it falsely rejected every valid read-only trio with "Signer is needed".
+    // getBalanceAllowance uses the API-cred trio (L2) and is the exact read
+    // we care about, so a pass here means the balance will load.
+    await client.getBalanceAllowance({ asset_type: AssetType.COLLATERAL })
   } catch (err) {
     return {
       ok: false,
