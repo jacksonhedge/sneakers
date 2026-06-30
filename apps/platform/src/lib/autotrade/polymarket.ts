@@ -232,6 +232,7 @@ export async function testConnection(creds: CredentialBundle): Promise<{
   reason?: string
   signerAddress?: string
 }> {
+  let balanceResult: unknown
   try {
     const client = await readClient(creds)
     // Smoke-test with an L2-authed balance read. getApiKeys() requires an L1
@@ -239,11 +240,47 @@ export async function testConnection(creds: CredentialBundle): Promise<{
     // it falsely rejected every valid read-only trio with "Signer is needed".
     // getBalanceAllowance uses the API-cred trio (L2) and is the exact read
     // we care about, so a pass here means the balance will load.
-    await client.getBalanceAllowance({ asset_type: AssetType.COLLATERAL })
+    //
+    // IMPORTANT: the SDK's default throwOnError=false means HTTP errors are
+    // returned as { error: string, status: number } objects rather than
+    // thrown exceptions. We MUST inspect the return value, otherwise a 401
+    // "invalid API key" response silently passes as "ok".
+    balanceResult = await client.getBalanceAllowance({ asset_type: AssetType.COLLATERAL })
   } catch (err) {
     return {
       ok: false,
       reason: err instanceof Error ? err.message : 'unknown error',
+    }
+  }
+
+  // Check for the SDK's silent-error response shape: { error: ..., status: ... }
+  if (
+    balanceResult !== null &&
+    typeof balanceResult === 'object' &&
+    'error' in balanceResult
+  ) {
+    const errObj = balanceResult as { error: unknown; status?: unknown }
+    const errMsg =
+      typeof errObj.error === 'string'
+        ? errObj.error
+        : typeof errObj.error === 'object' && errObj.error !== null
+          ? JSON.stringify(errObj.error)
+          : 'unknown error'
+    const status = typeof errObj.status === 'number' ? errObj.status : null
+    // Translate common HTTP status codes into actionable messages.
+    let hint: string
+    if (status === 401 || status === 403) {
+      hint =
+        'Check that the API Key, Secret, and Passphrase are correct and that the key is not expired.'
+    } else if (status === 400) {
+      hint =
+        'Bad request — ensure the Wallet Address matches the account that created these API credentials.'
+    } else {
+      hint = `Polymarket returned status ${status ?? 'unknown'}.`
+    }
+    return {
+      ok: false,
+      reason: `Polymarket rejected the credentials (${errMsg}). ${hint}`,
     }
   }
 
