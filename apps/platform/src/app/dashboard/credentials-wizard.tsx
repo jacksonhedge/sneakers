@@ -101,12 +101,16 @@ export function CredentialsWizard({
         ? {
             venue: 'polymarket',
             scope,
-            apiKey: pmApiKey,
-            apiSecret: pmApiSecret,
-            passphrase: pmPassphrase,
-            privateKey: scope === 'trade' && pmPrivateKey.trim() ? pmPrivateKey : undefined,
-            funderAddress: scope === 'trade' && pmFunder.trim() ? pmFunder : undefined,
-            walletAddress: scope === 'read' && pmWalletAddress.trim() ? pmWalletAddress : undefined,
+            // Trim everything — pasted credentials almost always carry a stray
+            // leading/trailing space or newline, which was failing the
+            // 0x-40-hex validation on the wallet address (and could silently
+            // break the trio's HMAC auth).
+            apiKey: pmApiKey.trim(),
+            apiSecret: pmApiSecret.trim(),
+            passphrase: pmPassphrase.trim(),
+            privateKey: scope === 'trade' && pmPrivateKey.trim() ? pmPrivateKey.trim() : undefined,
+            funderAddress: scope === 'trade' && pmFunder.trim() ? pmFunder.trim() : undefined,
+            walletAddress: scope === 'read' && pmWalletAddress.trim() ? pmWalletAddress.trim() : undefined,
           }
         : venueId === 'kalshi'
           ? {
