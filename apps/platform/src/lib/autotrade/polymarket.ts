@@ -34,6 +34,13 @@ function v5SignerFromV6(wallet: Wallet): EthersV5Signer {
 //   - "read"  — needs only the API key trio. Used for balance + positions
 //   - "write" — needs the private key as well. Used for placing orders.
 //
+// Credential resolution: callers may supply either:
+//   (a) the full CLOB trio (apiKey + apiSecret + passphrase) — used directly, no derivation
+//   (b) only a privateKey (+ optional funderAddress, "trade-scope") — the SDK derives the
+//       CLOB trio via createOrDeriveApiKey() using L1 auth. This path lets trade-scope
+//       connections reach balance, test-connection, and order placement without requiring
+//       users to separately copy the API key/secret/passphrase from the Polymarket UI.
+//
 // The CLOB host is hardcoded to mainnet. We don't ship the Amoy testnet
 // path because there's no real value in testing against fake liquidity —
 // we'd rather test with $1 of real USDC.e on a benign market.
@@ -44,24 +51,53 @@ const POLY_CHAIN = Chain.POLYGON
 type ReadClient = InstanceType<typeof ClobClient>
 type WriteClient = InstanceType<typeof ClobClient>
 
-function readClient(creds: CredentialBundle): ReadClient {
-  if (!creds.apiSecret || !creds.passphrase) {
-    throw new Error('polymarket creds missing apiSecret or passphrase')
+/**
+ * Resolve the CLOB API trio ({ key, secret, passphrase }) from a CredentialBundle.
+ *
+ * If the full trio is already present, return it directly (back-compat — no network call).
+ * Otherwise, if a privateKey is present, build an L1-auth client and call
+ * createOrDeriveApiKey() to obtain/derive the matching trio from Polymarket.
+ * This is the path taken for "trade-scope" connections where the user only
+ * provided their EOA private key + funder address.
+ */
+async function resolveApiCreds(creds: CredentialBundle): Promise<{
+  key: string
+  secret: string
+  passphrase: string
+}> {
+  // Fast path: caller already supplied the full trio.
+  if (creds.apiKey && creds.apiSecret && creds.passphrase) {
+    return { key: creds.apiKey, secret: creds.apiSecret, passphrase: creds.passphrase }
   }
-  return new ClobClient(POLY_CLOB_HOST, POLY_CHAIN, undefined, {
-    key: creds.apiKey,
-    secret: creds.apiSecret,
-    passphrase: creds.passphrase,
-  })
+  // Derivation path: use the private key to obtain the CLOB API trio via L1 auth.
+  if (creds.privateKey) {
+    const signer = v5SignerFromV6(new Wallet(creds.privateKey))
+    // Build an L1-auth client (no creds yet) with the same signatureType + funderAddress
+    // that writeClient uses — important: the derived creds are tied to this proxy identity.
+    const l1Client = new ClobClient(
+      POLY_CLOB_HOST,
+      POLY_CHAIN,
+      signer,
+      undefined,
+      SignatureType.POLY_PROXY,
+      creds.funderAddress,
+    )
+    const derived = await l1Client.createOrDeriveApiKey()
+    return { key: derived.key, secret: derived.secret, passphrase: derived.passphrase }
+  }
+  throw new Error('polymarket: need API credentials (key+secret+passphrase) or a private key')
 }
 
-function writeClient(creds: CredentialBundle): WriteClient {
+async function readClient(creds: CredentialBundle): Promise<ReadClient> {
+  const api = await resolveApiCreds(creds)
+  return new ClobClient(POLY_CLOB_HOST, POLY_CHAIN, undefined, api)
+}
+
+async function writeClient(creds: CredentialBundle): Promise<WriteClient> {
   if (!creds.privateKey) {
     throw new Error('private key required for write operations')
   }
-  if (!creds.apiSecret || !creds.passphrase) {
-    throw new Error('polymarket creds missing apiSecret or passphrase')
-  }
+  const api = await resolveApiCreds(creds)
   const signer = v5SignerFromV6(new Wallet(creds.privateKey))
   // SignatureType.POLY_PROXY (1) — most common: user funded their
   // Polymarket UI, generated API creds, and the wallet that signed
@@ -71,11 +107,7 @@ function writeClient(creds: CredentialBundle): WriteClient {
     POLY_CLOB_HOST,
     POLY_CHAIN,
     signer,
-    {
-      key: creds.apiKey,
-      secret: creds.apiSecret,
-      passphrase: creds.passphrase,
-    },
+    api,
     SignatureType.POLY_PROXY,
     creds.funderAddress,
   )
@@ -93,7 +125,7 @@ export async function testConnection(creds: CredentialBundle): Promise<{
   signerAddress?: string
 }> {
   try {
-    const client = readClient(creds)
+    const client = await readClient(creds)
     // Smoke-test: list api keys (cheap, requires valid creds).
     await client.getApiKeys()
   } catch (err) {
@@ -134,7 +166,7 @@ export async function placeMarketOrder(
   orderId: string
   raw: unknown
 }> {
-  const client = writeClient(creds)
+  const client = await writeClient(creds)
   const signed = await client.createMarketOrder({
     tokenID: params.tokenId,
     amount: params.sizeUsd,
@@ -160,7 +192,7 @@ export async function fetchBalance(creds: CredentialBundle): Promise<{
   usdcCents: number
   raw: unknown
 }> {
-  const client = readClient(creds)
+  const client = await readClient(creds)
   // The SDK's BalanceAllowanceResponse type doesn't expose the field
   // names cleanly, so cast to a permissive shape and read defensively.
   // asset_type COLLATERAL = USDC.e — the user's funded balance.
@@ -180,7 +212,7 @@ export async function fetchBalance(creds: CredentialBundle): Promise<{
  * List the user's currently-open Polymarket orders. Read-only.
  */
 export async function fetchOpenOrders(creds: CredentialBundle) {
-  const client = readClient(creds)
+  const client = await readClient(creds)
   return client.getOpenOrders()
 }
 
