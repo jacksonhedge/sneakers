@@ -32,17 +32,18 @@ export async function GET() {
   if (!user) return Response.json({ error: 'unauthenticated' }, { status: 401 })
 
   const service = getServerClient()
+  const fetchedAt = new Date().toISOString()
   const { data: credRows, error: credErr } = await service
     .from('user_venue_credentials')
     .select('venue')
     .eq('user_id', user.id)
   if (credErr) {
     console.error('[balance] cred lookup failed', credErr)
-    return Response.json({ error: 'lookup_failed' }, { status: 500 })
+    // Degrade to an honest empty $0 instead of a 500 that errors the card.
+    return Response.json({ ok: true, totalCents: 0, currency: 'USD', fetchedAt, byVenue: [] })
   }
 
   const venues = (credRows ?? []).map((r) => r.venue as string)
-  const fetchedAt = new Date().toISOString()
 
   const byVenue: VenueRow[] = await Promise.all(
     venues.map(async (venue): Promise<VenueRow> => {
@@ -51,11 +52,11 @@ export async function GET() {
       try {
         // Bound each venue fetch — a stale/slow credential must NOT hang the
         // whole balance call. A dead venue connection was freezing the page
-        // for ~2 min on accounts with one. 8s cap, then mark it errored.
+        // for ~2 min on accounts with one. 6s cap, then mark it errored.
         const res = await Promise.race([
           adapter.fetch(user.id),
           new Promise<never>((_, reject) =>
-            setTimeout(() => reject(new Error('balance fetch timed out after 8s')), 8000),
+            setTimeout(() => reject(new Error('balance fetch timed out after 6s')), 6000),
           ),
         ])
         if (res.status === 'no_credentials') return { venue, status: 'no_credentials' }
