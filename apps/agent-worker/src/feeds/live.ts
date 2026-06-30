@@ -176,9 +176,12 @@ export class LivePolymarketFeed implements MarketFeed {
     const seeds: WindowSeed[] = []
 
     for (const event of events) {
+      // Live short-interval BTC up/down windows are recurring events whose
+      // slug looks like "btc-updown-5m-<ts>" / "btc-updown-15m-<ts>". The
+      // question text is unreliable; the slug is the stable identifier.
+      if (!(event.slug ?? '').toLowerCase().startsWith('btc-updown-')) continue
       for (const market of event.markets ?? []) {
         if (market.closed || market.archived) continue
-        if (!isBtcShortWindow(market, event)) continue
 
         const seed = toWindowSeed(market, nowMs)
         if (!seed) continue
@@ -213,19 +216,16 @@ export class LivePolymarketFeed implements MarketFeed {
   }
 
   private async fetchBtcCryptoEvents(): Promise<GammaEvent[]> {
-    // Fetch active crypto/bitcoin events from Gamma
-    const url = `${GAMMA_BASE}/events?tag_slug=crypto&active=true&closed=false&archived=false&limit=100`
+    // The live short-interval windows only surface on the soonest-closing
+    // page, so order by endDate ascending and pull a large page. (Proven
+    // query from markets-proxy.py; tag_slug=crypto + the btc-updown- slug
+    // filter in discoverWindows is what catches the recurring 5/15-min windows.)
+    const url = `${GAMMA_BASE}/events?closed=false&limit=500&order=endDate&ascending=true&tag_slug=crypto`
     try {
       return await fetchJson<GammaEvent[]>(url)
     } catch (err) {
-      // Try bitcoin tag as fallback
-      try {
-        const fallbackUrl = `${GAMMA_BASE}/events?tag_slug=bitcoin&active=true&closed=false&archived=false&limit=100`
-        return await fetchJson<GammaEvent[]>(fallbackUrl)
-      } catch {
-        console.warn(`[DRY-RUN] LivePolymarketFeed: fetch failed — ${(err as Error).message}`)
-        return []
-      }
+      console.warn(`[DRY-RUN] LivePolymarketFeed: fetch failed — ${(err as Error).message}`)
+      return []
     }
   }
 }
