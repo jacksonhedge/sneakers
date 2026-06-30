@@ -21,6 +21,7 @@ type Props = {
 
 type TradeFeedback =
   | { kind: 'idle' }
+  | { kind: 'confirming' }
   | { kind: 'pending' }
   | { kind: 'ok'; orderId: string }
   | { kind: 'err'; message: string }
@@ -58,12 +59,29 @@ export function TradePanel({
         ? 'NO'
         : null
 
-  async function placeOrder() {
+  /** Step 1: validate locally then show the review/confirm card. No network call. */
+  function requestConfirm() {
     if (!liveTradeMode || !marketId || !apiOutcome) return
     if (!Number.isFinite(amount) || amount <= 0) {
       setFeedback({ kind: 'err', message: 'Enter an amount above $0.' })
       return
     }
+    track('trade_panel_submit', {
+      target: 'review-order',
+      metadata: {
+        platform: marketPlatform,
+        marketId,
+        outcome: apiOutcome,
+        side,
+        sizeUsd: amount,
+      },
+    })
+    setFeedback({ kind: 'confirming' })
+  }
+
+  /** Step 2: user clicked "Confirm order →" — POST to the route. */
+  async function confirmAndPlace() {
+    if (!liveTradeMode || !marketId || !apiOutcome) return
     setFeedback({ kind: 'pending' })
     track('trade_panel_submit', {
       target: 'place-order',
@@ -267,22 +285,73 @@ export function TradePanel({
         </div>
 
         {liveTradeMode ? (
-          <button
-            type="button"
-            onClick={placeOrder}
-            disabled={
-              feedback.kind === 'pending' || amount <= 0 || !apiOutcome
-            }
-            className={`block text-center w-full py-2.5 text-sm font-semibold rounded-full ring-1 transition disabled:opacity-50 ${
-              side === 'buy'
-                ? 'bg-[var(--yes)] text-black ring-[var(--yes-ring)] hover:opacity-90'
-                : 'bg-[var(--no)] text-white ring-[var(--no-ring)] hover:opacity-90'
-            }`}
-          >
-            {feedback.kind === 'pending'
-              ? 'PLACING…'
-              : `${side.toUpperCase()} ${apiOutcome ?? '—'} · $${amount.toFixed(2)}`}
-          </button>
+          feedback.kind === 'confirming' ? (
+            /* ── Order review card ─────────────────────────────────────── */
+            <div className="rounded border border-[var(--border)] bg-[var(--panel-2)] p-3 space-y-2 text-xs">
+              <div className="text-[10px] text-[var(--text-muted)] tracking-wider font-semibold">ORDER REVIEW</div>
+              <dl className="grid grid-cols-[1fr_auto] gap-y-1">
+                <dt className="text-[var(--text-muted)]">Side</dt>
+                <dd className={`font-semibold font-mono ${side === 'buy' ? 'text-[var(--yes)]' : 'text-[var(--no)]'}`}>
+                  {side.toUpperCase()}
+                </dd>
+                <dt className="text-[var(--text-muted)]">Outcome</dt>
+                <dd className="text-[var(--text-2)] font-mono">{apiOutcome ?? '—'}</dd>
+                <dt className="text-[var(--text-muted)]">Size</dt>
+                <dd className="text-[var(--text-2)] font-mono tabular-nums">${amount.toFixed(2)}</dd>
+                <dt className="text-[var(--text-muted)]">Current price</dt>
+                <dd className="text-[var(--text-2)] font-mono tabular-nums">
+                  {price != null ? `${Math.round(price * 100)}¢` : '—'}
+                </dd>
+                <dt className="text-[var(--text-muted)]">Est. shares</dt>
+                <dd className="text-[var(--text-2)] font-mono tabular-nums">
+                  {price && price > 0 ? (amount / price).toFixed(1) : '—'}
+                </dd>
+                <dt className="text-[var(--text-muted)]">Order type</dt>
+                <dd className="text-[var(--text-muted)] font-mono">Market</dd>
+              </dl>
+              <p className="text-[var(--text-muted)] text-[10px] leading-relaxed pt-1">
+                Market orders fill immediately at the best available price.
+                Risk gates will be checked server-side before any order is placed.
+              </p>
+              <div className="flex gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={confirmAndPlace}
+                  className={`flex-1 py-2 text-xs font-semibold rounded-full ring-1 transition ${
+                    side === 'buy'
+                      ? 'bg-[var(--yes)] text-black ring-[var(--yes-ring)] hover:opacity-90'
+                      : 'bg-[var(--no)] text-white ring-[var(--no-ring)] hover:opacity-90'
+                  }`}
+                >
+                  Confirm order →
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFeedback({ kind: 'idle' })}
+                  className="flex-1 py-2 text-xs font-semibold rounded-full ring-1 ring-[var(--border)] text-[var(--text-2)] hover:bg-[var(--panel)] transition"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={requestConfirm}
+              disabled={
+                feedback.kind === 'pending' || feedback.kind === 'ok' || amount <= 0 || !apiOutcome
+              }
+              className={`block text-center w-full py-2.5 text-sm font-semibold rounded-full ring-1 transition disabled:opacity-50 ${
+                side === 'buy'
+                  ? 'bg-[var(--yes)] text-black ring-[var(--yes-ring)] hover:opacity-90'
+                  : 'bg-[var(--no)] text-white ring-[var(--no-ring)] hover:opacity-90'
+              }`}
+            >
+              {feedback.kind === 'pending'
+                ? 'PLACING…'
+                : `${side.toUpperCase()} ${apiOutcome ?? '—'} · $${amount.toFixed(2)}`}
+            </button>
+          )
         ) : polymarketNotConnected ? (
           <Link
             href="/dashboard/settings/autotrade"

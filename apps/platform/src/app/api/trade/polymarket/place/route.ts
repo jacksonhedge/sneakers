@@ -2,6 +2,7 @@ import { getAuthClient } from '@/lib/supabase-auth'
 import { getServerClient } from '@/lib/supabase-server'
 import { loadUserCredentials, touchLastUsed } from '@/lib/autotrade/credentials'
 import { placeMarketOrder, resolveTokenIds } from '@/lib/autotrade/polymarket'
+import { runRiskGates } from '@/lib/autotrade/risk-gates'
 
 // POST /api/trade/polymarket/place
 //
@@ -89,6 +90,70 @@ export async function POST(req: Request) {
       { status: 400 },
     )
   }
+
+  // ── Risk gates (mirror of co-pilot execute pattern) ──────────────────
+  // Look up the waitlist row (app-level user id) by email, exactly as the
+  // co-pilot execute route does. `waitlist.id` is what risk-gates uses for
+  // `user_id`; `user.id` (Supabase auth id) becomes `auth_user_id`.
+  const adminForGates = getServerClient()
+  const { data: waitlistRow } = await adminForGates
+    .from('waitlist')
+    .select('id')
+    .eq('email', (user.email ?? '').toLowerCase())
+    .maybeSingle()
+  if (!waitlistRow?.id) {
+    return Response.json(
+      { error: 'no_waitlist_row', message: 'User account not fully set up. Contact support.' },
+      { status: 403 },
+    )
+  }
+  const waitlistId = waitlistRow.id as string
+
+  // `max_price` for a market order: we accept any market price up to $1
+  // (the maximum possible value for a Polymarket binary share). This keeps
+  // Gate 4 active for closed-market detection and Gates 1/2/3/5 fully
+  // active; only the price-ceiling check is intentionally relaxed since
+  // the user is placing a market order without an explicit limit.
+  const gateResult = await runRiskGates({
+    user_id: waitlistId,
+    auth_user_id: user.id,
+    platform: 'polymarket',
+    platform_market_id: marketId ?? directTokenId,
+    outcome_name: outcome || directTokenId,
+    side: sideRaw === 'BUY' ? 'buy' : 'sell',
+    size_usd: sizeUsd,
+    max_price: 1,
+  })
+
+  if (!gateResult.allPassed) {
+    const failedVerdict = gateResult.verdicts.find((v) => !v.pass)
+    const reason = failedVerdict && !failedVerdict.pass ? failedVerdict.reason : 'Risk gate blocked this trade.'
+    // Write a rejected audit row so the gate block is on record.
+    await adminForGates
+      .from('trade_executions')
+      .insert({
+        user_id: user.id,
+        venue: 'polymarket',
+        market_id: marketId ?? directTokenId,
+        side: sideRaw === 'BUY' ? 'buy' : 'sell',
+        outcome: outcome || 'UNKNOWN',
+        size_usd: sizeUsd,
+        order_type: 'market',
+        source: 'manual',
+        status: 'rejected',
+        error_message: reason,
+        venue_response: { gate_verdicts: gateResult.verdicts } as object,
+      })
+    return Response.json(
+      {
+        error: 'gate_blocked',
+        message: reason,
+        verdicts: gateResult.verdicts,
+      },
+      { status: 400 },
+    )
+  }
+  // ─────────────────────────────────────────────────────────────────────
 
   // Resolve the conditional-token id to use. Direct-tokenId path (legacy
   // / advanced) skips the lookup; marketId+outcome (preferred) hits the
