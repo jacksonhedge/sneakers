@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { findVenue } from '@/lib/venues'
+import { PolymarketReadonlyBalance } from './polymarket-readonly-balance'
 
 // Money Tracker hero — the user's aggregated wallet balance, displayed
 // large at the top of the dashboard. Reuses the /api/balance endpoint
@@ -187,6 +188,20 @@ export function MoneyTracker() {
 
   if (loading) return <LoadingHero />
   // If data fetch failed or no venues connected, show $0 / empty state
-  if (!data || data.byVenue.length === 0) return <EmptyHero />
-  return <BalanceHero data={data} />
+  if (!data || data.byVenue.length === 0) return (
+    <>
+      <EmptyHero />
+      <div className="mt-4">
+        <PolymarketReadonlyBalance />
+      </div>
+    </>
+  )
+  return (
+    <>
+      <BalanceHero data={data} />
+      <div className="mt-4">
+        <PolymarketReadonlyBalance />
+      </div>
+    </>
+  )
 }
