@@ -6,6 +6,7 @@ import { getAllHlPerps } from '@/lib/hyperliquid-data'
 import { findVenue } from '@/lib/venues'
 import { getCredentialMeta } from '@/lib/autotrade/credentials'
 import { MoneyTracker } from './money-tracker'
+import { TradingSwitch } from './trading-switch'
 import { AutoTradePanel } from './auto-trade-panel'
 import { QuickMarketsPanel, ALL_BUCKETS } from './quick/quick-markets-panel'
 import { HyperliquidStrip } from './hyperliquid-strip'
@@ -58,6 +59,11 @@ export default async function DashboardPage({ searchParams }: PageProps) {
 
   return (
     <div className="px-6 py-6 space-y-6 max-w-4xl mx-auto">
+      {/* 0. TRADING MASTER SWITCH — gates all O'Toole co-pilot proposals */}
+      <section>
+        <TradingSwitch polymarketReadyToTrade={polymarketReadyToTrade} />
+      </section>
+
       {/* 1. MONEY TRACKER HERO — balance from /api/balance, honest $0 state */}
       <section>
         <h2 className="text-[10px] text-stone-400 uppercase tracking-widest mb-3">
