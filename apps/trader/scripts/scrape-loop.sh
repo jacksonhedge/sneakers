@@ -52,7 +52,7 @@ while true; do
   run_scraper polymarket  "scrape:polymarket"
   run_scraper kalshi      "scrape:kalshi"
   run_scraper prophetx    "scrape:prophetx"
-  run_scraper novig       "scrape:novig"
+  # run_scraper novig     "scrape:novig"     # DISABLED 2026-06-30 — no NOVIG_BEARER_TOKEN (expired JWT / none); non-crypto
   run_scraper og          "scrape:og"
   # prizepicks DISABLED 2026-04-26 — takes 60-90 min per run and blocks
   # the rest of the loop, leaving oddsapi 90+ min stale every iteration.
@@ -61,7 +61,7 @@ while true; do
   # to its own slow-cadence loop.
   # run_scraper prizepicks  "scrape:prizepicks"
   run_scraper oddsapi     "scrape:oddsapi"
-  run_scraper opinion     "scrape:opinion"
+  # run_scraper opinion   "scrape:opinion"   # DISABLED 2026-06-30 — needs an approval-based OPINION_API_KEY we don't have; non-crypto
   run_scraper limitless   "scrape:limitless"
   # underdog excluded from the loop: Auth0 JWT expires every ~10 min and we
   # don't have a refresh path that works outside a real browser. Run it
