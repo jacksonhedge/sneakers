@@ -13,7 +13,7 @@
 
 import { AgentLoop } from './loop.js'
 import { InMemoryStore } from './feeds/fake.js'
-import { LivePolymarketFeed, LiveSpotFeed } from './feeds/live.js'
+import { LivePolymarketFeed, LiveSpotFeed, SpotHistorySource } from './feeds/live.js'
 import { FakeRouter } from './exec/router.js'
 import type { AuditSink, AuditEntry } from './exec/execute.js'
 import type { BotConfigRow } from '@sneakers/core/db/agent-repo'
@@ -60,20 +60,11 @@ const consoleAudit: AuditSink = {
   },
 }
 
-// ── RefPriceSource backed by LiveSpotFeed ─────────────────────────────────────
-
-/**
- * Simple ref price source that returns the current spot price for any
- * requested timestamp. In dry-run we don't have a historical oracle,
- * so we return the live spot for both open and settle prices.
- */
-class LiveRefPriceSource {
-  constructor(private spotFeed: LiveSpotFeed) {}
-
-  async refPriceAt(_atMs: number): Promise<number> {
-    return this.spotFeed.spot()
-  }
-}
+// NOTE: LiveRefPriceSource has been removed. We now use SpotHistorySource
+// (imported from ./feeds/live.ts) which records a spot sample each tick and
+// returns the nearest recorded sample to any requested timestamp.  This makes
+// openRef and settleRef reflect the ACTUAL spot at those moments, fixing the
+// fake-outcome bug.
 
 // ── Tick ──────────────────────────────────────────────────────────────────────
 
@@ -98,14 +89,18 @@ async function runTick(
   loop: AgentLoop,
   feed: LivePolymarketFeed,
   spotFeed: LiveSpotFeed,
+  refSource: SpotHistorySource,
   store: InMemoryStore,
 ): Promise<void> {
   tickCount++
   const ts = new Date().toISOString()
   console.log(`\n[DRY-RUN] ── Tick #${tickCount} @ ${ts} ─────────────────────────────────`)
 
-  // Discover
+  // Record a spot sample FIRST so history is available for open/settle ref lookups
   const nowMs = Date.now()
+  refSource.record(spotFeed.spot(), nowMs)
+
+  // Discover
   let seeds
   try {
     seeds = await feed.discoverWindows(nowMs)
@@ -160,7 +155,11 @@ async function main(): Promise<void> {
   await store.seedBotConfig(DRY_RUN_BOT_CONFIG)
   console.log('[DRY-RUN] Bot config seeded: id=1 preset=balanced mode=dry_run')
 
-  const refSource = new LiveRefPriceSource(spotFeed)
+  // SpotHistorySource: records a sample each tick so openRef/settleRef reflect
+  // actual prices at those moments, not the current live price.
+  const refSource = new SpotHistorySource(spotFeed)
+  // Seed the initial spot so the very first discoverTick has a baseline
+  refSource.record(spotFeed.spot(), Date.now())
   // FakeRouter — never places real orders
   const _router = new FakeRouter()
   const _audit = consoleAudit
@@ -176,10 +175,10 @@ async function main(): Promise<void> {
   console.log(`[DRY-RUN] Loop started. Running every ${LOOP_INTERVAL_MS / 1000}s. Press Ctrl+C to stop.`)
 
   // Run immediately, then on interval
-  await runTick(loop, feed, spotFeed, store)
+  await runTick(loop, feed, spotFeed, refSource, store)
 
   const handle = setInterval(async () => {
-    await runTick(loop, feed, spotFeed, store)
+    await runTick(loop, feed, spotFeed, refSource, store)
   }, LOOP_INTERVAL_MS)
 
   // Clean shutdown

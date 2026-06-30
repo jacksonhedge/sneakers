@@ -230,6 +230,60 @@ export class LivePolymarketFeed implements MarketFeed {
   }
 }
 
+// ── SpotHistorySource ────────────────────────────────────────────────────────
+
+/**
+ * Faithful spot-history oracle for the dry-run settle loop.
+ *
+ * Each tick, the caller should call `.record(spot, Date.now())` before
+ * running the AgentLoop ticks.  `refPriceAt(targetMs)` returns the
+ * recorded sample whose timestamp is closest to `targetMs`, so a
+ * window's openRef and settleRef reflect actual price at those moments
+ * instead of always being the current live price (the old bug).
+ *
+ * If no samples have been recorded yet, returns the latest spot from
+ * the SpotFeed directly.
+ */
+export class SpotHistorySource {
+  private samples: Array<{ ms: number; spot: number }> = []
+  private fallbackFeed: LiveSpotFeed
+
+  constructor(fallbackFeed: LiveSpotFeed) {
+    this.fallbackFeed = fallbackFeed
+  }
+
+  /** Record a spot sample at the given timestamp (call once per tick). */
+  record(spot: number, ms: number): void {
+    this.samples.push({ ms, spot })
+    // Keep at most 2000 samples (~33 min at 1s intervals)
+    if (this.samples.length > 2000) {
+      this.samples.splice(0, this.samples.length - 2000)
+    }
+  }
+
+  /**
+   * Return the sample whose timestamp is closest to targetMs.
+   * If no samples, falls back to the live spot feed's current value.
+   * For targetMs in the future (or equal to now) the latest sample is returned.
+   */
+  async refPriceAt(targetMs: number): Promise<number> {
+    if (this.samples.length === 0) {
+      return this.fallbackFeed.spot()
+    }
+    // Find the sample with minimum absolute time difference
+    let best = this.samples[0]
+    let bestDiff = Math.abs(this.samples[0].ms - targetMs)
+    for (let i = 1; i < this.samples.length; i++) {
+      const diff = Math.abs(this.samples[i].ms - targetMs)
+      if (diff < bestDiff) {
+        bestDiff = diff
+        best = this.samples[i]
+      }
+    }
+    return best.spot
+  }
+}
+
 // ── LiveSpotFeed ─────────────────────────────────────────────────────────────
 
 /**

@@ -6,7 +6,7 @@
  */
 import { test, describe, before } from 'node:test'
 import assert from 'node:assert/strict'
-import { LivePolymarketFeed, LiveSpotFeed } from './live.js'
+import { LivePolymarketFeed, LiveSpotFeed, SpotHistorySource } from './live.js'
 
 const LIVE = process.env['LIVE_TESTS'] === '1'
 
@@ -46,6 +46,71 @@ describe('LivePolymarketFeed', () => {
     const f = new LivePolymarketFeed()
     const price = await f.latestYesPrice('nonexistent-id-xyz')
     assert.equal(price, null)
+  })
+})
+
+// ── SpotHistorySource — nearest-sample logic ──────────────────────────────────
+
+describe('SpotHistorySource', () => {
+  test('returns live spot when no samples recorded', async () => {
+    const feed = new LiveSpotFeed(50_000)
+    const src = new SpotHistorySource(feed)
+    // No records yet → fallback to live spot
+    const price = await src.refPriceAt(Date.now())
+    assert.equal(price, 50_000)
+  })
+
+  test('returns the only sample regardless of targetMs', async () => {
+    const feed = new LiveSpotFeed(60_000)
+    const src = new SpotHistorySource(feed)
+    src.record(40_000, 1000)
+    assert.equal(await src.refPriceAt(500), 40_000)
+    assert.equal(await src.refPriceAt(1000), 40_000)
+    assert.equal(await src.refPriceAt(9999), 40_000)
+  })
+
+  test('returns the nearest sample by absolute time distance', async () => {
+    const feed = new LiveSpotFeed(0)
+    const src = new SpotHistorySource(feed)
+    src.record(100, 1000) // sample A at t=1000
+    src.record(200, 3000) // sample B at t=3000
+    // targetMs=1800 is 800ms from A, 1200ms from B → A wins
+    assert.equal(await src.refPriceAt(1800), 100)
+    // targetMs=2200 is 1200ms from A, 800ms from B → B wins
+    assert.equal(await src.refPriceAt(2200), 200)
+  })
+
+  test('targetMs at exact sample timestamp returns that sample', async () => {
+    const feed = new LiveSpotFeed(0)
+    const src = new SpotHistorySource(feed)
+    src.record(555, 5000)
+    src.record(777, 8000)
+    assert.equal(await src.refPriceAt(5000), 555)
+    assert.equal(await src.refPriceAt(8000), 777)
+  })
+
+  test('future targetMs returns the most recent (last) sample', async () => {
+    const feed = new LiveSpotFeed(0)
+    const src = new SpotHistorySource(feed)
+    src.record(100, 1000)
+    src.record(200, 2000)
+    src.record(300, 3000)
+    // targetMs way in the future → closest to last sample (t=3000)
+    assert.equal(await src.refPriceAt(1_000_000_000), 300)
+  })
+
+  test('caps buffer at 2000 samples', () => {
+    const feed = new LiveSpotFeed(0)
+    const src = new SpotHistorySource(feed)
+    for (let i = 0; i < 2500; i++) {
+      src.record(i, i)
+    }
+    // Access private field via cast — just ensure no throw and last sample is newest
+    const hist = src as unknown as { samples: Array<{ ms: number; spot: number }> }
+    assert.ok(hist.samples.length <= 2000)
+    // Latest sample should still be at index length-1
+    const last = hist.samples[hist.samples.length - 1]
+    assert.equal(last.spot, 2499)
   })
 })
 

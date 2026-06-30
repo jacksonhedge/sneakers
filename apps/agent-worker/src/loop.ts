@@ -8,6 +8,23 @@ import {
 import { RollingVol } from './vol'
 import type { MarketFeed, SpotFeed, RefPriceSource, WindowStore } from './feeds/types'
 
+// ── Fidelity constants ────────────────────────────────────────────────────────
+
+/**
+ * Hard guard against degenerate binary prices.
+ * Entry 0.05 → max win ~19×; entry 0.95 → near-certain win <6¢ per dollar.
+ * Anything outside [PRICE_MIN, PRICE_MAX] means the market is effectively
+ * resolved or the orderbook is pathological.
+ */
+const PRICE_MIN = 0.05
+const PRICE_MAX = 0.95
+
+/** Minimum trade size — don't bother with dust trades */
+const MIN_TRADE_USDC = 0.50
+
+/** Per-trade max as a fraction of the configured sim deposit */
+const PER_TRADE_DEPOSIT_FRACTION = 0.2
+
 interface LoopDeps {
   feeds: MarketFeed[]
   spot: SpotFeed
@@ -153,6 +170,16 @@ export class AgentLoop {
         // Determine entry price: YES price for YES side, 1 - yesPrice for NO side
         const entryPrice = decision.side === 'YES' ? yesPrice : 1 - yesPrice
 
+        // Bug #2 guard: skip degenerate near-0/near-1 prices that cause payout explosion
+        if (entryPrice < PRICE_MIN || entryPrice > PRICE_MAX) continue
+
+        // Bug #3 guard: cap trade size by sim deposit budget
+        const perTradeMax = Math.max(1, (config.simDepositUsdc ?? 0) * PER_TRADE_DEPOSIT_FRACTION)
+        const remainingBudget = (config.simDepositUsdc ?? 0) - pnl.spentTodayUsdc
+        if (remainingBudget <= 0) continue // exhausted daily budget
+        const sizeUsdc = Math.min(gate.sizeUsdc, perTradeMax, remainingBudget)
+        if (sizeUsdc < MIN_TRADE_USDC) continue // dust trade — skip
+
         // Insert trade; returns null on unique conflict (already traded this window)
         await this.store.insertTrade({
           botConfigId: config.id,
@@ -160,7 +187,7 @@ export class AgentLoop {
           signalId,
           mode: config.mode,
           side: decision.side,
-          sizeUsdc: gate.sizeUsdc,
+          sizeUsdc,
           entryPrice,
           settlePrice: null,
           pnlUsdc: null,
