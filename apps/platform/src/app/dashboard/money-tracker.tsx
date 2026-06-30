@@ -166,7 +166,13 @@ export function MoneyTracker() {
 
   useEffect(() => {
     let cancelled = false
-    fetch('/api/balance', { cache: 'no-store' })
+    // Hard client-side timeout so the Total Balance card can NEVER spin
+    // forever. If /api/balance is slow (typically a stale/failing venue
+    // connection dragging the aggregate fetch), abort at 12s and fall
+    // through to the honest $0/empty state instead of an endless shimmer.
+    const ctrl = new AbortController()
+    const timer = setTimeout(() => ctrl.abort(), 12_000)
+    fetch('/api/balance', { cache: 'no-store', signal: ctrl.signal })
       .then(async (r) => {
         if (!r.ok) throw new Error(`balance ${r.status}`)
         return (await r.json()) as BalanceResponse
@@ -181,8 +187,11 @@ export function MoneyTracker() {
         setError(err instanceof Error ? err.message : 'unknown')
         setLoading(false)
       })
+      .finally(() => clearTimeout(timer))
     return () => {
       cancelled = true
+      clearTimeout(timer)
+      ctrl.abort()
     }
   }, [])
 
