@@ -4,6 +4,7 @@ import { getTierIdentity } from '@/lib/require-tier'
 import { loadMinuteMarkets, type Bucket } from '@/lib/minute-markets'
 import { getAllHlPerps } from '@/lib/hyperliquid-data'
 import { findVenue } from '@/lib/venues'
+import { getCredentialMeta } from '@/lib/autotrade/credentials'
 import { MoneyTracker } from './money-tracker'
 import { AutoTradePanel } from './auto-trade-panel'
 import { QuickMarketsPanel, ALL_BUCKETS } from './quick/quick-markets-panel'
@@ -34,7 +35,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
   const asset = isPaid ? (sp.asset?.toUpperCase() || null) : null
 
   const hlMode = isPaid ? 'live' : 'delayed'
-  const [result, hlData] = await Promise.all([
+  const [result, hlData, polyMeta] = await Promise.all([
     loadMinuteMarkets({
       within: 60,
       asset,
@@ -42,7 +43,10 @@ export default async function DashboardPage({ searchParams }: PageProps) {
       cryptoOnly: true,
     }),
     getAllHlPerps({ mode: hlMode }).catch(() => ({ perps: [], fetchedAt: Date.now(), fromCache: false, mode: hlMode as 'live' | 'delayed' })),
+    getCredentialMeta(user.id, 'polymarket'),
   ])
+
+  const polymarketReadyToTrade = polyMeta?.hasPrivateKey === true
 
   const hlVenue = findVenue('hyperliquid')
   const hlTradeUrl = hlVenue?.affiliateUrl ?? 'https://app.hyperliquid.xyz/'
@@ -95,6 +99,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
             assetsAvailable={result.assetsAvailable}
             basePath="/dashboard"
             compact={true}
+            polymarketReadyToTrade={polymarketReadyToTrade}
           />
         )}
       </section>

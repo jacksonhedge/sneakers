@@ -4,6 +4,9 @@ import {
   type Bucket,
 } from '@/lib/minute-markets'
 import { QuickMarketsPanel, ALL_BUCKETS } from './quick-markets-panel'
+import { getAuthClient } from '@/lib/supabase-auth'
+import { getCredentialMeta } from '@/lib/autotrade/credentials'
+import { redirect } from 'next/navigation'
 
 // Quick markets — consumer surface for short-duration prediction markets
 // (≤ 60 min to resolution). Same data as /dashboard/minute, different
@@ -24,6 +27,10 @@ interface PageProps {
 }
 
 export default async function QuickMarketsPage({ searchParams }: PageProps) {
+  const supabase = await getAuthClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user || !user.email) redirect('/signup')
+
   const me = await getTierIdentity()
   const isPaid = me.tier !== 'free'
   const sp = await searchParams
@@ -36,14 +43,18 @@ export default async function QuickMarketsPage({ searchParams }: PageProps) {
       : FREE_TIER_DEFAULT_BUCKET
   const asset = isPaid ? (sp.asset?.toUpperCase() || null) : null
 
-  // Load the full 60m window once; bucket filter applies post-load so the
-  // user sees what's in their picked window without re-querying.
-  const result = await loadMinuteMarkets({
-    within: 60,
-    asset,
-    grouped: true,
-    cryptoOnly: true,
-  })
+  // Load minute markets + polymarket cred check in parallel.
+  const [result, polyMeta] = await Promise.all([
+    loadMinuteMarkets({
+      within: 60,
+      asset,
+      grouped: true,
+      cryptoOnly: true,
+    }),
+    getCredentialMeta(user.id, 'polymarket'),
+  ])
+
+  const polymarketReadyToTrade = polyMeta?.hasPrivateKey === true
 
   const allGroups = result.groups ?? []
   const groups = allGroups
@@ -63,6 +74,7 @@ export default async function QuickMarketsPage({ searchParams }: PageProps) {
           assetsAvailable={result.assetsAvailable}
           basePath="/dashboard/quick"
           compact={false}
+          polymarketReadyToTrade={polymarketReadyToTrade}
         />
       </div>
     </main>

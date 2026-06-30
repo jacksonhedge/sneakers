@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { findVenue } from '@/lib/venues'
 import { RollingFormatted } from '@/components/rolling-formatted'
 import type { Bucket, MinuteGroup, MinuteMarket } from '@/lib/minute-markets'
+import { PolymarketBuyPanel } from './polymarket-buy-panel'
 
 // ---------------------------------------------------------------------------
 // Props
@@ -17,6 +18,9 @@ export interface QuickMarketsPanelProps {
   assetsAvailable: string[]
   basePath: string
   compact?: boolean
+  /** True iff the current user has a Polymarket private key saved. Used to
+   *  gate the in-app Buy panel on Polymarket cards. */
+  polymarketReadyToTrade?: boolean
 }
 
 // ---------------------------------------------------------------------------
@@ -212,7 +216,15 @@ function EmptyState({ bucket }: { bucket: Bucket }) {
   )
 }
 
-function GroupCard({ group, isPaid }: { group: MinuteGroup; isPaid: boolean }) {
+function GroupCard({
+  group,
+  isPaid,
+  polymarketReadyToTrade,
+}: {
+  group: MinuteGroup
+  isPaid: boolean
+  polymarketReadyToTrade: boolean
+}) {
   const urgent = group.minutes_to_resolve <= 5
   return (
     <section className="space-y-3">
@@ -247,6 +259,7 @@ function GroupCard({ group, isPaid }: { group: MinuteGroup; isPaid: boolean }) {
             m={m}
             asset={group.asset}
             isPaid={isPaid}
+            polymarketReadyToTrade={polymarketReadyToTrade}
           />
         ))}
       </div>
@@ -258,19 +271,19 @@ function MarketBox({
   m,
   asset,
   isPaid,
+  polymarketReadyToTrade,
 }: {
   m: MinuteMarket
   asset: string | null
   isPaid: boolean
+  polymarketReadyToTrade: boolean
 }) {
   const ask = yesAsk(m)
-  return (
-    <a
-      href={tradeUrlFor(m.platform)}
-      target="_blank"
-      rel="noopener noreferrer sponsored"
-      className="group relative rounded-2xl border border-stone-200 bg-white p-4 flex flex-col gap-3 hover:border-[#004225] hover:shadow-md transition-all"
-    >
+  const isPolymarket = m.platform === 'polymarket'
+
+  // Shared card interior (visual layout preserved for both branches)
+  const cardInterior = (
+    <>
       <div className="flex items-start justify-between gap-2">
         <div className="text-sm font-semibold text-stone-900 leading-tight tracking-tight">
           {asset} {m.direction ?? ''} {fmtDollarStrike(m.strike)}
@@ -302,6 +315,41 @@ function MarketBox({
           </span>
         )}
       </div>
+    </>
+  )
+
+  // ── Polymarket: in-app Buy panel (no affiliate link) ─────────────────────
+  if (isPolymarket) {
+    // Derive YES/NO prices from outcomes for the buy panel
+    const yesOutcome = m.outcomes.find((o) => /^yes\b|\byes\s/i.test(o.name))
+    const noOutcome = m.outcomes.find((o) => /^no\b|\bno\s/i.test(o.name))
+    const yesPrice = yesOutcome?.best_ask ?? m.outcomes[0]?.best_ask ?? null
+    const noPrice = noOutcome?.best_ask ?? m.outcomes[1]?.best_ask ?? null
+
+    return (
+      <div className="group relative rounded-2xl border border-stone-200 bg-white p-4 flex flex-col gap-3 hover:border-[#004225] hover:shadow-md transition-all">
+        {cardInterior}
+        <div className="pt-1 border-t border-stone-100">
+          <PolymarketBuyPanel
+            marketId={m.market_id}
+            yesPrice={yesPrice}
+            noPrice={noPrice}
+            polymarketReadyToTrade={polymarketReadyToTrade}
+          />
+        </div>
+      </div>
+    )
+  }
+
+  // ── All other platforms: existing affiliate link ──────────────────────────
+  return (
+    <a
+      href={tradeUrlFor(m.platform)}
+      target="_blank"
+      rel="noopener noreferrer sponsored"
+      className="group relative rounded-2xl border border-stone-200 bg-white p-4 flex flex-col gap-3 hover:border-[#004225] hover:shadow-md transition-all"
+    >
+      {cardInterior}
 
       <div className="flex items-center justify-between pt-1 border-t border-stone-100">
         <span className="text-[10px] text-stone-400 tracking-wider uppercase">
@@ -332,6 +380,7 @@ export function QuickMarketsPanel({
   assetsAvailable,
   basePath,
   compact = false,
+  polymarketReadyToTrade = false,
 }: QuickMarketsPanelProps) {
   return (
     <div className="space-y-5">
@@ -368,7 +417,14 @@ export function QuickMarketsPanel({
         {groups.length === 0 ? (
           <EmptyState bucket={bucket} />
         ) : (
-          groups.map((g) => <GroupCard key={`${g.asset}:${g.resolves_at}`} group={g} isPaid={isPaid} />)
+          groups.map((g) => (
+          <GroupCard
+            key={`${g.asset}:${g.resolves_at}`}
+            group={g}
+            isPaid={isPaid}
+            polymarketReadyToTrade={polymarketReadyToTrade}
+          />
+        ))
         )}
       </section>
 
