@@ -10,6 +10,7 @@ interface InitialState {
   testConnectionAt: string | null
   hasPrivateKey: boolean
   funderAddress: string | null
+  walletAddress: string | null
   label: string | null
 }
 
@@ -20,6 +21,7 @@ export function PolymarketConnectForm({ initial }: { initial: InitialState }) {
   const [apiKey, setApiKey] = useState('')
   const [apiSecret, setApiSecret] = useState('')
   const [passphrase, setPassphrase] = useState('')
+  const [walletAddress, setWalletAddress] = useState(initial.walletAddress ?? '')
   const [privateKey, setPrivateKey] = useState('')
   const [funderAddress, setFunderAddress] = useState(initial.funderAddress ?? '')
   const [label, setLabel] = useState(initial.label ?? '')
@@ -42,13 +44,19 @@ export function PolymarketConnectForm({ initial }: { initial: InitialState }) {
     e.preventDefault()
     setBusy(true)
     setFeedback(null)
+    // Determine scope from which credential path the user filled in.
+    // If they provided a private key → trade scope.
+    // If they only filled the API trio (+ wallet address) → read scope.
+    const scope = privateKey.trim() ? 'trade' : 'read'
     const res = await fetch('/api/autotrade/credentials', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
+        scope,
         apiKey,
         apiSecret,
         passphrase,
+        walletAddress: walletAddress.trim() || undefined,
         privateKey: privateKey.trim() || undefined,
         funderAddress: funderAddress.trim() || undefined,
         label: label.trim() || undefined,
@@ -85,6 +93,7 @@ export function PolymarketConnectForm({ initial }: { initial: InitialState }) {
     setApiKey('')
     setApiSecret('')
     setPassphrase('')
+    setWalletAddress('')
     setPrivateKey('')
     router.refresh()
   }
@@ -136,6 +145,7 @@ export function PolymarketConnectForm({ initial }: { initial: InitialState }) {
           apiKey={apiKey}
           apiSecret={apiSecret}
           passphrase={passphrase}
+          walletAddress={walletAddress}
           privateKey={privateKey}
           funderAddress={funderAddress}
           label={label}
@@ -145,6 +155,7 @@ export function PolymarketConnectForm({ initial }: { initial: InitialState }) {
           onApiKey={setApiKey}
           onApiSecret={setApiSecret}
           onPassphrase={setPassphrase}
+          onWalletAddress={setWalletAddress}
           onPrivateKey={setPrivateKey}
           onFunderAddress={setFunderAddress}
           onLabel={setLabel}
@@ -211,8 +222,12 @@ function ConnectedCard({
             <span className="text-stone-500">Read-only</span>
           )}
         </Stat>
-        <Stat label="FUNDER">
-          {initial.funderAddress ? (
+        <Stat label="SIGNER">
+          {initial.walletAddress ? (
+            <code className="text-[12px] font-mono text-stone-800">
+              {initial.walletAddress.slice(0, 6)}…{initial.walletAddress.slice(-4)}
+            </code>
+          ) : initial.funderAddress ? (
             <code className="text-[12px] font-mono text-stone-800">
               {initial.funderAddress.slice(0, 6)}…{initial.funderAddress.slice(-4)}
             </code>
@@ -279,6 +294,7 @@ function ConnectForm(props: {
   apiKey: string
   apiSecret: string
   passphrase: string
+  walletAddress: string
   privateKey: string
   funderAddress: string
   label: string
@@ -291,6 +307,7 @@ function ConnectForm(props: {
   onApiKey: (v: string) => void
   onApiSecret: (v: string) => void
   onPassphrase: (v: string) => void
+  onWalletAddress: (v: string) => void
   onPrivateKey: (v: string) => void
   onFunderAddress: (v: string) => void
   onLabel: (v: string) => void
@@ -298,11 +315,13 @@ function ConnectForm(props: {
   onCancelEdit: () => void
   onSubmit: (e: React.FormEvent) => void
 }) {
+  // Read-only path: API trio + wallet address (no private key).
+  // Trade path:    private key + funder address (trio optional — derived automatically).
   const hasTrio =
-    props.apiKey.trim() && props.apiSecret.trim() && props.passphrase.trim()
-  const hasKeyPath =
-    props.privateKey.trim() && props.funderAddress.trim()
-  const ready = hasTrio || hasKeyPath
+    Boolean(props.apiKey.trim() && props.apiSecret.trim() && props.passphrase.trim())
+  const hasReadOnly = hasTrio && Boolean(props.walletAddress.trim())
+  const hasKeyPath = Boolean(props.privateKey.trim() && props.funderAddress.trim())
+  const ready = hasReadOnly || hasKeyPath || (hasTrio && Boolean(props.privateKey.trim()))
   return (
     <form onSubmit={props.onSubmit} className="p-5 space-y-5">
       {/* Step 1 — Trading wallet (primary / recommended path) */}
@@ -346,7 +365,7 @@ function ConnectForm(props: {
       <Section
         index={2}
         title="API credentials (optional)"
-        subtitle="Leave blank — automatically derived from your private key. Or paste them from Polymarket → Settings → API."
+        subtitle="Leave blank — automatically derived from your private key. Or paste them from Polymarket → Settings → API for read-only access."
         helpHref="https://polymarket.com"
       >
         <Field label="API KEY" hint="automatically derived if left blank">
@@ -379,6 +398,27 @@ function ConnectForm(props: {
             className={inputCls}
           />
         </Field>
+        {/* Wallet address — required when using the trio (read-only) path.
+            The SDK's canL2Auth() guard requires a signer object even for
+            read-only L2 calls. We build an address-only signer from this
+            address so no private key is stored for read-only access.
+            Shown whenever the user is filling the trio. */}
+        {hasTrio && (
+          <Field
+            label="WALLET ADDRESS"
+            hint='your Polymarket signer / EOA address — find it under Polymarket → Settings → "Signer Address"'
+            required
+          >
+            <input
+              type="text"
+              autoComplete="off"
+              value={props.walletAddress}
+              onChange={(e) => props.onWalletAddress(e.target.value)}
+              placeholder="0x… (required for read-only)"
+              className={inputCls}
+            />
+          </Field>
+        )}
       </Section>
 
       {/* Step 3 — Optional label */}

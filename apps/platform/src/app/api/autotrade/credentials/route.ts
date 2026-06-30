@@ -169,6 +169,7 @@ function parsePolymarket(
   const passphrase = optStrField(body.passphrase)
   const privateKey = optStrField(body.privateKey)
   const funderAddress = optStrField(body.funderAddress)
+  const walletAddress = optStrField(body.walletAddress)
 
   const hasFullTrio = Boolean(apiKey && apiSecret && passphrase)
   const hasKeyPath = Boolean(privateKey)
@@ -183,6 +184,19 @@ function parsePolymarket(
           error: 'missing_fields',
           message:
             'Read-only connections require your API key, secret, and passphrase.',
+        },
+      }
+    }
+    // Wallet address is required for read-only: the SDK's canL2Auth() guard
+    // requires a signer object; the adapter builds an address-only signer from
+    // this address. Without it, every L2-authed read (incl. getBalanceAllowance)
+    // throws "Signer is needed to interact with this endpoint!".
+    if (!walletAddress) {
+      return {
+        error: {
+          error: 'missing_fields',
+          message:
+            'Read-only connections require your wallet address (the EOA / signer address that owns these API credentials).',
         },
       }
     }
@@ -216,6 +230,14 @@ function parsePolymarket(
       },
     }
   }
+  if (walletAddress && !/^0x[0-9a-fA-F]{40}$/.test(walletAddress)) {
+    return {
+      error: {
+        error: 'invalid_wallet_address',
+        message: 'Wallet address must be a 0x-prefixed 40-character hex string.',
+      },
+    }
+  }
 
   // Build the bundle. For a key-only (trio-less) trade bundle, apiKey is
   // stored as '' — resolveApiCreds in polymarket.ts treats an empty apiKey
@@ -227,6 +249,7 @@ function parsePolymarket(
       passphrase,
       privateKey,
       funderAddress,
+      walletAddress,
     },
   }
 }

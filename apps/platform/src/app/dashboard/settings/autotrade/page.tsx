@@ -79,6 +79,7 @@ export default async function AutotradeSettingsPage() {
               testConnectionAt: polyMeta?.testConnectionAt ?? null,
               hasPrivateKey: polyMeta?.hasPrivateKey ?? false,
               funderAddress: polyMeta?.funderAddress ?? null,
+              walletAddress: polyMeta?.walletAddress ?? null,
               label: polyMeta?.label ?? null,
             }}
           />

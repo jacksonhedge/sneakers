@@ -83,8 +83,16 @@ export interface CredentialBundle {
    * the PEM since every request is signed).
    */
   privateKey?: string
-  /** Polymarket only — proxy/Safe funder address. */
+  /** Polymarket only — proxy/Safe funder address (holds USDC). */
   funderAddress?: string
+  /**
+   * Polymarket only — EOA signer address that owns the API credentials.
+   * Required for read-only (trio-only) connections so we can build an
+   * address-only signer that satisfies L2 auth without a private key.
+   * NOT secret — stored plaintext alongside funderAddress.
+   * Falls back to funderAddress inside the adapter if absent.
+   */
+  walletAddress?: string
 }
 
 export type CredentialScope = 'read' | 'trade'
@@ -99,6 +107,7 @@ export interface CredentialMeta {
   lastUsedAt: string | null
   hasPrivateKey: boolean
   funderAddress: string | null
+  walletAddress: string | null
 }
 
 /**
@@ -126,6 +135,7 @@ export async function storeUserCredentials(
       passphrase_encrypted: bundle.passphrase ? encrypt(bundle.passphrase) : null,
       private_key_encrypted: bundle.privateKey ? encrypt(bundle.privateKey) : null,
       funder_address: bundle.funderAddress ?? null,
+      wallet_address: bundle.walletAddress ?? null,
       label: label ?? null,
       test_connection_ok: false,
       test_connection_at: null,
@@ -147,7 +157,7 @@ export async function loadUserCredentials(
   const { data, error } = await sb
     .from('user_venue_credentials')
     .select(
-      'api_key_encrypted, api_secret_encrypted, passphrase_encrypted, private_key_encrypted, funder_address',
+      'api_key_encrypted, api_secret_encrypted, passphrase_encrypted, private_key_encrypted, funder_address, wallet_address',
     )
     .eq('user_id', userId)
     .eq('venue', venue)
@@ -167,6 +177,7 @@ export async function loadUserCredentials(
       passphrase: passphraseBlob ? decrypt(passphraseBlob) : undefined,
       privateKey: privKeyBlob ? decrypt(privKeyBlob) : undefined,
       funderAddress: (data.funder_address as string | null) ?? undefined,
+      walletAddress: (data.wallet_address as string | null) ?? undefined,
     }
   } catch (err) {
     console.error('[autotrade] decrypt failed for user', userId, err)
@@ -183,7 +194,7 @@ export async function getCredentialMeta(
   const { data } = await sb
     .from('user_venue_credentials')
     .select(
-      'venue, label, scope, test_connection_ok, test_connection_at, created_at, last_used_at, private_key_encrypted, funder_address',
+      'venue, label, scope, test_connection_ok, test_connection_at, created_at, last_used_at, private_key_encrypted, funder_address, wallet_address',
     )
     .eq('user_id', userId)
     .eq('venue', venue)
@@ -199,6 +210,7 @@ export async function getCredentialMeta(
     lastUsedAt: (data.last_used_at as string | null) ?? null,
     hasPrivateKey: Boolean(data.private_key_encrypted),
     funderAddress: (data.funder_address as string | null) ?? null,
+    walletAddress: (data.wallet_address as string | null) ?? null,
   }
 }
 

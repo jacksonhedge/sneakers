@@ -26,6 +26,44 @@ function v5SignerFromV6(wallet: Wallet): EthersV5Signer {
   }
 }
 
+/**
+ * Address-only signer for read-only (trio + walletAddress) connections.
+ *
+ * The Polymarket CLOB SDK's canL2Auth() guard (client.js:908-915) requires
+ * this.signer !== undefined. createL2Headers() (headers/index.js:22-37)
+ * ONLY calls getSignerAddress(signer) — it never calls _signTypedData or
+ * any wallet-signing method. The HMAC signature is built solely from
+ * creds.secret (an HMAC of the SECRET), so no private key is needed.
+ *
+ * getSignerAddress() (signer.js:24-32) checks:
+ *   1. isEthersTypedDataSigner(s) = typeof s._signTypedData === 'function'
+ *   2. isWalletClientSigner(s)    = typeof s.signTypedData === 'function'
+ * We satisfy (1) by providing _signTypedData that throws a clear error
+ * if ever called accidentally (it should not be for L2-only paths).
+ *
+ * SDK citation:
+ *   signer.js:1-3   — isEthersTypedDataSigner check
+ *   signer.js:24-32 — getSignerAddress dispatch
+ *   headers/index.js:27 — only getSignerAddress called in createL2Headers
+ *   client.js:908-915   — canL2Auth only checks signer !== undefined
+ */
+function addressOnlySigner(address: string): EthersV5Signer {
+  return {
+    _signTypedData(_domain, _types, _value): Promise<string> {
+      return Promise.reject(
+        new Error(
+          `[polymarket] addressOnlySigner for ${address} cannot sign — ` +
+            'this signer is read-only (no private key). ' +
+            'Only call this path for L2-authed reads, not L1 or order signing.',
+        ),
+      )
+    },
+    getAddress(): Promise<string> {
+      return Promise.resolve(address)
+    },
+  }
+}
+
 // Thin wrapper around @polymarket/clob-client for the trade-execution
 // surface. Stateless — create a fresh client per request, do the call,
 // throw it away. The SDK does its own retries internally.
@@ -111,6 +149,55 @@ async function resolveApiCreds(creds: CredentialBundle): Promise<{
 
 async function readClient(creds: CredentialBundle): Promise<ReadClient> {
   const api = await resolveApiCreds(creds)
+
+  // If we have a private key, use a real signer (same as writeClient minus funder
+  // for balance reads — writeClient uses POLY_PROXY + funder which is correct for
+  // both reads and writes).
+  if (creds.privateKey) {
+    const signer = v5SignerFromV6(new Wallet(creds.privateKey))
+    return new ClobClient(
+      POLY_CLOB_HOST,
+      POLY_CHAIN,
+      signer,
+      api,
+      SignatureType.POLY_PROXY,
+      creds.funderAddress,
+    )
+  }
+
+  // Read-only (trio + walletAddress) path.
+  //
+  // The user has no private key but has the CLOB API trio + their EOA address.
+  // canL2Auth() requires this.signer !== undefined; createL2Headers only calls
+  // getSignerAddress(signer) — never _signTypedData — so an address-only signer
+  // satisfies the SDK without any private key material.
+  //
+  // We pass POLY_PROXY + funderAddress so getBalanceAllowance sends
+  // signature_type=1 in the query params, which tells Polymarket to return the
+  // proxy wallet's USDC balance (where the user's funds actually live), not the
+  // EOA's balance (which is typically $0 on the CLOB).
+  //
+  // Address resolution priority:
+  //   1. walletAddress — the EOA that created the API creds (most precise)
+  //   2. funderAddress — proxy address; works if proxy == EOA (some setups)
+  //   3. error           — no address means we cannot satisfy canL2Auth
+  const signerAddress = creds.walletAddress ?? creds.funderAddress
+  if (signerAddress) {
+    const signer = addressOnlySigner(signerAddress)
+    return new ClobClient(
+      POLY_CLOB_HOST,
+      POLY_CHAIN,
+      signer,
+      api,
+      SignatureType.POLY_PROXY,
+      creds.funderAddress,
+    )
+  }
+
+  // Legacy fallback: trio present but no signer address. This will fail
+  // canL2Auth() inside the SDK with "Signer is needed to interact with this
+  // endpoint!" — but we keep this path so existing callers get the SDK's
+  // own error rather than a silent wrong-balance read.
   return new ClobClient(POLY_CLOB_HOST, POLY_CHAIN, undefined, api)
 }
 
