@@ -65,8 +65,12 @@ export function WalletButton() {
     let interval: number | undefined
 
     async function load() {
+      // Hard client timeout so the navbar balance can't hang on "…" if
+      // /api/balance is ever slow — matches the money-tracker behavior.
+      const ctrl = new AbortController()
+      const timer = setTimeout(() => ctrl.abort(), 12_000)
       try {
-        const r = await fetch('/api/balance', { cache: 'no-store' })
+        const r = await fetch('/api/balance', { cache: 'no-store', signal: ctrl.signal })
         const data = (await r.json().catch(() => ({}))) as {
           ok?: boolean
           totalCents?: number
@@ -86,6 +90,8 @@ export function WalletButton() {
       } catch (err) {
         if (cancelled) return
         setAgg({ kind: 'error', message: (err as Error).message })
+      } finally {
+        clearTimeout(timer)
       }
     }
 
