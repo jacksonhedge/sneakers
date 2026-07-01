@@ -3,6 +3,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { useOnboardingFlow, type StepId } from './use-onboarding-flow'
 import { EmailPanel } from './panels/email-panel'
+import { PasswordPanel } from './panels/password-panel'
+import { NamePanel } from './panels/name-panel'
+import { VenuesPanel } from './panels/venues-panel'
+import { ConfirmPanel } from './panels/confirm-panel'
 
 // ── Step meta ──────────────────────────────────────────────────────────────────
 
@@ -295,6 +299,14 @@ export function AuthShell({ entry }: AuthShellProps) {
     switch (currentStep) {
       case 'email':
         return <EmailPanel flow={flow} entry={entry} />
+      case 'password':
+        return <PasswordPanel flow={flow} />
+      case 'name':
+        return <NamePanel flow={flow} />
+      case 'venues':
+        return <VenuesPanel flow={flow} />
+      case 'confirm':
+        return <ConfirmPanel flow={flow} />
       default:
         return <PanelPlaceholder step={currentStep} flow={flow} />
     }
