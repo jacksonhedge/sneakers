@@ -75,7 +75,7 @@ export function LandingSignupButton({
         >
           {individualEnabled && (
             <Link
-              href="/signup"
+              href={referralCode ? '/signup' : '/join'}
               className="block p-4 hover:bg-blue-500/10 transition border-b border-white/5"
               onClick={() => setMenuOpen(false)}
               role="menuitem"

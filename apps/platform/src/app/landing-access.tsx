@@ -84,7 +84,7 @@ export function LandingAccess({
   // context with the landing.
   if (mode === 'individual') {
     return (
-      <Link href="/signup" className={buttonCls}>
+      <Link href={referralCode ? '/signup' : '/join'} className={buttonCls}>
         {label ?? defaultLabel}
       </Link>
     )
