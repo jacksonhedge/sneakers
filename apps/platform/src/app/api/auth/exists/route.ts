@@ -34,11 +34,17 @@ export const dynamic = 'force-dynamic'
 // only called during the onboarding flow. For a higher-traffic surface, back
 // this with a distributed store.
 const hits = new Map<string, { n: number; at: number }>()
+const WINDOW_MS = 60_000
+const MAX_KEYS = 5_000
 
 function rateLimited(key: string): boolean {
   const now = Date.now()
+  // Prune expired entries when map exceeds threshold to prevent unbounded growth.
+  if (hits.size > MAX_KEYS) {
+    for (const [k, v] of hits) if (now - v.at > WINDOW_MS) hits.delete(k)
+  }
   const w = hits.get(key)
-  if (!w || now - w.at > 60_000) {
+  if (!w || now - w.at > WINDOW_MS) {
     hits.set(key, { n: 1, at: now })
     return false
   }
@@ -54,7 +60,7 @@ export async function GET(req: Request) {
     return Response.json({ ok: false, error: 'invalid_email' }, { status: 400 })
   }
 
-  const ip = req.headers.get('x-forwarded-for') ?? 'unknown'
+  const ip = (req.headers.get('x-forwarded-for') ?? 'unknown').split(',')[0].trim()
   if (rateLimited(`${ip}:${email}`)) {
     return Response.json({ ok: false, error: 'rate_limited' }, { status: 429 })
   }
