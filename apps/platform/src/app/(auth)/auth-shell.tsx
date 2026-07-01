@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useOnboardingFlow, type StepId, SIGNUP_ORDER, LOGIN_ORDER } from './use-onboarding-flow'
+import { useOnboardingFlow, type StepId } from './use-onboarding-flow'
 import { EmailPanel } from './panels/email-panel'
 
 // ── Step meta ──────────────────────────────────────────────────────────────────
@@ -90,7 +90,7 @@ function ProgressRail({ order, index }: ProgressRailProps) {
             <div
               aria-label={`${STEP_LABELS[stepId]}${isActive ? ' (current)' : isPast ? ' (complete)' : ''}`}
               className={[
-                'rounded-full transition-all duration-300',
+                'rounded-full motion-safe:transition-all duration-300',
                 isActive
                   ? 'w-2 h-2 bg-blue-400 shadow-[0_0_8px_2px_rgba(96,165,250,0.5)]'
                   : isPast
@@ -102,7 +102,7 @@ function ProgressRail({ order, index }: ProgressRailProps) {
             {i < order.length - 1 && (
               <div
                 className={[
-                  'w-px h-5 transition-all duration-500',
+                  'w-px h-5 motion-safe:transition-all duration-500',
                   isPast ? 'bg-blue-400/30' : 'bg-white/[0.08]',
                 ].join(' ')}
               />
@@ -126,7 +126,7 @@ function ProgressBar({ index, total }: ProgressBarProps) {
   return (
     <div className="h-0.5 w-full bg-white/[0.06] overflow-hidden rounded-full">
       <div
-        className="h-full bg-blue-400 transition-all duration-500"
+        className="h-full bg-blue-400 motion-safe:transition-all duration-500"
         style={{ width: `${pct}%` }}
       />
     </div>
@@ -144,14 +144,38 @@ function AnimatedPanel({ stepKey, children }: AnimatedPanelProps) {
   const [displayed, setDisplayed] = useState(stepKey)
   const [opacity, setOpacity] = useState(1)
   const [translateY, setTranslateY] = useState(0)
+  const [reducedMotion, setReducedMotion] = useState(false)
   const isFirstRender = useRef(true)
+
+  // Detect prefers-reduced-motion (SSR-safe: default false, read on client)
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setReducedMotion(mq.matches)
+    const onChange = (e: MediaQueryListEvent) => setReducedMotion(e.matches)
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
 
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false
       return
     }
-    // Fade out + drift up
+    if (reducedMotion) {
+      // Fade only — no translate
+      setOpacity(0)
+      const swap = setTimeout(() => {
+        setDisplayed(stepKey)
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            setOpacity(1)
+          })
+        })
+      }, 180)
+      return () => clearTimeout(swap)
+    }
+    // Full motion: fade out + drift up
     setOpacity(0)
     setTranslateY(-8)
     const swap = setTimeout(() => {
@@ -165,14 +189,16 @@ function AnimatedPanel({ stepKey, children }: AnimatedPanelProps) {
       })
     }, 180)
     return () => clearTimeout(swap)
-  }, [stepKey])
+  }, [stepKey, reducedMotion])
 
   return (
     <div
       style={{
         opacity,
-        transform: `translateY(${translateY}px)`,
-        transition: 'opacity 180ms ease, transform 180ms ease',
+        transform: reducedMotion ? undefined : `translateY(${translateY}px)`,
+        transition: reducedMotion
+          ? 'opacity 180ms ease'
+          : 'opacity 180ms ease, transform 180ms ease',
       }}
     >
       {/* key is the DISPLAYED step so React remounts panels on step change */}
@@ -259,8 +285,8 @@ export interface AuthShellProps {
 export function AuthShell({ entry }: AuthShellProps) {
   const flow = useOnboardingFlow(entry)
 
-  // Choose correct order for the progress rail
-  const order = flow.track === 'login' ? LOGIN_ORDER : SIGNUP_ORDER
+  // The hook already exposes a track-aware order — use it directly
+  const order = flow.order
 
   // The current step drives the panel content
   const currentStep = flow.step

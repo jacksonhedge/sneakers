@@ -147,7 +147,7 @@ export function EmailPanel({ flow, entry }: EmailPanelProps) {
             (localEmail && !isValidFormat) ? 'email-error' :
             fallbackNote ? 'email-fallback-note' : undefined
           }
-          aria-invalid={localEmail && !isValidFormat ? 'true' : undefined}
+          aria-invalid={localEmail.length > 0 && !isValidFormat ? true : undefined}
         />
 
         {/* Inline validation error */}
