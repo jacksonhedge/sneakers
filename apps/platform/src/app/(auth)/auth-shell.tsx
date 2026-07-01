@@ -7,6 +7,7 @@ import { PasswordPanel } from './panels/password-panel'
 import { NamePanel } from './panels/name-panel'
 import { VenuesPanel } from './panels/venues-panel'
 import { ConfirmPanel } from './panels/confirm-panel'
+import { LoginPasswordPanel } from './panels/login-password-panel'
 
 // ── Step meta ──────────────────────────────────────────────────────────────────
 
@@ -307,6 +308,8 @@ export function AuthShell({ entry }: AuthShellProps) {
         return <VenuesPanel flow={flow} />
       case 'confirm':
         return <ConfirmPanel flow={flow} />
+      case 'loginPassword':
+        return <LoginPasswordPanel flow={flow} />
       default:
         return <PanelPlaceholder step={currentStep} flow={flow} />
     }
