@@ -44,7 +44,7 @@ export function LoginPasswordPanel({ flow }: LoginPasswordPanelProps) {
   }, [])
 
   const email = flow.values.email
-  const canLogin = flow.canAdvance && submitPhase === 'idle'
+  const canLogin = localPassword.length >= 1 && submitPhase === 'idle'
   const busy = submitPhase === 'signing-in'
 
   function handleChange(v: string) {

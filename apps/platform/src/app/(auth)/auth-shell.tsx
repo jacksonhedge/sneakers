@@ -212,53 +212,6 @@ function AnimatedPanel({ stepKey, children }: AnimatedPanelProps) {
   )
 }
 
-// ── Placeholder for steps not yet built (Tasks 4 & 5) ─────────────────────────
-
-interface PanelPlaceholderProps {
-  step: StepId
-  flow: ReturnType<typeof useOnboardingFlow>
-}
-
-function PanelPlaceholder({ step, flow }: PanelPlaceholderProps) {
-  const label = STEP_LABELS[step]
-
-  return (
-    // TODO(task 4): replace this placeholder with the real password panel
-    // TODO(task 5): replace venue/name/confirm placeholders with real panels
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <div className="text-[10px] tracking-widest text-blue-400/60 uppercase font-mono">
-          Coming in Task 4 / 5
-        </div>
-        <h1 className="text-2xl font-semibold tracking-tight text-white">
-          {label}
-        </h1>
-        <p className="text-sm text-white/40">
-          This panel is a placeholder — the real implementation ships in the next task.
-        </p>
-      </div>
-
-      {/* Step data preview (dev aid) */}
-      <div className="rounded-lg bg-white/[0.03] border border-white/[0.06] p-4 text-xs font-mono text-white/40 space-y-1">
-        <div>step: <span className="text-blue-300/70">{step}</span></div>
-        <div>track: <span className="text-blue-300/70">{flow.track}</span></div>
-        <div>email: <span className="text-blue-300/70">{flow.values.email || '—'}</span></div>
-      </div>
-
-      {/* Back control so shell is navigable during development */}
-      {flow.index > 0 && (
-        <button
-          type="button"
-          onClick={flow.back}
-          className="self-start text-sm text-white/40 hover:text-white/70 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded px-1"
-        >
-          ← Back
-        </button>
-      )}
-    </div>
-  )
-}
-
 // ── Disc / coin logo ───────────────────────────────────────────────────────────
 
 function DiscLogo() {
@@ -311,7 +264,13 @@ export function AuthShell({ entry }: AuthShellProps) {
       case 'loginPassword':
         return <LoginPasswordPanel flow={flow} />
       default:
-        return <PanelPlaceholder step={currentStep} flow={flow} />
+        return (
+          <div className="flex items-center justify-center py-10">
+            <p className="text-sm text-white/40">
+              Something went wrong loading this step. Please refresh.
+            </p>
+          </div>
+        )
     }
   }
 
