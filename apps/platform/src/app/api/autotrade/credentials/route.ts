@@ -118,6 +118,17 @@ export async function POST(req: Request) {
     )
   }
 
+  // Read-only Polymarket connections may have been verified against a
+  // DIFFERENT address than the one submitted — testConnection tries both
+  // the wallet (EOA) and funder (proxy) address, since Polymarket can
+  // register a trio under either one. Normalize the saved walletAddress to
+  // whichever one actually authenticated, so later balance/trade calls
+  // (which use walletAddress directly, not the candidate list) keep working.
+  const resolvedSignerAddress = (test as { signerAddress?: string }).signerAddress
+  if (venue === 'polymarket' && scope === 'read' && resolvedSignerAddress) {
+    bundle = { ...bundle, walletAddress: resolvedSignerAddress }
+  }
+
   // Verify passed — persist + mark verified atomically (best-effort; if
   // storeUserCredentials fails after a successful verify, we surface the
   // error and the credential row is just absent, which matches the

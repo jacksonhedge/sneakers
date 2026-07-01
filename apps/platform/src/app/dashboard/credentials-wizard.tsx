@@ -114,7 +114,12 @@ export function CredentialsWizard({
             apiSecret: pmApiSecret.trim(),
             passphrase: pmPassphrase.trim(),
             privateKey: scope === 'trade' && pmPrivateKey.trim() ? pmPrivateKey.trim() : undefined,
-            funderAddress: scope === 'trade' && pmFunder.trim() ? pmFunder.trim() : undefined,
+            // Funder/proxy address is useful in BOTH scopes now: trade-scope uses
+            // it to build the writeClient's proxy identity; read-scope offers it
+            // as an optional second candidate address (Polymarket can register a
+            // trio under either the EOA or the proxy address — see polymarket.ts
+            // readClientForAddress).
+            funderAddress: pmFunder.trim() ? pmFunder.trim() : undefined,
             walletAddress: scope === 'read' && pmWalletAddress.trim() ? pmWalletAddress.trim() : undefined,
           }
         : venueId === 'kalshi'
@@ -494,21 +499,36 @@ function PolymarketFields(props: {
         />
       </Field>
       {props.scope === 'read' && (
-        <Field
-          label="WALLET ADDRESS"
-          hint='Your Signer Address — Polymarket → Relayer API keys → "Signer Address" (0x…, a public address, not a key).'
-          required
-        >
-          <input
-            type="text"
+        <>
+          <Field
+            label="WALLET ADDRESS"
+            hint='Your Signer Address — Polymarket → Relayer API keys → "Signer Address" (0x…, a public address, not a key).'
             required
-            autoComplete="off"
-            value={props.walletAddress}
-            onChange={(e) => props.onWalletAddress(e.target.value)}
-            placeholder="0x9dac50f0…"
-            className={inputCls}
-          />
-        </Field>
+          >
+            <input
+              type="text"
+              required
+              autoComplete="off"
+              value={props.walletAddress}
+              onChange={(e) => props.onWalletAddress(e.target.value)}
+              placeholder="0x9dac50f0…"
+              className={inputCls}
+            />
+          </Field>
+          <Field
+            label="FUNDER / PROXY ADDRESS"
+            hint="Optional. Polymarket can register a key trio under either your Signer Address or your proxy/deposit wallet — add this too if the connection fails to verify with only the Signer Address above."
+          >
+            <input
+              type="text"
+              autoComplete="off"
+              value={props.funder}
+              onChange={(e) => props.onFunder(e.target.value)}
+              placeholder="0x… (optional)"
+              className={inputCls}
+            />
+          </Field>
+        </>
       )}
       {props.scope === 'trade' && (
         <>

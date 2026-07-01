@@ -1,6 +1,7 @@
 import { ClobClient, Chain, Side, OrderType, AssetType } from '@polymarket/clob-client'
 import { SignatureType } from '@polymarket/clob-client/dist/order-utils'
 import { Wallet, type TypedDataDomain, type TypedDataField } from 'ethers'
+import { buildAddressCandidates } from '@sneakers/core'
 import type { CredentialBundle } from './credentials'
 
 // Adapter from ethers-v6 Wallet to the EthersSigner shape Polymarket's
@@ -172,26 +173,12 @@ async function readClient(creds: CredentialBundle): Promise<ReadClient> {
   // getSignerAddress(signer) — never _signTypedData — so an address-only signer
   // satisfies the SDK without any private key material.
   //
-  // We pass POLY_PROXY + funderAddress so getBalanceAllowance sends
-  // signature_type=1 in the query params, which tells Polymarket to return the
-  // proxy wallet's USDC balance (where the user's funds actually live), not the
-  // EOA's balance (which is typically $0 on the CLOB).
-  //
-  // Address resolution priority:
-  //   1. walletAddress — the EOA that created the API creds (most precise)
-  //   2. funderAddress — proxy address; works if proxy == EOA (some setups)
-  //   3. error           — no address means we cannot satisfy canL2Auth
+  // Address resolution priority: walletAddress (EOA) first, funderAddress
+  // (proxy) as fallback — see readClientForAddress for why either can be the
+  // one the API key was actually registered under.
   const signerAddress = creds.walletAddress ?? creds.funderAddress
   if (signerAddress) {
-    const signer = addressOnlySigner(signerAddress)
-    return new ClobClient(
-      POLY_CLOB_HOST,
-      POLY_CHAIN,
-      signer,
-      api,
-      SignatureType.POLY_PROXY,
-      creds.funderAddress,
-    )
+    return readClientForAddress(creds, api, signerAddress)
   }
 
   // Legacy fallback: trio present but no signer address. This will fail
@@ -199,6 +186,32 @@ async function readClient(creds: CredentialBundle): Promise<ReadClient> {
   // endpoint!" — but we keep this path so existing callers get the SDK's
   // own error rather than a silent wrong-balance read.
   return new ClobClient(POLY_CLOB_HOST, POLY_CHAIN, undefined, api)
+}
+
+/**
+ * Build a read-only client for an EXPLICIT signer address, bypassing the
+ * walletAddress-vs-funderAddress priority in readClient(). Polymarket's own
+ * client ecosystem has a documented bug class where a given API key trio
+ * can be registered under either the EOA or the proxy/funder address,
+ * inconsistently (Polymarket/py-clob-client#339) — there's no way to know
+ * in advance which one a specific trio needs, so testConnection() tries
+ * each candidate from buildAddressCandidates() in turn.
+ *
+ * We still pass POLY_PROXY + funderAddress regardless of which address is
+ * used for L2 auth headers, so getBalanceAllowance sends signature_type=1
+ * and returns the proxy wallet's USDC balance (where the funds actually
+ * live), not the EOA's balance (typically $0 on the CLOB).
+ */
+function readClientForAddress(creds: CredentialBundle, api: ApiTrio, address: string): ReadClient {
+  const signer = addressOnlySigner(address)
+  return new ClobClient(
+    POLY_CLOB_HOST,
+    POLY_CHAIN,
+    signer,
+    api,
+    SignatureType.POLY_PROXY,
+    creds.funderAddress,
+  )
 }
 
 async function writeClient(creds: CredentialBundle): Promise<WriteClient> {
@@ -221,20 +234,12 @@ async function writeClient(creds: CredentialBundle): Promise<WriteClient> {
   )
 }
 
-/**
- * Read-only check: hits the API with the credentials. Used by the
- * "Test connection" button. Returns true if the API key trio works
- * AND (if a private key is present) the EOA address derived from it
- * matches the funder address logically.
- */
-export async function testConnection(creds: CredentialBundle): Promise<{
-  ok: boolean
-  reason?: string
-  signerAddress?: string
-}> {
+/** Result of a single getBalanceAllowance smoke-test against one client. */
+type BalanceCheckResult = { ok: true } | { ok: false; reason: string }
+
+async function attemptBalanceCheck(client: ReadClient): Promise<BalanceCheckResult> {
   let balanceResult: unknown
   try {
-    const client = await readClient(creds)
     // Smoke-test with an L2-authed balance read. getApiKeys() requires an L1
     // *signer*, which read-only (API-creds-only) connections don't have — so
     // it falsely rejected every valid read-only trio with "Signer is needed".
@@ -247,18 +252,11 @@ export async function testConnection(creds: CredentialBundle): Promise<{
     // "invalid API key" response silently passes as "ok".
     balanceResult = await client.getBalanceAllowance({ asset_type: AssetType.COLLATERAL })
   } catch (err) {
-    return {
-      ok: false,
-      reason: err instanceof Error ? err.message : 'unknown error',
-    }
+    return { ok: false, reason: err instanceof Error ? err.message : 'unknown error' }
   }
 
   // Check for the SDK's silent-error response shape: { error: ..., status: ... }
-  if (
-    balanceResult !== null &&
-    typeof balanceResult === 'object' &&
-    'error' in balanceResult
-  ) {
+  if (balanceResult !== null && typeof balanceResult === 'object' && 'error' in balanceResult) {
     const errObj = balanceResult as { error: unknown; status?: unknown }
     const errMsg =
       typeof errObj.error === 'string'
@@ -278,13 +276,27 @@ export async function testConnection(creds: CredentialBundle): Promise<{
     } else {
       hint = `Polymarket returned status ${status ?? 'unknown'}.`
     }
-    return {
-      ok: false,
-      reason: `Polymarket rejected the credentials (${errMsg}). ${hint}`,
-    }
+    return { ok: false, reason: `Polymarket rejected the credentials (${errMsg}). ${hint}` }
   }
 
+  return { ok: true }
+}
+
+/**
+ * Read-only check: hits the API with the credentials. Used by the
+ * "Test connection" button. Returns true if the API key trio works
+ * AND (if a private key is present) the EOA address derived from it
+ * matches the funder address logically.
+ */
+export async function testConnection(creds: CredentialBundle): Promise<{
+  ok: boolean
+  reason?: string
+  signerAddress?: string
+}> {
   if (creds.privateKey) {
+    const client = await readClient(creds)
+    const result = await attemptBalanceCheck(client)
+    if (!result.ok) return result
     try {
       const signer = new Wallet(creds.privateKey)
       return { ok: true, signerAddress: signer.address }
@@ -292,7 +304,30 @@ export async function testConnection(creds: CredentialBundle): Promise<{
       return { ok: false, reason: 'invalid private key format' }
     }
   }
-  return { ok: true }
+
+  // Read-only (trio + address) path — try every candidate address in turn.
+  // See readClientForAddress for why a trio can be registered under either
+  // the EOA or the proxy/funder address. Returns on the first success, or
+  // the LAST failure's reason if every candidate was rejected (most likely
+  // to reflect the real problem, since later attempts are less likely to
+  // fail for a reason unrelated to the address itself).
+  const api = await resolveApiCreds(creds)
+  const candidates = buildAddressCandidates({
+    walletAddress: creds.walletAddress,
+    funderAddress: creds.funderAddress,
+  })
+  if (candidates.length === 0) {
+    return { ok: false, reason: 'no wallet or funder address provided' }
+  }
+
+  let lastFailure: BalanceCheckResult = { ok: false, reason: 'no address candidates tried' }
+  for (const candidate of candidates) {
+    const client = readClientForAddress(creds, api, candidate)
+    const result = await attemptBalanceCheck(client)
+    if (result.ok) return { ok: true, signerAddress: candidate }
+    lastFailure = result
+  }
+  return lastFailure
 }
 
 /**

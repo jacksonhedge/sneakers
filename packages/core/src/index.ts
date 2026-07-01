@@ -1,3 +1,4 @@
 export * from './agent'
 export * from './autotrade/cooldown'
 export * from './autotrade/breaker'
+export * from './polymarket/address-candidates'
