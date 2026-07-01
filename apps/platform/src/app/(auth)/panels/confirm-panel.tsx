@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
 import { VENUES } from '@/lib/venues'
 import type { OnboardingFlow } from '../use-onboarding-flow'
+import { resolveAuthRedirect } from '@/lib/auth-redirect'
 
 interface ConfirmPanelProps {
   flow: OnboardingFlow
@@ -72,7 +73,8 @@ export function ConfirmPanel({ flow }: ConfirmPanelProps) {
 
       if (res.ok && json.ok) {
         if (json.hasAccess && !json.needsEmailConfirmation) {
-          router.push('/dashboard')
+          const host = typeof window !== 'undefined' ? window.location.host : ''
+          router.push(resolveAuthRedirect(searchParams, host))
           router.refresh()
           return
         }

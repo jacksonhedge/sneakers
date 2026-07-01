@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import type { OnboardingFlow } from '../use-onboarding-flow'
 import { MagicLinkButton } from '@/app/login/magic-link-button'
+import { resolveAuthRedirect } from '@/lib/auth-redirect'
 
 // "Remember me" mirrors email-form.tsx exactly:
 // persists the email (never the password) in localStorage.
@@ -13,11 +14,12 @@ interface LoginPasswordPanelProps {
   flow: OnboardingFlow
 }
 
-type SubmitPhase = 'idle' | 'signing-in' | 'redirecting' | 'error'
+type SubmitPhase = 'idle' | 'signing-in' | 'redirecting'
 
 export function LoginPasswordPanel({ flow }: LoginPasswordPanelProps) {
   const router = useRouter()
-  const [localPassword, setLocalPassword] = useState(flow.values.password)
+  const searchParams = useSearchParams()
+  const [localPassword, setLocalPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [remember, setRemember] = useState(true)
   const [submitPhase, setSubmitPhase] = useState<SubmitPhase>('idle')
@@ -83,13 +85,13 @@ export function LoginPasswordPanel({ flow }: LoginPasswordPanelProps) {
         // localStorage disabled in private mode — harmless
       }
       setSubmitPhase('redirecting')
-      router.push('/dashboard')
+      const host = typeof window !== 'undefined' ? window.location.host : ''
+      router.push(resolveAuthRedirect(searchParams, host))
       router.refresh()
       return
     }
 
     // Wrong password or other error — stay on panel, never stuck in submitting
-    setSubmitPhase('error')
     setError(
       "Email or password didn't match. Try again, or use a magic link below.",
     )
@@ -118,7 +120,7 @@ export function LoginPasswordPanel({ flow }: LoginPasswordPanelProps) {
 
       {/* Read-only email row */}
       <div className="flex items-center justify-between gap-3 px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.06]">
-        <span className="text-sm text-white/60 truncate min-w-0" aria-label="Signed in as">
+        <span className="text-sm text-white/60 truncate min-w-0" aria-label="Logging in as">
           {email}
         </span>
         <button
@@ -247,11 +249,15 @@ export function LoginPasswordPanel({ flow }: LoginPasswordPanelProps) {
         <div className="flex-1 h-px bg-white/[0.06]" />
       </div>
 
-      {/* Magic link fallback — reuse existing MagicLinkButton */}
-      <MagicLinkButton
-        email={email}
-        label="Email me a magic link instead"
-      />
+      {/* Magic link fallback — dark-scoped wrapper so MagicLinkButton's
+          light-mode styles (blue-50/red-50 bg, blue-700/red-700 text) read
+          correctly on the #0b0d13 shell. We do NOT edit the shared component. */}
+      <div className="[&_button]:bg-white/[0.08] [&_button]:text-white/70 [&_button]:ring-white/10 [&_button]:hover:bg-white/[0.14] [&_button]:hover:text-white [&_button]:rounded-lg [&_div:not(:first-child)]:bg-transparent [&_div:not(:first-child)]:border-white/[0.12] [&_div:not(:first-child)]:text-white/60">
+        <MagicLinkButton
+          email={email}
+          label="Email me a magic link instead"
+        />
+      </div>
     </div>
   )
 }
