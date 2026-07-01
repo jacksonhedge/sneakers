@@ -21,6 +21,9 @@ interface Settings {
   perTradeCapUsd: number
   dailyCapUsd: number
   killSwitchActive: boolean
+  cooldownSeconds: number
+  breakerTrippedAt: string | null
+  breakerReason: string | null
 }
 
 interface TradingSwitchProps {
@@ -47,6 +50,9 @@ export function TradingSwitch({ polymarketReadyToTrade }: TradingSwitchProps) {
           perTradeCapUsd: d.perTradeCapUsd,
           dailyCapUsd: d.dailyCapUsd,
           killSwitchActive: d.killSwitchActive,
+          cooldownSeconds: d.cooldownSeconds,
+          breakerTrippedAt: d.breakerTrippedAt,
+          breakerReason: d.breakerReason,
         })
       }
     } finally {
@@ -101,9 +107,20 @@ export function TradingSwitch({ polymarketReadyToTrade }: TradingSwitchProps) {
     setPhase('idle')
   }
 
+  async function dismissBreaker() {
+    await fetch('/api/otoole/autotrade-settings', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ resetBreaker: true }),
+    })
+    await refresh()
+  }
+
   const isBusy = phase === 'busy'
   const perTradeCap = settings?.perTradeCapUsd ?? 50
   const dailyCap = settings?.dailyCapUsd ?? 200
+  const cooldownSeconds = settings?.cooldownSeconds ?? 60
+  const breakerTripped = Boolean(settings?.breakerTrippedAt)
 
   return (
     <div className="rounded-2xl border-2 border-stone-200 bg-white shadow-sm overflow-hidden">
@@ -178,6 +195,26 @@ export function TradingSwitch({ polymarketReadyToTrade }: TradingSwitchProps) {
         </div>
       )}
 
+      {/* Reliability breaker note — trips after consecutive failed executions,
+          not losing trades (trade_executions has no win/loss tracking). It
+          self-clears on the next successful execution; this button only
+          dismisses the banner, it does not force anything back on. */}
+      {!loading && breakerTripped && (
+        <div className="px-6 py-2.5 border-t border-red-100 bg-red-50 text-[11px] text-red-800 flex items-center gap-1.5 justify-between">
+          <span className="flex items-center gap-1.5">
+            <span aria-hidden>⛔</span>
+            <span>Paused: {settings?.breakerReason ?? 'repeated failed executions'}.</span>
+          </span>
+          <button
+            type="button"
+            onClick={dismissBreaker}
+            className="underline underline-offset-2 font-semibold hover:text-red-900 transition flex-shrink-0"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
       {/* Not-connected note */}
       {!loading && tradingOn && !polymarketReadyToTrade && (
         <div className="px-6 py-2.5 border-t border-amber-100 bg-amber-50 text-[11px] text-amber-800 flex items-center gap-1.5">
@@ -199,8 +236,9 @@ export function TradingSwitch({ polymarketReadyToTrade }: TradingSwitchProps) {
         <div className="px-6 py-5 border-t border-stone-200 bg-stone-50">
           <p className="text-sm font-semibold text-stone-900 mb-1">Turn on live trading?</p>
           <p className="text-[12px] text-stone-600 leading-relaxed mb-4">
-            Your caps (${perTradeCap}/trade, ${dailyCap}/day) and per-trade confirmation still
-            apply — nothing auto-executes. O&apos;Toole proposes and you confirm each order.
+            Your caps (${perTradeCap}/trade, ${dailyCap}/day), a {cooldownSeconds}s cooldown
+            between orders, and per-trade confirmation still apply — nothing auto-executes.
+            O&apos;Toole proposes and you confirm each order.
           </p>
           <div className="flex items-center gap-3">
             <button

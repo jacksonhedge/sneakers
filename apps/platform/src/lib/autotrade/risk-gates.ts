@@ -2,8 +2,9 @@ import { getServerClient } from '@/lib/supabase-server'
 import { loadAllLatestSnapshots } from '@/lib/markets-data'
 import { loadUserCredentials } from './credentials'
 import { fetchBalance } from './polymarket'
+import { checkCooldown, checkConsecutiveFailures, type ExecutionStatus } from '@sneakers/core'
 
-// 5-gate risk check for a co-pilot trade draft. Modeled on the
+// 7-gate risk check for a co-pilot trade draft. Modeled on the
 // OctagonAI/kalshi-deep-trading-bot pattern surveyed 2026-04-29: every
 // gate either passes with optional context or fails with a human-readable
 // reason. The execute endpoint shows the verdict array to the user as
@@ -31,6 +32,8 @@ export interface DraftForGates {
 
 const DEFAULT_PER_TRADE_CAP = 50
 const DEFAULT_DAILY_CAP = 200
+const DEFAULT_COOLDOWN_SECONDS = 60
+const DEFAULT_MAX_CONSECUTIVE_FAILURES = 3
 
 export async function runRiskGates(draft: DraftForGates): Promise<GateResult> {
   const verdicts: GateVerdict[] = []
@@ -42,12 +45,18 @@ export async function runRiskGates(draft: DraftForGates): Promise<GateResult> {
   // configuration.
   const { data: settings } = await admin
     .from('autotrade_settings')
-    .select('per_trade_cap_usd, daily_cap_usd, kill_switch_active, kill_switch_reason')
+    .select(
+      'per_trade_cap_usd, daily_cap_usd, kill_switch_active, kill_switch_reason, cooldown_seconds, max_consecutive_failures',
+    )
     .eq('user_id', draft.auth_user_id)
     .maybeSingle()
 
   const perTradeCap = Number(settings?.per_trade_cap_usd ?? DEFAULT_PER_TRADE_CAP)
   const dailyCap = Number(settings?.daily_cap_usd ?? DEFAULT_DAILY_CAP)
+  const cooldownSeconds = Number(settings?.cooldown_seconds ?? DEFAULT_COOLDOWN_SECONDS)
+  const maxConsecutiveFailures = Number(
+    settings?.max_consecutive_failures ?? DEFAULT_MAX_CONSECUTIVE_FAILURES,
+  )
 
   if (settings?.kill_switch_active) {
     verdicts.push({
@@ -61,7 +70,71 @@ export async function runRiskGates(draft: DraftForGates): Promise<GateResult> {
   }
   verdicts.push({ gate: 'kill_switch', pass: true })
 
-  // ── Gate 2: per-trade cap ──────────────────────────────────────────
+  // ── Gate 2: cooldown since last placed order + Gate 3: reliability breaker ──
+  // Both read the same recent-executions window, so fetch it once. Only
+  // 'error'/'rejected' count as breaker failures — trade_executions has no
+  // win/loss tracking (positions can sit open for days), so this protects
+  // against a broken credential or repeated system failure, not a losing
+  // streak.
+  const { data: recentExecs, error: recentErr } = await admin
+    .from('trade_executions')
+    .select('status, attempted_at')
+    .eq('user_id', draft.auth_user_id)
+    .order('attempted_at', { ascending: false })
+    .limit(Math.max(maxConsecutiveFailures, 10))
+  if (recentErr) {
+    verdicts.push({
+      gate: 'cooldown',
+      pass: false,
+      reason: `Could not read recent executions: ${recentErr.message}`,
+    })
+    return { allPassed: false, verdicts }
+  }
+
+  const lastPlaced = (recentExecs ?? []).find(
+    (e) => e.status === 'pending' || e.status === 'filled',
+  )
+  const cooldown = checkCooldown({
+    lastTradeAtMs: lastPlaced ? new Date(lastPlaced.attempted_at).getTime() : null,
+    cooldownSeconds,
+    nowMs: Date.now(),
+  })
+  if (!cooldown.ok) {
+    verdicts.push({
+      gate: 'cooldown',
+      pass: false,
+      reason: `Cooldown active — try again in ${Math.ceil(cooldown.retryAfterMs / 1000)}s.`,
+    })
+    return { allPassed: false, verdicts }
+  }
+  verdicts.push({ gate: 'cooldown', pass: true })
+
+  const breaker = checkConsecutiveFailures({
+    recentStatuses: (recentExecs ?? []).map((e) => e.status as ExecutionStatus),
+    maxConsecutiveFailures,
+  })
+  if (breaker.tripped) {
+    // Best-effort write for dashboard visibility — the gate decision above
+    // is always live-recomputed from recent executions, so this isn't a
+    // sticky flag that needs a manual reset; it self-clears once a real
+    // success lands.
+    await admin
+      .from('autotrade_settings')
+      .update({
+        breaker_tripped_at: new Date().toISOString(),
+        breaker_reason: `${breaker.consecutiveFailures} consecutive failed executions`,
+      })
+      .eq('user_id', draft.auth_user_id)
+    verdicts.push({
+      gate: 'circuit_breaker',
+      pass: false,
+      reason: `Paused after ${breaker.consecutiveFailures} consecutive failed executions. Check your connection on /dashboard/settings/autotrade.`,
+    })
+    return { allPassed: false, verdicts }
+  }
+  verdicts.push({ gate: 'circuit_breaker', pass: true })
+
+  // ── Gate 4: per-trade cap ──────────────────────────────────────────
   if (draft.size_usd > perTradeCap) {
     verdicts.push({
       gate: 'per_trade_cap',
@@ -76,7 +149,7 @@ export async function runRiskGates(draft: DraftForGates): Promise<GateResult> {
     detail: `$${draft.size_usd.toFixed(2)} / $${perTradeCap.toFixed(2)}`,
   })
 
-  // ── Gate 3: daily cap (UTC day) ────────────────────────────────────
+  // ── Gate 5: daily cap (UTC day) ────────────────────────────────────
   const todayStart = new Date()
   todayStart.setUTCHours(0, 0, 0, 0)
   const { data: todaysExecs, error: execErr } = await admin
@@ -109,7 +182,7 @@ export async function runRiskGates(draft: DraftForGates): Promise<GateResult> {
     detail: `$${(usedToday + draft.size_usd).toFixed(2)} / $${dailyCap.toFixed(2)} after this trade`,
   })
 
-  // ── Gate 4: market still tradeable ────────────────────────────────
+  // ── Gate 6: market still tradeable ────────────────────────────────
   // Resolve the snapshot, confirm phase != closed, confirm best_ask is
   // within the user's max_price ceiling. Catches: stale drafts the AI
   // proposed 14 minutes ago that are now resolved, or markets that
@@ -171,7 +244,7 @@ export async function runRiskGates(draft: DraftForGates): Promise<GateResult> {
     detail: `phase=${snap.phase} ask=${askNow.toFixed(3)} limit=${draft.max_price.toFixed(3)}`,
   })
 
-  // ── Gate 5: live credentials + balance check (Polymarket only) ────
+  // ── Gate 7: live credentials + balance check (Polymarket only) ────
   if (draft.platform !== 'polymarket') {
     verdicts.push({
       gate: 'venue_credentials',

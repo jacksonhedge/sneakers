@@ -23,6 +23,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.90.0",
     "@polymarket/clob-client": "^5.8.1",
+    "@sneakers/core": "workspace:*",
     "@supabase/supabase-js": "^2.104.0",
     "ethers": "^6.16.0",
     "motion": "^12.38.0",

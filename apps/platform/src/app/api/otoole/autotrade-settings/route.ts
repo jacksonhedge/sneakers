@@ -18,6 +18,10 @@ const PER_TRADE_MAX = 5_000
 const DAILY_MAX = 25_000
 const PER_TRADE_DEFAULT = 50
 const DAILY_DEFAULT = 200
+const COOLDOWN_SECONDS_MAX = 86_400
+const COOLDOWN_SECONDS_DEFAULT = 60
+const MAX_CONSECUTIVE_FAILURES_MAX = 20
+const MAX_CONSECUTIVE_FAILURES_DEFAULT = 3
 
 export async function GET() {
   const supabase = await getAuthClient()
@@ -28,7 +32,9 @@ export async function GET() {
   const admin = getServerClient()
   const { data } = await admin
     .from('autotrade_settings')
-    .select('per_trade_cap_usd, daily_cap_usd, kill_switch_active, kill_switch_reason')
+    .select(
+      'per_trade_cap_usd, daily_cap_usd, kill_switch_active, kill_switch_reason, cooldown_seconds, max_consecutive_failures, breaker_tripped_at, breaker_reason',
+    )
     .eq('user_id', user.id)
     .maybeSingle()
   return NextResponse.json({
@@ -37,6 +43,12 @@ export async function GET() {
     dailyCapUsd: Number(data?.daily_cap_usd ?? DAILY_DEFAULT),
     killSwitchActive: Boolean(data?.kill_switch_active),
     killSwitchReason: (data?.kill_switch_reason as string | null) ?? null,
+    cooldownSeconds: Number(data?.cooldown_seconds ?? COOLDOWN_SECONDS_DEFAULT),
+    maxConsecutiveFailures: Number(
+      data?.max_consecutive_failures ?? MAX_CONSECUTIVE_FAILURES_DEFAULT,
+    ),
+    breakerTrippedAt: (data?.breaker_tripped_at as string | null) ?? null,
+    breakerReason: (data?.breaker_reason as string | null) ?? null,
   })
 }
 
@@ -49,8 +61,11 @@ export async function POST(req: Request) {
   const body = (await req.json().catch(() => ({}))) as {
     perTradeCapUsd?: unknown
     dailyCapUsd?: unknown
+    cooldownSeconds?: unknown
+    maxConsecutiveFailures?: unknown
+    resetBreaker?: unknown
   }
-  const updates: Record<string, number> = {}
+  const updates: Record<string, number | string | null> = {}
   if (typeof body.perTradeCapUsd === 'number') {
     if (body.perTradeCapUsd <= 0 || body.perTradeCapUsd > PER_TRADE_MAX) {
       return NextResponse.json(
@@ -68,6 +83,39 @@ export async function POST(req: Request) {
       )
     }
     updates.daily_cap_usd = body.dailyCapUsd
+  }
+  if (typeof body.cooldownSeconds === 'number') {
+    if (body.cooldownSeconds < 0 || body.cooldownSeconds > COOLDOWN_SECONDS_MAX) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: 'invalid',
+          message: `cooldown must be in [0, ${COOLDOWN_SECONDS_MAX}] seconds`,
+        },
+        { status: 400 },
+      )
+    }
+    updates.cooldown_seconds = body.cooldownSeconds
+  }
+  if (typeof body.maxConsecutiveFailures === 'number') {
+    if (
+      body.maxConsecutiveFailures < 1 ||
+      body.maxConsecutiveFailures > MAX_CONSECUTIVE_FAILURES_MAX
+    ) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: 'invalid',
+          message: `max consecutive failures must be in [1, ${MAX_CONSECUTIVE_FAILURES_MAX}]`,
+        },
+        { status: 400 },
+      )
+    }
+    updates.max_consecutive_failures = body.maxConsecutiveFailures
+  }
+  if (body.resetBreaker === true) {
+    updates.breaker_tripped_at = null
+    updates.breaker_reason = null
   }
   if (Object.keys(updates).length === 0) {
     return NextResponse.json(

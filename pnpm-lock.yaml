@@ -51,6 +51,9 @@ importers:
       '@polymarket/clob-client':
         specifier: ^5.8.1
         version: 5.8.1(typescript@5.9.3)
+      '@sneakers/core':
+        specifier: workspace:*
+        version: link:../../packages/core
       '@supabase/supabase-js':
         specifier: ^2.104.0
         version: 2.104.1
