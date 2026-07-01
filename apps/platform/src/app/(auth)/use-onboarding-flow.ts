@@ -26,8 +26,10 @@ interface FlowState {
 const initialValues: Values = { email: '', password: '', name: '', venues: [] }
 
 function initialState(entry: 'login' | 'signup'): FlowState {
-  const track: Track = entry === 'login' ? 'login' : 'unknown'
-  const order = track === 'login' ? LOGIN_ORDER : SIGNUP_ORDER
+  // Track ALWAYS starts as 'unknown', regardless of entry.
+  // Entry is only a hint for copy; the email existence-check (Task 3) decides the branch via setTrack.
+  const track: Track = 'unknown'
+  const order = orderFor(track) // always SIGNUP_ORDER for unknown
   const firstStep = order[0]
   return {
     track,
@@ -54,7 +56,9 @@ export function canAdvanceStep(step: StepId, values: Values): boolean {
       const at = values.email.indexOf('@')
       if (at < 1) return false // must have non-empty local part before @
       const domain = values.email.slice(at + 1)
-      return domain.indexOf('.') >= 0 && domain.length > 1
+      // Domain must have a dot with at least one character after it (a TLD)
+      const dot = domain.lastIndexOf('.')
+      return dot > 0 && dot < domain.length - 1
     }
     case 'password':
       return values.password.length >= PASSWORD_MIN
