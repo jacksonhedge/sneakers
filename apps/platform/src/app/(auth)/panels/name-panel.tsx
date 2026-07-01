@@ -16,8 +16,8 @@ export function NamePanel({ flow }: NamePanelProps) {
     inputRef.current?.focus()
   }, [])
 
-  const isValid = localName.trim().length >= NAME_MIN
-  const showError = localName.length > 0 && !isValid
+  const isValid = flow.canAdvance
+  const showError = localName.length > 0 && !flow.canAdvance
 
   function handleChange(v: string) {
     setLocalName(v)

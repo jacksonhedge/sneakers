@@ -19,7 +19,7 @@ export function PasswordPanel({ flow }: PasswordPanelProps) {
 
   const isStrong = localPassword.length >= PASSWORD_MIN
   const showStrengthHint = localPassword.length > 0 && !isStrong
-  const canContinue = isStrong
+  const canContinue = flow.canAdvance
 
   function handleChange(v: string) {
     setLocalPassword(v)
@@ -79,7 +79,6 @@ export function PasswordPanel({ flow }: PasswordPanelProps) {
                 : 'border-white/[0.08] focus-visible:border-blue-500/60',
             ].join(' ')}
             aria-describedby={showStrengthHint ? 'password-hint' : undefined}
-            aria-invalid={showStrengthHint ? true : undefined}
           />
           {/* Show / hide toggle — never changes input type to text when hidden;
               only toggles the visible echo. spellCheck=false on input prevents
