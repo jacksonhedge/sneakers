@@ -66,7 +66,7 @@ function decrypt(blob: string): string {
 }
 
 /** Venues that can store credentials. Widen as new adapters land. */
-export type CredentialedVenue = 'polymarket' | 'kalshi' | 'opinion'
+export type CredentialedVenue = 'polymarket' | 'kalshi' | 'opinion' | 'limitless'
 
 export interface CredentialBundle {
   /** Polymarket: CLOB API key. Kalshi: access key ID (UUID). */

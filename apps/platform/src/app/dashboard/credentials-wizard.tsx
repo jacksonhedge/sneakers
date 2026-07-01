@@ -27,6 +27,7 @@ const LOGO_PATH: Record<string, string> = {
   polymarket: '/SneakersLogos/partners/polymarket.png',
   kalshi: '/SneakersLogos/partners/kalshi.png',
   opinion: '/SneakersLogos/partners/opinion.svg',
+  limitless: '/SneakersLogos/partners/limitless.svg',
 }
 
 export function CredentialsWizard({
@@ -34,7 +35,7 @@ export function CredentialsWizard({
   onClose,
   onConnected,
 }: {
-  venueId: 'polymarket' | 'kalshi' | 'opinion'
+  venueId: 'polymarket' | 'kalshi' | 'opinion' | 'limitless'
   onClose: () => void
   onConnected?: () => void
 }) {
@@ -59,6 +60,10 @@ export function CredentialsWizard({
 
   // Opinion fields
   const [oApiKey, setOApiKey] = useState('')
+
+  // Limitless fields
+  const [lTokenId, setLTokenId] = useState('')
+  const [lSecret, setLSecret] = useState('')
 
   // Load existing meta so user sees current state on open.
   useEffect(() => {
@@ -119,11 +124,18 @@ export function CredentialsWizard({
               apiKey: kAccessKey,
               privateKey: kPrivateKey,
             }
-          : {
-              venue: 'opinion',
-              scope,
-              apiKey: oApiKey,
-            }
+          : venueId === 'limitless'
+            ? {
+                venue: 'limitless',
+                scope,
+                apiKey: lTokenId.trim(),
+                apiSecret: lSecret.trim(),
+              }
+            : {
+                venue: 'opinion',
+                scope,
+                apiKey: oApiKey,
+              }
 
     const res = await fetch('/api/autotrade/credentials', {
       method: 'POST',
@@ -216,6 +228,13 @@ export function CredentialsWizard({
               privateKey={kPrivateKey}
               onAccessKey={setKAccessKey}
               onPrivateKey={setKPrivateKey}
+            />
+          ) : venueId === 'limitless' ? (
+            <LimitlessFields
+              tokenId={lTokenId}
+              secret={lSecret}
+              onTokenId={setLTokenId}
+              onSecret={setLSecret}
             />
           ) : (
             <OpinionFields apiKey={oApiKey} onApiKey={setOApiKey} />
@@ -544,6 +563,54 @@ function OpinionFields(props: { apiKey: string; onApiKey: (v: string) => void })
       <div className="rounded-lg bg-stone-50 ring-1 ring-stone-200 px-3 py-2 text-[11px] text-stone-600 leading-relaxed">
         Default rate limit is 15 requests/sec. We only call the balance
         endpoint once per dashboard load.
+      </div>
+    </>
+  )
+}
+
+function LimitlessFields(props: {
+  tokenId: string
+  secret: string
+  onTokenId: (v: string) => void
+  onSecret: (v: string) => void
+}) {
+  return (
+    <>
+      <div className="text-[11px] text-stone-600 leading-relaxed">
+        Connect your Limitless account via an API token.{' '}
+        <strong>limitless.exchange → Profile → API Tokens → &ldquo;Derive API Token&rdquo;</strong>.
+        Copy the Token ID and Secret — <strong>the secret is shown only once</strong>.
+      </div>
+      <Field label="TOKEN ID" hint="UUID from the token creation screen" required>
+        <input
+          type="text"
+          required
+          autoComplete="off"
+          spellCheck={false}
+          data-1p-ignore
+          data-lpignore="true"
+          value={props.tokenId}
+          onChange={(e) => props.onTokenId(e.target.value)}
+          placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+          className={inputCls}
+        />
+      </Field>
+      <Field label="TOKEN SECRET" hint="shown once at creation — save it immediately" required>
+        <input
+          type="password"
+          required
+          autoComplete="off"
+          spellCheck={false}
+          data-1p-ignore
+          data-lpignore="true"
+          value={props.secret}
+          onChange={(e) => props.onSecret(e.target.value)}
+          className={inputCls}
+        />
+      </Field>
+      <div className="rounded-lg bg-stone-50 ring-1 ring-stone-200 px-3 py-2 text-[11px] text-stone-600 leading-relaxed">
+        Limitless uses HMAC-SHA256 signed tokens. The secret is not your wallet private key.
+        Balance shown is your USDC trading allowance on Base.
       </div>
     </>
   )

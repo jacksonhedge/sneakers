@@ -1,6 +1,7 @@
 import { polymarketBalanceAdapter } from './venues/polymarket'
 import { kalshiBalanceAdapter } from './venues/kalshi'
 import { opinionBalanceAdapter } from './venues/opinion'
+import { limitlessBalanceAdapter } from './venues/limitless'
 
 // Per-venue cash-balance fetcher. v1 is collateral / cash only — no
 // open-position MTM. When a venue ships an authenticated balance call,
@@ -19,6 +20,7 @@ export const balanceAdapters: Record<string, BalanceAdapter> = {
   [polymarketBalanceAdapter.venue]: polymarketBalanceAdapter,
   [kalshiBalanceAdapter.venue]: kalshiBalanceAdapter,
   [opinionBalanceAdapter.venue]: opinionBalanceAdapter,
+  [limitlessBalanceAdapter.venue]: limitlessBalanceAdapter,
 }
 
 export function getBalanceAdapter(venue: string): BalanceAdapter | undefined {

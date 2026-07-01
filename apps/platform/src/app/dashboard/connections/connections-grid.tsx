@@ -17,9 +17,9 @@ import {
 } from '@/lib/connections'
 import { CredentialsWizard } from '../credentials-wizard'
 
-const CREDENTIALED_VENUES = new Set(['polymarket', 'kalshi', 'opinion'])
+const CREDENTIALED_VENUES = new Set(['polymarket', 'kalshi', 'opinion', 'limitless'])
 
-type WizardVenue = 'polymarket' | 'kalshi' | 'opinion'
+type WizardVenue = 'polymarket' | 'kalshi' | 'opinion' | 'limitless'
 
 const CATEGORY_ORDER: VenueCategory[] = [
   'prediction_market',

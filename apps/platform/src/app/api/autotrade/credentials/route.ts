@@ -12,6 +12,7 @@ import {
 import { testConnection as testPolymarket } from '@/lib/autotrade/polymarket'
 import { testConnection as testKalshi } from '@/lib/autotrade/kalshi'
 import { testConnection as testOpinion } from '@/lib/autotrade/opinion'
+import { testConnection as testLimitless } from '@/lib/autotrade/limitless'
 
 // POST   /api/autotrade/credentials  → save (and verify) a venue cred bundle
 // GET    /api/autotrade/credentials?venue=  → return metadata only
@@ -28,6 +29,7 @@ const SUPPORTED_VENUES: readonly CredentialedVenue[] = [
   'polymarket',
   'kalshi',
   'opinion',
+  'limitless',
 ] as const
 
 function parseVenue(v: unknown): CredentialedVenue | null {
@@ -80,6 +82,10 @@ export async function POST(req: Request) {
     const parsed = parseKalshi(body)
     if ('error' in parsed) return Response.json(parsed.error, { status: 400 })
     bundle = parsed.bundle
+  } else if (venue === 'limitless') {
+    const parsed = parseLimitless(body)
+    if ('error' in parsed) return Response.json(parsed.error, { status: 400 })
+    bundle = parsed.bundle
   } else {
     const parsed = parseOpinion(body)
     if ('error' in parsed) return Response.json(parsed.error, { status: 400 })
@@ -95,7 +101,9 @@ export async function POST(req: Request) {
       ? await testPolymarket(bundle)
       : venue === 'kalshi'
         ? await testKalshi(bundle)
-        : await testOpinion(bundle)
+        : venue === 'limitless'
+          ? await testLimitless(bundle)
+          : await testOpinion(bundle)
 
   if (!test.ok) {
     return Response.json(
@@ -266,6 +274,32 @@ function parseOpinion(body: Record<string, unknown>): ParseResult {
     }
   }
   return { bundle: { apiKey } }
+}
+
+function parseLimitless(body: Record<string, unknown>): ParseResult {
+  // Limitless: tokenId (stored as apiKey) + secret (stored as apiSecret).
+  // Derived via limitless.exchange → Profile → API Tokens → "Derive API Token".
+  // The secret is shown ONCE at creation — cannot be retrieved again.
+  const apiKey = strField(body.apiKey) // tokenId UUID
+  const apiSecret = strField(body.apiSecret) // token secret
+
+  if (!apiKey) {
+    return {
+      error: {
+        error: 'missing_fields',
+        message: 'Limitless Token ID is required.',
+      },
+    }
+  }
+  if (!apiSecret) {
+    return {
+      error: {
+        error: 'missing_fields',
+        message: 'Limitless token secret is required.',
+      },
+    }
+  }
+  return { bundle: { apiKey, apiSecret } }
 }
 
 function parseKalshi(body: Record<string, unknown>): ParseResult {
