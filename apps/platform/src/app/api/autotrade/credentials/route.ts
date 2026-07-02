@@ -106,6 +106,10 @@ export async function POST(req: Request) {
           : await testOpinion(bundle)
 
   if (!test.ok) {
+    // Log the reason (never the credential values) so a failed verify is
+    // diagnosable from server logs without asking the user to copy-paste
+    // the UI error message every time.
+    console.error('[autotrade/credentials] verify_failed', { venue, scope, reason: test.reason })
     return Response.json(
       {
         ok: false,
