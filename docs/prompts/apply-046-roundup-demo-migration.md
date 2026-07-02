@@ -93,6 +93,5 @@ Do NOT:
 - Run any other SQL
 - Change RLS policies
 - Edit any rows manually
-```
 
 If the migration errors, the most likely cause is syntax errors in the foreign key references or check constraint; stop and paste the error.
