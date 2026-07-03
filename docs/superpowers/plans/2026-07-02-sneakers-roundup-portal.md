@@ -539,7 +539,14 @@ function positiveInt(v: unknown): number | undefined {
 }
 
 export async function PATCH(req: Request) {
-  const { sessionId, isNew } = await ensureSession()
+  let sessionId: string
+  let isNew: boolean
+  try {
+    ;({ sessionId, isNew } = await ensureSession())
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    return NextResponse.json({ error: 'session_init_failed', message }, { status: 500 })
+  }
   const body = (await req.json().catch(() => ({}))) as Record<string, unknown>
 
   const update: Record<string, number> = {}
@@ -694,7 +701,14 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 export async function POST() {
-  const { sessionId, isNew } = await ensureSession()
+  let sessionId: string
+  let isNew: boolean
+  try {
+    ;({ sessionId, isNew } = await ensureSession())
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    return NextResponse.json({ error: 'session_init_failed', message }, { status: 500 })
+  }
   const sb = getServerClient()
 
   const { data: session, error: loadErr } = await sb
@@ -736,7 +750,14 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 export async function POST(req: Request) {
-  const { sessionId, isNew } = await ensureSession()
+  let sessionId: string
+  let isNew: boolean
+  try {
+    ;({ sessionId, isNew } = await ensureSession())
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    return NextResponse.json({ error: 'session_init_failed', message }, { status: 500 })
+  }
   const body = (await req.json().catch(() => ({}))) as { financialConnectionsSessionId?: unknown }
   const fcSessionId = typeof body.financialConnectionsSessionId === 'string' ? body.financialConnectionsSessionId : null
   if (!fcSessionId) {
@@ -809,7 +830,14 @@ export const dynamic = 'force-dynamic'
 const MIN_REAL_TXNS_BEFORE_SKIPPING_DEMO_FEED = 3
 
 export async function POST() {
-  const { sessionId, isNew } = await ensureSession()
+  let sessionId: string
+  let isNew: boolean
+  try {
+    ;({ sessionId, isNew } = await ensureSession())
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    return NextResponse.json({ error: 'session_init_failed', message }, { status: 500 })
+  }
   const sb = getServerClient()
 
   const { data: session, error: loadErr } = await sb
@@ -903,7 +931,14 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 export async function POST() {
-  const { sessionId, isNew } = await ensureSession()
+  let sessionId: string
+  let isNew: boolean
+  try {
+    ;({ sessionId, isNew } = await ensureSession())
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    return NextResponse.json({ error: 'session_init_failed', message }, { status: 500 })
+  }
   const sb = getServerClient()
 
   const { data: session, error: loadErr } = await sb
