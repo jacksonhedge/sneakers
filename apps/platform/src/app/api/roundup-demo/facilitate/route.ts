@@ -56,7 +56,35 @@ export async function POST() {
     return isNew ? attachSessionCookie(res, sessionId) : res
   }
 
-  const { error: updateErr } = await sb
+  // Ledger row is written BEFORE the wallet/session update (fail closed): if the ledger
+  // insert fails, we bail out before any money moves, so there's never a wallet credit
+  // without a corresponding audit row. The inverse gap (a ledger row exists but the
+  // session update below fails) is possible since this isn't a real DB transaction, but
+  // that gap is detectable/reconcilable later (ledger cumulative sum vs. wallet_cents),
+  // which is strictly better than the original ordering's silent over-crediting. True
+  // atomicity would need a Postgres function/RPC wrapping both writes in one transaction
+  // — out of scope here since there's no migration path available in this environment.
+  const { data: ledgerRow, error: ledgerErr } = await sb
+    .from('roundup_demo_ledger')
+    .insert({
+      session_id: sessionId,
+      kind: 'facilitation',
+      amount_cents: movedCents,
+      memo: `Round-ups swept to wallet at $${(rule.thresholdCents / 100).toFixed(2)} threshold`,
+    })
+    .select('id')
+    .single()
+  if (ledgerErr || !ledgerRow) {
+    return NextResponse.json({ error: 'ledger_write_failed', message: ledgerErr?.message }, { status: 500 })
+  }
+
+  // Optimistic concurrency control: only apply the update if facilitated_cents still
+  // matches what we read moments earlier. If another concurrent request already moved
+  // the session forward, this filter matches zero rows and .select() comes back empty
+  // (distinct from a Supabase error, which surfaces via updateErr). We do NOT retry with
+  // fresh values in this request — that would risk double-applying movedCents against a
+  // value we didn't originate.
+  const { data: updatedRows, error: updateErr } = await sb
     .from('roundup_demo_sessions')
     .update({
       facilitated_cents: session.facilitated_cents + movedCents,
@@ -65,18 +93,30 @@ export async function POST() {
       updated_at: new Date().toISOString(),
     })
     .eq('session_id', sessionId)
+    .eq('facilitated_cents', session.facilitated_cents)
+    .select('wallet_cents')
   if (updateErr) {
     return NextResponse.json({ error: 'facilitation_update_failed', message: updateErr.message }, { status: 500 })
   }
-
-  const { error: ledgerErr } = await sb.from('roundup_demo_ledger').insert({
-    session_id: sessionId,
-    kind: 'facilitation',
-    amount_cents: movedCents,
-    memo: `Round-ups swept to wallet at $${(rule.thresholdCents / 100).toFixed(2)} threshold`,
-  })
-  if (ledgerErr) {
-    return NextResponse.json({ error: 'ledger_write_failed', message: ledgerErr.message }, { status: 500 })
+  if (!updatedRows || updatedRows.length === 0) {
+    // Zero rows matched: another concurrent request already changed facilitated_cents
+    // between our read and this write, so no money actually moved on this call. The
+    // ledger row inserted above was written on the assumption this call would win the
+    // race; since it didn't, compensate by deleting that row so the audit trail never
+    // claims a movement that didn't happen (a ledger row's own presence is what other
+    // code/humans reconcile against, so an orphaned one here would itself become a false
+    // audit entry). Best-effort: if the delete fails, we still return the no-op response
+    // rather than resurrecting an update we deliberately chose not to retry; the
+    // dangling ledger row becomes a manual-reconciliation case at worst, which is far
+    // better than the double-write this guard exists to prevent. The caller re-syncs and
+    // calls facilitate() again on its next poll cycle, so the money itself isn't lost.
+    await sb.from('roundup_demo_ledger').delete().eq('id', ledgerRow.id)
+    return NextResponse.json({
+      ok: true,
+      moved: false,
+      reason: 'concurrent_update',
+      pendingAccruedCents,
+    })
   }
 
   const res = NextResponse.json({
