@@ -96,6 +96,12 @@ export async function POST() {
     .eq('facilitated_cents', session.facilitated_cents)
     .select('wallet_cents')
   if (updateErr) {
+    // Genuine DB error on the update (network blip, constraint violation, etc.).
+    // The ledger row was already inserted; compensate by deleting it so the audit
+    // trail doesn't claim a movement that didn't happen. Best-effort: if the delete
+    // itself fails, proceed to return the original error anyway without letting the
+    // failed cleanup mask or replace the real error.
+    await sb.from('roundup_demo_ledger').delete().eq('id', ledgerRow.id)
     return NextResponse.json({ error: 'facilitation_update_failed', message: updateErr.message }, { status: 500 })
   }
   if (!updatedRows || updatedRows.length === 0) {
