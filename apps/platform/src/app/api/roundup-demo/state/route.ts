@@ -7,7 +7,14 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
-  const { sessionId, isNew } = await ensureSession()
+  let sessionId: string
+  let isNew: boolean
+  try {
+    ;({ sessionId, isNew } = await ensureSession())
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    return NextResponse.json({ error: 'session_init_failed', message }, { status: 500 })
+  }
   const sb = getServerClient()
 
   const { data: session, error: sessionErr } = await sb

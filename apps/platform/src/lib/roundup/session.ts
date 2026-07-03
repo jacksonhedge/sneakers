@@ -22,10 +22,21 @@ export async function readSessionId(): Promise<string | null> {
  */
 export async function ensureSession(): Promise<{ sessionId: string; isNew: boolean }> {
   const existing = await readSessionId()
-  if (existing) return { sessionId: existing, isNew: false }
+  const sb = getServerClient()
+
+  if (existing) {
+    const { data, error } = await sb
+      .from('roundup_demo_sessions')
+      .select('session_id')
+      .eq('session_id', existing)
+      .maybeSingle()
+    if (error) throw new Error(`failed to verify roundup_demo session: ${error.message}`)
+    if (data) return { sessionId: existing, isNew: false }
+    // cookie references a missing row (e.g. demo data reset) — fall through
+    // and create a fresh session below instead of trusting the stale cookie.
+  }
 
   const sessionId = randomUUID()
-  const sb = getServerClient()
   const { error } = await sb.from('roundup_demo_sessions').insert({ session_id: sessionId })
   if (error) throw new Error(`failed to create roundup_demo session: ${error.message}`)
   return { sessionId, isNew: true }
