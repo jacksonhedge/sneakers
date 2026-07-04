@@ -54,6 +54,9 @@ importers:
       '@sneakers/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@stripe/stripe-js':
+        specifier: ^4.0.0
+        version: 4.10.0
       '@supabase/supabase-js':
         specifier: ^2.104.0
         version: 2.104.1
@@ -622,6 +625,10 @@ packages:
 
   '@stablelib/base64@1.0.1':
     resolution: {integrity: sha512-1bnPQqSxSuc3Ii6MhBysoWCg58j97aUjuCSZrGSmDxNqtytIi0k8utUenAwTZN4V5mXXYGsVUI9zeBqy+jBOSQ==}
+
+  '@stripe/stripe-js@4.10.0':
+    resolution: {integrity: sha512-KrMOL+sH69htCIXCaZ4JluJ35bchuCCznyPyrbN8JXSGQfwBI1SuIEMZNwvy8L8ykj29t6sa5BAAiL7fNoLZ8A==}
+    engines: {node: '>=12.16'}
 
   '@supabase/auth-js@2.104.1':
     resolution: {integrity: sha512-pqFnDKekq1isqlqnzqzyJ3mzmho+o+FjfVTqhKY3PFlwj2anx3OPznO1kbo1ZEwD8zg1r4EAFf/7pplLyX0ocQ==}
@@ -2142,6 +2149,8 @@ snapshots:
       '@scure/base': 1.2.6
 
   '@stablelib/base64@1.0.1': {}
+
+  '@stripe/stripe-js@4.10.0': {}
 
   '@supabase/auth-js@2.104.1':
     dependencies:

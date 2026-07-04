@@ -1,0 +1,67 @@
+// apps/platform/src/app/roundup-demo/page.tsx
+'use client'
+
+import { useCallback, useEffect, useState } from 'react'
+import { BankLinkScreen } from './bank-link-screen'
+
+export interface SessionState {
+  sessionId: string
+  bank: { linked: boolean; institution: string | null; last4: string | null }
+  rule: { roundToCents: number; multiplier: number; thresholdCents: number; weeklyCapCents: number }
+  pendingAccruedCents: number
+  walletCents: number
+  txns: Array<{ id: string; merchant: string; amountCents: number; roundUpCents: number; date: string }>
+}
+
+export default function RoundupDemoPage() {
+  const [state, setState] = useState<SessionState | null>(null)
+  const [consented, setConsented] = useState(false)
+
+  const refresh = useCallback(async () => {
+    const res = await fetch('/api/roundup-demo/state')
+    const body = (await res.json()) as { session: SessionState }
+    setState(body.session)
+  }, [])
+
+  useEffect(() => {
+    refresh()
+  }, [refresh])
+
+  if (!state) {
+    return <div className="mx-auto max-w-md px-4 py-10 text-sm text-gray-500">Loading…</div>
+  }
+
+  return (
+    <div className="mx-auto max-w-md px-4 py-10">
+      <h1 className="mb-1 text-xl font-bold text-gray-900">Round-Ups</h1>
+      <p className="mb-6 text-sm text-gray-500">Spare change, put to work.</p>
+
+      {!consented && (
+        <div className="rounded-2xl border border-gray-200 bg-white p-6">
+          <p className="mb-4 text-sm text-gray-700">
+            Sneakers rounds up your everyday purchases to the nearest dollar and sweeps the spare
+            change into your wallet once it adds up to ${(state.rule.thresholdCents / 100).toFixed(2)}.
+            This is a demo — your bank link is real (test mode), but no real money moves.
+          </p>
+          <button
+            onClick={() => setConsented(true)}
+            className="w-full rounded-xl bg-gray-900 px-4 py-3 text-sm font-semibold text-white"
+          >
+            Continue
+          </button>
+        </div>
+      )}
+
+      {consented && !state.bank.linked && (
+        <BankLinkScreen onLinked={() => refresh()} />
+      )}
+
+      {consented && state.bank.linked && (
+        <div className="rounded-2xl border border-gray-200 bg-white p-6 text-sm text-gray-500">
+          Bank linked: {state.bank.institution} ····{state.bank.last4}. (Round-up config + activity
+          screens land in Tasks 10–11.)
+        </div>
+      )}
+    </div>
+  )
+}
