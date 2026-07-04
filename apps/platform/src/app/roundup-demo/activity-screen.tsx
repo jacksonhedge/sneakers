@@ -1,0 +1,76 @@
+// apps/platform/src/app/roundup-demo/activity-screen.tsx
+'use client'
+
+import { useEffect, useState } from 'react'
+import type { SessionState } from './page'
+
+export function ActivityScreen({ state, refresh }: { state: SessionState; refresh: () => Promise<void> }) {
+  const [syncing, setSyncing] = useState(false)
+  const [justMoved, setJustMoved] = useState<number | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    async function syncAndFacilitate() {
+      setSyncing(true)
+      await fetch('/api/roundup-demo/transactions/sync', { method: 'POST' })
+      const facilitateRes = await fetch('/api/roundup-demo/facilitate', { method: 'POST' })
+      const facilitateBody = (await facilitateRes.json()) as { moved: boolean; movedCents?: number }
+      if (!cancelled && facilitateBody.moved && facilitateBody.movedCents) {
+        setJustMoved(facilitateBody.movedCents)
+      }
+      if (!cancelled) await refresh()
+      if (!cancelled) setSyncing(false)
+    }
+    syncAndFacilitate()
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const progressPct = Math.min(100, Math.round((state.pendingAccruedCents / state.rule.thresholdCents) * 100))
+
+  return (
+    <div className="space-y-4">
+      {justMoved !== null && (
+        <div className="rounded-xl bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-800">
+          ${(justMoved / 100).toFixed(2)} swept to your wallet 🎉
+        </div>
+      )}
+
+      <div className="rounded-2xl border border-gray-200 bg-white p-6">
+        <div className="mb-2 flex items-baseline justify-between">
+          <span className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+            Round-ups toward ${(state.rule.thresholdCents / 100).toFixed(2)}
+          </span>
+          <span className="text-sm font-semibold text-gray-900">
+            ${(state.pendingAccruedCents / 100).toFixed(2)}
+          </span>
+        </div>
+        <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
+          <div className="h-full rounded-full bg-gray-900" style={{ width: `${progressPct}%` }} />
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-gray-200 bg-white p-6">
+        <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-400">Wallet balance</div>
+        <div className="text-2xl font-bold text-gray-900">${(state.walletCents / 100).toFixed(2)}</div>
+      </div>
+
+      <div className="rounded-2xl border border-gray-200 bg-white p-4">
+        <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">Recent activity</div>
+        <ul className="divide-y divide-gray-100">
+          {state.txns.map((t) => (
+            <li key={t.id} className="flex items-center justify-between py-2 text-sm">
+              <span className="text-gray-700">{t.merchant}</span>
+              <span className="text-gray-400">${(t.amountCents / 100).toFixed(2)}</span>
+              <span className="font-semibold text-gray-900">+${(t.roundUpCents / 100).toFixed(2)}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {syncing && <p className="text-center text-xs text-gray-400">Syncing…</p>}
+    </div>
+  )
+}

@@ -2,6 +2,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import { ActivityScreen } from './activity-screen'
 import { BankLinkScreen } from './bank-link-screen'
 import { ConfigureScreen } from './configure-screen'
 
@@ -92,6 +93,10 @@ export default function RoundupDemoPage() {
             setStage('activity')
           }}
         />
+      )}
+
+      {consented && state.bank.linked && stage === 'activity' && (
+        <ActivityScreen state={state} refresh={refresh} />
       )}
     </div>
   )
