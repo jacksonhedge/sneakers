@@ -3,6 +3,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { BankLinkScreen } from './bank-link-screen'
+import { ConfigureScreen } from './configure-screen'
 
 export interface SessionState {
   sessionId: string
@@ -17,6 +18,7 @@ export default function RoundupDemoPage() {
   const [state, setState] = useState<SessionState | null>(null)
   const [consented, setConsented] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [stage, setStage] = useState<'configure' | 'activity'>('configure')
 
   const refresh = useCallback(async () => {
     try {
@@ -82,11 +84,14 @@ export default function RoundupDemoPage() {
         <BankLinkScreen onLinked={() => refresh()} />
       )}
 
-      {consented && state.bank.linked && (
-        <div className="rounded-2xl border border-gray-200 bg-white p-6 text-sm text-gray-500">
-          Bank linked: {state.bank.institution} ····{state.bank.last4}. (Round-up config + activity
-          screens land in Tasks 10–11.)
-        </div>
+      {consented && state.bank.linked && stage === 'configure' && (
+        <ConfigureScreen
+          rule={state.rule}
+          onConfigured={() => {
+            refresh()
+            setStage('activity')
+          }}
+        />
       )}
     </div>
   )
