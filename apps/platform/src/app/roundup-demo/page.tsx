@@ -16,16 +16,42 @@ export interface SessionState {
 export default function RoundupDemoPage() {
   const [state, setState] = useState<SessionState | null>(null)
   const [consented, setConsented] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const refresh = useCallback(async () => {
-    const res = await fetch('/api/roundup-demo/state')
-    const body = (await res.json()) as { session: SessionState }
-    setState(body.session)
+    try {
+      const res = await fetch('/api/roundup-demo/state')
+      if (!res.ok) {
+        setError(`Failed to load state: ${res.status} ${res.statusText}`)
+        return
+      }
+      const body = (await res.json()) as { session: SessionState }
+      setState(body.session)
+      setError(null)
+    } catch (err) {
+      setError(`Error loading state: ${err instanceof Error ? err.message : 'Unknown error'}`)
+    }
   }, [])
 
   useEffect(() => {
     refresh()
   }, [refresh])
+
+  if (error) {
+    return (
+      <div className="mx-auto max-w-md px-4 py-10">
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-6">
+          <p className="mb-4 text-sm text-red-700">{error}</p>
+          <button
+            onClick={() => refresh()}
+            className="w-full rounded-xl bg-red-600 px-4 py-3 text-sm font-semibold text-white"
+          >
+            Try again
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   if (!state) {
     return <div className="mx-auto max-w-md px-4 py-10 text-sm text-gray-500">Loading…</div>
