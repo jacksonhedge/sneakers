@@ -14,13 +14,19 @@ import type { NextConfig } from 'next'
 //     X-Frame-Options: DENY this works across browser versions.
 //   - form-action 'self' stops a phishing site from POSTing forms to our
 //     domain to harvest sessions cross-origin.
+//   - script-src allows https://js.stripe.com and frame-src allows
+//     https://js.stripe.com + https://hooks.stripe.com because Stripe
+//     Financial Connections (the round-up portal's bank-link flow) needs to
+//     load Stripe.js and its embedded iframe. Without frame-src this would
+//     fall back to default-src 'self', which blocks the iframe outright.
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
   "connect-src 'self' https: wss:",
+  "frame-src https://js.stripe.com https://hooks.stripe.com",
   "frame-ancestors 'none'",
   "form-action 'self'",
   "base-uri 'self'",
