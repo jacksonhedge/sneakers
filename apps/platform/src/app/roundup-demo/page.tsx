@@ -1,7 +1,7 @@
 // apps/platform/src/app/roundup-demo/page.tsx
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { ActivityScreen } from './activity-screen'
 import { BankLinkScreen } from './bank-link-screen'
 import { ConfigureScreen } from './configure-screen'
@@ -20,6 +20,20 @@ export default function RoundupDemoPage() {
   const [consented, setConsented] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [stage, setStage] = useState<'configure' | 'activity'>('configure')
+  const didInitialRouteRef = useRef(false)
+
+  // Route a returning user straight to where they left off, based on the very first
+  // successful state load. A linked bank means they're past consent + bank-link; having
+  // at least one txn means they've been through configure before (txns only exist once
+  // ActivityScreen has synced), so they should land on activity, not back on configure.
+  useEffect(() => {
+    if (!state || didInitialRouteRef.current) return
+    didInitialRouteRef.current = true
+    if (state.bank.linked) {
+      setConsented(true)
+      setStage(state.txns.length > 0 ? 'activity' : 'configure')
+    }
+  }, [state])
 
   const refresh = useCallback(async () => {
     try {
