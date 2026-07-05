@@ -1,29 +1,41 @@
 // apps/platform/src/app/roundup-demo/activity-screen.tsx
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { SessionState } from './page'
 
 export function ActivityScreen({ state, refresh }: { state: SessionState; refresh: () => Promise<void> }) {
   const [syncing, setSyncing] = useState(false)
   const [justMoved, setJustMoved] = useState<number | null>(null)
+  const hasRunRef = useRef(false)
+  const cancelledRef = useRef(false)
 
   useEffect(() => {
-    let cancelled = false
+    // Strict Mode (dev) mounts this effect, synchronously runs its cleanup, then
+    // mounts it again. Reset the cancellation flag on every invocation so that a
+    // synthetic (Strict Mode) cleanup doesn't permanently cancel the one real run
+    // below — only a genuine unmount (no subsequent re-mount to reset this) does.
+    cancelledRef.current = false
+    if (hasRunRef.current) {
+      return () => {
+        cancelledRef.current = true
+      }
+    }
+    hasRunRef.current = true
     async function syncAndFacilitate() {
       setSyncing(true)
       await fetch('/api/roundup-demo/transactions/sync', { method: 'POST' })
       const facilitateRes = await fetch('/api/roundup-demo/facilitate', { method: 'POST' })
       const facilitateBody = (await facilitateRes.json()) as { moved: boolean; movedCents?: number }
-      if (!cancelled && facilitateBody.moved && facilitateBody.movedCents) {
+      if (!cancelledRef.current && facilitateBody.moved && facilitateBody.movedCents) {
         setJustMoved(facilitateBody.movedCents)
       }
-      if (!cancelled) await refresh()
-      if (!cancelled) setSyncing(false)
+      if (!cancelledRef.current) await refresh()
+      if (!cancelledRef.current) setSyncing(false)
     }
     syncAndFacilitate()
     return () => {
-      cancelled = true
+      cancelledRef.current = true
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
