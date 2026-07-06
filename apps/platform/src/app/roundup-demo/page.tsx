@@ -13,6 +13,15 @@ export interface SessionState {
   pendingAccruedCents: number
   walletCents: number
   txns: Array<{ id: string; merchant: string; amountCents: number; roundUpCents: number; date: string }>
+  positions: Array<{
+    id: string
+    marketId: string
+    marketQuestion: string | null
+    entryPrice: number
+    sizeCents: number
+    currentPrice: number | null
+    pnlCents: number | null
+  }>
 }
 
 export default function RoundupDemoPage() {

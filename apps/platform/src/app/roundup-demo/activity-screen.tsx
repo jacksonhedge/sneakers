@@ -69,6 +69,35 @@ export function ActivityScreen({ state, refresh }: { state: SessionState; refres
         <div className="text-2xl font-bold text-gray-900">${(state.walletCents / 100).toFixed(2)}</div>
       </div>
 
+      {state.positions.length > 0 && (
+        <div className="space-y-2">
+          {state.positions.map((p) => {
+            const pnlPositive = p.pnlCents !== null && p.pnlCents >= 0
+            return (
+              <div key={p.id} className="rounded-2xl border border-gray-200 bg-white p-6">
+                <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-400">
+                  Polymarket position
+                </div>
+                <div className="mb-3 text-sm text-gray-700">{p.marketQuestion ?? p.marketId}</div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-500">
+                    Entry {(p.entryPrice * 100).toFixed(0)}¢ · Size ${(p.sizeCents / 100).toFixed(2)}
+                  </span>
+                  {p.pnlCents !== null && p.currentPrice !== null ? (
+                    <span className={`font-semibold ${pnlPositive ? 'text-green-600' : 'text-red-600'}`}>
+                      {pnlPositive ? '+' : ''}
+                      ${(p.pnlCents / 100).toFixed(2)} ({(p.currentPrice * 100).toFixed(0)}¢ now)
+                    </span>
+                  ) : (
+                    <span className="text-gray-400">Live price unavailable</span>
+                  )}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+
       <div className="rounded-2xl border border-gray-200 bg-white p-4">
         <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">Recent activity</div>
         <ul className="divide-y divide-gray-100">
