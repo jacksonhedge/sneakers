@@ -1,0 +1,872 @@
+<title>Sneakers iOS — v1 Prototype</title>
+<style>
+  :root{
+    --page-bg:#101418; --page-ink:#e8edef; --page-sub:#8b969c; --page-line:#232b31;
+    --accent:#2FD37A;
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --page-bg:#eef1f2; --page-ink:#15211c; --page-sub:#5c6b66; --page-line:#d5dcda; }
+  }
+  :root[data-theme="dark"]{ --page-bg:#101418; --page-ink:#e8edef; --page-sub:#8b969c; --page-line:#232b31; }
+  :root[data-theme="light"]{ --page-bg:#eef1f2; --page-ink:#15211c; --page-sub:#5c6b66; --page-line:#d5dcda; }
+
+  *{box-sizing:border-box; margin:0; padding:0}
+  body{
+    background:var(--page-bg); color:var(--page-ink);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif;
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  .stage{ max-width:1060px; margin:0 auto; padding:28px 20px 60px; }
+  .stage-head{ display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:26px;}
+  .stage-head h1{ font-size:17px; font-weight:600; letter-spacing:-0.01em;}
+  .stage-head .tag{ font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--page-sub);
+    border:1px solid var(--page-line); border-radius:99px; padding:3px 10px;}
+  .cols{ display:flex; gap:44px; align-items:flex-start; justify-content:center;}
+  .notes{ flex:1; max-width:360px; padding-top:8px; position:sticky; top:28px;}
+  .notes h2{ font-size:12px; letter-spacing:.09em; text-transform:uppercase; color:var(--accent); margin-bottom:12px; font-weight:600;}
+  .notes h3{ font-size:15px; font-weight:600; margin-bottom:8px; letter-spacing:-0.01em;}
+  .notes p{ font-size:13.5px; line-height:1.6; color:var(--page-sub); margin-bottom:12px; max-width:62ch;}
+  .notes ul{ list-style:none; display:flex; flex-direction:column; gap:8px; margin-bottom:14px;}
+  .notes li{ font-size:13px; line-height:1.5; color:var(--page-sub); padding-left:16px; position:relative;}
+  .notes li::before{ content:""; position:absolute; left:0; top:8px; width:6px; height:6px; border-radius:2px; background:var(--accent); opacity:.75;}
+  .notes .hint{ font-size:12px; color:var(--page-sub); opacity:.75; border-top:1px solid var(--page-line); padding-top:12px;}
+  @media (max-width:900px){ .notes{display:none} .stage{padding-top:12px} .stage-head{margin-bottom:14px} }
+
+  /* ---------- phone frame ---------- */
+  .phone{
+    width:393px; height:852px; flex-shrink:0; position:relative;
+    border-radius:56px; background:#000; padding:10px;
+    box-shadow:0 0 0 2px #2a2f33, 0 28px 70px rgba(0,0,0,.5);
+  }
+  @media (max-width:430px){
+    .phone{ width:100%; height:auto; min-height:96vh; border-radius:36px; padding:6px;}
+    .screen{ border-radius:30px;}
+  }
+  .screen{
+    position:relative; width:100%; height:100%; border-radius:46px; overflow:hidden;
+    background:#0B0D10; color:#F2F5F3; display:flex; flex-direction:column;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif;
+  }
+  .island{ position:absolute; top:12px; left:50%; transform:translateX(-50%); width:118px; height:34px; border-radius:20px; background:#000; z-index:40;}
+  .statusbar{ height:56px; flex-shrink:0; display:flex; align-items:flex-end; justify-content:space-between; padding:0 30px 4px; font-size:14px; font-weight:600;}
+  .statusbar .icons{ display:flex; gap:5px; align-items:center;}
+  .statusbar svg{ display:block }
+
+  .tabpane{ flex:1; overflow-y:auto; overflow-x:hidden; padding:10px 20px 18px; display:none; scrollbar-width:none;}
+  .tabpane::-webkit-scrollbar{display:none}
+  .tabpane.active{ display:block;}
+
+  /* ---------- tab bar ---------- */
+  .tabbar{
+    flex-shrink:0; display:flex; padding:8px 10px 26px; gap:4px;
+    background:rgba(16,19,23,.92); border-top:1px solid #1c2126; backdrop-filter:blur(12px);
+  }
+  .tabbtn{
+    flex:1; background:none; border:none; color:#FFFFFF; font-family:inherit;
+    display:flex; flex-direction:column; align-items:center; gap:3px; font-size:10px; font-weight:600;
+    padding:6px 0 2px; cursor:pointer; border-radius:12px; letter-spacing:.01em;
+  }
+  .tabbtn svg{ width:24px; height:24px; }
+  .tabbtn .tabnum{ height:24px; display:flex; align-items:center; font-size:14px; font-weight:800; letter-spacing:-0.02em;}
+  .tabbtn.on{ color:#2FD37A; }
+  .tabbtn:focus-visible{ outline:2px solid #2FD37A; outline-offset:-2px;}
+
+  /* ---------- shared app pieces ---------- */
+  .apphead{ display:flex; align-items:center; justify-content:space-between; padding:6px 2px 14px;}
+  .apphead .brand{ font-size:20px; font-weight:700; letter-spacing:-0.02em;}
+  .badge{ font-size:10px; font-weight:700; letter-spacing:.1em; padding:4px 9px; border-radius:99px;}
+  .badge.paper{ color:#0B0D10; background:#2FD37A;}
+  .badge.test{ color:#8fd7ff; background:rgba(78,168,255,.14); border:1px solid rgba(78,168,255,.35); letter-spacing:.06em;}
+  .card{ background:#14181D; border:1px solid #1e242a; border-radius:18px; padding:16px; margin-bottom:12px;}
+  .sechead{ font-size:12px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#98A2A8; margin:18px 2px 10px;}
+  .num{ font-variant-numeric:tabular-nums; }
+  .pos{ color:#2FD37A;} .neg{ color:#FF5C5C;}
+  .row{ display:flex; align-items:center; justify-content:space-between; gap:12px;}
+  .sub{ font-size:12.5px; color:#98A2A8; line-height:1.45;}
+  .pillbtn{
+    font-family:inherit; border:none; cursor:pointer; border-radius:14px; font-weight:600; font-size:15px;
+    padding:14px 0; flex:1; letter-spacing:-0.01em;
+  }
+  .pillbtn.primary{ background:#2FD37A; color:#0B0D10;}
+  .pillbtn.ghost{ background:#1a2026; color:#FFFFFF;}
+  .pillbtn:focus-visible{ outline:2px solid #fff; outline-offset:2px;}
+
+  /* ---------- agent tab / orbs ---------- */
+  .orb{
+    position:relative; width:150px; height:150px;
+    --o1:#b8ffd9; --o2:#2FD37A; --o3:#1a9e97; --o4:#0d5f74; --halo:rgba(47,211,122,.35);
+  }
+  .orb.c-blue  { --o1:#d3e7ff; --o2:#4EA8FF; --o3:#2b6fd4; --o4:#14335e; --halo:rgba(78,168,255,.35);}
+  .orb.c-purple{ --o1:#e6d9ff; --o2:#a97dff; --o3:#6d3fd4; --o4:#2c1560; --halo:rgba(169,125,255,.35);}
+  .orb.c-gold  { --o1:#fff0c4; --o2:#e8c25a; --o3:#b0842c; --o4:#4e3608; --halo:rgba(232,194,90,.35);}
+  .orb.c-red   { --o1:#ffd6d6; --o2:#FF5C5C; --o3:#c22e2e; --o4:#4e0e0e; --halo:rgba(255,92,92,.35);}
+  .orb.c-updown{ --o1:#d6ffe3; --o2:#2FD37A; --o3:#c04a33; --o4:#4e0e12; --halo:rgba(47,211,122,.32);}
+  .orb.c-oddsjam{ --o1:#9fdcff; --o2:#18AFE8; --o3:#0d3a55; --o4:#0a1118; --halo:rgba(24,175,232,.4);}
+  .orb.c-oddsjam .blob{ background:#0d1520 url("data:image/png;base64,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") center/cover no-repeat;}
+  .orb .blob{
+    position:absolute; inset:0; border-radius:50%;
+    background:radial-gradient(circle at 34% 30%, var(--o1) 0%, var(--o2) 34%, var(--o3) 68%, var(--o4) 100%);
+  }
+  .orb .halo{
+    position:absolute; inset:-24px; border-radius:50%;
+    background:radial-gradient(circle, var(--halo) 0%, transparent 70%);
+    filter:blur(6px);
+  }
+  .orb.live .blob{ animation:breathe 4.2s ease-in-out infinite;}
+  .orb.live .halo{ animation:breathe 4.2s ease-in-out infinite reverse;}
+  .orb .memoji{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-size:60px; z-index:2; filter:drop-shadow(0 3px 6px rgba(0,0,0,.45));
+  }
+  .modelcell .orb .memoji{ font-size:36px;}
+  #msOrb .memoji{ font-size:27px;}
+  .orb .sheen{ position:absolute; inset:0; border-radius:50%; overflow:hidden;}
+  .orb .sheen::after{
+    content:""; position:absolute; width:130%; height:60%; left:-15%; top:-8%;
+    background:radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.5), transparent 65%);
+  }
+  /* living surface — two counter-rotating plasma layers, masked to the sphere */
+  .orb .swirl{ position:absolute; inset:0; border-radius:50%; overflow:hidden;}
+  .orb .swirl::before{
+    content:""; position:absolute; width:170%; height:170%; left:-35%; top:-35%;
+    background:
+      radial-gradient(28% 24% at 33% 62%, var(--o1), transparent 72%),
+      radial-gradient(34% 30% at 68% 38%, rgba(0,0,0,.38), transparent 74%),
+      radial-gradient(22% 20% at 58% 72%, var(--o2), transparent 70%);
+    filter:blur(7px); opacity:.6;
+    animation:swirl 11s linear infinite;
+  }
+  .orb .swirl::after{
+    content:""; position:absolute; width:170%; height:170%; left:-35%; top:-35%;
+    background:
+      radial-gradient(26% 30% at 62% 60%, var(--o1), transparent 70%),
+      radial-gradient(30% 26% at 34% 36%, rgba(0,0,0,.3), transparent 72%);
+    filter:blur(9px); opacity:.45; mix-blend-mode:soft-light;
+    animation:swirl 17s linear infinite reverse;
+  }
+  @keyframes swirl{ to{ transform:rotate(360deg);} }
+  @keyframes breathe{ 0%,100%{transform:scale(1)} 50%{transform:scale(1.055)} }
+  .orb.state-holding .blob{ animation-duration:6.5s;}
+  .orb.state-entering .blob{ animation-duration:1.6s;}
+  .orb.state-entering .halo{ animation-duration:1.6s;}
+  .orb.paused .blob,.orb.paused .halo{ animation-play-state:paused; filter:grayscale(.55) brightness(.75);}
+  @media (prefers-reduced-motion: reduce){ .orb .blob,.orb .halo,.orb .swirl::before,.orb .swirl::after{ animation:none !important;} }
+  .orb.paused .swirl::before,.orb.paused .swirl::after{ animation-play-state:paused;}
+
+  /* cover-flow carousel (iOS 6 album style) */
+  .orbwrap{ display:flex; flex-direction:column; align-items:center; padding:8px 0 6px;}
+  .cf{ position:relative; width:100%; height:180px; perspective:900px; touch-action:pan-y;}
+  .cf .orb{
+    position:absolute; left:50%; top:50%; margin:-75px 0 0 -75px; cursor:pointer;
+    transition:transform .45s cubic-bezier(.3,.8,.3,1), opacity .45s, filter .45s;
+  }
+  .cf .orb.cfp0  { transform:translateX(0) scale(1); z-index:5; opacity:1;}
+  .cf .orb.cfp-1 { transform:translateX(-116px) rotateY(48deg) scale(.56); z-index:3; opacity:.55; filter:brightness(.6);}
+  .cf .orb.cfp1  { transform:translateX(116px) rotateY(-48deg) scale(.56); z-index:3; opacity:.55; filter:brightness(.6);}
+  .cf .orb.cfp-2 { transform:translateX(-168px) rotateY(58deg) scale(.4); z-index:1; opacity:.22; filter:brightness(.5);}
+  .cf .orb.cfp2  { transform:translateX(168px) rotateY(-58deg) scale(.4); z-index:1; opacity:.22; filter:brightness(.5);}
+  .cf .orb.cfhide{ transform:translateX(0) scale(.2); opacity:0; z-index:0; pointer-events:none;}
+  .cf .orb:not(.cfp0) .sheen::after{ opacity:.4;}
+  @media (prefers-reduced-motion: reduce){ .cf .orb{ transition:none;} }
+  .cf-name{ font-size:18px; font-weight:700; letter-spacing:-0.02em; margin-top:10px;}
+  .cf-dots{ display:flex; gap:6px; margin-top:12px;}
+  .cf-dots span{ width:6px; height:6px; border-radius:50%; background:#2a323a;}
+  .cf-dots span.on{ background:#98A2A8;}
+
+  /* models grid (Best Models) */
+  .orbgrid{ display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .modelcell{
+    background:#14181D; border:1px solid #1e242a; border-radius:18px; padding:18px 12px 14px;
+    display:flex; flex-direction:column; align-items:center; cursor:pointer; text-align:center;
+    font-family:inherit; color:#F2F5F3; position:relative;
+  }
+  .addbtn{
+    position:absolute; top:10px; right:10px; width:26px; height:26px; border-radius:50%;
+    background:#1a2026; border:1px solid #2a323a; color:#F2F5F3;
+    display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:600; line-height:1;
+  }
+  .addbtn.added{ background:rgba(47,211,122,.15); border-color:#2FD37A; color:#2FD37A; font-size:12px;}
+  .modelcell.featured .addbtn{ background:rgba(24,175,232,.18); border-color:rgba(24,175,232,.55); color:#8fd7ff;}
+  .modelcell.featured .addbtn.added{ background:rgba(47,211,122,.15); border-color:#2FD37A; color:#2FD37A;}
+  .modelcell:focus-visible{ outline:2px solid #2FD37A;}
+  .modelcell .orb{ width:84px; height:84px; margin-bottom:12px;}
+  .modelcell .orb .halo{ inset:-13px;}
+  .modelcell .mname{ font-size:14.5px; font-weight:600; letter-spacing:-0.01em;}
+  .modelcell .mby{ font-size:11px; color:#98A2A8; margin-top:2px;}
+  .modelcell .mperf{ font-size:12px; font-weight:600; margin-top:6px;}
+  .modelcell .mprice{ font-size:11.5px; font-weight:700; margin-top:8px; padding:5px 11px; border-radius:99px; background:#1a2026; color:#98A2A8;}
+  .modelcell.subscribed .mprice{ background:rgba(47,211,122,.14); color:#2FD37A;}
+  .modelcell.featured{
+    background:linear-gradient(165deg, rgba(24,175,232,.2), #14181D 62%);
+    border-color:rgba(24,175,232,.5);
+    box-shadow:0 0 26px rgba(24,175,232,.16), inset 0 1px 0 rgba(159,220,255,.12);
+  }
+  .modelcell.featured .mprice{ background:#18AFE8; color:#0B0D10;}
+  .modelcell .mtag{ font-size:11.5px; color:#8fd7ff; margin-top:6px; line-height:1.4; font-weight:600;}
+  .agent-status{ margin-top:16px; font-size:15px; font-weight:600; letter-spacing:-0.01em; display:flex; align-items:center; gap:8px;}
+  .agent-status .dot{ width:8px; height:8px; border-radius:50%; background:#2FD37A; animation:pulse 2s infinite;}
+  .orbwrap.paused .dot{ background:#98A2A8; animation:none;}
+  @keyframes pulse{ 0%,100%{opacity:1} 50%{opacity:.35} }
+  .agent-sub{ font-size:12.5px; color:#98A2A8; margin-top:4px;}
+  .balrow{ display:flex; gap:12px; margin:18px 0 12px;}
+  .balcell{ flex:1; background:#14181D; border:1px solid #1e242a; border-radius:18px; padding:14px 16px;}
+  .balcell .lab{ font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#98A2A8; margin-bottom:5px; font-weight:600;}
+  .balcell .val{ font-size:22px; font-weight:700; letter-spacing:-0.02em;}
+  .feeditem{ display:flex; gap:12px; padding:11px 2px; border-bottom:1px solid #191f24; align-items:flex-start;}
+  .feeditem:last-child{ border-bottom:none;}
+  .feeditem .ic{
+    width:32px; height:32px; border-radius:10px; flex-shrink:0; position:relative;
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px; font-weight:800; color:#0B0D10;
+  }
+  .feeditem .ic .bdg{
+    position:absolute; right:-5px; bottom:-5px; width:16px; height:16px; border-radius:50%;
+    background:#1a2026; border:2px solid #0B0D10; color:#F2F5F3;
+    display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:700;
+  }
+  .feeditem .ic .bdg.win{ background:#2FD37A; color:#0B0D10;}
+  .feeditem .t{ font-size:13.5px; line-height:1.4;}
+  .feeditem .m{ font-size:11.5px; color:#98A2A8; margin-top:2px;}
+
+  /* ---------- models tab ---------- */
+  .seg{
+    display:flex; background:#14181D; border:1px solid #1e242a; border-radius:12px; padding:3px; margin-bottom:14px;
+  }
+  .seg button{
+    flex:1; font-family:inherit; font-size:13.5px; font-weight:600; padding:9px 0; border:none; border-radius:9px;
+    background:none; color:#98A2A8; cursor:pointer; letter-spacing:-0.01em;
+  }
+  .seg button.on{ background:#242b32; color:#F2F5F3; box-shadow:0 1px 3px rgba(0,0,0,.4);}
+  .seg button:focus-visible{ outline:2px solid #2FD37A; outline-offset:-2px;}
+  .subbtn{
+    font-family:inherit; font-size:12px; font-weight:700; border:none; border-radius:99px; padding:8px 14px;
+    background:#2FD37A; color:#0B0D10; cursor:pointer; flex-shrink:0;
+  }
+  .subbtn.subscribed{ background:rgba(47,211,122,.14); color:#2FD37A; border:1px solid #2FD37A;}
+  .subbtn .price{ font-weight:600; opacity:.8;}
+  .promptbox{ font-size:14px; line-height:1.55; color:#dfe6e2; background:#101519; border:1px solid #232b31; border-radius:14px; padding:13px 14px; min-height:88px;}
+  .promptbox .caret{ display:inline-block; width:2px; height:15px; background:#2FD37A; vertical-align:-2px; animation:pulse 1.1s infinite;}
+  .chips{ display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;}
+  .chip{ font-family:inherit; font-size:12.5px; font-weight:600; padding:8px 13px; border-radius:99px; border:1px solid #232b31; background:none; color:#98A2A8; cursor:pointer;}
+  .chip.on{ background:rgba(47,211,122,.13); border-color:#2FD37A; color:#2FD37A;}
+  .botcard{ display:flex; gap:13px; align-items:center;}
+  .botcard .avatar{ width:44px; height:44px; border-radius:14px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:20px;}
+  .botcard .info{ flex:1; min-width:0;}
+  .botcard .name{ font-size:14.5px; font-weight:600;}
+  .botcard .by{ font-size:11.5px; color:#98A2A8; margin-top:2px;}
+  .botcard .stat{ font-size:11.5px; margin-top:3px;}
+  .soon{ font-family:inherit; font-size:11.5px; font-weight:700; color:#98A2A8; background:#1a2026; border:none; border-radius:99px; padding:7px 12px; flex-shrink:0; letter-spacing:.02em;}
+
+  /* ---------- funds tab ---------- */
+  .bighero{ padding:10px 2px 4px;}
+  .bighero .lab{ font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:#98A2A8; font-weight:600;}
+  .bighero .amount{ font-size:44px; font-weight:700; letter-spacing:-0.03em; margin-top:4px;}
+  .bighero .delta{ font-size:14px; font-weight:600; margin-top:2px;}
+  .sparkcard{ position:relative; padding:14px 6px 6px;}
+  .sparkcard .tt{
+    position:absolute; pointer-events:none; background:#1e252b; border:1px solid #2a323a; border-radius:9px;
+    padding:6px 9px; font-size:11.5px; display:none; z-index:5; white-space:nowrap; transform:translate(-50%,-115%);
+  }
+  .ledgeritem{ display:flex; justify-content:space-between; gap:10px; padding:12px 2px; border-bottom:1px solid #191f24; align-items:center;}
+  .ledgeritem:last-child{ border-bottom:none;}
+  .ledgeritem .l{ font-size:14px;}
+  .ledgeritem .d{ font-size:11.5px; color:#98A2A8; margin-top:2px;}
+  .ledgeritem .amt{ font-size:14.5px; font-weight:600;}
+
+  /* ---------- APIs tab ---------- */
+  .connitem{ display:flex; align-items:center; gap:13px; padding:13px 2px; border-bottom:1px solid #191f24;}
+  .connitem:last-child{border-bottom:none;}
+  .connitem .logo{ width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:15px; flex-shrink:0; color:#0B0D10;}
+  .connitem .nm{ font-size:14.5px; font-weight:600;}
+  .connitem .st{ font-size:11.5px; margin-top:2px; display:flex; align-items:center; gap:5px;}
+  .connitem .st .cd{ width:6px; height:6px; border-radius:50%;}
+  .connitem .act{ margin-left:auto; flex-shrink:0;}
+  .linkish{ font-family:inherit; background:none; border:1px solid #2a323a; color:#F2F5F3; font-size:12px; font-weight:600; border-radius:99px; padding:7px 13px; cursor:pointer;}
+
+  /* ---------- add cash sheet ---------- */
+  .sheetveil{ position:absolute; inset:0; background:rgba(0,0,0,.55); z-index:60; opacity:0; pointer-events:none; transition:opacity .25s;}
+  .sheet{
+    position:absolute; left:0; right:0; bottom:0; z-index:61; background:#14181D; border-radius:28px 28px 0 0;
+    padding:14px 20px 40px; transform:translateY(105%); transition:transform .3s cubic-bezier(.32,.72,.25,1);
+  }
+  .screen.sheet-open .sheetveil{ opacity:1; pointer-events:auto;}
+  .sheet.open{ transform:translateY(0);}
+  .grab{ width:38px; height:5px; border-radius:3px; background:#2a323a; margin:0 auto 16px;}
+  .amtchips{ display:flex; gap:8px; margin:14px 0 16px;}
+  .amtchips .chip{ flex:1; text-align:center; font-size:14px; padding:11px 0;}
+  @media (prefers-reduced-motion: reduce){ .sheet{transition:none} .sheetveil{transition:none} }
+</style>
+
+<div class="stage">
+  <div class="stage-head">
+    <h1>Sneakers iOS — v1 prototype</h1>
+    <span class="tag">Interactive mockup · no Xcode needed</span>
+  </div>
+  <div class="cols">
+
+    <!-- ================= PHONE ================= -->
+    <div class="phone"><div class="screen" id="screen">
+      <div class="island"></div>
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="icons">
+          <svg width="18" height="12" viewBox="0 0 18 12" fill="#F2F5F3"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2.5" width="3" height="9.5" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5" stroke="#F2F5F3" opacity=".5"/><rect x="2" y="2" width="15" height="8" rx="2" fill="#2FD37A"/><path d="M23.5 4v4c1-.4 1.5-1.2 1.5-2s-.5-1.6-1.5-2z" fill="#F2F5F3" opacity=".5"/></svg>
+        </span>
+      </div>
+
+      <!-- ===== TAB 1 · AGENT ===== -->
+      <div class="tabpane active" id="pane-agent">
+        <div class="apphead">
+          <span class="brand">Sneakers</span>
+          <span class="badge paper">PAPER</span>
+        </div>
+        <div class="orbwrap" id="orbwrap">
+          <div class="cf" id="cf"></div>
+          <div class="cf-name" id="cfName">Longshot v3</div>
+          <div class="agent-status"><span class="dot" id="statusDot"></span><span id="statusText">Scanning 14 markets</span></div>
+          <div class="agent-sub" id="statusSub">BTC · ETH · SOL — 5 &amp; 15-min windows on Kalshi + Polymarket</div>
+          <div class="cf-dots" id="cfDots"></div>
+        </div>
+        <div style="display:flex; gap:10px; margin:14px 0 12px;">
+          <button class="pillbtn primary" id="equipBtn">Equipped ✓</button>
+          <button class="pillbtn ghost" id="pauseBtn">Pause</button>
+        </div>
+        <div class="balrow" style="margin:0 0 6px;">
+          <div class="balcell"><div class="lab">Balance</div><div class="val num" id="agentBal">$1,247.62</div></div>
+          <div class="balcell"><div class="lab">Today</div><div class="val num pos" id="agentPnl">+$38.14</div></div>
+        </div>
+        <div class="sechead">Activity</div>
+        <div class="card" id="feed" style="padding:6px 14px;">
+          <div class="feeditem">
+            <div class="ic" style="background:#2FD37A">K<span class="bdg win">✓</span></div>
+            <div><div class="t">Settled: <b>BTC above $109,250 at 2:15p</b> — Yes hit</div><div class="m num">Kalshi · +$21.60 · 2:15 PM</div></div>
+          </div>
+          <div class="feeditem">
+            <div class="ic" style="background:#8fb0ff">P<span class="bdg">→</span></div>
+            <div><div class="t">Entered <b>ETH above $3,410 at 2:30p</b> · 27¢ × 80</div><div class="m">Polymarket · momentum + book imbalance · 2:11 PM</div></div>
+          </div>
+          <div class="feeditem">
+            <div class="ic" style="background:#e3c56b">Px<span class="bdg win">✓</span></div>
+            <div><div class="t">Settled: <b>Thunder −4.5 vs Pacers</b> — covered</div><div class="m num">ProphetX · +$14.20 · 1:48 PM</div></div>
+          </div>
+          <div class="feeditem">
+            <div class="ic" style="background:#2FD37A">K<span class="bdg">·</span></div>
+            <div><div class="t">Passed on <b>SOL range 2:15p</b> — spread too wide</div><div class="m">Kalshi · gate: liquidity floor · 2:08 PM</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== TAB 2 · MODELS ===== -->
+      <div class="tabpane" id="pane-train">
+        <div class="apphead"><span class="brand">Models</span><span class="badge paper">PAPER</span></div>
+        <div class="seg" role="tablist">
+          <button id="segMine" role="tab" aria-selected="false">My Model</button>
+          <button class="on" id="segBest" role="tab" aria-selected="true">Trading Agents</button>
+        </div>
+
+        <!-- My Model -->
+        <div id="modelMine" hidden>
+          <div class="card">
+            <div class="row" style="margin-bottom:10px;">
+              <div style="font-size:15px; font-weight:600;">Longshot v3</div>
+              <div class="sub num pos">+9.4% · 30d paper</div>
+            </div>
+            <div class="promptbox">Trade 5 and 15-minute crypto markets only. Favor longshots priced 10–35¢ with momentum confirmation. Max 5% of bankroll per trade. Skip anything with a spread over 4¢.<span class="caret"></span></div>
+            <div class="chips">
+              <button class="chip on">Longshot 10–35¢</button>
+              <button class="chip">Momentum</button>
+              <button class="chip">Fade the spike</button>
+              <button class="chip">Conservative</button>
+            </div>
+            <div class="sub" style="margin-top:12px;">Your model re-reads this prompt before every window. Changes apply to the next scan.</div>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button class="pillbtn primary" style="font-size:14px;">Run this model</button>
+            <button class="pillbtn ghost" style="font-size:14px;">Backtest</button>
+          </div>
+        </div>
+
+        <!-- Best Models -->
+        <div id="modelBest">
+          <div class="sub" style="padding:0 2px 12px;">Ranked by 30-day paper performance. Tap a model for details — subscribe to add it to your Agent carousel.</div>
+          <div class="orbgrid" id="orbGrid"></div>
+          <div class="sub" style="padding:12px 4px 2px;">Subscriptions bill through your Sneakers plan (Stripe). Creator payouts via Stripe Connect.</div>
+        </div>
+      </div>
+
+      <!-- ===== TAB 3 · FUNDS ===== -->
+      <div class="tabpane" id="pane-funds">
+        <div class="apphead"><span class="brand">Funds</span><span class="badge test">STRIPE TEST</span></div>
+        <div class="bighero">
+          <div class="lab">Sneakers wallet</div>
+          <div class="amount num" id="fundsBal">$1,247.62</div>
+          <div class="delta num pos">+$38.14 today</div>
+        </div>
+        <div class="card sparkcard">
+          <svg id="spark" viewBox="0 0 320 96" width="100%" height="96" role="img" aria-label="Balance, last 7 days"></svg>
+          <div class="tt" id="sparkTT"></div>
+        </div>
+        <div style="display:flex; gap:10px; margin:2px 0 6px;">
+          <button class="pillbtn primary" id="addCashBtn">Add cash</button>
+          <button class="pillbtn ghost">Withdraw</button>
+        </div>
+        <div class="sechead">History</div>
+        <div class="card" style="padding:4px 16px;">
+          <div class="ledgeritem"><div><div class="l">Trade settlements (12)</div><div class="d">Today</div></div><div class="amt num pos">+$38.14</div></div>
+          <div class="ledgeritem"><div><div class="l">Added cash</div><div class="d">Jul 3 · Visa ··4242</div></div><div class="amt num">$500.00</div></div>
+          <div class="ledgeritem"><div><div class="l">Trade settlements (31)</div><div class="d">Jul 1 – Jul 2</div></div><div class="amt num neg">−$12.48</div></div>
+          <div class="ledgeritem"><div><div class="l">Starting balance</div><div class="d">Jun 30</div></div><div class="amt num">$721.96</div></div>
+        </div>
+      </div>
+
+      <!-- ===== TAB 4 · APIS ===== -->
+      <div class="tabpane" id="pane-apis">
+        <div class="apphead"><span class="brand">Profile</span></div>
+        <div class="card" style="display:flex; align-items:center; gap:14px;">
+          <div style="width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg,#2FD37A,#1a9e97); display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:800; color:#0B0D10; flex-shrink:0;">JF</div>
+          <div style="flex:1; min-width:0;">
+            <div style="font-size:16px; font-weight:700;">Jackson</div>
+            <div class="sub" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">jacksonfitzgerald25@gmail.com</div>
+          </div>
+          <button class="linkish">Edit</button>
+        </div>
+        <div class="sechead">Your plan</div>
+        <div class="card row">
+          <div>
+            <div style="font-size:15px; font-weight:600;">Sneakers Pro</div>
+            <div class="sub num" style="margin-top:3px;">$39/mo · trial ends Jul 20</div>
+          </div>
+          <button class="linkish">Change</button>
+        </div>
+        <div class="sechead">Trading venues</div>
+        <div class="card" style="padding:4px 16px;">
+          <div class="connitem">
+            <div class="logo" style="background:#2FD37A">K</div>
+            <div><div class="nm">Kalshi</div><div class="st pos"><span class="cd" style="background:#2FD37A"></span>Connected · live prices</div></div>
+            <div class="act"><button class="linkish">Manage</button></div>
+          </div>
+          <div class="connitem">
+            <div class="logo" style="background:#8fb0ff">P</div>
+            <div><div class="nm">Polymarket</div><div class="st pos"><span class="cd" style="background:#2FD37A"></span>Connected · live prices</div></div>
+            <div class="act"><button class="linkish">Manage</button></div>
+          </div>
+          <div class="connitem">
+            <div class="logo" style="background:#e3c56b">Px</div>
+            <div><div class="nm">ProphetX</div><div class="st" style="color:#98A2A8"><span class="cd" style="background:#98A2A8"></span>Available</div></div>
+            <div class="act"><button class="soon">Soon</button></div>
+          </div>
+        </div>
+        <div class="sechead">Data &amp; bots</div>
+        <div class="card" style="padding:4px 16px;">
+          <div class="connitem">
+            <div class="logo" style="background:#d98fff">OJ</div>
+            <div><div class="nm">OddsJam</div><div class="st" style="color:#98A2A8"><span class="cd" style="background:#98A2A8"></span>Data plan · not subscribed</div></div>
+            <div class="act"><button class="soon">Soon</button></div>
+          </div>
+          <div class="connitem">
+            <div class="logo" style="background:#7de0d6">🤖</div>
+            <div><div class="nm">Trading Agents</div><div class="st" style="color:#98A2A8"><span class="cd" style="background:#98A2A8"></span>Subscribe in Models tab</div></div>
+            <div class="act"></div>
+          </div>
+        </div>
+        <button class="linkish" style="width:100%; padding:12px 0; margin-top:14px; color:#FF5C5C; border-color:#2a323a;">Sign out</button>
+      </div>
+
+      <!-- ===== TAB BAR ===== -->
+      <div class="tabbar" role="tablist">
+        <button class="tabbtn on" data-tab="agent" role="tab" aria-selected="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none"/></svg>
+          Agent
+        </button>
+        <button class="tabbtn" data-tab="train" role="tab" aria-selected="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 17l5-5 4 3 7-8"/><path d="M16 7h4v4"/></svg>
+          Models
+        </button>
+        <button class="tabbtn" data-tab="funds" role="tab" aria-selected="false">
+          <span class="tabnum num" id="tabBal">$1,248</span>
+          Balance
+        </button>
+        <button class="tabbtn" data-tab="apis" role="tab" aria-selected="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 19.5c1.4-3.2 4-4.8 7-4.8s5.6 1.6 7 4.8"/></svg>
+          Profile
+        </button>
+      </div>
+
+      <!-- ===== MODEL DETAIL SHEET ===== -->
+      <div class="sheet" id="modelSheet" role="dialog" aria-label="Model details" style="z-index:62;">
+        <div class="grab"></div>
+        <div style="display:flex; gap:16px; align-items:center; margin-bottom:12px;">
+          <div class="orb" id="msOrb" style="width:64px; height:64px;"><div class="halo" style="inset:-10px;"></div><div class="blob"></div><div class="swirl"></div><span class="memoji" id="msEmoji"></span><div class="sheen"></div></div>
+          <div>
+            <div style="font-size:18px; font-weight:700;" id="msName">Wave Rider</div>
+            <div class="sub" id="msBy">by Sneakers Labs</div>
+          </div>
+        </div>
+        <div class="balrow" style="margin:0 0 12px;">
+          <div class="balcell"><div class="lab">30d paper</div><div class="val num" id="msPerf" style="font-size:18px;">+18.2%</div></div>
+          <div class="balcell"><div class="lab">Running</div><div class="val num" id="msRun" style="font-size:18px;">1,204</div></div>
+        </div>
+        <div class="sub" id="msDesc" style="margin-bottom:16px;"></div>
+        <button class="pillbtn primary" id="msSub" style="width:100%;">Subscribe · $9.99/mo</button>
+      </div>
+
+      <!-- ===== ADD CASH SHEET ===== -->
+      <div class="sheetveil" id="veil"></div>
+      <div class="sheet" role="dialog" aria-label="Add cash">
+        <div class="grab"></div>
+        <div class="row"><div style="font-size:17px; font-weight:700;">Add cash</div><span class="badge test">STRIPE TEST</span></div>
+        <div class="sub" style="margin-top:8px;">Test mode — card 4242 4242 4242 4242. No real money moves.</div>
+        <div class="amtchips">
+          <button class="chip num" data-amt="25">$25</button>
+          <button class="chip on num" data-amt="100">$100</button>
+          <button class="chip num" data-amt="250">$250</button>
+        </div>
+        <button class="pillbtn primary" id="confirmAdd" style="width:100%;">Add $100</button>
+      </div>
+    </div></div>
+
+    <!-- ================= SPEC NOTES ================= -->
+    <aside class="notes">
+      <div data-note="agent">
+        <h2>Tab 1 · Agent</h2>
+        <h3>Cover-flow of models, one equipped</h3>
+        <p>iOS-6-album-style carousel: swipe (or tap a side orb) to browse your models — each is a colored orb. The equipped one breathes and trades; tap <b>Equip</b> to switch. Unsubscribed models show their price right in the carousel.</p>
+        <ul>
+          <li>Paper-live in v1 — real prices, simulated balance; the agent runs 24/7 on a Railway worker</li>
+          <li>Only one model equipped at a time; Equip is instant, next window uses the new model</li>
+          <li>Activity feed carries the venue logo per trade — Kalshi, Polymarket, ProphetX for sports</li>
+          <li>Tap the centered orb for its detail sheet</li>
+        </ul>
+      </div>
+      <div data-note="train" hidden>
+        <h2>Tab 2 · Models</h2>
+        <h3>My Model vs Trading Agents</h3>
+        <p><b>My Model</b> is yours to train: the strategy prompt writes agent config the worker re-reads each window. <b>Trading Agents</b> is a ranked, subscribable marketplace — tap + to add one, or open it for details.</p>
+        <ul>
+          <li>Prompt + presets wired to <code>PUT /api/agent/config</code></li>
+          <li>Trading Agents ranked by 30-day paper performance; subscriptions bill via Stripe, creator payouts via Stripe Connect</li>
+          <li>v1: Sneakers Labs models subscribable first; community submissions in review</li>
+        </ul>
+      </div>
+      <div data-note="funds" hidden>
+        <h2>Tab 3 · Funds</h2>
+        <h3>Real Stripe rails, test keys</h3>
+        <p>Add cash runs a genuine Payment Element flow in test mode and feeds the agent's paper balance. Flip to live keys when custody and compliance are settled — the UI doesn't change.</p>
+        <ul>
+          <li>Balance + ledger from the server, single source of truth with the agent</li>
+          <li>Try it: Add cash actually updates the balance here</li>
+        </ul>
+      </div>
+      <div data-note="apis" hidden>
+        <h2>Tab 4 · Profile</h2>
+        <h3>You, your plan, your connections</h3>
+        <p>Account at the top, then everything the agent plugs into: your Sneakers plan (Stripe Billing), trading venues, and data connections. Kalshi and Polymarket connect for real in v1; the rest appear as cards so the full vision is visible at launch.</p>
+        <ul>
+          <li>Profile + plan management up top; sign out at the bottom</li>
+          <li>ProphetX + OddsJam data plan listed as available / coming soon</li>
+        </ul>
+      </div>
+      <p class="hint">Tap the tab bar to move around · Pause the agent · Add cash on Funds. Open this page on your iPhone to feel it at real size.</p>
+    </aside>
+  </div>
+</div>
+
+<script>
+(function(){
+  // ---- model catalog ----
+  var MODELS = [
+    {id:'updown', name:'Up/Down', color:'c-updown', emoji:'🎢', by:'Sneakers Labs', perf:'+14.6%', runners:2340, price:null, included:true,
+     desc:'The flagship. Trades every Bitcoin and crypto up/down market on Kalshi and Polymarket — 5 and 15-minute windows, both directions. Included with your Sneakers plan.'},
+    {id:'longshot', name:'Longshot v3', color:'', emoji:'🐎', by:'you', perf:'+9.4%', runners:1, price:null, mine:true,
+     desc:'Your model. Trades 5 & 15-minute crypto windows, favoring longshots priced 10–35¢ with momentum confirmation. Max 5% of bankroll per trade.'},
+    {id:'oddsjam', name:'OddsJam', color:'c-oddsjam', by:'OddsJam', perf:'—', runners:0, price:19.99, featured:true,
+     tagline:'The best sports/predictions agent', priceLabel:'From $1 per day',
+     desc:'The best sports & predictions agent. Powered by OddsJam’s live odds data across every major sportsbook and prediction market — finds +EV lines and trades them for you.'},
+    {id:'wave', name:'Wave Rider', color:'c-blue', emoji:'🏄', by:'Sneakers Labs', perf:'+18.2%', runners:1204, price:9.99,
+     desc:'Rides momentum across consecutive 5-minute windows. Enters on book imbalance, exits into strength. Best in trending sessions.'},
+    {id:'drift', name:'Overnight Drift', color:'c-purple', emoji:'🦉', by:'Sneakers Labs', perf:'+11.7%', runners:862, price:4.99,
+     desc:'Trades the quiet hours — fades overreactions on low-liquidity overnight windows when spreads widen.'},
+    {id:'sniper', name:'Cent Sniper', color:'c-gold', emoji:'🎯', by:'@quantfrat', perf:'+8.9%', runners:315, price:2.99,
+     desc:'Hunts mispriced 1–5¢ tails minutes before settle. Small size, high frequency, strict loss ceiling.'},
+    {id:'news', name:'News Reactor', color:'c-red', emoji:'🗞️', by:'community', perf:'—', runners:0, price:null, review:true,
+     desc:'Reacts to headline momentum within seconds. Currently in review — subscribable once it clears the vetting run.'}
+  ];
+  var subscribed = {};      // id -> true
+  var equippedId = 'updown';
+  var center = 0;
+  var paused = false;
+
+  // ---- agent state machine ----
+  var states = [
+    {c:'state-scanning', t:'Scanning 14 markets', s:'BTC · ETH · SOL — 5 & 15-min windows on Kalshi + Polymarket'},
+    {c:'state-entering', t:'Entering position', s:'ETH above $3,410 at 2:30p · buying Yes at 27¢'},
+    {c:'state-holding',  t:'Holding 2 positions', s:'Next settle in 4m 12s'},
+    {c:'state-scanning', t:'Scanning 14 markets', s:'Last window: +$21.60 · 12 trades today'}
+  ];
+  var si = 0;
+
+  // ---- cover flow ----
+  var cf = document.getElementById('cf');
+  var cfDots = document.getElementById('cfDots');
+  var orbEls = MODELS.map(function(m, i){
+    var el = document.createElement('div');
+    el.className = 'orb ' + m.color;
+    el.innerHTML = '<div class="halo"></div><div class="blob"></div><div class="swirl"></div>' +
+      (m.emoji ? '<span class="memoji">' + m.emoji + '</span>' : '') + '<div class="sheen"></div>';
+    el.setAttribute('role','button');
+    el.setAttribute('aria-label', m.name);
+    el.addEventListener('click', function(){
+      if (i !== center){ center = i; render(); }
+      else { openSheet(m); }
+    });
+    cf.appendChild(el);
+    var d = document.createElement('span');
+    cfDots.appendChild(d);
+    return el;
+  });
+
+  var cfName = document.getElementById('cfName');
+  var statusDot = document.getElementById('statusDot');
+  var statusText = document.getElementById('statusText');
+  var statusSub = document.getElementById('statusSub');
+  var equipBtn = document.getElementById('equipBtn');
+
+  function ownedById(id){ var m = MODELS.filter(function(x){return x.id===id})[0]; return m.mine || m.included || subscribed[id]; }
+
+  function render(){
+    MODELS.forEach(function(m, i){
+      var d = i - center;
+      var el = orbEls[i];
+      var cls = 'orb ' + m.color;
+      if (Math.abs(d) > 2) cls += ' cfhide'; else cls += ' cfp' + d;
+      if (m.id === equippedId){
+        cls += ' ' + states[si].c;
+        if (!paused && i === center) cls += ' live';
+        if (paused) cls += ' paused';
+      }
+      el.className = cls;
+      cfDots.children[i].className = (i === center) ? 'on' : '';
+    });
+    var m = MODELS[center];
+    cfName.textContent = m.name;
+    if (m.id === equippedId){
+      statusDot.style.display = '';
+      if (paused){ statusText.textContent = 'Paused'; statusSub.textContent = 'The agent will not enter new positions.'; }
+      else { statusText.textContent = states[si].t; statusSub.textContent = states[si].s; }
+      equipBtn.textContent = 'Equipped ✓';
+      equipBtn.className = 'pillbtn ghost';
+    } else {
+      statusDot.style.display = 'none';
+      statusText.textContent = m.tagline || (m.perf + ' · 30d paper');
+      statusSub.textContent = 'by ' + m.by + (m.runners > 1 ? ' · ' + m.runners.toLocaleString('en-US') + ' running' : '');
+      if (m.review){ equipBtn.textContent = 'In review'; equipBtn.className = 'pillbtn ghost'; }
+      else if (ownedById(m.id)){ equipBtn.textContent = 'Equip'; equipBtn.className = 'pillbtn primary'; }
+      else { equipBtn.textContent = 'Subscribe · ' + (m.priceLabel || '$' + m.price + '/mo'); equipBtn.className = 'pillbtn primary'; }
+    }
+  }
+
+  equipBtn.addEventListener('click', function(){
+    var m = MODELS[center];
+    if (m.id === equippedId || m.review) return;
+    if (!ownedById(m.id)){ subscribed[m.id] = true; renderGrid(); }
+    equippedId = m.id;
+    paused = false;
+    document.getElementById('pauseBtn').textContent = 'Pause';
+    render();
+  });
+
+  document.getElementById('pauseBtn').addEventListener('click', function(){
+    paused = !paused;
+    this.textContent = paused ? 'Resume' : 'Pause';
+    render();
+  });
+
+  setInterval(function(){
+    if (paused) return;
+    si = (si + 1) % states.length;
+    render();
+  }, 4500);
+
+  // swipe on the carousel
+  var tx = null;
+  cf.addEventListener('touchstart', function(e){ tx = e.touches[0].clientX; }, {passive:true});
+  cf.addEventListener('touchend', function(e){
+    if (tx === null) return;
+    var dx = e.changedTouches[0].clientX - tx; tx = null;
+    if (Math.abs(dx) < 30) return;
+    center = Math.max(0, Math.min(MODELS.length - 1, center + (dx < 0 ? 1 : -1)));
+    render();
+  }, {passive:true});
+
+  // ---- tabs ----
+  var btns = document.querySelectorAll('.tabbtn');
+  var notes = document.querySelectorAll('.notes [data-note]');
+  function goTab(name){
+    btns.forEach(function(x){ x.classList.toggle('on', x.dataset.tab===name); x.setAttribute('aria-selected', x.dataset.tab===name); });
+    document.querySelectorAll('.tabpane').forEach(function(p){ p.classList.toggle('active', p.id==='pane-'+name); });
+    notes.forEach(function(n){ n.hidden = n.dataset.note!==name; });
+  }
+  btns.forEach(function(b){ b.addEventListener('click', function(){ goTab(b.dataset.tab); }); });
+
+  // ---- models: segmented toggle ----
+  var segMine = document.getElementById('segMine'), segBest = document.getElementById('segBest');
+  var vMine = document.getElementById('modelMine'), vBest = document.getElementById('modelBest');
+  function seg(on){
+    segMine.classList.toggle('on', on==='mine'); segBest.classList.toggle('on', on==='best');
+    segMine.setAttribute('aria-selected', on==='mine'); segBest.setAttribute('aria-selected', on==='best');
+    vMine.hidden = on!=='mine'; vBest.hidden = on!=='best';
+  }
+  segMine.addEventListener('click', function(){ seg('mine'); });
+  segBest.addEventListener('click', function(){ seg('best'); });
+
+  // ---- best models grid ----
+  var grid = document.getElementById('orbGrid');
+  function renderGrid(){
+    grid.innerHTML = '';
+    var list = MODELS.filter(function(m){ return !m.mine; })
+      .sort(function(a,b){ return (b.featured?1:0) - (a.featured?1:0); });
+    list.forEach(function(m){
+      var cell = document.createElement('button');
+      var owned = ownedById(m.id);
+      cell.className = 'modelcell' + (owned ? ' subscribed' : '') + (m.featured ? ' featured' : '');
+      var priceTxt = m.review ? 'In review' : m.included ? 'Included' : (subscribed[m.id] ? 'Subscribed ✓' : (m.priceLabel || '$' + m.price + '/mo'));
+      var statLine = m.tagline
+        ? '<div class="mtag">' + m.tagline + '</div>'
+        : '<div class="mperf num' + (m.review ? '' : ' pos') + '">' + m.perf + (m.review ? '' : ' · 30d') + '</div>';
+      var addBtn = m.review ? '' : '<span class="addbtn' + (owned ? ' added' : '') + '" data-add aria-label="Add ' + m.name + '">' + (owned ? '✓' : '+') + '</span>';
+      cell.innerHTML =
+        addBtn +
+        '<div class="orb ' + m.color + '"><div class="halo"></div><div class="blob"></div><div class="swirl"></div>' +
+        (m.emoji ? '<span class="memoji">' + m.emoji + '</span>' : '') + '<div class="sheen"></div></div>' +
+        '<div class="mname">' + m.name + '</div>' +
+        '<div class="mby">by ' + m.by + '</div>' +
+        statLine +
+        '<div class="mprice num">' + priceTxt + '</div>';
+      cell.addEventListener('click', function(e){
+        if (e.target.hasAttribute && e.target.hasAttribute('data-add')){
+          if (!ownedById(m.id)){ subscribed[m.id] = true; renderGrid(); render(); }
+          return;
+        }
+        openSheet(m);
+      });
+      grid.appendChild(cell);
+    });
+  }
+
+  // ---- model detail sheet ----
+  var screen = document.getElementById('screen');
+  var modelSheet = document.getElementById('modelSheet');
+  var sheetModel = null;
+  function openSheet(m){
+    sheetModel = m;
+    document.getElementById('msOrb').className = 'orb ' + m.color;
+    document.getElementById('msEmoji').textContent = m.emoji || '';
+    document.getElementById('msName').textContent = m.name;
+    document.getElementById('msBy').textContent = 'by ' + m.by;
+    document.getElementById('msPerf').textContent = m.perf;
+    document.getElementById('msPerf').className = 'val num' + (m.review ? '' : ' pos');
+    document.getElementById('msRun').textContent = m.runners > 1 ? m.runners.toLocaleString('en-US') : '—';
+    document.getElementById('msDesc').textContent = m.desc;
+    refreshSheetBtn();
+    screen.classList.add('sheet-open');
+    modelSheet.classList.add('open');
+  }
+  function refreshSheetBtn(){
+    var b = document.getElementById('msSub');
+    var m = sheetModel;
+    if (m.mine){ b.textContent = 'Edit in My Model'; b.className = 'pillbtn ghost'; }
+    else if (m.review){ b.textContent = 'In review — coming soon'; b.className = 'pillbtn ghost'; }
+    else if (m.id === equippedId){ b.textContent = 'Equipped ✓'; b.className = 'pillbtn ghost'; }
+    else if (ownedById(m.id)){ b.textContent = 'Equip now'; b.className = 'pillbtn primary'; }
+    else { b.textContent = 'Subscribe · ' + (m.priceLabel || '$' + m.price + '/mo'); b.className = 'pillbtn primary'; }
+    b.style.width = '100%';
+  }
+  document.getElementById('msSub').addEventListener('click', function(){
+    var m = sheetModel;
+    if (m.review) return;
+    if (m.mine){ closeSheets(); goTab('train'); seg('mine'); return; }
+    if (m.id === equippedId) return;
+    if (!ownedById(m.id)){ subscribed[m.id] = true; renderGrid(); refreshSheetBtn(); render(); return; }
+    equippedId = m.id; paused = false;
+    document.getElementById('pauseBtn').textContent = 'Pause';
+    center = MODELS.indexOf(m);
+    closeSheets(); renderGrid(); render(); goTab('agent');
+  });
+
+  // ---- funds: balance + add-cash sheet ----
+  var balance = 1247.62;
+  function fmt(n){ return '$' + n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+  var cashSheet = document.querySelector('.sheet[aria-label="Add cash"]');
+  var amt = 100;
+  function closeSheets(){
+    screen.classList.remove('sheet-open');
+    modelSheet.classList.remove('open');
+    cashSheet.classList.remove('open');
+  }
+  document.getElementById('addCashBtn').addEventListener('click', function(){
+    screen.classList.add('sheet-open'); cashSheet.classList.add('open');
+  });
+  document.getElementById('veil').addEventListener('click', closeSheets);
+  document.querySelectorAll('.amtchips .chip').forEach(function(c){
+    c.addEventListener('click', function(){
+      document.querySelectorAll('.amtchips .chip').forEach(function(x){ x.classList.toggle('on', x===c); });
+      amt = +c.dataset.amt;
+      document.getElementById('confirmAdd').textContent = 'Add $' + amt;
+    });
+  });
+  function syncBalance(){
+    document.getElementById('fundsBal').textContent = fmt(balance);
+    document.getElementById('agentBal').textContent = fmt(balance);
+    document.getElementById('tabBal').textContent = '$' + Math.round(balance).toLocaleString('en-US');
+  }
+  document.getElementById('confirmAdd').addEventListener('click', function(){
+    balance += amt;
+    syncBalance();
+    closeSheets();
+  });
+  syncBalance();
+
+  // ---- sparkline ----
+  var data = [721.96, 748.2, 731.1, 812.4, 1298.7, 1286.2, 1209.48, 1247.62];
+  var days = ['Jun 30','Jul 1','Jul 2','Jul 3','Jul 3','Jul 4','Jul 5','Today'];
+  var svg = document.getElementById('spark');
+  var W=320,H=96,P=8;
+  var min=Math.min.apply(null,data), max=Math.max.apply(null,data);
+  function X(i){ return P + i*(W-2*P)/(data.length-1); }
+  function Y(v){ return H-P-14 - (v-min)/(max-min)*(H-2*P-22); }
+  var pts = data.map(function(v,i){ return X(i)+','+Y(v); }).join(' ');
+  var area = P+','+(H-P) + ' ' + pts + ' ' + (W-P)+','+(H-P);
+  svg.innerHTML =
+    '<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">' +
+    '<stop offset="0" stop-color="#2FD37A" stop-opacity=".28"/><stop offset="1" stop-color="#2FD37A" stop-opacity="0"/></linearGradient></defs>' +
+    '<line x1="'+P+'" y1="'+Y(data[0])+'" x2="'+(W-P)+'" y2="'+Y(data[0])+'" stroke="#232b31" stroke-dasharray="3 4" stroke-width="1"/>' +
+    '<polygon points="'+area+'" fill="url(#g)"/>' +
+    '<polyline points="'+pts+'" fill="none" stroke="#2FD37A" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>' +
+    '<circle cx="'+X(data.length-1)+'" cy="'+Y(data[data.length-1])+'" r="4" fill="#2FD37A" stroke="#14181D" stroke-width="2"/>' +
+    '<line id="xh" x1="0" y1="'+P+'" x2="0" y2="'+(H-P)+'" stroke="#3a444d" stroke-width="1" visibility="hidden"/>' +
+    '<circle id="hp" r="4.5" fill="#2FD37A" stroke="#14181D" stroke-width="2" visibility="hidden"/>';
+  var tt = document.getElementById('sparkTT'), xh = svg.querySelector('#xh'), hp = svg.querySelector('#hp');
+  function showAt(clientX){
+    var r = svg.getBoundingClientRect();
+    var i = Math.round((clientX - r.left)/r.width * (data.length-1));
+    i = Math.max(0, Math.min(data.length-1, i));
+    var px = X(i), py = Y(data[i]);
+    xh.setAttribute('x1',px); xh.setAttribute('x2',px); xh.setAttribute('visibility','visible');
+    hp.setAttribute('cx',px); hp.setAttribute('cy',py); hp.setAttribute('visibility','visible');
+    tt.style.display='block';
+    tt.style.left = (px/W*100)+'%'; tt.style.top = (py/H*100)+'%';
+    tt.innerHTML = '<b class="num">'+fmt(data[i])+'</b> · '+days[i];
+  }
+  function hide(){ tt.style.display='none'; xh.setAttribute('visibility','hidden'); hp.setAttribute('visibility','hidden'); }
+  svg.addEventListener('mousemove', function(e){ showAt(e.clientX); });
+  svg.addEventListener('mouseleave', hide);
+  svg.addEventListener('touchstart', function(e){ showAt(e.touches[0].clientX); }, {passive:true});
+  svg.addEventListener('touchmove', function(e){ showAt(e.touches[0].clientX); }, {passive:true});
+  svg.addEventListener('touchend', hide);
+
+  // ---- init ----
+  renderGrid();
+  render();
+})();
+</script>

@@ -1,0 +1,155 @@
+# Sneakers Agent Experience — Design Spec
+
+**Date:** 2026-07-06
+**Status:** Approved (prototype iterated with Jackson; visual source of truth below)
+**Prototype:** `docs/prototypes/sneakers-app-prototype.html` (interactive, open in any browser)
+**Targets:** Web (`apps/platform`, ships first) and iOS (`apps/ios`, SwiftUI port)
+
+## Vision
+
+The bot is the product. One agent-first experience — identical design on web and iOS —
+replaces the multi-tab terminal UX for consumer users. Users watch a living "orb" trade
+for them, subscribe to better models, fund a wallet, and manage connections. Everything
+runs through one shared API so the web app and iOS app are two skins over the same body.
+
+v1 is **paper-live** (Rung 1): real prices from Kalshi + Polymarket, simulated balance,
+real Stripe rails in test mode. No real money until custody/KYC/counsel are resolved.
+
+## The four tabs
+
+### 1. Agent — cover-flow of model orbs
+- iOS-6-album-style carousel of "model orbs." Each model is a colored, living sphere
+  (two counter-rotating plasma layers + breathing animation when equipped + emoji or
+  partner logo identity).
+- One model **equipped** at a time. Center orb = selected; button reads
+  `Equipped ✓` / `Equip` / `Subscribe · <price>`. Equipping is instant; the next
+  trading window uses the new model.
+- Status line under the orb: live agent state (`scanning | entering | holding | paused`)
+  with human explanation ("Scanning 14 markets — BTC · ETH · SOL, 5 & 15-min windows").
+- Balance + Today P&L cells; Pause/Resume.
+- **Activity feed**: every decision with the venue logo (Kalshi/Polymarket/ProphetX),
+  a status badge (✓ settled, → entered, · passed), and the *why* (signal or gate name).
+- PAPER badge always visible in paper mode.
+
+### 2. Models — My Model | Trading Agents
+- Segmented control, **Trading Agents is the default**.
+- **Trading Agents**: 2-col grid of model orbs. Each card: orb, name, author,
+  perf line (30d paper) or tagline, price pill, and a **+ button** (top-right) for
+  one-tap subscribe (flips to ✓). Tap card → detail sheet (stats, description,
+  Subscribe/Equip). Featured partner card (OddsJam) gets a standout treatment:
+  logo-on-orb, blue glow card, tagline "The best sports/predictions agent",
+  price "From $1 per day", no metrics.
+- **My Model**: user's own model (name + 30d perf), an editable **strategy prompt**
+  (natural language, re-read by the worker each window), preset chips
+  (default: Longshot 10–35¢), Run this model / Backtest buttons.
+- Model catalog v1: Up/Down 🎢 (flagship, included with plan, equipped by default,
+  trades all BTC/crypto up-down markets), OddsJam (featured partner, subscribable),
+  Wave Rider 🏄, Overnight Drift 🦉, Cent Sniper 🎯 (paid), News Reactor 🗞️ (in review),
+  Longshot v3 🐎 (user's own).
+
+### 3. Balance (Funds)
+- Tab bar item shows the **live balance number** ("$1,248" over the label "Balance").
+- Wallet hero + 7-day sparkline (hover/touch tooltip), Add cash / Withdraw.
+- Add cash = Stripe Payment Element, **test mode**, feeding the paper ledger.
+  The UI does not change when live keys land later.
+- History: trade settlements (grouped), deposits, starting balance.
+
+### 4. Profile
+- Account card (avatar, name, email, edit), **Your plan** (Sneakers Pro via Stripe
+  Billing), **Trading venues** (Kalshi ✓ connected, Polymarket ✓ connected,
+  ProphetX = soon), **Data & bots** (OddsJam data plan = soon, pointer to Trading
+  Agents), Sign out.
+
+## Design system (from prototype)
+
+- Surface `#0B0D10`, card `#14181D`, border `#1e242a`, ink `#F2F5F3`,
+  secondary `#98A2A8`, green `#2FD37A`, red `#FF5C5C` (negative only),
+  OddsJam blue `#18AFE8`. SF Pro / `-apple-system`; tabular numerals for money.
+- Orb = layered: halo (blurred radial), blob (radial gradient from per-model
+  CSS vars), swirl (two counter-rotating blurred plasma layers), emoji/logo, sheen.
+  Breathing keyframe when live; grayscale-frozen when paused. All motion respects
+  `prefers-reduced-motion`.
+- Never surface "scrape/scraper" in user copy — "live prices", "live data".
+
+## Architecture (contract-first)
+
+```
+apps/platform (Next.js)        apps/agent-worker (Railway)      apps/ios (SwiftUI)
+  /agent route group  ──────►    loop.ts paper-live runner        4-tab port (M2)
+  /api/agent/* etc.   ◄──────    writes state to Postgres
+  (single shared API)            reads config each window
+```
+
+- **Web ships first** inside `apps/platform` as an `/agent` route group — same
+  Supabase auth/session as the rest of the platform. "Combining functionality into
+  one" = the agent experience lives in the main web app, not a separate deploy.
+- iOS consumes the identical API later; zero server changes for the iOS port.
+- Worker: `apps/agent-worker` (already has loop/feeds/dryrun) runs continuously on
+  Railway, persists every decision + state transition.
+
+## API contract
+
+```
+GET  /api/agent/state        orb state, equipped model, sim balance, today P&L, last decision
+GET  /api/agent/activity     paginated decision feed (venue, action, why, amount, ts)
+GET  /api/agent/models       catalog + user's subscription/equip status
+POST /api/agent/models/:id/subscribe    (Stripe subscription, test mode)
+POST /api/agent/models/:id/equip
+GET  /api/agent/config       my-model prompt, preset, risk band
+PUT  /api/agent/config       update prompt/preset (worker re-reads next window)
+POST /api/agent/pause | resume
+GET  /api/wallet             balance, pending, ledger
+POST /api/wallet/deposit     Stripe PaymentIntent (test mode)
+POST /api/wallet/withdraw    test-mode stub
+GET  /api/connections        venue/data connections + status
+GET  /api/plans              subscribed plans (Sneakers tier, OddsJam future)
+```
+
+Auth: Supabase JWT (cookie session on web, Authorization header on iOS).
+All rows user-scoped. Web polls `/api/agent/state` every 5s while visible.
+
+## Data model (new tables, Supabase = user data)
+
+- `agent_models` — catalog: id, name, emoji/logo, color, author, price_cents,
+  billing_period, tagline, description, status (live|review|coming_soon), featured, included
+- `user_agent_state` — user_id, equipped_model_id, paused, sim_balance_cents
+- `agent_model_subs` — user_id, model_id, stripe_subscription_id, status
+- `agent_configs` — user_id, prompt, preset, risk band (worker reads)
+- `agent_decisions` — user_id, model_id, venue, market, action (entered|settled|passed),
+  qty, price_cents, pnl_cents, reason, created_at  ← feed + P&L derive from this
+- `wallet_ledger` — user_id, kind (deposit|withdraw|settlement), amount_cents,
+  stripe_ref, created_at
+
+Market prices continue to come from the Railway Postgres pipeline (two-DB split holds;
+no cross-joins — worker joins in memory).
+
+## Phases
+
+1. **Web shell** — `/agent` route group in `apps/platform`: port the prototype to
+   React/Tailwind components (Orb, CoverFlow, ModelGrid, DetailSheet, Feed, Sparkline),
+   mock data module, all four tabs interactive. Mobile-web = full-bleed app frame;
+   desktop = centered column (~430px) like the prototype.
+2. **Contract** — implement the API routes against fixtures; migrations for the tables;
+   swap the UI from mock module to live endpoints (one env flag).
+3. **Worker paper-live** — agent-worker writes decisions/state per window using the
+   equipped model's preset + prompt; state endpoint goes real; feed goes real.
+4. **Stripe test rails** — deposit flow (Payment Element), model subscriptions
+   (Products/Prices in test mode), plan card on Profile.
+5. **iOS port** — SwiftUI 4-tab app against the same API (existing `apps/ios`
+   scaffolding: auth, biometry survive; tabs rebuilt to match prototype).
+
+## Error handling & testing
+
+- Worker unreachable / stale state (> 2 windows old): orb shows "Reconnecting…"
+  amber state; feed stays readable (last known data, timestamped).
+- Every external call (Stripe, venues) logs entry + success, not just errors.
+- Vitest: state reducers, P&L derivation from `agent_decisions`, config validation.
+  Playwright: tab flows, subscribe→equip loop, add-cash test-mode flow.
+- Paper-mode guardrail: `PAPER` badge is driven by server flag, not client constant.
+
+## Open questions (parked, not blockers)
+
+- OddsJam: partnership terms (rev-share vs reselling their API) — affects nothing
+  in phases 1–3.
+- Model marketplace creator onboarding (Stripe Connect payouts) — post-v1.
+- Voice interaction on the orb — post-v1.
