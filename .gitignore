@@ -4,6 +4,8 @@ dist/
 logs/
 .env
 .env.local
+*.local.md
+POLYMARKET_KEYS.local.md
 .DS_Store
 *.swp
 *.swo
@@ -14,3 +16,6 @@ logs/
 data/
 .vercel
 .next/
+
+# Superpowers brainstorming scratch (mockups, session state)
+.superpowers/
