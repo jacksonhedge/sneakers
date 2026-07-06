@@ -51,6 +51,13 @@ export function ActivityScreen({ state, refresh }: { state: SessionState; refres
       )}
 
       <div className="rounded-2xl border border-gray-200 bg-white p-6">
+        <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-400">Connected bank</div>
+        <div className="text-sm text-gray-700">
+          {state.bank.institution ?? 'Unknown institution'} ····{state.bank.last4 ?? '----'}
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-gray-200 bg-white p-6">
         <div className="mb-2 flex items-baseline justify-between">
           <span className="text-xs font-semibold uppercase tracking-wide text-gray-400">
             Round-ups toward ${(state.rule.thresholdCents / 100).toFixed(2)}
