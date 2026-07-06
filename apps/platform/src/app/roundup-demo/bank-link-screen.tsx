@@ -19,10 +19,16 @@ export function BankLinkScreen({ onLinked }: { onLinked: (institution: string | 
       const { clientSecret } = (await tokenRes.json()) as { clientSecret: string }
 
       const stripe = await stripePromise
-      if (!stripe) throw new Error('Stripe failed to load.')
+      if (!stripe) throw new Error('Stripe failed to load. Please try again in a moment.')
 
       const result = await stripe.collectFinancialConnectionsAccounts({ clientSecret })
-      if (result.error) throw new Error(result.error.message)
+      if (result.error) {
+        // Stripe SDK error messages are written for developers (e.g. "You should not use your
+        // secret key with Stripe.js"), not end users — log the real detail for debugging but
+        // never surface it verbatim in the UI.
+        console.error('[roundup-demo] Stripe Financial Connections error:', result.error)
+        throw new Error('Could not connect to your bank right now. Please try again.')
+      }
 
       const fcSessionId = result.financialConnectionsSession.id
       const completeRes = await fetch('/api/roundup-demo/bank/link-complete', {
