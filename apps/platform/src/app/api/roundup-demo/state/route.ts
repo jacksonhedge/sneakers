@@ -2,6 +2,8 @@
 import { NextResponse } from 'next/server'
 import { getServerClient } from '@/lib/supabase-server'
 import { ensureSession, attachSessionCookie } from '@/lib/roundup/session'
+import { fetchPolymarketPrice } from '@/lib/roundup/polymarket-price'
+import { computePositionPnlCents } from '@sneakers/core'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -35,6 +37,42 @@ export async function GET() {
     return NextResponse.json({ error: 'txns_load_failed', message: txnsErr.message }, { status: 500 })
   }
 
+  const { data: positions, error: positionsErr } = await sb
+    .from('roundup_demo_positions')
+    .select('*')
+    .eq('session_id', sessionId)
+    .order('opened_at', { ascending: false })
+  if (positionsErr) {
+    return NextResponse.json({ error: 'positions_load_failed', message: positionsErr.message }, { status: 500 })
+  }
+
+  // Live price is fetched fresh on every call (same "server is authoritative,
+  // recomputed on read" pattern as pendingAccruedCents below) -- the client never
+  // calls Polymarket directly. A failed live-price lookup degrades gracefully to
+  // showing the entry price only (currentPrice/pnlCents null) rather than failing
+  // the whole state load.
+  const positionsWithLivePrice = await Promise.all(
+    (positions ?? []).map(async (p) => {
+      let currentPrice: number | null = null
+      try {
+        const live = await fetchPolymarketPrice(p.market_id)
+        currentPrice = live.price
+      } catch {
+        currentPrice = null
+      }
+      const entryPrice = Number(p.entry_price)
+      return {
+        id: p.id,
+        marketId: p.market_id,
+        marketQuestion: p.market_question,
+        entryPrice,
+        sizeCents: p.size_cents,
+        currentPrice,
+        pnlCents: currentPrice !== null ? computePositionPnlCents(entryPrice, currentPrice, p.size_cents) : null,
+      }
+    }),
+  )
+
   const totalRoundUpCents = (txns ?? []).reduce((sum, t) => sum + t.round_up_cents, 0)
   const pendingAccruedCents = Math.max(0, totalRoundUpCents - session.facilitated_cents)
 
@@ -61,6 +99,7 @@ export async function GET() {
         roundUpCents: t.round_up_cents,
         date: t.occurred_on,
       })),
+      positions: positionsWithLivePrice,
     },
   }
 
