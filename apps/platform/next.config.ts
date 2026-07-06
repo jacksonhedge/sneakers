@@ -30,7 +30,9 @@ const CSP = [
   "frame-ancestors 'none'",
   "form-action 'self'",
   "base-uri 'self'",
-  'upgrade-insecure-requests',
+  // upgrade-insecure-requests breaks plain-http dev access (e.g. LAN IP):
+  // every _next chunk gets upgraded to https where nothing listens.
+  ...(process.env.NODE_ENV === 'development' ? [] : ['upgrade-insecure-requests']),
 ].join('; ')
 
 const SECURITY_HEADERS = [
@@ -49,6 +51,13 @@ const SECURITY_HEADERS = [
 ]
 
 const nextConfig: NextConfig = {
+  // Next's dev server only trusts "localhost" for dev-mode resources (Fast
+  // Refresh/HMR) by default -- 127.0.0.1 and other loopback aliases are
+  // blocked even though they're the same machine, which silently hangs the
+  // app on those origins in dev (no console error, just a stuck client
+  // bundle). Only needed for local multi-origin testing (e.g. comparing two
+  // isolated cookie sessions side by side); irrelevant in production.
+  ...(process.env.NODE_ENV === 'development' ? { allowedDevOrigins: ['127.0.0.1', '[::1]'] } : {}),
   async headers() {
     return [
       {
