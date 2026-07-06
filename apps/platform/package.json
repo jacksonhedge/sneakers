@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "test": "vitest run",
     "recompute:canonical": "tsx scripts/recompute-canonical.ts",
     "recompute:arb-pairs": "tsx scripts/recompute-arb-pairs.ts",
     "watch:positions": "tsx scripts/autotrade-watcher.ts",
@@ -51,6 +52,7 @@
     "dotenv": "^16.0.3",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.10"
   }
 }
