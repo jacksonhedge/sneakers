@@ -47,3 +47,50 @@
 .ag-tabbtn .ag-tabnum { height: 24px; display: flex; align-items: center; font-size: 14px; font-weight: 800; letter-spacing: -0.02em; }
 .ag-tabbtn--on { color: var(--ag-green); }
 .ag-tabbtn:focus-visible { outline: 2px solid var(--ag-green); outline-offset: -2px; }
+
+/* ---- orb: living sphere ---- */
+.orb { position: relative;
+  --o1:#b8ffd9; --o2:#2FD37A; --o3:#1a9e97; --o4:#0d5f74; --halo:rgba(47,211,122,.35); }
+.orb--blue   { --o1:#d3e7ff; --o2:#4EA8FF; --o3:#2b6fd4; --o4:#14335e; --halo:rgba(78,168,255,.35); }
+.orb--purple { --o1:#e6d9ff; --o2:#a97dff; --o3:#6d3fd4; --o4:#2c1560; --halo:rgba(169,125,255,.35); }
+.orb--gold   { --o1:#fff0c4; --o2:#e8c25a; --o3:#b0842c; --o4:#4e3608; --halo:rgba(232,194,90,.35); }
+.orb--red    { --o1:#ffd6d6; --o2:#FF5C5C; --o3:#c22e2e; --o4:#4e0e0e; --halo:rgba(255,92,92,.35); }
+.orb--cyan   { --o1:#d0fbff; --o2:#39C6D6; --o3:#1e7f95; --o4:#0b2e3e; --halo:rgba(57,198,214,.35); }
+.orb--updown { --o1:#d6ffe3; --o2:#2FD37A; --o3:#c04a33; --o4:#4e0e12; --halo:rgba(47,211,122,.32); }
+.orb--oddsjam{ --o1:#9fdcff; --o2:#18AFE8; --o3:#0d3a55; --o4:#0a1118; --halo:rgba(24,175,232,.4); }
+.orb--gambly { --o1:#d9ffe6; --o2:#3ee06e; --o3:#1a8a44; --o4:#0e1626; --halo:rgba(62,224,110,.42); }
+.orb__blob { position: absolute; inset: 0; border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, var(--o1) 0%, var(--o2) 34%, var(--o3) 68%, var(--o4) 100%); }
+.orb--oddsjam .orb__blob { background: #0d1520 url('/agents/oddsjam.png') center/cover no-repeat; }
+.orb--gambly  .orb__blob { background: #3ee06e url('/agents/gambly.jpg') center/cover no-repeat; }
+.orb__halo { position: absolute; inset: -16%; border-radius: 50%;
+  background: radial-gradient(circle, var(--halo) 0%, transparent 70%); filter: blur(6px); }
+.orb__swirl { position: absolute; inset: 0; border-radius: 50%; overflow: hidden; }
+.orb__swirl::before { content: ""; position: absolute; width: 170%; height: 170%; left: -35%; top: -35%;
+  background:
+    radial-gradient(28% 24% at 33% 62%, var(--o1), transparent 72%),
+    radial-gradient(34% 30% at 68% 38%, rgba(0,0,0,.38), transparent 74%),
+    radial-gradient(22% 20% at 58% 72%, var(--o2), transparent 70%);
+  filter: blur(7px); opacity: .6; animation: orb-swirl 11s linear infinite; }
+.orb__swirl::after { content: ""; position: absolute; width: 170%; height: 170%; left: -35%; top: -35%;
+  background:
+    radial-gradient(26% 30% at 62% 60%, var(--o1), transparent 70%),
+    radial-gradient(30% 26% at 34% 36%, rgba(0,0,0,.3), transparent 72%);
+  filter: blur(9px); opacity: .45; mix-blend-mode: soft-light; animation: orb-swirl 17s linear infinite reverse; }
+.orb__emoji { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-size: calc(var(--orb-size) * 0.4); z-index: 2; filter: drop-shadow(0 3px 6px rgba(0,0,0,.45)); }
+.orb__sheen { position: absolute; inset: 0; border-radius: 50%; overflow: hidden; }
+.orb__sheen::after { content: ""; position: absolute; width: 130%; height: 60%; left: -15%; top: -8%;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.5), transparent 65%); }
+.orb--live .orb__blob { animation: orb-breathe 4.2s ease-in-out infinite; }
+.orb--live .orb__halo { animation: orb-breathe 4.2s ease-in-out infinite reverse; }
+.orb--holding.orb--live .orb__blob { animation-duration: 6.5s; }
+.orb--entering.orb--live .orb__blob, .orb--entering.orb--live .orb__halo { animation-duration: 1.6s; }
+.orb--paused .orb__blob, .orb--paused .orb__halo, .orb--paused .orb__swirl::before, .orb--paused .orb__swirl::after {
+  animation-play-state: paused; }
+.orb--paused .orb__blob, .orb--paused .orb__halo { filter: grayscale(.55) brightness(.75); }
+@keyframes orb-swirl { to { transform: rotate(360deg); } }
+@keyframes orb-breathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.055); } }
+@media (prefers-reduced-motion: reduce) {
+  .orb__blob, .orb__halo, .orb__swirl::before, .orb__swirl::after { animation: none !important; }
+}
