@@ -102,6 +102,7 @@
   .orb.c-red   { --o1:#ffd6d6; --o2:#FF5C5C; --o3:#c22e2e; --o4:#4e0e0e; --halo:rgba(255,92,92,.35);}
   .orb.c-updown{ --o1:#d6ffe3; --o2:#2FD37A; --o3:#c04a33; --o4:#4e0e12; --halo:rgba(47,211,122,.32);}
   .orb.c-oddsjam{ --o1:#9fdcff; --o2:#18AFE8; --o3:#0d3a55; --o4:#0a1118; --halo:rgba(24,175,232,.4);}
+  .orb.c-cyan  { --o1:#d0fbff; --o2:#39C6D6; --o3:#1e7f95; --o4:#0b2e3e; --halo:rgba(57,198,214,.35);}
   .orb.c-oddsjam .blob{ background:#0d1520 url("data:image/png;base64,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") center/cover no-repeat;}
   .orb .blob{
     position:absolute; inset:0; border-radius:50%;
@@ -203,6 +204,30 @@
   }
   .modelcell.featured .mprice{ background:#18AFE8; color:#0B0D10;}
   .modelcell .mtag{ font-size:11.5px; color:#8fd7ff; margin-top:6px; line-height:1.4; font-weight:600;}
+  .addcell{ border:1.5px dashed #2a323a; background:rgba(20,24,29,.4);}
+  .addcell .plusorb{
+    width:84px; height:84px; border-radius:50%; border:2px dashed #2FD37A; margin-bottom:12px;
+    display:flex; align-items:center; justify-content:center; font-size:32px; color:#2FD37A; font-weight:300;
+  }
+  .addcell .mby{ max-width:14ch;}
+
+  /* add-agent sheet form */
+  .fld{
+    width:100%; background:#101519; border:1px solid #232b31; border-radius:12px;
+    padding:11px 12px; color:#F2F5F3; font-family:inherit; font-size:14px; margin-bottom:10px;
+  }
+  .fld::placeholder{ color:#5c676e;}
+  .fld:focus{ outline:none; border-color:#2FD37A;}
+  textarea.fld{ min-height:72px; resize:none; line-height:1.5;}
+  .picklab{ font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#98A2A8; font-weight:600; margin:2px 2px 8px;}
+  .pickrow{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;}
+  .epick{
+    width:38px; height:38px; border-radius:12px; background:#1a2026; border:1px solid #232b31;
+    font-size:19px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-family:inherit;
+  }
+  .epick.on{ border-color:#2FD37A; background:rgba(47,211,122,.12);}
+  .cpick{ width:28px; height:28px; border-radius:50%; cursor:pointer; border:2px solid transparent; padding:0;}
+  .cpick.on{ border-color:#fff;}
   .agent-status{ margin-top:16px; font-size:15px; font-weight:600; letter-spacing:-0.01em; display:flex; align-items:center; gap:8px;}
   .agent-status .dot{ width:8px; height:8px; border-radius:50%; background:#2FD37A; animation:pulse 2s infinite;}
   .orbwrap.paused .dot{ background:#98A2A8; animation:none;}
@@ -385,6 +410,7 @@
             <button class="pillbtn primary" style="font-size:14px;">Run this model</button>
             <button class="pillbtn ghost" style="font-size:14px;">Backtest</button>
           </div>
+          <button class="pillbtn ghost" data-addagent style="width:100%; margin-top:10px; font-size:14px; color:#2FD37A;">＋ Add Agent</button>
         </div>
 
         <!-- Best Models -->
@@ -491,6 +517,30 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 19.5c1.4-3.2 4-4.8 7-4.8s5.6 1.6 7 4.8"/></svg>
           Profile
         </button>
+      </div>
+
+      <!-- ===== ADD AGENT SHEET ===== -->
+      <div class="sheet" id="addSheet" role="dialog" aria-label="Add agent" style="z-index:63;">
+        <div class="grab"></div>
+        <div class="row" style="margin-bottom:12px;"><div style="font-size:17px; font-weight:700;">Add Agent</div><span class="badge paper">PAPER</span></div>
+        <div class="seg" role="tablist" style="margin-bottom:12px;">
+          <button class="on" id="pathPrompt" role="tab" aria-selected="true">Build with prompt</button>
+          <button id="pathApi" role="tab" aria-selected="false">Connect your bot</button>
+        </div>
+        <input class="fld" id="agName" placeholder="Agent name" maxlength="18">
+        <div class="picklab">Emoji</div>
+        <div class="pickrow" id="emojiRow"></div>
+        <div class="picklab">Color</div>
+        <div class="pickrow" id="colorRow"></div>
+        <div id="promptFields">
+          <textarea class="fld" id="agPrompt" placeholder="Strategy prompt — e.g. Trade 15-min ETH windows, buy Yes under 30¢ when momentum is up, max 3% per trade."></textarea>
+        </div>
+        <div id="apiFields" hidden>
+          <input class="fld" id="agUrl" placeholder="https://your-bot.example.com/signals">
+          <input class="fld" id="agKey" placeholder="API key">
+          <div class="sub" style="margin:-2px 0 10px;">We send market signals; your bot returns orders. Runs against your paper balance until it clears review.</div>
+        </div>
+        <button class="pillbtn primary" id="createAgent" style="width:100%;">Create agent</button>
       </div>
 
       <!-- ===== MODEL DETAIL SHEET ===== -->
@@ -609,7 +659,8 @@
   // ---- cover flow ----
   var cf = document.getElementById('cf');
   var cfDots = document.getElementById('cfDots');
-  var orbEls = MODELS.map(function(m, i){
+  var orbEls = [];
+  function addOrbEl(m){
     var el = document.createElement('div');
     el.className = 'orb ' + m.color;
     el.innerHTML = '<div class="halo"></div><div class="blob"></div><div class="swirl"></div>' +
@@ -617,14 +668,16 @@
     el.setAttribute('role','button');
     el.setAttribute('aria-label', m.name);
     el.addEventListener('click', function(){
+      var i = MODELS.indexOf(m);
       if (i !== center){ center = i; render(); }
       else { openSheet(m); }
     });
     cf.appendChild(el);
-    var d = document.createElement('span');
-    cfDots.appendChild(d);
+    cfDots.appendChild(document.createElement('span'));
+    orbEls.push(el);
     return el;
-  });
+  }
+  MODELS.forEach(addOrbEl);
 
   var cfName = document.getElementById('cfName');
   var statusDot = document.getElementById('statusDot');
@@ -752,7 +805,83 @@
       });
       grid.appendChild(cell);
     });
+    var addCell = document.createElement('button');
+    addCell.className = 'modelcell addcell';
+    addCell.innerHTML =
+      '<div class="plusorb">＋</div>' +
+      '<div class="mname">Add Agent</div>' +
+      '<div class="mby">build one or connect your own bot</div>';
+    addCell.addEventListener('click', openAddSheet);
+    grid.appendChild(addCell);
   }
+
+  // ---- add agent sheet ----
+  var addSheet = document.getElementById('addSheet');
+  var EMOJIS = ['🤖','🚀','🧠','🔥','💎','🐍'];
+  var COLORS = [
+    {cls:'',        hex:'#2FD37A'},
+    {cls:'c-blue',  hex:'#4EA8FF'},
+    {cls:'c-purple',hex:'#a97dff'},
+    {cls:'c-gold',  hex:'#e8c25a'},
+    {cls:'c-cyan',  hex:'#39C6D6'},
+    {cls:'c-red',   hex:'#FF5C5C'}
+  ];
+  var pickedEmoji = EMOJIS[0], pickedColor = COLORS[4], pathIsApi = false, customN = 0;
+  var emojiRow = document.getElementById('emojiRow'), colorRow = document.getElementById('colorRow');
+  EMOJIS.forEach(function(em){
+    var b = document.createElement('button');
+    b.className = 'epick' + (em === pickedEmoji ? ' on' : ''); b.textContent = em;
+    b.addEventListener('click', function(){
+      pickedEmoji = em;
+      emojiRow.querySelectorAll('.epick').forEach(function(x){ x.classList.toggle('on', x === b); });
+    });
+    emojiRow.appendChild(b);
+  });
+  COLORS.forEach(function(c, i){
+    var b = document.createElement('button');
+    b.className = 'cpick' + (i === 4 ? ' on' : ''); b.style.background = c.hex;
+    b.setAttribute('aria-label', 'color ' + c.hex);
+    b.addEventListener('click', function(){
+      pickedColor = c;
+      colorRow.querySelectorAll('.cpick').forEach(function(x){ x.classList.toggle('on', x === b); });
+    });
+    colorRow.appendChild(b);
+  });
+  var pathPrompt = document.getElementById('pathPrompt'), pathApi = document.getElementById('pathApi');
+  function setPath(api){
+    pathIsApi = api;
+    pathPrompt.classList.toggle('on', !api); pathApi.classList.toggle('on', api);
+    pathPrompt.setAttribute('aria-selected', !api); pathApi.setAttribute('aria-selected', api);
+    document.getElementById('promptFields').hidden = api;
+    document.getElementById('apiFields').hidden = !api;
+  }
+  pathPrompt.addEventListener('click', function(){ setPath(false); });
+  pathApi.addEventListener('click', function(){ setPath(true); });
+  function openAddSheet(){
+    screen.classList.add('sheet-open');
+    addSheet.classList.add('open');
+  }
+  document.querySelectorAll('[data-addagent]').forEach(function(b){ b.addEventListener('click', openAddSheet); });
+  document.getElementById('createAgent').addEventListener('click', function(){
+    customN += 1;
+    var name = document.getElementById('agName').value.trim() || 'My Agent ' + customN;
+    var prompt = document.getElementById('agPrompt').value.trim();
+    var m = {
+      id: 'custom-' + customN,
+      name: name, color: pickedColor.cls, emoji: pickedEmoji,
+      by: 'you', perf: '—', runners: 1, price: null, mine: true, custom: true,
+      desc: pathIsApi
+        ? 'Your connected bot. We send it market signals; it returns orders. Trading your paper balance while in review for the marketplace.'
+        : (prompt || 'Your prompt-built agent, running on the Sneakers worker against your paper balance.')
+    };
+    MODELS.push(m);
+    addOrbEl(m);
+    document.getElementById('agName').value = ''; document.getElementById('agPrompt').value = '';
+    closeSheets();
+    goTab('agent');
+    center = MODELS.indexOf(m);
+    render();
+  });
 
   // ---- model detail sheet ----
   var screen = document.getElementById('screen');
@@ -803,6 +932,7 @@
     screen.classList.remove('sheet-open');
     modelSheet.classList.remove('open');
     cashSheet.classList.remove('open');
+    addSheet.classList.remove('open');
   }
   document.getElementById('addCashBtn').addEventListener('click', function(){
     screen.classList.add('sheet-open'); cashSheet.classList.add('open');

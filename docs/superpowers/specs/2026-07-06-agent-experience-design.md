@@ -47,6 +47,24 @@ real Stripe rails in test mode. No real money until custody/KYC/counsel are reso
   Wave Rider 🏄, Overnight Drift 🦉, Cent Sniper 🎯 (paid), News Reactor 🗞️ (in review),
   Longshot v3 🐎 (user's own).
 
+### 2b. Add Agent (creator flow)
+
+- Entry points: a dashed **"Add Agent"** card at the end of the Trading Agents grid,
+  and an **＋ Add Agent** button in My Model.
+- Bottom sheet with two paths (segmented control):
+  - **Build with prompt** — name, emoji picker, color picker, strategy prompt.
+    Runs on the Sneakers worker like My Model; zero user infra.
+  - **Connect your bot** — name/emoji/color plus endpoint URL + API key.
+    Contract: we POST market signals to the endpoint; the bot returns orders.
+    Connected bots trade the user's paper balance only.
+- Created agents become orbs in the owner's carousel immediately (equippable,
+  private). A **Submit to marketplace** action (detail sheet) moves them to
+  `review` status — the same state News Reactor models; approved agents become
+  subscribable and the creator gets Stripe Connect payouts (post-v1 for payouts).
+- Safety: connected bots are rate-limited, sandboxed to paper balances until
+  approved, keys stored encrypted, and every order passes the same core gates
+  (ceilings, breaker) as first-party models.
+
 ### 3. Balance (Funds)
 - Tab bar item shows the **live balance number** ("$1,248" over the label "Balance").
 - Wallet hero + 7-day sparkline (hover/touch tooltip), Add cash / Withdraw.
@@ -95,6 +113,8 @@ GET  /api/agent/activity     paginated decision feed (venue, action, why, amount
 GET  /api/agent/models       catalog + user's subscription/equip status
 POST /api/agent/models/:id/subscribe    (Stripe subscription, test mode)
 POST /api/agent/models/:id/equip
+POST /api/agent/models       create user agent {kind: prompt|connected, name, emoji, color, prompt?|endpoint+key?}
+POST /api/agent/models/:id/submit       submit own agent for marketplace review
 GET  /api/agent/config       my-model prompt, preset, risk band
 PUT  /api/agent/config       update prompt/preset (worker re-reads next window)
 POST /api/agent/pause | resume
@@ -111,7 +131,9 @@ All rows user-scoped. Web polls `/api/agent/state` every 5s while visible.
 ## Data model (new tables, Supabase = user data)
 
 - `agent_models` — catalog: id, name, emoji/logo, color, author, price_cents,
-  billing_period, tagline, description, status (live|review|coming_soon), featured, included
+  billing_period, tagline, description, status (live|review|coming_soon|private),
+  featured, included, owner_user_id (null = first-party), kind (prompt|connected),
+  endpoint_url, api_key_encrypted (connected only)
 - `user_agent_state` — user_id, equipped_model_id, paused, sim_balance_cents
 - `agent_model_subs` — user_id, model_id, stripe_subscription_id, status
 - `agent_configs` — user_id, prompt, preset, risk band (worker reads)
