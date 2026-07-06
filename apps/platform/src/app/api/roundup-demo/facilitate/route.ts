@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server'
 import { getServerClient } from '@/lib/supabase-server'
 import { ensureSession, attachSessionCookie } from '@/lib/roundup/session'
 import { thresholdReached, transferableCents, type RoundUpRule } from '@sneakers/core'
+import { getFacilitationMode } from '@/lib/roundup/facilitation-mode'
+import { fetchPolymarketPrice, type PolymarketPrice } from '@/lib/roundup/polymarket-price'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -16,6 +18,15 @@ export async function POST() {
     const message = err instanceof Error ? err.message : String(err)
     return NextResponse.json({ error: 'session_init_failed', message }, { status: 500 })
   }
+
+  let mode: ReturnType<typeof getFacilitationMode>
+  try {
+    mode = getFacilitationMode()
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    return NextResponse.json({ error: 'config_error', message }, { status: 500 })
+  }
+
   const sb = getServerClient()
 
   const { data: session, error: loadErr } = await sb
@@ -56,6 +67,72 @@ export async function POST() {
     return isNew ? attachSessionCookie(res, sessionId) : res
   }
 
+  if (mode.kind === 'polymarket') {
+    let priceData: PolymarketPrice
+    try {
+      priceData = await fetchPolymarketPrice(mode.marketId)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err)
+      return NextResponse.json({ error: 'polymarket_price_lookup_failed', message }, { status: 502 })
+    }
+
+    // Audit-record-first, same fail-closed ordering as wallet mode below: if this
+    // insert fails, bail before touching session state at all.
+    const { data: positionRow, error: positionErr } = await sb
+      .from('roundup_demo_positions')
+      .insert({
+        session_id: sessionId,
+        market_id: mode.marketId,
+        market_question: priceData.question,
+        entry_price: priceData.price,
+        size_cents: movedCents,
+      })
+      .select('id')
+      .single()
+    if (positionErr || !positionRow) {
+      return NextResponse.json({ error: 'position_write_failed', message: positionErr?.message }, { status: 500 })
+    }
+
+    // Same optimistic-concurrency guard as wallet mode -- see that branch's comments
+    // for the full race-condition rationale. wallet_cents is deliberately untouched
+    // here: no money enters the demo wallet in this mode, the position row itself is
+    // the audit record.
+    const { data: updatedRows, error: updateErr } = await sb
+      .from('roundup_demo_sessions')
+      .update({
+        facilitated_cents: session.facilitated_cents + movedCents,
+        transferred_this_week_cents: session.transferred_this_week_cents + movedCents,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('session_id', sessionId)
+      .eq('facilitated_cents', session.facilitated_cents)
+      .select('session_id')
+    if (updateErr) {
+      await sb.from('roundup_demo_positions').delete().eq('id', positionRow.id)
+      return NextResponse.json({ error: 'facilitation_update_failed', message: updateErr.message }, { status: 500 })
+    }
+    if (!updatedRows || updatedRows.length === 0) {
+      await sb.from('roundup_demo_positions').delete().eq('id', positionRow.id)
+      return NextResponse.json({
+        ok: true,
+        moved: false,
+        reason: 'concurrent_update',
+        pendingAccruedCents,
+      })
+    }
+
+    const res = NextResponse.json({
+      ok: true,
+      moved: true,
+      movedCents,
+      marketId: mode.marketId,
+      entryPrice: priceData.price,
+    })
+    return isNew ? attachSessionCookie(res, sessionId) : res
+  }
+
+  // wallet mode (default) -- unchanged from Milestone 1.
+  //
   // Ledger row is written BEFORE the wallet/session update (fail closed): if the ledger
   // insert fails, we bail out before any money moves, so there's never a wallet credit
   // without a corresponding audit row. The inverse gap (a ledger row exists but the
@@ -109,13 +186,10 @@ export async function POST() {
     // between our read and this write, so no money actually moved on this call. The
     // ledger row inserted above was written on the assumption this call would win the
     // race; since it didn't, compensate by deleting that row so the audit trail never
-    // claims a movement that didn't happen (a ledger row's own presence is what other
-    // code/humans reconcile against, so an orphaned one here would itself become a false
-    // audit entry). Best-effort: if the delete fails, we still return the no-op response
-    // rather than resurrecting an update we deliberately chose not to retry; the
-    // dangling ledger row becomes a manual-reconciliation case at worst, which is far
-    // better than the double-write this guard exists to prevent. The caller re-syncs and
-    // calls facilitate() again on its next poll cycle, so the money itself isn't lost.
+    // claims a movement that didn't happen. Best-effort: if the delete fails, we still
+    // return the no-op response rather than resurrecting an update we deliberately
+    // chose not to retry; the caller re-syncs and calls facilitate() again on its next
+    // poll cycle, so the money itself isn't lost.
     await sb.from('roundup_demo_ledger').delete().eq('id', ledgerRow.id)
     return NextResponse.json({
       ok: true,
