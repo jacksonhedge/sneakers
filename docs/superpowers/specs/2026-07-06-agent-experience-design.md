@@ -169,6 +169,38 @@ no cross-joins — worker joins in memory).
   Playwright: tab flows, subscribe→equip loop, add-cash test-mode flow.
 - Paper-mode guardrail: `PAPER` badge is driven by server flag, not client constant.
 
+## Phase 1 status + Phase 2 carry-ins (updated 2026-07-07)
+
+Phase 1 (web shell) is BUILT, reviewed, and live at sneakersterminal.com/agent
+(commits `d704cf1..fbda033` on `feat/sneakers-agent`; implementation at
+`apps/platform/src/app/agent/`; runs on the mock reducer in `lib/engine.ts`;
+local QA via `AGENT_PREVIEW=1 pnpm platform`).
+
+Carry-ins the final review flagged for Phase 2 — do not lose these:
+
+- **Editable My Model prompt** — spec requires it; Phase 1 renders it static.
+  Wire to `GET/PUT /api/agent/config`.
+- **`todayPnlCents` must become date-filtered** once decisions are live data
+  (it currently sums all seed decisions); add to contract tests.
+- **Server-side id validation** for subscribe/equip (client reducer accepts
+  unknown ids into `subscribedIds`).
+- **Subscribe asymmetry**: carousel equip is one-tap subscribe+equip; the sheet
+  is two-step. Real Stripe billing forces both through a payment step — resolve
+  in the contract design.
+- **Accessibility batch**: carousel keyboard access (side orbs unreachable by
+  keyboard), sheet Esc/focus-trap/aria-modal/scroll-lock, grid + button
+  keyboard path.
+- **CSS prefixing**: `agent.css` classes (`.sheet`, `.conn`, `.orb`, `.mcell`,
+  `.cf`) are globally scoped; prefix `.ag-*` on next touch.
+- **Replace the hardcoded profile identity** (name/email in `profile/page.tsx`)
+  with real account data; page can become a server component.
+- **My-Agents list in the Models tab** — user-created agents currently appear
+  only in the Agent carousel (spec-consistent for Phase 1).
+- **Negative-money formatting**: `formatMoney`/`formatMoneyWhole` don't handle
+  negatives — becomes real when withdrawals ship (route through `formatSigned`).
+- **`formatPerf` uses ASCII `-`** while `formatSigned` uses U+2212 — unify when
+  a negative-perf model can exist.
+
 ## Open questions (parked, not blockers)
 
 - OddsJam: partnership terms (rev-share vs reselling their API) — affects nothing
