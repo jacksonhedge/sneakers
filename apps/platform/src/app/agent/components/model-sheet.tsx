@@ -39,20 +39,22 @@ export function ModelSheet({ model, onClose }: { model: AgentModel | null; onClo
           <div className="ag-sub">by {m.by}</div>
         </div>
       </div>
-      <div className="ag-balrow" style={{ margin: '0 0 12px' }}>
-        <div className="ag-balcell">
-          <div className="ag-balcell__lab">30d paper</div>
-          <div className={'ag-balcell__val ag-num' + (m.perf30d !== null ? (m.perf30d < 0 ? ' ag-neg' : ' ag-pos') : '')} style={{ fontSize: 18 }}>
-            {formatPerf(m.perf30d)}
+      {!m.tagline && (
+        <div className="ag-balrow" style={{ margin: '0 0 12px' }}>
+          <div className="ag-balcell">
+            <div className="ag-balcell__lab">30d paper</div>
+            <div className={'ag-balcell__val ag-num' + (m.perf30d !== null ? (m.perf30d < 0 ? ' ag-neg' : ' ag-pos') : '')} style={{ fontSize: 18 }}>
+              {formatPerf(m.perf30d)}
+            </div>
+          </div>
+          <div className="ag-balcell">
+            <div className="ag-balcell__lab">Running</div>
+            <div className="ag-balcell__val ag-num" style={{ fontSize: 18 }}>
+              {m.runners > 1 ? m.runners.toLocaleString('en-US') : '—'}
+            </div>
           </div>
         </div>
-        <div className="ag-balcell">
-          <div className="ag-balcell__lab">Running</div>
-          <div className="ag-balcell__val ag-num" style={{ fontSize: 18 }}>
-            {m.runners > 1 ? m.runners.toLocaleString('en-US') : '—'}
-          </div>
-        </div>
-      </div>
+      )}
       <div className="ag-sub" style={{ marginBottom: 16 }}>{m.description}</div>
       <button className={'ag-pill ' + (ghost ? 'ag-pill--ghost' : 'ag-pill--primary')} style={{ width: '100%' }} onClick={onAction}>
         {label}

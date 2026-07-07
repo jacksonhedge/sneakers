@@ -28,7 +28,7 @@ export function AddAgentSheet({ open, onClose }: { open: boolean; onClose: () =>
     setName(''); setPrompt(''); setEndpointUrl(''); setApiKey('')
     setKind('prompt'); setEmoji(EMOJIS[0]); setColor('cyan')
     onClose()
-    router.push('/agent')
+    router.push('/agent?center=new')
   }
 
   return (

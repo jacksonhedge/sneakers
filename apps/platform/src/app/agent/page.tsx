@@ -1,5 +1,6 @@
 'use client'
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useAgent } from './lib/store'
 import { CoverFlow } from './components/cover-flow'
 import { ActivityFeed } from './components/activity-feed'
@@ -7,9 +8,12 @@ import { ModelSheet } from './components/model-sheet'
 import { formatMoney, formatPerf, formatSigned } from './lib/format'
 import type { AgentModel } from './lib/types'
 
-export default function AgentTab() {
+function AgentTabInner() {
   const { state, status, todayPnl, owned, dispatch } = useAgent()
-  const [centerIndex, setCenterIndex] = useState(0)
+  const searchParams = useSearchParams()
+  const [centerIndex, setCenterIndex] = useState(() =>
+    searchParams.get('center') === 'new' ? state.models.length - 1 : 0
+  )
   const [sheetModel, setSheetModel] = useState<AgentModel | null>(null)
 
   const m = state.models[centerIndex]
@@ -87,5 +91,13 @@ export default function AgentTab() {
 
       <ModelSheet model={sheetModel} onClose={() => setSheetModel(null)} />
     </>
+  )
+}
+
+export default function AgentTab() {
+  return (
+    <Suspense fallback={null}>
+      <AgentTabInner />
+    </Suspense>
   )
 }
