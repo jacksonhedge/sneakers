@@ -77,7 +77,7 @@ export default function AgentTab() {
         </div>
         <div className="ag-balcell">
           <div className="ag-balcell__lab">Today</div>
-          <div className="ag-balcell__val ag-num ag-pos">{formatSigned(todayPnl)}</div>
+          <div className={'ag-balcell__val ag-num ' + (todayPnl < 0 ? 'ag-neg' : 'ag-pos')}>{formatSigned(todayPnl)}</div>
         </div>
       </div>
 
