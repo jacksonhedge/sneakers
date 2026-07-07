@@ -45,7 +45,7 @@ export function ConfigureScreen({
       <h2 className="mb-4 text-lg font-semibold text-gray-900">Configure round-ups</h2>
 
       <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-gray-400">
-        Sweep to wallet at
+        Put to work at
       </label>
       <div className="mb-4 flex items-center rounded-xl border border-gray-200 px-3 py-2">
         <span className="mr-1 text-sm text-gray-500">$</span>
