@@ -14,7 +14,8 @@ import { PlatformFreshnessStrip } from './platform-freshness-strip'
 // Body of the /markets listing — data loading + filter/sort/paginate +
 // the listing JSX (h1, freshness strip, filter bar, grid of MarketCards,
 // pagination, footer). Reused by:
-//   - /markets/page.tsx (public-style chrome — DashboardTopbar + DashboardSidebar)
+//   - /markets/page.tsx (thin redirector to /dashboard/markets — renders no
+//     chrome of its own)
 //   - /dashboard/markets/page.tsx (dashboard layout chrome — inherits topbar +
 //     OToole panel from the parent layout, no body remount on nav)
 //

@@ -136,66 +136,74 @@ export function AppsBar({ configuredIds = [] }: Props) {
       >
         +
       </button>
-      {featured.map((v) => {
-        const isOpen = activeVenueId === v.id
-        const configured = configuredSet.has(v.id)
-        return (
-          <div key={v.id} className="relative">
-            <button
-              type="button"
-              onClick={() => {
-                setPickerOpen(false)
-                setActiveVenueId(isOpen ? null : v.id)
-              }}
-              title={v.name}
-              aria-label={v.name}
-              aria-expanded={isOpen}
-              className={`relative w-9 h-9 inline-flex items-center justify-center rounded-lg transition ${
-                isOpen ? 'bg-stone-100 ring-1 ring-stone-300' : 'hover:bg-stone-100'
-              }`}
-            >
-              <VenueIcon id={v.id} name={v.name} size={30} priority />
-              {configured && (
-                <span
-                  aria-hidden
-                  className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-blue-500 text-white ring-2 ring-white inline-flex items-center justify-center"
-                >
-                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M5 12l5 5L20 7"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </span>
+      {/* Featured venue icons + "more" link: hidden below md. At 5 icons x
+          36px plus gaps plus the text link, this row alone runs ~300px wide
+          with no responsive handling, which was overflowing the entire
+          topbar and pushing the avatar/hamburger off-screen on phones —
+          the "+" button above is the only always-visible affordance on
+          mobile; the rest is reachable via the picker it opens. */}
+      <div className="hidden md:flex items-center gap-1.5">
+        {featured.map((v) => {
+          const isOpen = activeVenueId === v.id
+          const configured = configuredSet.has(v.id)
+          return (
+            <div key={v.id} className="relative">
+              <button
+                type="button"
+                onClick={() => {
+                  setPickerOpen(false)
+                  setActiveVenueId(isOpen ? null : v.id)
+                }}
+                title={v.name}
+                aria-label={v.name}
+                aria-expanded={isOpen}
+                className={`relative w-9 h-9 inline-flex items-center justify-center rounded-lg transition ${
+                  isOpen ? 'bg-stone-100 ring-1 ring-stone-300' : 'hover:bg-stone-100'
+                }`}
+              >
+                <VenueIcon id={v.id} name={v.name} size={30} priority />
+                {configured && (
+                  <span
+                    aria-hidden
+                    className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-blue-500 text-white ring-2 ring-white inline-flex items-center justify-center"
+                  >
+                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M5 12l5 5L20 7"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </span>
+                )}
+              </button>
+
+              {isOpen && (
+                <VenuePopover
+                  venue={v}
+                  configured={configured}
+                  onClose={() => setActiveVenueId(null)}
+                />
               )}
-            </button>
+            </div>
+          )
+        })}
 
-            {isOpen && (
-              <VenuePopover
-                venue={v}
-                configured={configured}
-                onClose={() => setActiveVenueId(null)}
-              />
-            )}
-          </div>
-        )
-      })}
-
-      <span className="text-[11px] text-stone-500 hover:text-stone-800 ml-1 select-none">
-        <button
-          type="button"
-          onClick={() => {
-            setActiveVenueId(null)
-            setPickerOpen(true)
-          }}
-          className="font-medium hover:underline"
-        >
-          (+{moreCount} more)
-        </button>
-      </span>
+        <span className="text-[11px] text-stone-500 hover:text-stone-800 ml-1 select-none">
+          <button
+            type="button"
+            onClick={() => {
+              setActiveVenueId(null)
+              setPickerOpen(true)
+            }}
+            className="font-medium hover:underline"
+          >
+            (+{moreCount} more)
+          </button>
+        </span>
+      </div>
 
       {pickerOpen && (
         <div
