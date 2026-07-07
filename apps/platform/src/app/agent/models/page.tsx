@@ -12,7 +12,7 @@ export default function ModelsTab() {
   const [seg, setSeg] = useState<'mine' | 'best'>('best')
   const [sheetModel, setSheetModel] = useState<AgentModel | null>(null)
   const [addOpen, setAddOpen] = useState(false)
-  const mine = state.models.find(m => m.id === 'longshot')!
+  const mine = state.models.find(m => m.mine) ?? state.models[0]
 
   return (
     <>
