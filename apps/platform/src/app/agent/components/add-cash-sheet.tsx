@@ -26,8 +26,8 @@ export function AddCashSheet({ open, onClose }: { open: boolean; onClose: () => 
           </button>
         ))}
       </div>
-      <button className="ag-pill ag-pill--primary" style={{ width: '100%' }}
-        onClick={() => { dispatch({ type: 'deposit', cents }); onClose() }}>
+      <button className="ag-pill ag-pill--primary ag-num" style={{ width: '100%' }}
+        onClick={() => { dispatch({ type: 'deposit', cents }); setCents(10000); onClose() }}>
         Add ${cents / 100}
       </button>
     </Sheet>
