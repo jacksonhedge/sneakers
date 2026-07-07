@@ -1,6 +1,6 @@
 'use client'
-import { Suspense, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { Suspense, useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useAgent } from './lib/store'
 import { CoverFlow } from './components/cover-flow'
 import { ActivityFeed } from './components/activity-feed'
@@ -11,10 +11,16 @@ import type { AgentModel } from './lib/types'
 function AgentTabInner() {
   const { state, status, todayPnl, owned, dispatch } = useAgent()
   const searchParams = useSearchParams()
+  const router = useRouter()
   const [centerIndex, setCenterIndex] = useState(() =>
     searchParams.get('center') === 'new' ? state.models.length - 1 : 0
   )
   const [sheetModel, setSheetModel] = useState<AgentModel | null>(null)
+
+  useEffect(() => {
+    if (searchParams.get('center') === 'new') router.replace('/agent', { scroll: false })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const m = state.models[centerIndex]
   const isEquipped = m.id === state.equippedId
