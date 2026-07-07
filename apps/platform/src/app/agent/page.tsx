@@ -3,13 +3,14 @@ import { useState } from 'react'
 import { useAgent } from './lib/store'
 import { CoverFlow } from './components/cover-flow'
 import { ActivityFeed } from './components/activity-feed'
+import { ModelSheet } from './components/model-sheet'
 import { formatMoney, formatPerf, formatSigned } from './lib/format'
 import type { AgentModel } from './lib/types'
 
 export default function AgentTab() {
   const { state, status, todayPnl, owned, dispatch } = useAgent()
   const [centerIndex, setCenterIndex] = useState(0)
-  const [_sheetModel, setSheetModel] = useState<AgentModel | null>(null) // wired in Task 7
+  const [sheetModel, setSheetModel] = useState<AgentModel | null>(null)
 
   const m = state.models[centerIndex]
   const isEquipped = m.id === state.equippedId
@@ -83,6 +84,8 @@ export default function AgentTab() {
 
       <div className="ag-sechead">Activity</div>
       <ActivityFeed decisions={state.decisions} />
+
+      <ModelSheet model={sheetModel} onClose={() => setSheetModel(null)} />
     </>
   )
 }
