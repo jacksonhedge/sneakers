@@ -160,3 +160,34 @@ textarea.ag-fld { min-height: 72px; resize: none; line-height: 1.5; }
   background: none; color: var(--ag-sub); cursor: pointer; letter-spacing: -0.01em; }
 .ag-seg button.on { background: #242b32; color: var(--ag-ink); box-shadow: 0 1px 3px rgba(0,0,0,.4); }
 .ag-seg button:focus-visible { outline: 2px solid var(--ag-green); outline-offset: -2px; }
+
+/* ---- trading agents grid ---- */
+.mgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.mcell { background: var(--ag-card); border: 1px solid var(--ag-border); border-radius: 18px; padding: 18px 12px 14px;
+  display: flex; flex-direction: column; align-items: center; cursor: pointer; text-align: center;
+  font-family: inherit; color: var(--ag-ink); position: relative; }
+.mcell:focus-visible { outline: 2px solid var(--ag-green); }
+.mcell__name { font-size: 14.5px; font-weight: 600; letter-spacing: -0.01em; margin-top: 12px; }
+.mcell__by { font-size: 11px; color: var(--ag-sub); margin-top: 2px; }
+.mcell__perf { font-size: 12px; font-weight: 600; margin-top: 6px; }
+.mcell__tag { font-size: 11.5px; color: #8fd7ff; margin-top: 6px; line-height: 1.4; font-weight: 600; }
+.mcell__price { font-size: 11.5px; font-weight: 700; margin-top: 8px; padding: 5px 11px; border-radius: 99px; background: #1a2026; color: var(--ag-sub); }
+.mcell--owned .mcell__price { background: rgba(47,211,122,.14); color: var(--ag-green); }
+.mcell__add { position: absolute; top: 10px; right: 10px; width: 26px; height: 26px; border-radius: 50%;
+  background: #1a2026; border: 1px solid #2a323a; color: var(--ag-ink);
+  display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; line-height: 1; }
+.mcell__add--added { background: rgba(47,211,122,.15); border-color: var(--ag-green); color: var(--ag-green); font-size: 12px; }
+.mcell--featured.mcell--oddsjam { background: linear-gradient(165deg, rgba(24,175,232,.2), var(--ag-card) 62%);
+  border-color: rgba(24,175,232,.5); box-shadow: 0 0 26px rgba(24,175,232,.16); }
+.mcell--featured.mcell--oddsjam .mcell__price { background: var(--ag-oddsjam); color: var(--ag-surface); }
+.mcell--featured.mcell--gambly { background: linear-gradient(165deg, rgba(62,224,110,.2), var(--ag-card) 62%);
+  border-color: rgba(62,224,110,.5); box-shadow: 0 0 26px rgba(62,224,110,.18); }
+.mcell--featured.mcell--gambly .mcell__price { background: var(--ag-gambly); color: var(--ag-surface); }
+.mcell--featured.mcell--gambly .mcell__tag { color: #7df0a2; }
+.mcell--dashed { border: 1.5px dashed #2a323a; background: rgba(20,24,29,.4); }
+.mcell__plusorb { width: 84px; height: 84px; border-radius: 50%; border: 2px dashed var(--ag-green);
+  display: flex; align-items: center; justify-content: center; font-size: 32px; color: var(--ag-green); font-weight: 300; }
+.mprompt { font-size: 14px; line-height: 1.55; color: #dfe6e2; background: #101519; border: 1px solid #232b31; border-radius: 14px; padding: 13px 14px; min-height: 88px; }
+.mchips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.mchip { font-family: inherit; font-size: 12.5px; font-weight: 600; padding: 8px 13px; border-radius: 99px; border: 1px solid #232b31; background: none; color: var(--ag-sub); cursor: pointer; }
+.mchip--on { background: rgba(47,211,122,.13); border-color: var(--ag-green); color: var(--ag-green); }
