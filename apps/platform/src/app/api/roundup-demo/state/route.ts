@@ -2,6 +2,8 @@
 import { NextResponse } from 'next/server'
 import { getServerClient } from '@/lib/supabase-server'
 import { ensureSession, attachSessionCookie } from '@/lib/roundup/session'
+import { fetchPolymarketPrice } from '@/lib/roundup/polymarket-price'
+import { computePositionPnlCents } from '@sneakers/core'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -35,6 +37,62 @@ export async function GET() {
     return NextResponse.json({ error: 'txns_load_failed', message: txnsErr.message }, { status: 500 })
   }
 
+  const { data: positions, error: positionsErr } = await sb
+    .from('roundup_demo_positions')
+    .select('*')
+    .eq('session_id', sessionId)
+    .order('opened_at', { ascending: false })
+  if (positionsErr) {
+    return NextResponse.json({ error: 'positions_load_failed', message: positionsErr.message }, { status: 500 })
+  }
+
+  // Live price is fetched fresh on every call (same "server is authoritative,
+  // recomputed on read" pattern as pendingAccruedCents below) -- the client never
+  // calls Polymarket directly. A failed live-price lookup degrades gracefully to
+  // showing the entry price only (currentPrice/pnlCents null) rather than failing
+  // the whole state load.
+  //
+  // Facilitation is "one market for everyone" (ROUNDUP_POLYMARKET_MARKET_ID), so
+  // every position row for a session shares the same market_id in practice. Memoize
+  // the fetch per market_id so distinct markets are only hit once each -- the Map
+  // is keyed by market_id and stores the in-flight *promise*, not just the result,
+  // so positions processed concurrently (before the first fetch resolves) reuse the
+  // same pending request instead of firing a second one. That also means a failed
+  // fetch for a market_id is the same rejected promise for every position sharing
+  // it, so they consistently degrade to currentPrice: null together rather than
+  // one succeeding on a retry while another sees a stale failure.
+  const priceFetchesByMarketId = new Map<string, ReturnType<typeof fetchPolymarketPrice>>()
+  const getPriceForMarket = (marketId: string) => {
+    let fetchPromise = priceFetchesByMarketId.get(marketId)
+    if (!fetchPromise) {
+      fetchPromise = fetchPolymarketPrice(marketId)
+      priceFetchesByMarketId.set(marketId, fetchPromise)
+    }
+    return fetchPromise
+  }
+
+  const positionsWithLivePrice = await Promise.all(
+    (positions ?? []).map(async (p) => {
+      let currentPrice: number | null = null
+      try {
+        const live = await getPriceForMarket(p.market_id)
+        currentPrice = live.price
+      } catch {
+        currentPrice = null
+      }
+      const entryPrice = Number(p.entry_price)
+      return {
+        id: p.id,
+        marketId: p.market_id,
+        marketQuestion: p.market_question,
+        entryPrice,
+        sizeCents: p.size_cents,
+        currentPrice,
+        pnlCents: currentPrice !== null ? computePositionPnlCents(entryPrice, currentPrice, p.size_cents) : null,
+      }
+    }),
+  )
+
   const totalRoundUpCents = (txns ?? []).reduce((sum, t) => sum + t.round_up_cents, 0)
   const pendingAccruedCents = Math.max(0, totalRoundUpCents - session.facilitated_cents)
 
@@ -61,6 +119,7 @@ export async function GET() {
         roundUpCents: t.round_up_cents,
         date: t.occurred_on,
       })),
+      positions: positionsWithLivePrice,
     },
   }
 
