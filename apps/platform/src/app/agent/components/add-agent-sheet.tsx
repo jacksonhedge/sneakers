@@ -26,6 +26,7 @@ export function AddAgentSheet({ open, onClose }: { open: boolean; onClose: () =>
   function create() {
     dispatch({ type: 'createAgent', input: { name, emoji, color, kind, prompt, endpointUrl, apiKey } })
     setName(''); setPrompt(''); setEndpointUrl(''); setApiKey('')
+    setKind('prompt'); setEmoji(EMOJIS[0]); setColor('cyan')
     onClose()
     router.push('/agent')
   }

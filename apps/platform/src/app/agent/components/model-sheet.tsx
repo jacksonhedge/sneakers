@@ -42,7 +42,7 @@ export function ModelSheet({ model, onClose }: { model: AgentModel | null; onClo
       <div className="ag-balrow" style={{ margin: '0 0 12px' }}>
         <div className="ag-balcell">
           <div className="ag-balcell__lab">30d paper</div>
-          <div className={'ag-balcell__val ag-num' + (m.perf30d !== null ? ' ag-pos' : '')} style={{ fontSize: 18 }}>
+          <div className={'ag-balcell__val ag-num' + (m.perf30d !== null ? (m.perf30d < 0 ? ' ag-neg' : ' ag-pos') : '')} style={{ fontSize: 18 }}>
             {formatPerf(m.perf30d)}
           </div>
         </div>
