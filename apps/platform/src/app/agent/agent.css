@@ -191,3 +191,15 @@ textarea.ag-fld { min-height: 72px; resize: none; line-height: 1.5; }
 .mchips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
 .mchip { font-family: inherit; font-size: 12.5px; font-weight: 600; padding: 8px 13px; border-radius: 99px; border: 1px solid #232b31; background: none; color: var(--ag-sub); cursor: pointer; }
 .mchip--on { background: rgba(47,211,122,.13); border-color: var(--ag-green); color: var(--ag-green); }
+
+/* ---- profile connections ---- */
+.conn { display: flex; align-items: center; gap: 13px; padding: 13px 2px; border-bottom: 1px solid #191f24; }
+.conn:last-child { border-bottom: none; }
+.conn__logo { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 15px; flex-shrink: 0; color: var(--ag-surface); }
+.conn__nm { font-size: 14.5px; font-weight: 600; }
+.conn__st { font-size: 11.5px; margin-top: 2px; display: flex; align-items: center; gap: 5px; }
+.conn__dot { width: 6px; height: 6px; border-radius: 50%; }
+.conn__act { margin-left: auto; flex-shrink: 0; }
+.ag-soon { font-family: inherit; font-size: 11.5px; font-weight: 700; color: var(--ag-sub); background: #1a2026;
+  border: none; border-radius: 99px; padding: 7px 12px; }
