@@ -91,8 +91,8 @@ export default function RoundupDemoPage() {
       {!consented && (
         <div className="rounded-2xl border border-gray-200 bg-white p-6">
           <p className="mb-4 text-sm text-gray-700">
-            Sneakers rounds up your everyday purchases to the nearest dollar and sweeps the spare
-            change into your wallet once it adds up to ${(state.rule.thresholdCents / 100).toFixed(2)}.
+            Sneakers rounds up your everyday purchases to the nearest dollar and puts your spare
+            change to work once it adds up to ${(state.rule.thresholdCents / 100).toFixed(2)}.
             This is a demo — your bank link is real (test mode), but no real money moves.
           </p>
           <button
