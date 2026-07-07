@@ -30,10 +30,10 @@ export function TabBar() {
     { href: '/agent/profile', label: 'Profile', icon: PROFILE_ICON },
   ]
   return (
-    <nav className="ag-tabbar" role="tablist">
+    <nav className="ag-tabbar">
       {tabs.map(t => (
-        <Link key={t.href} href={t.href} role="tab"
-          aria-selected={path === t.href}
+        <Link key={t.href} href={t.href}
+          aria-current={path === t.href ? 'page' : undefined}
           className={'ag-tabbtn' + (path === t.href ? ' ag-tabbtn--on' : '')}>
           {t.icon}
           {t.label}

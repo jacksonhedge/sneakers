@@ -56,7 +56,7 @@ export function ModelSheet({ model, onClose }: { model: AgentModel | null; onClo
         </div>
       )}
       <div className="ag-sub" style={{ marginBottom: 16 }}>{m.description}</div>
-      <button className={'ag-pill ' + (ghost ? 'ag-pill--ghost' : 'ag-pill--primary')} style={{ width: '100%' }} onClick={onAction}>
+      <button className={'ag-pill ag-num ' + (ghost ? 'ag-pill--ghost' : 'ag-pill--primary')} style={{ width: '100%' }} onClick={onAction}>
         {label}
       </button>
     </Sheet>

@@ -93,6 +93,7 @@
 @keyframes orb-breathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.055); } }
 @media (prefers-reduced-motion: reduce) {
   .orb__blob, .orb__halo, .orb__swirl::before, .orb__swirl::after { animation: none !important; }
+  .ag-status__dot { animation: none !important; }
 }
 
 /* ---- cover flow ---- */

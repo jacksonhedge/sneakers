@@ -71,7 +71,8 @@ function AgentTabInner() {
 
       <div style={{ display: 'flex', gap: 10, margin: '14px 0 12px' }}>
         <button
-          className={'ag-pill ' + (isEquipped ? 'ag-pill--ghost' : 'ag-pill--primary')}
+          className={'ag-pill ag-num ' + (isEquipped ? 'ag-pill--ghost' : 'ag-pill--primary')}
+          disabled={equipLabel === 'In review'}
           onClick={() => dispatch({ type: 'equip', id: m.id })}
         >
           {equipLabel}
