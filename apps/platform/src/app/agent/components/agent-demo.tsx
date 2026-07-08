@@ -44,6 +44,7 @@ function DemoInner() {
   }
 
   // AddAgentSheet's navigate means "a new agent was just created" — center it.
+  // centerNew relies on AgentTabView reading startAtEnd in a lazy useState initializer AND on the conditional render below remounting the view per tab switch — keep both if refactoring.
   function goAfterCreate() {
     setCenterNew(true)
     setTab('agent')

@@ -7,7 +7,7 @@ import './agent.css'
 export const dynamic = 'force-dynamic'
 
 export default async function AgentLayout({ children }: { children: React.ReactNode }) {
-  if (process.env.AGENT_PREVIEW !== '1') {
+  if (!(process.env.NODE_ENV !== 'production' && process.env.AGENT_PREVIEW === '1')) {
     const supabase = await getAuthClient()
     const { data } = await supabase.auth.getUser()
     if (!data.user) redirect('/login')

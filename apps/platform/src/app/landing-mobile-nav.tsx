@@ -12,6 +12,7 @@ import type { SignupConfig } from '@/lib/signup-config'
 // Reuses LandingAccess so signup flows (Individual routes to /signup,
 // Organization opens the in-page modal) behave identically across nav
 // variants.
+// Authed users get OPEN APP / DASHBOARD instead of the signup items.
 
 interface Props {
   referralCode: string | null

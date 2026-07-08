@@ -37,7 +37,7 @@ export default async function LandingPage() {
   // Auth-aware nav: logged-in users get app entry points instead of the
   // signup funnel. Fail-soft — any auth hiccup renders the logged-out nav.
   // AGENT_PREVIEW=1 (local QA only) forces the authed variant.
-  let authed = process.env.AGENT_PREVIEW === '1'
+  let authed = process.env.NODE_ENV !== 'production' && process.env.AGENT_PREVIEW === '1'
   if (!authed) {
     try {
       const supabase = await getAuthClient()
