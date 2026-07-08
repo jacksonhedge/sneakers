@@ -68,13 +68,14 @@ Placed directly below the hero CTA block, above the existing stats strip.
   Profile stays as-is (not demoed).
 - **Navigation override (one mechanism, no context):** an optional prop
   `onNavigate?: (dest: 'agent' | 'models' | 'balance' | 'profile') => void`
-  added to `TabBar`, `ModelSheet`, and `AddAgentSheet`.
-  - When ABSENT (the real app): behavior byte-identical to today — `TabBar`
-    keeps its `<Link>` elements; the sheets keep their `router.push(...)` calls.
-  - When PRESENT (the demo): `TabBar` renders `<button>`s calling
-    `onNavigate(dest)`; the sheets call `onNavigate(...)` instead of
-    `router.push(...)` (the `useRouter()` hook may still be called
-    unconditionally — hooks rules — it just goes unused).
+  added to `ModelSheet` and `AddAgentSheet` (sheets carry the prop).
+  `TabBar` is untouched except exporting `ORB_ICON`/`MODELS_ICON`; the demo
+  renders its own 3-tab bar reusing `.ag-tabbar` styles.
+  - When ABSENT (the real app): behavior byte-identical to today — the sheets
+    keep their `router.push(...)` calls (the `useRouter()` hook may still be
+    called unconditionally — hooks rules — it just goes unused).
+  - When PRESENT (the demo): the sheets call `onNavigate(...)` instead of
+    `router.push(...)`.
   - The tab views pass the prop through to the sheets they render
     (`models-tab-view` → ModelSheet/AddAgentSheet; `agent-tab-view` → ModelSheet).
 - **Demo component:** `components/agent-demo.tsx` (client):

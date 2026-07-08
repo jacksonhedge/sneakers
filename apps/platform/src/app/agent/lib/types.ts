@@ -57,3 +57,5 @@ export interface CreateAgentInput {
   endpointUrl?: string
   apiKey?: string
 }
+
+export type AgentDest = 'agent' | 'models' | 'balance' | 'profile'

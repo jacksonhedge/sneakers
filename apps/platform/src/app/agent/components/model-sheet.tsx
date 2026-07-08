@@ -4,9 +4,13 @@ import { Sheet } from './sheet'
 import { Orb } from './orb'
 import { useAgent } from '../lib/store'
 import { formatPerf } from '../lib/format'
-import type { AgentModel } from '../lib/types'
+import type { AgentModel, AgentDest } from '../lib/types'
 
-export function ModelSheet({ model, onClose }: { model: AgentModel | null; onClose: () => void }) {
+export function ModelSheet({ model, onClose, onNavigate }: {
+  model: AgentModel | null
+  onClose: () => void
+  onNavigate?: (dest: AgentDest) => void
+}) {
   const { state, owned, dispatch } = useAgent()
   const router = useRouter()
   if (!model) return null
@@ -22,12 +26,12 @@ export function ModelSheet({ model, onClose }: { model: AgentModel | null; onClo
 
   function onAction() {
     if (m.status === 'review') return
-    if (m.mine) { onClose(); router.push('/agent/models'); return }
+    if (m.mine) { onClose(); onNavigate ? onNavigate('models') : router.push('/agent/models'); return }
     if (equipped) return
     if (!owned(m.id)) { dispatch({ type: 'subscribe', id: m.id }); return }
     dispatch({ type: 'equip', id: m.id })
     onClose()
-    router.push('/agent')
+    onNavigate ? onNavigate('agent') : router.push('/agent')
   }
 
   return (

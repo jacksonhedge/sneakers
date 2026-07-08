@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Sheet } from './sheet'
 import { useAgent } from '../lib/store'
-import type { OrbColor } from '../lib/types'
+import type { OrbColor, AgentDest } from '../lib/types'
 
 const EMOJIS = ['🤖', '🚀', '🧠', '🔥', '💎', '🐍']
 const COLORS: { color: OrbColor; hex: string }[] = [
@@ -12,7 +12,11 @@ const COLORS: { color: OrbColor; hex: string }[] = [
   { color: 'cyan', hex: '#39C6D6' }, { color: 'red', hex: '#FF5C5C' },
 ]
 
-export function AddAgentSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function AddAgentSheet({ open, onClose, onNavigate }: {
+  open: boolean
+  onClose: () => void
+  onNavigate?: (dest: AgentDest) => void
+}) {
   const { dispatch } = useAgent()
   const router = useRouter()
   const [kind, setKind] = useState<'prompt' | 'connected'>('prompt')
@@ -28,7 +32,7 @@ export function AddAgentSheet({ open, onClose }: { open: boolean; onClose: () =>
     setName(''); setPrompt(''); setEndpointUrl(''); setApiKey('')
     setKind('prompt'); setEmoji(EMOJIS[0]); setColor('cyan')
     onClose()
-    router.push('/agent?center=new')
+    onNavigate ? onNavigate('agent') : router.push('/agent?center=new')
   }
 
   return (

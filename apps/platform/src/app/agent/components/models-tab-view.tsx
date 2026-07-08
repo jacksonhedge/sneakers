@@ -5,9 +5,9 @@ import { ModelGrid } from './model-grid'
 import { ModelSheet } from './model-sheet'
 import { AddAgentSheet } from './add-agent-sheet'
 import { formatPerf } from '../lib/format'
-import type { AgentModel } from '../lib/types'
+import type { AgentModel, AgentDest } from '../lib/types'
 
-export function ModelsTabView({ badge = 'PAPER' }: { badge?: string }) {
+export function ModelsTabView({ badge = 'PAPER', onNavigate }: { badge?: string; onNavigate?: (dest: AgentDest) => void }) {
   const { state } = useAgent()
   const [seg, setSeg] = useState<'mine' | 'best'>('best')
   const [sheetModel, setSheetModel] = useState<AgentModel | null>(null)
@@ -67,8 +67,8 @@ export function ModelsTabView({ badge = 'PAPER' }: { badge?: string }) {
         </>
       )}
 
-      <ModelSheet model={sheetModel} onClose={() => setSheetModel(null)} />
-      <AddAgentSheet open={addOpen} onClose={() => setAddOpen(false)} />
+      <ModelSheet model={sheetModel} onClose={() => setSheetModel(null)} onNavigate={onNavigate} />
+      <AddAgentSheet open={addOpen} onClose={() => setAddOpen(false)} onNavigate={onNavigate} />
     </>
   )
 }

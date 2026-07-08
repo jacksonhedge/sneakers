@@ -4,12 +4,12 @@ import { usePathname } from 'next/navigation'
 import { useAgent } from '../lib/store'
 import { formatMoneyWhole } from '../lib/format'
 
-const ORB_ICON = (
+export const ORB_ICON = (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
     <circle cx="12" cy="12" r="7" /><circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none" />
   </svg>
 )
-const MODELS_ICON = (
+export const MODELS_ICON = (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
     <path d="M4 17l5-5 4 3 7-8" /><path d="M16 7h4v4" />
   </svg>

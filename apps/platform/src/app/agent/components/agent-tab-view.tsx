@@ -5,9 +5,9 @@ import { CoverFlow } from './cover-flow'
 import { ActivityFeed } from './activity-feed'
 import { ModelSheet } from './model-sheet'
 import { formatMoney, formatPerf, formatSigned } from '../lib/format'
-import type { AgentModel } from '../lib/types'
+import type { AgentModel, AgentDest } from '../lib/types'
 
-export function AgentTabView({ startAtEnd, badge = 'PAPER' }: { startAtEnd?: boolean; badge?: string }) {
+export function AgentTabView({ startAtEnd, badge = 'PAPER', onNavigate }: { startAtEnd?: boolean; badge?: string; onNavigate?: (dest: AgentDest) => void }) {
   const { state, status, todayPnl, owned, dispatch } = useAgent()
   const [centerIndex, setCenterIndex] = useState(() => (startAtEnd ? state.models.length - 1 : 0))
   const [sheetModel, setSheetModel] = useState<AgentModel | null>(null)
@@ -86,7 +86,7 @@ export function AgentTabView({ startAtEnd, badge = 'PAPER' }: { startAtEnd?: boo
       <div className="ag-sechead">Activity</div>
       <ActivityFeed decisions={state.decisions} />
 
-      <ModelSheet model={sheetModel} onClose={() => setSheetModel(null)} />
+      <ModelSheet model={sheetModel} onClose={() => setSheetModel(null)} onNavigate={onNavigate} />
     </>
   )
 }
