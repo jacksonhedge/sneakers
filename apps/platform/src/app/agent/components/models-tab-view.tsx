@@ -7,7 +7,7 @@ import { AddAgentSheet } from './add-agent-sheet'
 import { formatPerf } from '../lib/format'
 import type { AgentModel, AgentDest } from '../lib/types'
 
-export function ModelsTabView({ badge = 'PAPER', onNavigate }: { badge?: string; onNavigate?: (dest: AgentDest) => void }) {
+export function ModelsTabView({ badge = 'PAPER', onNavigate, onCreateNavigate }: { badge?: string; onNavigate?: (dest: AgentDest) => void; onCreateNavigate?: (dest: AgentDest) => void }) {
   const { state } = useAgent()
   const [seg, setSeg] = useState<'mine' | 'best'>('best')
   const [sheetModel, setSheetModel] = useState<AgentModel | null>(null)
@@ -68,7 +68,7 @@ export function ModelsTabView({ badge = 'PAPER', onNavigate }: { badge?: string;
       )}
 
       <ModelSheet model={sheetModel} onClose={() => setSheetModel(null)} onNavigate={onNavigate} />
-      <AddAgentSheet open={addOpen} onClose={() => setAddOpen(false)} onNavigate={onNavigate} />
+      <AddAgentSheet open={addOpen} onClose={() => setAddOpen(false)} onNavigate={onCreateNavigate ?? onNavigate} />
     </>
   )
 }
