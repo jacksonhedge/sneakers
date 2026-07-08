@@ -11,6 +11,7 @@ import { loadMarketCount } from '@/lib/markets-data'
 import { getSignupConfig } from '@/lib/signup-config'
 import { LandingMobileNav } from './landing-mobile-nav'
 import { HeroBackground } from './hero-background'
+import { MeetYourAgent } from './meet-your-agent'
 
 export const dynamic = 'force-dynamic'
 
@@ -126,6 +127,12 @@ export default async function LandingPage() {
           </div>
 
         </div>
+
+        <MeetYourAgent
+          authed={false} // replaced in the authed-nav task
+          referralCode={referralCode}
+          individualEnabled={signupCfg.individualEnabled}
+        />
 
         {/* Three pillars that make this a college-first product — directly
             below the CTAs so visitors scan value props after seeing the
