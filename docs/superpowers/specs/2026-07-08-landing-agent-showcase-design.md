@@ -66,16 +66,17 @@ Placed directly below the hero CTA block, above the existing stats strip.
   - `components/balance-tab-view.tsx` (from `balance/page.tsx`)
   Route pages become 3-line wrappers (`'use client'; import view; export default`).
   Profile stays as-is (not demoed).
-- **Navigation context:** `lib/nav.tsx` exports `AgentNavContext` with
-  `{ go(dest: 'agent' | 'models' | 'balance' | 'profile'): void }`.
-  Default value (app): `router.push('/agent[/dest]')`. Consumed by:
-  - `TabBar` (replaces `Link` hrefs with `go()` when a demo context is
-    provided; in the real app it keeps `<Link>` semantics — implementation:
-    TabBar takes an optional `onNavigate` prop; the demo passes it, the app
-    doesn't. Simpler than context if it stays one level deep — implementer's
-    choice, but the app's behavior must be byte-identical.)
-  - `ModelSheet` (`router.push('/agent')` and `/agent/models` become `go()`)
-  - `AddAgentSheet` (`router.push('/agent')` → `go()`)
+- **Navigation override (one mechanism, no context):** an optional prop
+  `onNavigate?: (dest: 'agent' | 'models' | 'balance' | 'profile') => void`
+  added to `TabBar`, `ModelSheet`, and `AddAgentSheet`.
+  - When ABSENT (the real app): behavior byte-identical to today — `TabBar`
+    keeps its `<Link>` elements; the sheets keep their `router.push(...)` calls.
+  - When PRESENT (the demo): `TabBar` renders `<button>`s calling
+    `onNavigate(dest)`; the sheets call `onNavigate(...)` instead of
+    `router.push(...)` (the `useRouter()` hook may still be called
+    unconditionally — hooks rules — it just goes unused).
+  - The tab views pass the prop through to the sheets they render
+    (`models-tab-view` → ModelSheet/AddAgentSheet; `agent-tab-view` → ModelSheet).
 - **Demo component:** `components/agent-demo.tsx` (client):
   `AgentProvider` + local `tab` state + phone-frame chrome + `LIVE DEMO` badge
   + the three views + in-frame tab bar wired to local state. Exported for the
