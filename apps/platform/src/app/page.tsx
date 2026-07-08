@@ -34,7 +34,7 @@ export default async function LandingPage() {
   const signupCfg = getSignupConfig()
 
   return (
-    <main className="relative min-h-screen flex items-center justify-center px-6 pt-28 pb-32 overflow-hidden isolate">
+    <main className="relative min-h-screen flex flex-col items-center justify-center px-6 pt-28 pb-32 overflow-hidden isolate">
       <HeroBackground />
 
       {/* Top nav: just LOG IN + SIGN UP. SIGN UP opens a small dropdown with
@@ -127,12 +127,6 @@ export default async function LandingPage() {
           </div>
 
         </div>
-
-        <MeetYourAgent
-          authed={false} // replaced in the authed-nav task
-          referralCode={referralCode}
-          individualEnabled={signupCfg.individualEnabled}
-        />
 
         {/* Three pillars that make this a college-first product — directly
             below the CTAs so visitors scan value props after seeing the
@@ -236,6 +230,12 @@ export default async function LandingPage() {
           </a>
         </div>
       </div>
+
+      <MeetYourAgent
+        authed={false} // replaced in the authed-nav task
+        referralCode={referralCode}
+        individualEnabled={signupCfg.individualEnabled}
+      />
 
       <VenueTicker />
     </main>
