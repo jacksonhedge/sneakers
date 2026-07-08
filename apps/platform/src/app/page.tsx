@@ -9,6 +9,7 @@ import { isValidReferralCodeFormat } from '@/lib/referral-code'
 import { VENUES } from '@/lib/venues'
 import { loadMarketCount } from '@/lib/markets-data'
 import { getSignupConfig } from '@/lib/signup-config'
+import { getAuthClient } from '@/lib/supabase-auth'
 import { LandingMobileNav } from './landing-mobile-nav'
 import { HeroBackground } from './hero-background'
 import { MeetYourAgent } from './meet-your-agent'
@@ -33,6 +34,20 @@ export default async function LandingPage() {
 
   const signupCfg = getSignupConfig()
 
+  // Auth-aware nav: logged-in users get app entry points instead of the
+  // signup funnel. Fail-soft — any auth hiccup renders the logged-out nav.
+  // AGENT_PREVIEW=1 (local QA only) forces the authed variant.
+  let authed = process.env.AGENT_PREVIEW === '1'
+  if (!authed) {
+    try {
+      const supabase = await getAuthClient()
+      const { data } = await supabase.auth.getUser()
+      authed = Boolean(data.user)
+    } catch {
+      authed = false
+    }
+  }
+
   return (
     <main className="relative min-h-screen flex flex-col items-center justify-center px-6 pt-28 pb-32 overflow-hidden isolate">
       <HeroBackground />
@@ -42,22 +57,42 @@ export default async function LandingPage() {
           four separate buttons. */}
       <div className="absolute top-4 right-4 z-30 flex items-center gap-2 justify-end">
         <div className="hidden sm:flex items-center gap-2">
-          <Link
-            href="/login"
-            className="inline-flex items-center gap-2 rounded-full bg-white/5 px-4 py-2 text-xs font-semibold tracking-wider text-white ring-1 ring-white/30 backdrop-blur-sm hover:bg-white/10 hover:ring-white/60 transition"
-          >
-            LOG IN
-          </Link>
-          {(signupCfg.individualEnabled || signupCfg.organizationEnabled) && (
-            <LandingSignupButton
-              referralCode={referralCode}
-              individualEnabled={signupCfg.individualEnabled}
-              organizationEnabled={signupCfg.organizationEnabled}
-            />
+          {authed ? (
+            <>
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center gap-2 rounded-full bg-white/5 px-4 py-2 text-xs font-semibold tracking-wider text-white ring-1 ring-white/30 backdrop-blur-sm hover:bg-white/10 hover:ring-white/60 transition"
+              >
+                DASHBOARD
+              </Link>
+              <Link
+                href="/agent"
+                className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold tracking-wider text-stone-950 transition hover:opacity-90"
+                style={{ background: '#2FD37A' }}
+              >
+                OPEN APP →
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="inline-flex items-center gap-2 rounded-full bg-white/5 px-4 py-2 text-xs font-semibold tracking-wider text-white ring-1 ring-white/30 backdrop-blur-sm hover:bg-white/10 hover:ring-white/60 transition"
+              >
+                LOG IN
+              </Link>
+              {(signupCfg.individualEnabled || signupCfg.organizationEnabled) && (
+                <LandingSignupButton
+                  referralCode={referralCode}
+                  individualEnabled={signupCfg.individualEnabled}
+                  organizationEnabled={signupCfg.organizationEnabled}
+                />
+              )}
+            </>
           )}
         </div>
         {/* Mobile: hamburger + slide-down panel */}
-        <LandingMobileNav referralCode={referralCode} signupCfg={signupCfg} />
+        <LandingMobileNav referralCode={referralCode} signupCfg={signupCfg} authed={authed} />
       </div>
 
       <div className="max-w-2xl w-full space-y-8 text-center text-white">
@@ -88,7 +123,17 @@ export default async function LandingPage() {
               first action a visitor sees is "Get in", not "scroll to learn
               more". Same conditional rendering driven by signup-config. */}
           <div className="mt-7 w-full">
-            {signupCfg.allClosed ? (
+            {authed ? (
+              <div className="flex justify-center">
+                <Link
+                  href="/agent"
+                  className="inline-flex items-center gap-2 rounded-full px-8 py-4 text-base font-bold tracking-wide text-stone-950 transition hover:opacity-90 shadow-[0_8px_32px_rgba(47,211,122,0.3)]"
+                  style={{ background: '#2FD37A' }}
+                >
+                  Open App →
+                </Link>
+              </div>
+            ) : signupCfg.allClosed ? (
               <div className="rounded-lg ring-1 ring-amber-400/40 bg-amber-500/10 backdrop-blur-sm px-6 py-5 max-w-md mx-auto text-center">
                 <div className="text-[10px] tracking-[0.2em] text-amber-300 font-semibold mb-1">
                   SIGNUPS PAUSED
@@ -232,7 +277,7 @@ export default async function LandingPage() {
       </div>
 
       <MeetYourAgent
-        authed={false} // replaced in the authed-nav task
+        authed={authed}
         referralCode={referralCode}
         individualEnabled={signupCfg.individualEnabled}
       />
