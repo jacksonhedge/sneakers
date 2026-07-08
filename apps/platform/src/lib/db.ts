@@ -92,8 +92,14 @@ export async function safeQueryWithTimeout<T extends pg.QueryResultRow>(
   try {
     const pool = getDbPool()
     client = await pool.connect()
+    // SET LOCAL is a no-op outside a transaction block (Postgres warns and
+    // ignores it) — that's how "10s-capped" markets queries ran 200s+ in the
+    // 2026-07-08 outage. An explicit transaction makes the timeout real and
+    // auto-resets it on COMMIT so the pooled connection isn't polluted.
+    await client.query('BEGIN')
     await client.query(`SET LOCAL statement_timeout = ${timeoutMs}`)
     const res = await client.query<T>(sql, params)
+    await client.query('COMMIT')
     const dur = Date.now() - t0
     if (dur > 3000) {
       const tag = sql.replace(/\s+/g, ' ').trim().slice(0, 80)
@@ -101,6 +107,11 @@ export async function safeQueryWithTimeout<T extends pg.QueryResultRow>(
     }
     return res
   } catch (e) {
+    try {
+      await client?.query('ROLLBACK')
+    } catch {
+      // connection already dead; release below still runs
+    }
     const dur = Date.now() - t0
     const tag = sql.replace(/\s+/g, ' ').trim().slice(0, 80)
     console.warn(

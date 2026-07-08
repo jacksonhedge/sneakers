@@ -3,6 +3,7 @@ import path from 'node:path'
 import { cache } from 'react'
 import { categoryOf, type TerminalCategory } from './market-stats'
 import { safeQuery, safeQueryWithTimeout } from './db'
+import { marketsPageOrderBy } from './markets-order-by'
 import { SEED_SNAPSHOTS } from './seed-snapshots'
 
 // Mirror of the MarketSnapshot contract from apps/trader/src/scrapers/types.ts.
@@ -692,24 +693,11 @@ export async function loadMarketsPage(filter: MarketFilter = {}): Promise<Market
   const whereStr = whereClauses.join(' AND ')
 
   // -----------------------------------------------------------------------
-  // ORDER BY — SQL-side sort on the markets table, not on outcome rows
+  // ORDER BY — applied inside paged_markets (scope = ranked_markets CTE
+  // columns ONLY; `l.`/`m.` aliases are out of scope there — see
+  // markets-order-by.ts and its regression test).
   // -----------------------------------------------------------------------
-  let orderBy: string
-  switch (filter.sort) {
-    case 'overround':
-      orderBy = 'l.overround DESC NULLS LAST'
-      break
-    case 'resolves_at':
-      orderBy = 'm.close_time ASC NULLS LAST'
-      break
-    case 'updated':
-      orderBy = 'l.observed_at DESC NULLS LAST'
-      break
-    case 'volume':
-    default:
-      orderBy = 'l.volume_traded DESC NULLS LAST'
-      break
-  }
+  const orderBy = marketsPageOrderBy(filter.sort)
 
   // -----------------------------------------------------------------------
   // Count query — distinct markets matching filter (no outcome fan-out).
@@ -879,7 +867,29 @@ export async function loadMarketsPage(filter: MarketFilter = {}): Promise<Market
   // loadAllLatestSnapshots() to avoid double-reading disk.
   // -----------------------------------------------------------------------
   console.warn('[loadMarketsPage] DB returned no rows, falling back to JSONL')
-  const { snapshots: all, latestDate } = await loadAllLatestSnapshots()
+  // Bound the fallback: loadAllLatestSnapshots() can run an unbounded 100s+
+  // DB scan under load — on this request path that blew the 300s Vercel
+  // budget and left the page's loading state spinning forever (2026-07-08
+  // outage). If the fallback can't produce data in 12s, render an empty page
+  // with an honest freshness strip instead of hanging the route.
+  const FALLBACK_BUDGET_MS = 12_000
+  const fallbackResult = await Promise.race([
+    loadAllLatestSnapshots(),
+    new Promise<null>((resolve) => setTimeout(() => resolve(null), FALLBACK_BUDGET_MS)),
+  ])
+  if (!fallbackResult) {
+    console.warn(`[loadMarketsPage] fallback exceeded ${FALLBACK_BUDGET_MS}ms, returning empty page`)
+    return {
+      markets: [],
+      total: 0,
+      availableSports: [],
+      availablePlatforms: [],
+      dataDate: null,
+      perBook: {},
+      fromDb: false,
+    }
+  }
+  const { snapshots: all, latestDate } = fallbackResult
 
   // CRYPTO_SPORTS mirrors the set in minute-markets.ts — same definition here.
   const CRYPTO_SPORTS_JSONL = new Set(['crypto', 'bitcoin', 'ethereum', 'solana', 'daily'])
