@@ -11,6 +11,10 @@ interface EmailPanelProps {
 
 type CheckState = 'idle' | 'checking' | 'done' | 'error'
 
+// Same key /login's email-form.tsx and the login-password panel use, so a
+// remembered email prefills here at the front door too.
+const REMEMBER_KEY = 'sneakers_login_remember'
+
 export function EmailPanel({ flow, entry }: EmailPanelProps) {
   const [localEmail, setLocalEmail] = useState(flow.values.email)
   const [checkState, setCheckState] = useState<CheckState>('idle')
@@ -20,6 +24,22 @@ export function EmailPanel({ flow, entry }: EmailPanelProps) {
   // Focus the field on mount
   useEffect(() => {
     inputRef.current?.focus()
+  }, [])
+
+  // Prefill the remembered email so returning users just hit Continue.
+  // Client-only, run-once; never clobbers an email already carried in the
+  // flow (e.g. Back from a later panel).
+  useEffect(() => {
+    if (flow.values.email) return
+    try {
+      const raw = window.localStorage.getItem(REMEMBER_KEY)
+      if (!raw) return
+      const parsed = JSON.parse(raw) as { email?: string; remember?: boolean }
+      if (parsed.email && parsed.remember !== false) setLocalEmail(parsed.email)
+    } catch {
+      // corrupt entry or storage disabled — ignore
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const emailValues = { ...flow.values, email: localEmail }
@@ -33,6 +53,18 @@ export function EmailPanel({ flow, entry }: EmailPanelProps) {
     flow.set('email', trimmed)
     setCheckState('checking')
     setFallbackNote(null)
+
+    // Remember the email (never the password) unless the user previously
+    // opted out via the login panel's checkbox. Mirrors email-form.tsx.
+    try {
+      const raw = window.localStorage.getItem(REMEMBER_KEY)
+      const prior = raw ? (JSON.parse(raw) as { remember?: boolean }) : null
+      if (prior?.remember !== false) {
+        window.localStorage.setItem(REMEMBER_KEY, JSON.stringify({ email: trimmed, remember: true }))
+      }
+    } catch {
+      // storage disabled (private mode) — harmless
+    }
 
     try {
       const res = await fetch(
