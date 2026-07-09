@@ -15,7 +15,7 @@ const PRIMARY_LINKS = [
 ] as const
 
 const SECONDARY_LINKS = [
-  { href: '/dashboard', label: 'Dashboard' },
+  { href: '/dashboard/legacy', label: 'Dashboard' },
   { href: '/dashboard/markets', label: 'Markets' },
   { href: '/dashboard/minute', label: 'Minute Markets' },
   { href: '/dashboard/strategies', label: 'Strategies' },

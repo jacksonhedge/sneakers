@@ -159,7 +159,7 @@ function GroupCard({ group, generatedAt }: { group: SerializedGroup; generatedAt
         <div className="mk-group__title">
           <span className="mk-asset-badge">{group.asset ?? '—'}</span>
           <span className="mk-group__resolve">
-            resolves in <Countdown resolvesAt={group.resolvesAt} generatedAt={generatedAt} />
+            resolves in <Countdown key={generatedAt} resolvesAt={group.resolvesAt} generatedAt={generatedAt} />
           </span>
         </div>
         <div className="mk-group__meta ag-sub">
