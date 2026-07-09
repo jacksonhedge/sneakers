@@ -201,6 +201,18 @@ Carry-ins the final review flagged for Phase 2 — do not lose these:
 - **`formatPerf` uses ASCII `-`** while `formatSigned` uses U+2212 — unify when
   a negative-perf model can exist.
 
+## Phase 2 scope decision (2026-07-07)
+
+Confirmed with Jackson: Phase 2 proceeds as specced above (real API routes,
+migrations, live subscribe/equip, Stripe test-mode subscriptions for
+flagship + partner models) but explicitly **excludes community creator
+payouts**. The `POST /api/agent/models` (create) and `/submit` (submit for
+review) endpoints are still in scope — a user can build a prompt-based or
+connected-bot agent and submit it for review — but Stripe Connect payout
+wiring for approved community creators stays parked post-v1, same as
+already noted below. No architecture changes from this decision; it only
+resolves which parts of the existing contract Phase 2 actually implements.
+
 ## Open questions (parked, not blockers)
 
 - OddsJam: partnership terms (rev-share vs reselling their API) — affects nothing
