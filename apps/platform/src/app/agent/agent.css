@@ -69,7 +69,7 @@
     radial-gradient(34% 30% at 68% 38%, rgba(0,0,0,.38), transparent 74%),
     radial-gradient(22% 20% at 58% 72%, var(--o2), transparent 70%);
   filter: blur(7px); opacity: .6;
-  animation: orb-drift-a calc(7s * var(--orb-tempo)) ease-in-out infinite alternate; }
+  animation: orb-drift-a calc(7s * var(--orb-tempo)) cubic-bezier(.25,.46,.45,.94) infinite alternate; }
 .orb__swirl::after { content: ""; position: absolute; width: 170%; height: 170%; left: -35%; top: -35%;
   background:
     radial-gradient(26% 30% at 62% 60%, var(--o1), transparent 70%),
@@ -84,26 +84,26 @@
     radial-gradient(30% 26% at 46% 55%, var(--o1), transparent 72%),
     radial-gradient(24% 22% at 60% 40%, var(--o2), transparent 74%);
   filter: blur(8px); opacity: .4; mix-blend-mode: screen;
-  animation: orb-drift-c calc(17s * var(--orb-tempo)) ease-in-out infinite alternate; }
+  animation: orb-drift-c calc(17s * var(--orb-tempo)) cubic-bezier(.55,.085,.68,.53) infinite alternate; }
 .orb__sheen::after { content: ""; position: absolute; width: 130%; height: 60%; left: -15%; top: -8%;
   background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.5), transparent 65%); }
 
 /* tempo dial — one knob drives state speed (live/resting, entering/holding); dimmer + slower at rest */
-.orb:not(.orb--live) { --orb-tempo: 1.6; filter: saturate(.74) brightness(.84); }
+.orb:not(.orb--live) { --orb-tempo: 1.2; filter: saturate(.88) brightness(.93); }
 .orb.orb--live.orb--entering { --orb-tempo: .75; }
 .orb.orb--live.orb--holding { --orb-tempo: 1.5; }
 
 /* morphing silhouette — blob + swirl + sheen undulate together; logo orbs (image fill) stay circular */
-.orb:not(.orb--oddsjam):not(.orb--gambly) .orb__blob,
-.orb:not(.orb--oddsjam):not(.orb--gambly) .orb__swirl,
-.orb:not(.orb--oddsjam):not(.orb--gambly) .orb__sheen {
+.orb:not(.orb--oddsjam):not(.orb--gambly):not(.orb--paused) .orb__blob,
+.orb:not(.orb--oddsjam):not(.orb--gambly):not(.orb--paused) .orb__swirl,
+.orb:not(.orb--oddsjam):not(.orb--gambly):not(.orb--paused) .orb__sheen {
   animation: orb-morph calc(12s * var(--orb-tempo)) ease-in-out infinite; }
 
 /* breathing + life pulse — live orbs only; blob's shorthand must restate morph alongside breathe */
 .orb--live .orb__halo { animation: orb-breathe calc(4.2s * var(--orb-tempo)) ease-in-out infinite reverse; }
 .orb--live.orb--oddsjam .orb__blob, .orb--live.orb--gambly .orb__blob {
   animation: orb-breathe calc(4.2s * var(--orb-tempo)) ease-in-out infinite; }
-.orb--live:not(.orb--oddsjam):not(.orb--gambly) .orb__blob {
+.orb--live:not(.orb--oddsjam):not(.orb--gambly):not(.orb--paused) .orb__blob {
   animation: orb-morph calc(12s * var(--orb-tempo)) ease-in-out infinite,
              orb-breathe calc(4.2s * var(--orb-tempo)) ease-in-out infinite; }
 .orb--live { animation: orb-lifepulse calc(6s * var(--orb-tempo)) ease-in-out infinite; }
@@ -112,7 +112,7 @@
 .orb.orb--paused .orb__blob, .orb.orb--paused .orb__halo,
 .orb.orb--paused .orb__swirl, .orb.orb--paused .orb__swirl::before, .orb.orb--paused .orb__swirl::after,
 .orb.orb--paused .orb__sheen, .orb.orb--paused .orb__sheen::before {
-  animation-play-state: paused !important; }
+  animation-play-state: paused; }
 .orb.orb--paused,
 .orb.orb--paused .orb__blob, .orb.orb--paused .orb__halo,
 .orb.orb--paused .orb__swirl, .orb.orb--paused .orb__sheen {
