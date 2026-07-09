@@ -80,11 +80,11 @@ export function LandingMobileNav({ referralCode, signupCfg, authed }: Props) {
                   OPEN APP →
                 </Link>
                 <Link
-                  href="/dashboard"
+                  href="/dashboard/legacy"
                   className="block w-full text-center rounded-full bg-white/5 px-4 py-2.5 text-xs font-semibold tracking-wider text-white ring-1 ring-white/30 hover:bg-white/10 transition"
                   onClick={() => setOpen(false)}
                 >
-                  DASHBOARD
+                  CLASSIC
                 </Link>
               </>
             ) : (

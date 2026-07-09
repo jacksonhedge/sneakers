@@ -60,10 +60,10 @@ export default async function LandingPage() {
           {authed ? (
             <>
               <Link
-                href="/dashboard"
+                href="/dashboard/legacy"
                 className="inline-flex items-center gap-2 rounded-full bg-white/5 px-4 py-2 text-xs font-semibold tracking-wider text-white ring-1 ring-white/30 backdrop-blur-sm hover:bg-white/10 hover:ring-white/60 transition"
               >
-                DASHBOARD
+                CLASSIC
               </Link>
               <Link
                 href="/agent"
