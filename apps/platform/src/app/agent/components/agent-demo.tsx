@@ -65,7 +65,7 @@ function DemoInner() {
 
 export function AgentDemo() {
   return (
-    <div className="agdemo-frame agent-app" style={{ minHeight: 0, border: 'none', maxWidth: 'none' }}>
+    <div className="agdemo-frame agent-app" style={{ minHeight: 0 }}>
       <AgentProvider>
         <DemoInner />
       </AgentProvider>
