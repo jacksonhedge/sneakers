@@ -30,6 +30,7 @@
 .ag-badge { font-size: 10px; font-weight: 700; letter-spacing: .1em; padding: 4px 9px; border-radius: 99px; }
 .ag-badge--paper { color: var(--ag-surface); background: var(--ag-green); }
 .ag-badge--test { color: #8fd7ff; background: rgba(78,168,255,.14); border: 1px solid rgba(78,168,255,.35); letter-spacing: .06em; }
+.ag-badge--live { color: var(--ag-green); background: rgba(47,211,122,.14); border: 1px solid rgba(47,211,122,.35); letter-spacing: .06em; }
 .ag-pill { font-family: inherit; border: none; cursor: pointer; border-radius: 14px; font-weight: 600; font-size: 15px; padding: 14px 0; flex: 1; letter-spacing: -0.01em; }
 .ag-pill--primary { background: var(--ag-green); color: var(--ag-surface); }
 .ag-pill--ghost { background: #1a2026; color: #fff; }
@@ -200,6 +201,36 @@ textarea.ag-fld { min-height: 72px; resize: none; line-height: 1.5; }
 .conn__act { margin-left: auto; flex-shrink: 0; }
 .ag-soon { font-family: inherit; font-size: 11.5px; font-weight: 700; color: var(--ag-sub); background: #1a2026;
   border: none; border-radius: 99px; padding: 7px 12px; }
+
+/* ---- markets: minute strike ladders ---- */
+.mk-filters { margin-bottom: 4px; }
+.mk-summary { display: flex; flex-wrap: wrap; gap: 4px; margin: 2px 2px 16px; }
+.mk-group__head { align-items: flex-start; margin-bottom: 10px; }
+.mk-group__title { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.mk-asset-badge { font-size: 13px; font-weight: 800; letter-spacing: -0.01em; background: #1a2026;
+  color: var(--ag-ink); border-radius: 8px; padding: 3px 9px; }
+.mk-group__resolve { font-size: 12.5px; color: var(--ag-sub); }
+.mk-group__resolve .ag-num { color: var(--ag-ink); font-weight: 700; }
+.mk-group__resolve .mk-countdown--soon { color: #e8c25a; }
+.mk-group__resolve .mk-countdown--urgent { color: var(--ag-red); animation: ag-pulse 1.4s infinite; }
+.mk-group__meta { font-size: 11.5px; white-space: nowrap; flex-shrink: 0; }
+.mk-rows { display: flex; flex-direction: column; }
+.mk-row { display: grid; grid-template-columns: 26px 1fr auto; align-items: center; gap: 12px;
+  padding: 9px 2px; border-bottom: 1px solid #191f24; }
+.mk-row:last-child { border-bottom: none; }
+.mk-tile { width: 26px; height: 26px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; color: var(--ag-surface); flex-shrink: 0; }
+.mk-row__mid { min-width: 0; }
+.mk-row__strike { font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mk-row__dir { font-size: 11px; font-weight: 600; color: var(--ag-sub); margin-top: 1px; }
+.mk-row__dir--above { color: var(--ag-green); }
+.mk-row__dir--below { color: var(--ag-red); }
+.mk-row__right { text-align: right; flex-shrink: 0; }
+.mk-row__yes { font-size: 15px; font-weight: 700; }
+.mk-row__sub { font-size: 11px; margin-top: 2px; white-space: nowrap; }
+.mk-empty { text-align: center; padding: 30px 16px; }
+.mk-empty__t { font-size: 14px; color: var(--ag-sub); line-height: 1.5; }
+.mk-footer { font-size: 11.5px; color: var(--ag-sub); text-align: center; margin-top: 8px; padding-bottom: 4px; }
 
 /* ---- landing demo phone frame ---- */
 .agdemo-frame {
