@@ -37,7 +37,20 @@ function platformTile(platform: string): { abbr: string; bg: string } {
   return PLATFORM_TILE[platform] ?? { abbr: platform.slice(0, 2).toUpperCase(), bg: '#3a444d' }
 }
 
+// FIX 3: Brand-correct capitalization for platform labels
+const PLATFORM_LABELS: Record<string, string> = {
+  og: 'OG',
+  prophetx: 'ProphetX',
+  prizepicks: 'PrizePicks',
+  novig: 'Novig',
+  kalshi: 'Kalshi',
+  polymarket: 'Polymarket',
+  limitless: 'Limitless',
+  underdog: 'Underdog',
+}
+
 function platformLabel(platform: string): string {
+  if (PLATFORM_LABELS[platform]) return PLATFORM_LABELS[platform]
   return platform.length ? platform.charAt(0).toUpperCase() + platform.slice(1) : platform
 }
 
@@ -92,6 +105,9 @@ function hrefFor(overrides: Partial<CurrentState>, current: CurrentState): strin
 
 function MarketRow({ row, sort }: { row: SerializedRow; sort: AllViewSort }) {
   const tile = platformTile(row.platform)
+  // FIX 2: Avoid "resolves resolved" when market is already resolved
+  const resolvedText = fmtResolves(row.resolvesAt)
+  const resolvesDisplay = resolvedText === 'resolved' ? 'resolved' : `resolves ${resolvedText}`
   return (
     <div className="av-row">
       <span className="mk-tile" style={{ background: tile.bg }} aria-hidden="true">
@@ -100,7 +116,7 @@ function MarketRow({ row, sort }: { row: SerializedRow; sort: AllViewSort }) {
       <div className="mk-row__mid">
         <div className="av-row__q">{row.question}</div>
         <div className="av-row__sub">
-          {platformLabel(row.platform)} · resolves {fmtResolves(row.resolvesAt)}
+          {platformLabel(row.platform)} · {resolvesDisplay}
         </div>
       </div>
       <div className="av-row__right">
@@ -168,15 +184,18 @@ export function MarketsAllView({
           >
             All
           </Link>
-          {platforms.map((p) => (
-            <Link
-              key={p}
-              href={hrefFor({ platform: p, page: 1 }, current)}
-              className={'mchip' + (platform === p ? ' mchip--on' : '')}
-            >
-              {platformLabel(p)}
-            </Link>
-          ))}
+          {/* FIX 1: Only show platforms in PLATFORM_TILE, but keep active platform visible */}
+          {platforms
+            .filter((p) => PLATFORM_TILE[p] || p === platform)
+            .map((p) => (
+              <Link
+                key={p}
+                href={hrefFor({ platform: p, page: 1 }, current)}
+                className={'mchip' + (platform === p ? ' mchip--on' : '')}
+              >
+                {platformLabel(p)}
+              </Link>
+            ))}
         </div>
       </div>
 
