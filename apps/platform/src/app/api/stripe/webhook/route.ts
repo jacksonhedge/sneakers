@@ -1,6 +1,7 @@
 import type Stripe from 'stripe'
 import { getStripe } from '@/lib/stripe'
 import { getServerClient } from '@/lib/supabase-server'
+import { activateSub, cancelSubByStripeId } from '@/lib/agent/service'
 import {
   flavorToSubtype,
   flavorToTier,
@@ -55,6 +56,21 @@ export async function POST(req: Request) {
         const session = event.data.object as Stripe.Checkout.Session
         // Subscription mode only — credits handler picks up payment-mode sessions.
         if (session.mode !== 'subscription') break
+        // Agent-model subscriptions carry agent_model_id in metadata — route
+        // them to the agent-sub table and stop, so they never fall through
+        // to the plan-subscription logic below (which binds by email into
+        // the waitlist row and would corrupt plan state for this customer).
+        const agentModelId = session.metadata?.agent_model_id
+        if (agentModelId) {
+          const userId = session.metadata?.user_id ?? session.client_reference_id
+          if (userId && typeof session.subscription === 'string') {
+            await activateSub(userId, agentModelId, session.subscription)
+            console.log('[stripe-webhook] agent model sub activated', { agentModelId, userId })
+          } else {
+            console.error('[stripe-webhook] agent model session missing user/subscription', { sessionId: session.id })
+          }
+          break // do NOT fall through to plan handling
+        }
         await handleCheckoutCompleted(session)
         break
       }
@@ -65,6 +81,12 @@ export async function POST(req: Request) {
       }
       case 'customer.subscription.deleted': {
         const sub = event.data.object as Stripe.Subscription
+        // Same agent-model routing as checkout.session.completed above.
+        if (sub.metadata?.agent_model_id) {
+          await cancelSubByStripeId(sub.id)
+          console.log('[stripe-webhook] agent model sub canceled', { subId: sub.id })
+          break
+        }
         await applySubscriptionState(sub, { forceCanceled: true })
         break
       }
