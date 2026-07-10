@@ -50,3 +50,35 @@ describe('engine', () => {
     expect(todayPnlCents(initialState())).toBe(3580) // +$21.60 + $14.20 seeds
   })
 })
+
+describe('live-mode actions', () => {
+  it('sync shallow-merges server truth', () => {
+    const s0 = initialState()
+    const s1 = agentReducer(s0, { type: 'sync', patch: { paused: true, balanceCents: 99, serverPnlCents: -500 } })
+    expect(s1.paused).toBe(true)
+    expect(s1.balanceCents).toBe(99)
+    expect(s1.serverPnlCents).toBe(-500)
+    expect(s1.models).toBe(s0.models) // untouched keys preserved by reference
+  })
+
+  it('modelCreated replaces an optimistic model with the same id, else appends', () => {
+    const s0 = initialState()
+    const optimistic = agentReducer(s0, { type: 'createAgent', input: { name: 'Fade', emoji: '🧊', color: 'cyan', kind: 'prompt' } })
+    const serverModel = { ...optimistic.models.at(-1)!, id: optimistic.models.at(-1)!.id, description: 'server copy' }
+    const s1 = agentReducer(optimistic, { type: 'modelCreated', model: serverModel })
+    expect(s1.models.filter(m => m.id === serverModel.id)).toHaveLength(1)
+    expect(s1.models.find(m => m.id === serverModel.id)!.description).toBe('server copy')
+  })
+
+  it('updateConfig renames the mine model in place', () => {
+    const s0 = initialState()
+    const s1 = agentReducer(s0, { type: 'updateConfig', patch: { name: 'Longshot v4', emoji: '🏇' } })
+    const mine = s1.models.find(m => m.mine)!
+    expect(mine.name).toBe('Longshot v4')
+    expect(mine.emoji).toBe('🏇')
+  })
+
+  it('initialState has serverPnlCents null (mock mode)', () => {
+    expect(initialState().serverPnlCents).toBeNull()
+  })
+})

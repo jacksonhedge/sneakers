@@ -1,4 +1,4 @@
-import type { AgentModel, AgentPhase, CreateAgentInput, Decision, LedgerEntry } from './types'
+import type { AgentModel, AgentPhase, CreateAgentInput, Decision, LedgerEntry, OrbColor } from './types'
 import { CATALOG } from './catalog'
 
 export interface AgentUIState {
@@ -12,6 +12,7 @@ export interface AgentUIState {
   ledger: LedgerEntry[]
   spark: number[]
   customCount: number
+  serverPnlCents: number | null
 }
 
 export type AgentAction =
@@ -21,6 +22,9 @@ export type AgentAction =
   | { type: 'tick' }
   | { type: 'deposit'; cents: number }
   | { type: 'createAgent'; input: CreateAgentInput }
+  | { type: 'sync'; patch: Partial<Pick<AgentUIState, 'models' | 'equippedId' | 'subscribedIds' | 'paused' | 'balanceCents' | 'decisions' | 'ledger' | 'spark' | 'serverPnlCents'>> }
+  | { type: 'modelCreated'; model: AgentModel }
+  | { type: 'updateConfig'; patch: { name?: string; emoji?: string; color?: OrbColor; prompt?: string; preset?: string } }
 
 const PHASES: { phase: AgentPhase; title: string; sub: string }[] = [
   { phase: 'scanning', title: 'Scanning 14 markets', sub: 'BTC · ETH · SOL — 5 & 15-min windows on Kalshi + Polymarket' },
@@ -55,6 +59,7 @@ export function initialState(): AgentUIState {
     ledger: SEED_LEDGER,
     spark: [72196, 74820, 73110, 81240, 129870, 128620, 120948, 124762],
     customCount: 0,
+    serverPnlCents: null,
   }
 }
 
@@ -124,6 +129,28 @@ export function agentReducer(s: AgentUIState, a: AgentAction): AgentUIState {
             : (a.input.prompt?.trim() || 'Your prompt-built agent, running on the Sneakers worker against your paper balance.'),
       }
       return { ...s, models: [...s.models, model], customCount: n }
+    }
+    case 'sync':
+      return { ...s, ...a.patch }
+    case 'modelCreated': {
+      const i = s.models.findIndex(m => m.id === a.model.id)
+      if (i === -1) return { ...s, models: [...s.models, a.model] }
+      const models = [...s.models]
+      models[i] = a.model
+      return { ...s, models }
+    }
+    case 'updateConfig': {
+      const models = s.models.map(m =>
+        m.mine
+          ? {
+              ...m,
+              ...(a.patch.name ? { name: a.patch.name } : {}),
+              ...(a.patch.emoji ? { emoji: a.patch.emoji } : {}),
+              ...(a.patch.color ? { color: a.patch.color } : {}),
+            }
+          : m,
+      )
+      return { ...s, models }
     }
   }
 }
