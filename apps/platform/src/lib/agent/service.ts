@@ -56,7 +56,7 @@ export async function ensureAgentBootstrap(userId: string): Promise<void> {
 
 export async function loadStateWire(userId: string): Promise<StateWire> {
   const sb = getServerClient()
-  const [{ data: st }, { data: last }, { data: pnlRows }] = await Promise.all([
+  const [stRes, lastRes, pnlRes] = await Promise.all([
     sb.from('user_agent_state').select('equipped_model_id, paused, sim_balance_cents')
       .eq('user_id', userId).maybeSingle(),
     sb.from('agent_decisions')
@@ -67,6 +67,12 @@ export async function loadStateWire(userId: string): Promise<StateWire> {
       .eq('user_id', userId)
       .gte('created_at', new Date(new Date().setUTCHours(0, 0, 0, 0)).toISOString()),
   ])
+  if (stRes.error) throw stRes.error
+  if (lastRes.error) throw lastRes.error
+  if (pnlRes.error) throw pnlRes.error
+  const { data: st } = stRes
+  const { data: last } = lastRes
+  const { data: pnlRows } = pnlRes
   const paused = st?.paused ?? false
   const p = phaseAt(Date.now(), paused)
   return {
@@ -84,16 +90,24 @@ export async function loadModelsWire(userId: string): Promise<{
   models: AgentModel[]; subscribedIds: string[]; equippedId: string
 }> {
   const sb = getServerClient()
-  const [{ data: rows }, { data: cfg }, { data: subs }, { data: st }] = await Promise.all([
+  const [rowsRes, cfgRes, subsRes, stRes] = await Promise.all([
     sb.from('agent_models')
       .select('id, name, emoji, brand, color, author, perf_30d, runners, price_cents, price_label, tagline, description, status, featured, included, kind, owner_user_id, sort_order')
-      .or(`owner_user_id.is.null,owner_user_id.eq.${userId}`)
-      .neq('status', 'coming_soon')
+      // Own models always visible; first-party (owner null) only when live/review.
+      .or(`owner_user_id.eq.${userId},and(owner_user_id.is.null,status.in.(live,review))`)
       .order('sort_order', { ascending: true }),
     sb.from('agent_configs').select('name, emoji, color').eq('user_id', userId).maybeSingle(),
     sb.from('agent_model_subs').select('model_id').eq('user_id', userId).eq('status', 'active'),
     sb.from('user_agent_state').select('equipped_model_id').eq('user_id', userId).maybeSingle(),
   ])
+  if (rowsRes.error) throw rowsRes.error
+  if (cfgRes.error) throw cfgRes.error
+  if (subsRes.error) throw subsRes.error
+  if (stRes.error) throw stRes.error
+  const { data: rows } = rowsRes
+  const { data: cfg } = cfgRes
+  const { data: subs } = subsRes
+  const { data: st } = stRes
   const catalog = ((rows ?? []) as AgentModelRow[]).map(r => rowToModel(r, userId))
   const firstParty = catalog.filter(m => !m.mine)
   const customs = catalog.filter(m => m.mine)
@@ -109,8 +123,9 @@ export async function loadModelsWire(userId: string): Promise<{
 
 export async function loadConfig(userId: string) {
   const sb = getServerClient()
-  const { data } = await sb.from('agent_configs')
+  const { data, error } = await sb.from('agent_configs')
     .select('name, emoji, color, prompt, preset').eq('user_id', userId).maybeSingle()
+  if (error) throw error
   return data ?? {
     name: 'Longshot v3', emoji: '🐎', color: 'green',
     prompt: '', preset: 'longshot',
@@ -121,12 +136,16 @@ export async function loadWalletWire(userId: string): Promise<{
   balanceCents: number; spark: number[]; ledger: LedgerEntry[]
 }> {
   const sb = getServerClient()
-  const [{ data: st }, { data: rows }] = await Promise.all([
+  const [stRes, rowsRes] = await Promise.all([
     sb.from('user_agent_state').select('sim_balance_cents').eq('user_id', userId).maybeSingle(),
     sb.from('wallet_ledger')
       .select('id, kind, label, detail, amount_cents, created_at')
       .eq('user_id', userId).order('created_at', { ascending: false }).limit(50),
   ])
+  if (stRes.error) throw stRes.error
+  if (rowsRes.error) throw rowsRes.error
+  const { data: st } = stRes
+  const { data: rows } = rowsRes
   const ledger = (rows ?? []).map(ledgerRowToWire)
   return {
     balanceCents: Number(st?.sim_balance_cents ?? 0),
@@ -141,7 +160,8 @@ export async function loadActivity(userId: string, limit: number, before?: strin
     .select('id, venue, action, title, detail, pnl_cents, created_at')
     .eq('user_id', userId).order('created_at', { ascending: false }).limit(limit)
   if (before) q = q.lt('created_at', before)
-  const { data } = await q
+  const { data, error } = await q
+  if (error) throw error
   return (data ?? []).map(decisionRowToWire)
 }
 
@@ -164,8 +184,9 @@ export async function applyWallet(userId: string, args: {
 
 export async function isSubscribed(userId: string, modelId: string): Promise<boolean> {
   const sb = getServerClient()
-  const { data } = await sb.from('agent_model_subs').select('id')
+  const { data, error } = await sb.from('agent_model_subs').select('id')
     .eq('user_id', userId).eq('model_id', modelId).eq('status', 'active').maybeSingle()
+  if (error) throw error
   return Boolean(data)
 }
 
