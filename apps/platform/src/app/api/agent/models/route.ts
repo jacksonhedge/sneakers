@@ -34,8 +34,9 @@ export async function POST(req: Request) {
   try {
     await ensureAgentBootstrap(user.id)
     const service = getServerClient()
-    const { count } = await service.from('agent_models')
+    const { count, error: countError } = await service.from('agent_models')
       .select('id', { count: 'exact', head: true }).eq('owner_user_id', user.id)
+    if (countError) throw countError
     if ((count ?? 0) >= MAX_USER_AGENTS) {
       return Response.json({ error: 'agent_cap_reached', message: `You can have up to ${MAX_USER_AGENTS} agents.` }, { status: 400 })
     }
