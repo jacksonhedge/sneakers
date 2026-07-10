@@ -16,7 +16,7 @@ create table if not exists agent_models (
   author            text not null,            -- display "by …"
   perf_30d          numeric,                  -- null = no metrics shown
   runners           int not null default 1,
-  price_cents       int,                      -- null = free
+  price_cents       bigint,                   -- null = free
   price_label       text,                     -- overrides "$X/mo" display
   tagline           text,
   description       text not null,
