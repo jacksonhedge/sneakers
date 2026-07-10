@@ -76,6 +76,15 @@ export async function POST(req: Request) {
       }
       case 'customer.subscription.updated': {
         const sub = event.data.object as Stripe.Subscription
+        // Agent-model subs need no state change on `updated` in Phase 2 —
+        // activation happens via checkout.session.completed, cancellation
+        // via deleted. Guard here so billing-cycle updates on agent-model
+        // subs never reach applySubscriptionState (keyed by
+        // stripe_customer_id — it would overwrite plan tier fields).
+        if (sub.metadata?.agent_model_id) {
+          console.log('[stripe-webhook] agent model sub updated — ignored', { subId: sub.id })
+          break
+        }
         await applySubscriptionState(sub)
         break
       }
