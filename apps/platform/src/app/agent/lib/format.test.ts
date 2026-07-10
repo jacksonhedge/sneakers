@@ -17,4 +17,11 @@ describe('format', () => {
     expect(formatPerf(14.6)).toBe('+14.6%')
     expect(formatPerf(null)).toBe('—')
   })
+  it('formatMoney and formatMoneyWhole handle negatives with U+2212', () => {
+    expect(formatMoney(-1248)).toBe('−$12.48')
+    expect(formatMoneyWhole(-124762)).toBe('−$1,248')
+  })
+  it('formatPerf uses U+2212 for negative perf', () => {
+    expect(formatPerf(-3.2)).toBe('−3.2%')
+  })
 })
