@@ -117,6 +117,9 @@ create index if not exists wallet_ledger_user_ts_idx
 -- ── Atomic wallet apply (insert ledger row + bump balance) ─────────────
 -- Idempotent on p_stripe_ref: replayed webhooks insert nothing and the
 -- balance is bumped exactly once. Returns the (possibly unchanged) balance.
+-- Negative amounts (withdrawals) are applied with an atomic floor guard:
+-- the conditional update runs first, and the ledger row is only written if
+-- it succeeded. Returns NULL when funds are insufficient.
 create or replace function agent_wallet_apply(
   p_user_id      uuid,
   p_kind         text,
@@ -131,6 +134,25 @@ declare
   v_inserted int;
   v_balance  bigint;
 begin
+  if p_amount_cents < 0 then
+    -- Withdrawal: conditional decrement first (atomic floor guard),
+    -- ledger row only if it succeeded. NULL = insufficient funds.
+    update user_agent_state
+       set sim_balance_cents = sim_balance_cents + p_amount_cents,
+           updated_at = now()
+     where user_id = p_user_id
+       and sim_balance_cents + p_amount_cents >= 0
+    returning sim_balance_cents into v_balance;
+
+    if v_balance is null then
+      return null;
+    end if;
+
+    insert into wallet_ledger (user_id, kind, label, detail, amount_cents, stripe_ref)
+    values (p_user_id, p_kind, p_label, p_detail, p_amount_cents, p_stripe_ref);
+    return v_balance;
+  end if;
+
   insert into wallet_ledger (user_id, kind, label, detail, amount_cents, stripe_ref)
   values (p_user_id, p_kind, p_label, p_detail, p_amount_cents, p_stripe_ref)
   on conflict (stripe_ref) where stripe_ref is not null do nothing;

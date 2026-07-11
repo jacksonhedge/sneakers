@@ -25,6 +25,11 @@ export async function POST(req: Request) {
     const balanceCents = await applyWallet(user.id, {
       kind: 'withdraw', label: 'Withdrawal', detail: 'Test mode · no payout sent', amountCents: -amountCents,
     })
+    // Atomic floor guard in agent_wallet_apply — covers the race the
+    // friendly pre-check above can miss under concurrent withdrawals.
+    if (balanceCents === null) {
+      return Response.json({ error: 'insufficient_funds' }, { status: 400 })
+    }
     return Response.json({ ok: true, balanceCents })
   } catch (err) {
     console.error('[api/wallet/withdraw]', err)

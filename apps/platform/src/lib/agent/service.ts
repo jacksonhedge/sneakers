@@ -165,10 +165,14 @@ export async function loadActivity(userId: string, limit: number, before?: strin
   return (data ?? []).map(decisionRowToWire)
 }
 
+// Atomic ledger insert + balance bump via agent_wallet_apply. Returns the new
+// balance in cents, or null when funds are insufficient (withdrawals only —
+// negative amounts are floor-guarded atomically in SQL; positive amounts never
+// return null).
 export async function applyWallet(userId: string, args: {
   kind: 'deposit' | 'withdraw'; label: string; detail: string
   amountCents: number; stripeRef?: string
-}): Promise<number> {
+}): Promise<number | null> {
   const sb = getServerClient()
   const { data, error } = await sb.rpc('agent_wallet_apply', {
     p_user_id: userId,
@@ -179,7 +183,7 @@ export async function applyWallet(userId: string, args: {
     p_stripe_ref: args.stripeRef ?? null,
   })
   if (error) throw error
-  return Number(data)
+  return data === null ? null : Number(data)
 }
 
 export async function isSubscribed(userId: string, modelId: string): Promise<boolean> {

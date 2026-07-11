@@ -20,12 +20,14 @@ import {
 // Stripe's verify/fulfill pattern requires the RAW body for HMAC; Next.js App
 // Router gives us that via req.text().
 //
-// The four event types we subscribe to:
+// The five event types we subscribe to:
 //   checkout.session.completed       → first time we see a customer + sub_id;
 //                                      bind them to the waitlist row by email
 //   customer.subscription.updated    → status, price, period_end, cancel flag
 //   customer.subscription.deleted    → user fully canceled; downgrade to free
 //   invoice.payment_failed           → set status to past_due; Stripe retries
+//   payment_intent.succeeded         → agent wallet deposit credit (only PIs
+//                                      with metadata.kind='agent_wallet_deposit')
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -119,6 +121,8 @@ export async function POST(req: Request) {
           kind: 'deposit', label: 'Added cash', detail: 'Stripe (test)', amountCents: pi.amount,
           stripeRef: pi.id, // idempotent: replayed events are no-ops
         })
+        // Positive amounts never hit the withdrawal floor guard — null here is a bug.
+        if (balance === null) throw new Error('unexpected null balance from agent_wallet_apply')
         console.log('[stripe/webhook] agent wallet credited', { userId, pi: pi.id, balance })
         break
       }

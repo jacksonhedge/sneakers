@@ -28,6 +28,8 @@ export async function POST(req: Request) {
       const balanceCents = await applyWallet(user.id, {
         kind: 'deposit', label: 'Added cash', detail: 'Test mode · no card charged', amountCents,
       })
+      // Positive amounts never hit the withdrawal floor guard — null here is a bug.
+      if (balanceCents === null) throw new Error('unexpected null balance from agent_wallet_apply')
       return Response.json({ ok: true, balanceCents })
     }
 
