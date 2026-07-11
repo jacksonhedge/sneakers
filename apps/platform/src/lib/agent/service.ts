@@ -209,3 +209,28 @@ export async function cancelSubByStripeId(stripeSubscriptionId: string): Promise
     .update({ status: 'canceled' }).eq('stripe_subscription_id', stripeSubscriptionId)
   if (error) throw error
 }
+
+// Server-built initial UI state for live mode — avoids a client loading
+// flash by seeding the reducer with real data on first paint.
+export async function buildInitialUIState(userId: string) {
+  await ensureAgentBootstrap(userId)
+  const [state, models, wallet, decisions] = await Promise.all([
+    loadStateWire(userId),
+    loadModelsWire(userId),
+    loadWalletWire(userId),
+    loadActivity(userId, 30),
+  ])
+  return {
+    models: models.models,
+    equippedId: models.equippedId,
+    subscribedIds: models.subscribedIds,
+    paused: state.paused,
+    tick: 0,
+    balanceCents: state.balanceCents,
+    decisions,
+    ledger: wallet.ledger,
+    spark: wallet.spark,
+    customCount: models.models.filter(m => m.mine && m.id !== 'my-model').length,
+    serverPnlCents: state.todayPnlCents,
+  }
+}
