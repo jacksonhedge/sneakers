@@ -1,7 +1,7 @@
 import type Stripe from 'stripe'
 import { getStripe } from '@/lib/stripe'
 import { getServerClient } from '@/lib/supabase-server'
-import { activateSub, cancelSubByStripeId } from '@/lib/agent/service'
+import { activateSub, cancelSubByStripeId, applyWallet } from '@/lib/agent/service'
 import {
   flavorToSubtype,
   flavorToTier,
@@ -108,6 +108,18 @@ export async function POST(req: Request) {
             ? invoice.subscription
             : invoice.subscription?.id ?? null
         if (subId) await markPastDue(subId)
+        break
+      }
+      case 'payment_intent.succeeded': {
+        const pi = event.data.object as Stripe.PaymentIntent
+        if (pi.metadata?.kind !== 'agent_wallet_deposit') break // not ours
+        const userId = pi.metadata.user_id
+        if (!userId) { console.error('[stripe/webhook] agent deposit PI missing user_id', { id: pi.id }); break }
+        const balance = await applyWallet(userId, {
+          kind: 'deposit', label: 'Added cash', detail: 'Stripe (test)', amountCents: pi.amount,
+          stripeRef: pi.id, // idempotent: replayed events are no-ops
+        })
+        console.log('[stripe/webhook] agent wallet credited', { userId, pi: pi.id, balance })
         break
       }
       default:
