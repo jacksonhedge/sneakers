@@ -4,6 +4,7 @@ import { useAgent } from '../lib/store'
 import { ModelGrid } from './model-grid'
 import { ModelSheet } from './model-sheet'
 import { AddAgentSheet } from './add-agent-sheet'
+import { MyModelEditor } from './my-model-editor'
 import { formatPerf } from '../lib/format'
 import type { AgentModel, AgentDest } from '../lib/types'
 
@@ -42,19 +43,7 @@ export function ModelsTabView({ badge = 'PAPER', onNavigate, onCreateNavigate }:
               <div style={{ fontSize: 15, fontWeight: 600 }}>{mine.name}</div>
               <div className={'ag-sub ag-num' + (mine.perf30d !== null ? (mine.perf30d < 0 ? ' ag-neg' : ' ag-pos') : '')}>{formatPerf(mine.perf30d)} · 30d paper</div>
             </div>
-            <div className="mprompt">
-              Trade 5 and 15-minute crypto markets only. Favor longshots priced 10–35¢ with momentum confirmation.
-              Max 5% of bankroll per trade. Skip anything with a spread over 4¢.
-            </div>
-            <div className="mchips">
-              <button className="mchip mchip--on">Longshot 10–35¢</button>
-              <button className="mchip">Momentum</button>
-              <button className="mchip">Fade the spike</button>
-              <button className="mchip">Conservative</button>
-            </div>
-            <div className="ag-sub" style={{ marginTop: 12 }}>
-              Your model re-reads this prompt before every window. Changes apply to the next scan.
-            </div>
+            <MyModelEditor />
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
             <button className="ag-pill ag-pill--primary" style={{ fontSize: 14 }}>Run this model</button>
@@ -64,6 +53,22 @@ export function ModelsTabView({ badge = 'PAPER', onNavigate, onCreateNavigate }:
             onClick={() => setAddOpen(true)}>
             ＋ Add Agent
           </button>
+          {state.models.filter(m => m.mine && m.id !== mine.id).length > 0 && (
+            <>
+              <div className="ag-sechead" style={{ marginTop: 16 }}>My agents</div>
+              {state.models.filter(m => m.mine && m.id !== mine.id).map(m => (
+                <button
+                  key={m.id}
+                  className="ag-card ag-row"
+                  style={{ width: '100%', textAlign: 'left', marginBottom: 8, font: 'inherit', color: 'inherit', cursor: 'pointer' }}
+                  onClick={() => setSheetModel(m)}
+                >
+                  <div style={{ fontSize: 15, fontWeight: 600 }}>{m.emoji} {m.name}</div>
+                  <div className="ag-sub">{m.status === 'review' ? 'In review' : 'Private'}</div>
+                </button>
+              ))}
+            </>
+          )}
         </>
       )}
 

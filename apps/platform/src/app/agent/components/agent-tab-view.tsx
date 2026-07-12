@@ -63,7 +63,11 @@ export function AgentTabView({ startAtEnd, badge = 'PAPER', onNavigate }: { star
         <button
           className={'ag-pill ag-num ' + (isEquipped ? 'ag-pill--ghost' : 'ag-pill--primary')}
           disabled={equipLabel === 'In review'}
-          onClick={() => dispatch({ type: 'equip', id: m.id })}
+          onClick={() => {
+            const paid = !owned(m.id) && m.priceCents !== null && !m.included
+            if (paid) setSheetModel(m) // payment goes through the detail sheet
+            else dispatch({ type: 'equip', id: m.id })
+          }}
         >
           {equipLabel}
         </button>
