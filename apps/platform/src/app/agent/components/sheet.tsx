@@ -18,11 +18,15 @@ export function Sheet({ open, onClose, label, children }: {
     const prevFocus = document.activeElement as HTMLElement | null
     el.focus()
 
-    // Lock the surrounding scroller, not the body — inside the landing demo the
-    // sheet lives in the phone frame and the page itself must keep scrolling.
-    const scroller = el.closest<HTMLElement>('.agent-main, .ag-demo-main')
-    const prevOverflow = scroller ? scroller.style.overflow : ''
-    if (scroller) scroller.style.overflow = 'hidden'
+    // Scroll lock. In the app the page itself scrolls (footer sits below the
+    // shell), so lock the document + the inner pane; inside the landing demo
+    // lock only the phone-frame scroller so the page keeps scrolling.
+    const demoScroller = el.closest<HTMLElement>('.ag-demo-main')
+    const scrollers = demoScroller
+      ? [demoScroller]
+      : [document.documentElement, el.closest<HTMLElement>('.agent-main')].filter((s): s is HTMLElement => s !== null)
+    const prevOverflow = scrollers.map(s => s.style.overflow)
+    scrollers.forEach(s => { s.style.overflow = 'hidden' })
 
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') { e.stopPropagation(); closeRef.current(); return }
@@ -38,8 +42,8 @@ export function Sheet({ open, onClose, label, children }: {
     document.addEventListener('keydown', onKey, true)
     return () => {
       document.removeEventListener('keydown', onKey, true)
-      if (scroller) scroller.style.overflow = prevOverflow
-      prevFocus?.focus?.()
+      scrollers.forEach((s, i) => { s.style.overflow = prevOverflow[i] })
+      prevFocus?.focus?.({ preventScroll: true })
     }
   }, [open])
 
