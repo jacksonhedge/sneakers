@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Sheet } from './sheet'
 import { useAgent } from '../lib/store'
 import type { Stripe, StripeElements } from '@stripe/stripe-js'
@@ -7,11 +7,17 @@ import type { Stripe, StripeElements } from '@stripe/stripe-js'
 const AMOUNTS = [2500, 10000, 25000]
 
 export function AddCashSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { live, api, dispatch } = useAgent()
+  const { live, api, dispatch, state } = useAgent()
   const [cents, setCents] = useState(10000)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [payState, setPayState] = useState<{ stripe: Stripe; elements: StripeElements } | null>(null)
+
+  // The sheet stays mounted (only `open` toggles). Backing out mid-flow must
+  // not strand a detached Payment Element / stale error/busy for the next open.
+  useEffect(() => {
+    if (!open) { setPayState(null); setError(null); setBusy(false); setCents(10000) }
+  }, [open])
 
   async function confirm() {
     if (!live) { dispatch({ type: 'deposit', cents }); setCents(10000); onClose(); return }
@@ -49,11 +55,16 @@ export function AddCashSheet({ open, onClose }: { open: boolean; onClose: () => 
       redirect: 'if_required',
     })
     if (err) { setError(err.message ?? 'Payment failed.'); setBusy(false); return }
-    // Webhook credits the ledger; poll wallet until the balance lands (≤10s).
+    // Webhook credits the ledger; poll wallet until the balance moves off its
+    // pre-payment value, capped at 5×2s (≤10s) if the webhook is slow.
+    const before = state.balanceCents
     for (let i = 0; i < 5; i++) {
       await new Promise(r => setTimeout(r, 2000))
       const w = await api.wallet()
-      if (w) dispatch({ type: 'sync', patch: { balanceCents: w.balanceCents, ledger: w.ledger, spark: w.spark } })
+      if (w) {
+        dispatch({ type: 'sync', patch: { balanceCents: w.balanceCents, ledger: w.ledger, spark: w.spark } })
+        if (w.balanceCents !== before) break
+      }
     }
     setPayState(null); setBusy(false); setCents(10000); onClose()
   }

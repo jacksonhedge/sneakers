@@ -38,7 +38,7 @@ export function MyModelEditor() {
     <>
       <textarea
         className="mprompt"
-        style={{ width: '100%', minHeight: 96, resize: 'vertical', background: 'transparent', border: 0, color: 'inherit', font: 'inherit' }}
+        style={{ width: '100%', minHeight: 96, resize: 'vertical', fontFamily: 'inherit', display: 'block' }}
         value={prompt}
         maxLength={2000}
         aria-label="Strategy prompt"
