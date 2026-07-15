@@ -109,19 +109,19 @@ function MarketRow({ row, sort }: { row: SerializedRow; sort: AllViewSort }) {
   const resolvedText = fmtResolves(row.resolvesAt)
   const resolvesDisplay = resolvedText === 'resolved' ? 'resolved' : `resolves ${resolvedText}`
   return (
-    <div className="av-row">
-      <span className="mk-tile" style={{ background: tile.bg }} aria-hidden="true">
+    <div className="ag-av-row">
+      <span className="ag-mk-tile" style={{ background: tile.bg }} aria-hidden="true">
         {tile.abbr}
       </span>
-      <div className="mk-row__mid">
-        <div className="av-row__q">{row.question}</div>
-        <div className="av-row__sub">
+      <div className="ag-mk-row__mid">
+        <div className="ag-av-row__q">{row.question}</div>
+        <div className="ag-av-row__sub">
           {platformLabel(row.platform)} · {resolvesDisplay}
         </div>
       </div>
-      <div className="av-row__right">
-        <div className="av-row__yes ag-num ag-pos">{fmtPrice(row.yesPrice)}</div>
-        <div className="av-row__rsub ag-num ag-sub">
+      <div className="ag-av-row__right">
+        <div className="ag-av-row__yes ag-num ag-pos">{fmtPrice(row.yesPrice)}</div>
+        <div className="ag-av-row__rsub ag-num ag-sub">
           {fmtMoney(row.volume)}
           {sort === 'overround' && <> · ov {fmtOverround(row.overround)}</>}
         </div>
@@ -161,14 +161,14 @@ export function MarketsAllView({
         </span>
       </div>
 
-      <div className="mk-filters">
+      <div className="ag-mk-filters">
         <div className="ag-picklab">Sort</div>
-        <div className="mchips">
+        <div className="ag-mchips">
           {SORT_OPTS.map((opt) => (
             <Link
               key={opt.value}
               href={hrefFor({ sort: opt.value, page: 1 }, current)}
-              className={'mchip' + (sort === opt.value ? ' mchip--on' : '')}
+              className={'ag-mchip' + (sort === opt.value ? ' ag-mchip--on' : '')}
             >
               {opt.label}
             </Link>
@@ -177,10 +177,10 @@ export function MarketsAllView({
         <div className="ag-picklab" style={{ marginTop: 10 }}>
           Platform
         </div>
-        <div className="mchips">
+        <div className="ag-mchips">
           <Link
             href={hrefFor({ platform: null, page: 1 }, current)}
-            className={'mchip' + (platform === null ? ' mchip--on' : '')}
+            className={'ag-mchip' + (platform === null ? ' ag-mchip--on' : '')}
           >
             All
           </Link>
@@ -191,7 +191,7 @@ export function MarketsAllView({
               <Link
                 key={p}
                 href={hrefFor({ platform: p, page: 1 }, current)}
-                className={'mchip' + (platform === p ? ' mchip--on' : '')}
+                className={'ag-mchip' + (platform === p ? ' ag-mchip--on' : '')}
               >
                 {platformLabel(p)}
               </Link>
@@ -199,29 +199,29 @@ export function MarketsAllView({
         </div>
       </div>
 
-      <div className="ag-sub mk-summary">
+      <div className="ag-sub ag-mk-summary">
         <span className="ag-num">{total}</span>&nbsp;markets · sorted by{' '}
         {SORT_OPTS.find((o) => o.value === sort)?.label ?? sort}
         {platform ? ` · ${platformLabel(platform)}` : ''}
       </div>
 
       {rows.length === 0 ? (
-        <div className="ag-card mk-empty">
-          <div className="mk-empty__t">
+        <div className="ag-card ag-mk-empty">
+          <div className="ag-mk-empty__t">
             No markets match this filter.
             {!fromDb && ' Live database unavailable — the cached fallback had none either.'}
           </div>
         </div>
       ) : (
         <>
-          {!fromDb && <div className="av-notice">Live database unavailable — showing cached data.</div>}
+          {!fromDb && <div className="ag-av-notice">Live database unavailable — showing cached data.</div>}
           <div className="ag-card">
             {rows.map((r) => (
               <MarketRow key={r.id} row={r} sort={sort} />
             ))}
           </div>
 
-          <div className="av-pager">
+          <div className="ag-av-pager">
             {page > 1 ? (
               <Link href={hrefFor({ page: page - 1 }, current)} className="ag-linkish" prefetch={false}>
                 Prev
@@ -231,7 +231,7 @@ export function MarketsAllView({
                 Prev
               </span>
             )}
-            <div className="av-pager__mid">
+            <div className="ag-av-pager__mid">
               Page <span className="ag-num">{page}</span> of <span className="ag-num">{totalPages}</span>
             </div>
             {page < totalPages ? (
@@ -247,7 +247,7 @@ export function MarketsAllView({
         </>
       )}
 
-      <div className="mk-footer">Crypto markets, all connected venues · page {page} of {totalPages}</div>
+      <div className="ag-mk-footer">Crypto markets, all connected venues · page {page} of {totalPages}</div>
     </>
   )
 }

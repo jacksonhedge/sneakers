@@ -37,18 +37,18 @@ export function MyModelEditor() {
   return (
     <>
       <textarea
-        className="mprompt"
+        className="ag-mprompt"
         style={{ width: '100%', minHeight: 96, resize: 'vertical', fontFamily: 'inherit', display: 'block' }}
         value={prompt}
         maxLength={2000}
         aria-label="Strategy prompt"
         onChange={e => { setPrompt(e.target.value); setDirty(true) }}
       />
-      <div className="mchips">
+      <div className="ag-mchips">
         {Object.entries(PRESET_LABELS).map(([key, label]) => (
           <button
             key={key}
-            className={'mchip' + (preset === key ? ' mchip--on' : '')}
+            className={'ag-mchip' + (preset === key ? ' ag-mchip--on' : '')}
             onClick={() => { setPreset(key); setDirty(true) }}
           >
             {label}

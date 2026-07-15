@@ -11,19 +11,19 @@ interface OrbProps {
 
 export function Orb({ color, emoji, size, live, paused, phase }: OrbProps) {
   const cls = [
-    'orb',
-    `orb--${color}`,
-    live ? 'orb--live' : '',
-    paused ? 'orb--paused' : '',
-    phase ? `orb--${phase}` : '',
+    'ag-orb',
+    `ag-orb--${color}`,
+    live ? 'ag-orb--live' : '',
+    paused ? 'ag-orb--paused' : '',
+    phase ? `ag-orb--${phase}` : '',
   ].filter(Boolean).join(' ')
   return (
     <div className={cls} style={{ width: size, height: size, ['--orb-size' as string]: `${size}px` }}>
-      <div className="orb__halo" />
-      <div className="orb__blob" />
-      <div className="orb__swirl" />
-      {emoji ? <span className="orb__emoji">{emoji}</span> : null}
-      <div className="orb__sheen" />
+      <div className="ag-orb__halo" />
+      <div className="ag-orb__blob" />
+      <div className="ag-orb__swirl" />
+      {emoji ? <span className="ag-orb__emoji">{emoji}</span> : null}
+      <div className="ag-orb__sheen" />
     </div>
   )
 }

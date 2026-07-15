@@ -51,9 +51,9 @@ function DemoInner() {
   }
 
   return (
-    <div className="agdemo-screen">
-      <div className="agdemo-island" />
-      <div className="agdemo-main">
+    <div className="ag-demo-screen">
+      <div className="ag-demo-island" />
+      <div className="ag-demo-main">
         {tab === 'agent' && <AgentTabView startAtEnd={centerNew} badge="LIVE DEMO" onNavigate={go} />}
         {tab === 'models' && <ModelsTabView badge="LIVE DEMO" onNavigate={go} onCreateNavigate={goAfterCreate} />}
         {tab === 'balance' && <BalanceTabView />}
@@ -65,7 +65,7 @@ function DemoInner() {
 
 export function AgentDemo() {
   return (
-    <div className="agdemo-frame agent-app" style={{ minHeight: 0 }}>
+    <div className="ag-demo-frame agent-app" style={{ minHeight: 0 }}>
       <AgentProvider>
         <DemoInner />
       </AgentProvider>

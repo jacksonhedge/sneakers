@@ -227,7 +227,14 @@ Phase 2 (contract) is BUILT on `feat/sneakers-agent`: migration 048, `/api/agent
 presence-gated (paper fallback while keys are empty). Carry-ins resolved: editable
 My Model prompt, date-filtered today P&L, server-side subscribe/equip validation,
 subscribe asymmetry (paid → sheet → Checkout), My-Agents list, negative-money
-formatting. Still parked for the follow-up UI batch: accessibility (carousel
-keyboard, sheet focus-trap), remaining CSS prefixing. GET /api/connections and
-GET /api/plans deferred to the iOS-port phase (web Profile reads these server-side
-already).
+formatting. GET /api/connections and GET /api/plans deferred to the iOS-port
+phase (web Profile reads these server-side already).
+
+The follow-up UI batch shipped 2026-07-15: all agent.css classes now carry the
+`ag-` prefix (orb/cf/sheet/conn/mcell/feed-item/mk/av/mchip/mprompt/agdemo
+families + keyframes), sheets are real modals (aria-modal, Escape, focus trap,
+restore focus, scroller lock — locks `.agent-main`/`.ag-demo-main`, never body,
+so the landing demo can't freeze the page), the carousel has keyboard access
+(container arrows + Enter, labeled orb buttons), and the marketplace grid fixed
+its invalid nested-interactive (cell div[role=button] + real subscribe button).
+Verified live via Playwright on /agent, /agent/models, and the landing demo.

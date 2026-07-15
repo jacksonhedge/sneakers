@@ -38,7 +38,7 @@ export function AgentTabView({ startAtEnd, badge = 'PAPER', onNavigate }: { star
         onCenter={setCenterIndex}
         onOpen={setSheetModel}
       />
-      <div className="cf-name">{m.name}</div>
+      <div className="ag-cf-name">{m.name}</div>
       {isEquipped ? (
         <>
           <div className="ag-status">
@@ -55,7 +55,7 @@ export function AgentTabView({ startAtEnd, badge = 'PAPER', onNavigate }: { star
           </div>
         </>
       )}
-      <div className="cf-dots">
+      <div className="ag-cf-dots">
         {state.models.map((x, i) => <span key={x.id} className={i === centerIndex ? 'on' : ''} />)}
       </div>
 

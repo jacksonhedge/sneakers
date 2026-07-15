@@ -14,14 +14,14 @@ export function ActivityFeed({ decisions }: { decisions: Decision[] }) {
         const v = VENUE_META[d.venue]
         const b = BADGE[d.action]
         return (
-          <div className="feed-item" key={d.id}>
-            <div className="feed-item__ic" style={{ background: v.bg }}>
+          <div className="ag-feed-item" key={d.id}>
+            <div className="ag-feed-item__ic" style={{ background: v.bg }}>
               {v.abbr}
-              <span className={'feed-item__bdg' + (b.win ? ' feed-item__bdg--win' : '')}>{b.glyph}</span>
+              <span className={'ag-feed-item__bdg' + (b.win ? ' feed-item__bdg--win' : '')}>{b.glyph}</span>
             </div>
             <div>
-              <div className="feed-item__t">{d.title}</div>
-              <div className="feed-item__m ag-num">{d.detail}</div>
+              <div className="ag-feed-item__t">{d.title}</div>
+              <div className="ag-feed-item__m ag-num">{d.detail}</div>
             </div>
           </div>
         )

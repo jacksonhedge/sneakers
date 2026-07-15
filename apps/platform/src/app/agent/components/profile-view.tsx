@@ -106,37 +106,37 @@ function ProfileRowItem({ row }: { row: ProfileRow }) {
   const body = (
     <>
       {row.icon && (
-        <div className="conn__logo" style={{ background: row.iconBg ?? '#1a2026' }}>{row.icon}</div>
+        <div className="ag-conn__logo" style={{ background: row.iconBg ?? '#1a2026' }}>{row.icon}</div>
       )}
       <div style={{ minWidth: 0, flex: 1 }}>
-        <div className="conn__nm">{row.label}</div>
+        <div className="ag-conn__nm">{row.label}</div>
         {row.statusText ? (
-          <div className="conn__st" style={{ color: row.statusColor ?? '#98A2A8' }}>
-            <span className="conn__dot" style={{ background: row.statusColor ?? '#98A2A8' }} />
+          <div className="ag-conn__st" style={{ color: row.statusColor ?? '#98A2A8' }}>
+            <span className="ag-conn__dot" style={{ background: row.statusColor ?? '#98A2A8' }} />
             {row.statusText}
           </div>
         ) : row.sub ? (
-          <div className="conn__st" style={{ color: '#98A2A8' }}>{row.sub}</div>
+          <div className="ag-conn__st" style={{ color: '#98A2A8' }}>{row.sub}</div>
         ) : null}
       </div>
       {row.action === 'Soon' ? (
-        <div className="conn__act"><span className="ag-soon">Soon</span></div>
+        <div className="ag-conn__act"><span className="ag-soon">Soon</span></div>
       ) : row.action ? (
-        <div className="conn__act"><span className="ag-linkish">{row.action}</span></div>
+        <div className="ag-conn__act"><span className="ag-linkish">{row.action}</span></div>
       ) : row.href ? (
-        <div className="conn__act ag-sub" aria-hidden="true">→</div>
+        <div className="ag-conn__act ag-sub" aria-hidden="true">→</div>
       ) : null}
     </>
   )
 
   if (row.href) {
     return (
-      <Link href={row.href} className="conn" style={{ textDecoration: 'none', color: 'inherit' }}>
+      <Link href={row.href} className="ag-conn" style={{ textDecoration: 'none', color: 'inherit' }}>
         {body}
       </Link>
     )
   }
-  return <div className="conn">{body}</div>
+  return <div className="ag-conn">{body}</div>
 }
 
 // Real sign-out mechanism — mirrors src/app/dashboard/sign-out-button.tsx

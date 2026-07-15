@@ -70,7 +70,7 @@ export function AddCashSheet({ open, onClose }: { open: boolean; onClose: () => 
   }
 
   return (
-    <Sheet open={open} onClose={onClose}>
+    <Sheet open={open} onClose={onClose} label="Add cash">
       <div className="ag-row">
         <div style={{ fontSize: 17, fontWeight: 700 }}>Add cash</div>
         <span className="ag-badge ag-badge--test">STRIPE TEST</span>

@@ -35,7 +35,7 @@ export function ModelSheet({ model, onClose, onNavigate }: {
   }
 
   return (
-    <Sheet open onClose={onClose}>
+    <Sheet open onClose={onClose} label={`${m.name} details`}>
       <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginBottom: 12 }}>
         <Orb color={m.color} emoji={m.emoji} size={64} />
         <div>

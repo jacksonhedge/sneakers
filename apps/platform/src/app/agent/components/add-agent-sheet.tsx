@@ -36,7 +36,7 @@ export function AddAgentSheet({ open, onClose, onNavigate }: {
   }
 
   return (
-    <Sheet open={open} onClose={onClose}>
+    <Sheet open={open} onClose={onClose} label="Add agent">
       <div className="ag-row" style={{ marginBottom: 12 }}>
         <div style={{ fontSize: 17, fontWeight: 700 }}>Add Agent</div>
         <span className="ag-badge ag-badge--paper">PAPER</span>

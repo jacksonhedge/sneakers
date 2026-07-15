@@ -110,7 +110,7 @@ function Countdown({ resolvesAt, generatedAt }: { resolvesAt: string; generatedA
   const urgent = remainingMin <= 2
   const soon = remainingMin > 2 && remainingMin <= 5
   return (
-    <span className={'ag-num' + (urgent ? ' mk-countdown--urgent' : soon ? ' mk-countdown--soon' : '')}>
+    <span className={'ag-num' + (urgent ? ' ag-mk-countdown--urgent' : soon ? ' ag-mk-countdown--soon' : '')}>
       {remainingMin <= 0 ? 'resolving' : fmtMinutes(remainingMin)}
     </span>
   )
@@ -120,28 +120,28 @@ function MarketRow({ market }: { market: SerializedMarket }) {
   const tile = platformTile(market.platform)
   const strikeLabel = market.strike != null ? `$${market.strike.toLocaleString()}` : market.question
   return (
-    <div className="ag-row mk-row">
-      <span className="mk-tile" style={{ background: tile.bg }} aria-hidden="true">
+    <div className="ag-row ag-mk-row">
+      <span className="ag-mk-tile" style={{ background: tile.bg }} aria-hidden="true">
         {tile.abbr}
       </span>
-      <div className="mk-row__mid">
-        <div className="mk-row__strike ag-num">{strikeLabel}</div>
+      <div className="ag-mk-row__mid">
+        <div className="ag-mk-row__strike ag-num">{strikeLabel}</div>
         <div
           className={
-            'mk-row__dir' +
+            'ag-mk-row__dir' +
             (market.direction === 'above'
-              ? ' mk-row__dir--above'
+              ? ' ag-mk-row__dir--above'
               : market.direction === 'below'
-                ? ' mk-row__dir--below'
+                ? ' ag-mk-row__dir--below'
                 : '')
           }
         >
           {market.direction === 'above' ? '↑ above' : market.direction === 'below' ? '↓ below' : '—'}
         </div>
       </div>
-      <div className="mk-row__right">
-        <div className="mk-row__yes ag-num ag-pos">{fmtPrice(market.yesPrice)}</div>
-        <div className="mk-row__sub ag-num ag-sub">
+      <div className="ag-mk-row__right">
+        <div className="ag-mk-row__yes ag-num ag-pos">{fmtPrice(market.yesPrice)}</div>
+        <div className="ag-mk-row__sub ag-num ag-sub">
           <span className={changeClass(market.change5m, market.movementSamples).trim()}>
             {fmtChange(market.change5m, market.movementSamples)}
           </span>
@@ -154,19 +154,19 @@ function MarketRow({ market }: { market: SerializedMarket }) {
 
 function GroupCard({ group, generatedAt }: { group: SerializedGroup; generatedAt: string }) {
   return (
-    <div className="ag-card mk-group">
-      <div className="ag-row mk-group__head">
-        <div className="mk-group__title">
-          <span className="mk-asset-badge">{group.asset ?? '—'}</span>
-          <span className="mk-group__resolve">
+    <div className="ag-card ag-mk-group">
+      <div className="ag-row ag-mk-group__head">
+        <div className="ag-mk-group__title">
+          <span className="ag-mk-asset-badge">{group.asset ?? '—'}</span>
+          <span className="ag-mk-group__resolve">
             resolves in <Countdown key={generatedAt} resolvesAt={group.resolvesAt} generatedAt={generatedAt} />
           </span>
         </div>
-        <div className="mk-group__meta ag-sub">
+        <div className="ag-mk-group__meta ag-sub">
           {group.platforms.join(' · ')} · {group.marketCount} {group.marketCount === 1 ? 'strike' : 'strikes'}
         </div>
       </div>
-      <div className="mk-rows">
+      <div className="ag-mk-rows">
         {group.markets.map((m) => (
           <MarketRow key={`${m.platform}:${m.marketId}`} market={m} />
         ))}
@@ -238,14 +238,14 @@ export function MarketsMinuteView({
         <span className="ag-badge ag-badge--live">LIVE</span>
       </div>
 
-      <div className="mk-filters">
+      <div className="ag-mk-filters">
         <div className="ag-picklab">Window</div>
-        <div className="mchips">
+        <div className="ag-mchips">
           {WINDOW_OPTS.map((w) => (
             <Link
               key={w.value}
               href={windowHref(w.value, asset)}
-              className={'mchip' + (within === w.value ? ' mchip--on' : '')}
+              className={'ag-mchip' + (within === w.value ? ' ag-mchip--on' : '')}
             >
               {w.label}
             </Link>
@@ -254,19 +254,19 @@ export function MarketsMinuteView({
         <div className="ag-picklab" style={{ marginTop: 10 }}>
           Asset
         </div>
-        <div className="mchips">
-          <Link href={assetHref(null, within)} className={'mchip' + (asset === null ? ' mchip--on' : '')}>
+        <div className="ag-mchips">
+          <Link href={assetHref(null, within)} className={'ag-mchip' + (asset === null ? ' ag-mchip--on' : '')}>
             All
           </Link>
           {assetChips.map((a) => (
-            <Link key={a} href={assetHref(a, within)} className={'mchip' + (asset === a ? ' mchip--on' : '')}>
+            <Link key={a} href={assetHref(a, within)} className={'ag-mchip' + (asset === a ? ' ag-mchip--on' : '')}>
               {a}
             </Link>
           ))}
         </div>
       </div>
 
-      <div className="ag-sub mk-summary">
+      <div className="ag-sub ag-mk-summary">
         <span className="ag-num">{totalMarkets}</span>&nbsp;markets ·{' '}
         <span className="ag-num">{totalGroups}</span>&nbsp;groups · 5m{' '}
         <span className="ag-num">{bucketCounts['5m']}</span> · 15m{' '}
@@ -276,8 +276,8 @@ export function MarketsMinuteView({
       </div>
 
       {groups.length === 0 ? (
-        <div className="ag-card mk-empty">
-          <div className="mk-empty__t">
+        <div className="ag-card ag-mk-empty">
+          <div className="ag-mk-empty__t">
             No {asset ?? 'crypto'} markets in the next {within} minutes.
           </div>
         </div>
@@ -285,7 +285,7 @@ export function MarketsMinuteView({
         groups.map((g) => <GroupCard key={`${g.asset}:${g.resolvesAt}`} group={g} generatedAt={generatedAt} />)
       )}
 
-      <div className="mk-footer">Updated {updatedLabel} · refreshes every 30s</div>
+      <div className="ag-mk-footer">Updated {updatedLabel} · refreshes every 30s</div>
     </>
   )
 }
