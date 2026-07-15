@@ -16,6 +16,7 @@ Sneakers is a **Bitcoin investment arm**: a ~90% automatic **up/down trading bot
   - [x] **Agent decision core** — `packages/core/src/agent/` (window, presets, signal, gate, settlement, orchestrator); 44 tests, dry-run P&L. Branch `feat/sneakers-agent`.
   - [ ] **Plan 2** — DB migration `004` (windows/signals/trades/bot_configs) + live Polymarket/Kalshi/spot-oracle feeds + always-on Railway worker writing dry-run trades to Postgres. *#1 risk: oracle parity (match the Chainlink feed Polymarket settles 5-min BTC on).*
   - [ ] **Plan 3** — real `/agent` route in `apps/platform` reading from Postgres (prototype: `docs/prototypes/sneakers-agent.html`).
+  - [x] **Agent marketplace Phase 2 (contract)** — migration 048, `/api/agent/*` + wallet routes, Stripe test-mode subscribe/deposit with paper fallback, live `/agent` store behind `AGENT_API_LIVE=1`. Built 2026-07-15 on `feat/sneakers-agent`; deploy checklist in WORKLOG (migration 048 by hand first). Spec: `docs/superpowers/specs/2026-07-06-agent-experience-design.md`.
 - **Later rungs:** non-custodial real money (reuses existing `/api/balance` + credential wizard), then custodial (parked, needs KYC/custody/counsel). Full design: `docs/superpowers/specs/2026-06-25-sneakers-crypto-bot-terminal-design.md`.
 
 ---

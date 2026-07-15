@@ -1,5 +1,24 @@
 # Sneakers — Work Log
 
+## 2026-07-15 — Agent Marketplace Phase 2 (contract) landed
+
+### Shipped
+- **Full Phase 2 API contract** on `feat/sneakers-agent` (17 commits): migration `048_agent_marketplace.sql` (six spec tables + `agent_wallet_apply` for atomic idempotent wallet writes), read routes (`state`, `activity`, `models`, `config`, `wallet`), mutation routes (`equip` with server-side id validation, `pause`/`resume`, `config` PUT, agent create + submit), Stripe test-mode model subscriptions via hosted Checkout, paper-wallet deposit/withdraw with PaymentIntent path + idempotent webhook credit, atomic withdraw floor (no negative balances under concurrency).
+- **Live web store** behind `AGENT_API_LIVE=1`: API-backed dispatch, 5s state polling, server-built initial state (no loading flash). Mock mode unchanged when the flag is unset.
+- **UI carry-ins from the Phase 1 review**: editable My Model prompt (persisted via config PUT), subscribe asymmetry (paid models route through sheet → Checkout), My-Agents list in Models tab, negative-money formatting, date-filtered today P&L.
+- **Final polish**: Add Cash sheet resets Stripe Payment Element/error state on close; wallet poll stops once the webhook credit lands.
+- Gate green 2026-07-15: 36/36 vitest, clean `tsc --noEmit`, production build passes.
+
+### Deploy checklist (order matters)
+1. Apply `048_agent_marketplace.sql` by hand in the prod Supabase SQL editor (BEFORE deploying — same-window rule).
+2. Set `AGENT_API_LIVE=1` on Vercel (production) — leave unset to keep prod on the mock while validating preview.
+3. Stripe (whenever test keys get pasted): set `STRIPE_SECRET_KEY`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `STRIPE_SUBSCRIPTION_WEBHOOK_SECRET`; in the Stripe dashboard add `payment_intent.succeeded` to the `/api/stripe/webhook` endpoint's event list. Until then everything runs in paper fallback by design.
+4. Deploy; verify `/api/agent/state` returns `paper: true` for a logged-in user; run the Task 9 Step 6 smoke list against prod.
+
+### Deferred (by design)
+- `GET /api/connections` + `GET /api/plans` → iOS-port phase (web Profile reads these server-side already).
+- Accessibility batch (carousel keyboard, sheet focus-trap) + CSS `.ag-*` prefixing → follow-up UI plan.
+
 ## 2026-05-01 — Aggregated balances + multi-venue credentials
 
 ### Shipped

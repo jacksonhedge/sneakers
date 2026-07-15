@@ -219,3 +219,15 @@ resolves which parts of the existing contract Phase 2 actually implements.
   in phases 1–3.
 - Model marketplace creator onboarding (Stripe Connect payouts) — post-v1.
 - Voice interaction on the orb — post-v1.
+
+## Phase 2 status (updated 2026-07-15)
+
+Phase 2 (contract) is BUILT on `feat/sneakers-agent`: migration 048, `/api/agent/*`
++ `/api/wallet*` routes, live store behind `AGENT_API_LIVE=1`. Stripe rails are
+presence-gated (paper fallback while keys are empty). Carry-ins resolved: editable
+My Model prompt, date-filtered today P&L, server-side subscribe/equip validation,
+subscribe asymmetry (paid → sheet → Checkout), My-Agents list, negative-money
+formatting. Still parked for the follow-up UI batch: accessibility (carousel
+keyboard, sheet focus-trap), remaining CSS prefixing. GET /api/connections and
+GET /api/plans deferred to the iOS-port phase (web Profile reads these server-side
+already).
