@@ -22,9 +22,10 @@ const PROVIDER_LABEL: Record<AIProvider, string> = {
   openai: 'OpenAI',
   google: 'Google',
   xai: 'xAI',
+  moonshot: 'Moonshot',
 }
 
-const PROVIDER_ORDER: AIProvider[] = ['anthropic', 'openai', 'google', 'xai']
+const PROVIDER_ORDER: AIProvider[] = ['anthropic', 'openai', 'google', 'xai', 'moonshot']
 
 export function ModelPicker({
   selected,

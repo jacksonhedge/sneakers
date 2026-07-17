@@ -72,7 +72,7 @@ export type ChatRequest = {
 }
 
 export interface ChatAdapter {
-  provider: 'anthropic' | 'openai' | 'google' | 'xai'
+  provider: 'anthropic' | 'openai' | 'google' | 'xai' | 'moonshot'
   chat(req: ChatRequest): Promise<ChatResult>
 }
 

@@ -41,6 +41,12 @@ const PROVIDER_META: Record<AIProvider, {
     getKeyUrl: 'https://console.x.ai/team',
     note: 'Unlocks Grok 3 without spending Sneakers credits.',
   },
+  moonshot: {
+    name: 'Moonshot (Kimi)',
+    keyFormat: 'starts with sk-',
+    getKeyUrl: 'https://platform.kimi.ai/',
+    note: 'Unlocks Kimi K3 without spending Sneakers credits.',
+  },
 }
 
 export default async function ApiKeysPage() {
@@ -51,7 +57,7 @@ export default async function ApiKeysPage() {
   const existing = await listUserProviderKeys(user.id)
   const byProvider = Object.fromEntries(existing.map((e) => [e.provider, e]))
 
-  const providers: AIProvider[] = ['anthropic', 'openai', 'google', 'xai']
+  const providers: AIProvider[] = ['anthropic', 'openai', 'google', 'xai', 'moonshot']
 
   return (
     <main className="min-h-screen bg-stone-50 text-stone-900">

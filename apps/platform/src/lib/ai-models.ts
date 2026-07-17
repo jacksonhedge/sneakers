@@ -8,7 +8,7 @@
 // ~$0.15. Real per-message cost varies with input/output token mix — these are
 // "typical short-conversation" estimates to show users up front.
 
-export type AIProvider = 'anthropic' | 'openai' | 'google' | 'xai'
+export type AIProvider = 'anthropic' | 'openai' | 'google' | 'xai' | 'moonshot'
 
 export type AIModelId =
   // Anthropic
@@ -24,6 +24,8 @@ export type AIModelId =
   | 'gemini-2-5-pro'
   // xAI
   | 'grok-3'
+  // Moonshot (Kimi)
+  | 'kimi-k3'
 
 export interface AIModelMeta {
   id: AIModelId
@@ -143,6 +145,18 @@ export const AI_MODELS: AIModelMeta[] = [
     provider: 'xai',
     displayName: 'Grok 3',
     tagline: 'Real-time search + reasoning from xAI',
+    creditCostPerMessage: 30,
+    minTier: 'pro',
+    enabled: true,
+    priceInputPerMTok: 3.0,
+    priceOutputPerMTok: 15.0,
+  },
+  // ── Moonshot / Kimi ───────────────────────────────────────────────────
+  {
+    id: 'kimi-k3',
+    provider: 'moonshot',
+    displayName: 'Kimi K3',
+    tagline: '1M-token context — deep reasoning over huge market histories',
     creditCostPerMessage: 30,
     minTier: 'pro',
     enabled: true,

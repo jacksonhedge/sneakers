@@ -494,6 +494,7 @@ export async function POST(req: Request) {
     openai: process.env.OPENAI_API_KEY,
     google: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
     xai: process.env.XAI_API_KEY,
+    moonshot: process.env.MOONSHOT_API_KEY,
   }
   const apiKey = byoKey ?? envKeyByProvider[model.provider]
   const usingByoKey = Boolean(byoKey)

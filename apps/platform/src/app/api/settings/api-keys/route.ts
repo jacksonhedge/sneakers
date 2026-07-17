@@ -8,7 +8,7 @@ import {
 import type { AIProvider } from '@/lib/ai-models'
 import { getAdapter, ChatAdapterError } from '@/lib/ai-providers'
 
-const VALID_PROVIDERS: AIProvider[] = ['anthropic', 'openai', 'google', 'xai']
+const VALID_PROVIDERS: AIProvider[] = ['anthropic', 'openai', 'google', 'xai', 'moonshot']
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -122,5 +122,6 @@ function probeModelFor(provider: AIProvider): string {
     case 'openai': return 'gpt-4o-mini'
     case 'google': return 'gemini-2-5-flash'
     case 'xai': return 'grok-3'
+    case 'moonshot': return 'kimi-k3'
   }
 }
