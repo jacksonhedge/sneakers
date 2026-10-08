@@ -6,7 +6,8 @@ import type { Metadata, Viewport } from 'next'
 const RED = '#E03A3E'
 const CREAM = '#FFF3D6'
 const NAVY = '#0B1E3F'
-const NAME = 'Sneakers, a Hedge Product'
+const NAME = 'Sneakers'
+const POWERED_BY = 'Hedge Payments'
 const LEAD = 'Sending payments to friends…'
 const PUNCH = 'just became more fun.'
 const TAGLINE = `${LEAD} ${PUNCH}`
@@ -61,7 +62,7 @@ const MOTION = `
 export default function LandingPage() {
   return (
     <main
-      className="flex min-h-[100svh] flex-col items-center justify-center overflow-hidden px-6 py-14 text-center"
+      className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden px-6 pt-14 pb-20 text-center"
       style={{ backgroundColor: RED }}
     >
       <style>{MOTION}</style>
@@ -81,9 +82,9 @@ export default function LandingPage() {
         priority
         className="sneakers-shoes -mt-2 h-auto w-[min(64vw,380px)]"
       />
-      <h1 className="mt-2 text-xl font-semibold tracking-wide text-white/85 sm:text-2xl">{NAME}</h1>
+      <h1 className="sr-only">{NAME}</h1>
 
-      <p className="sneakers-lead mt-6 text-xl font-semibold text-white sm:text-3xl">{LEAD}</p>
+      <p className="sneakers-lead mt-4 text-xl font-semibold text-white sm:text-3xl">{LEAD}</p>
       <p
         className="mt-2 text-[clamp(2.6rem,10vw,5rem)] leading-[1.05]"
         style={{
@@ -119,6 +120,13 @@ export default function LandingPage() {
           })}
         </span>
       </p>
+      <a
+        href="https://hedgepayments.com"
+        className="absolute text-sm text-white/80 transition-colors hover:text-white sm:text-base"
+        style={{ right: 'max(1.25rem, env(safe-area-inset-right))', bottom: 'max(1rem, env(safe-area-inset-bottom))' }}
+      >
+        Powered by <span className="font-semibold">{POWERED_BY}</span>
+      </a>
     </main>
   )
 }
