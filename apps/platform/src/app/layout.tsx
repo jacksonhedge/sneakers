@@ -66,6 +66,9 @@ export default async function RootLayout({
     host.startsWith("localhost") ||
     host.endsWith(".localhost") ||
     host.endsWith(".vercel.app");
+  // The homepage is the Sneakers app's single red screen: no marketing footer there.
+  // `x-pathname` is set by src/proxy.ts on every request.
+  const isHomepage = (hdrs.get("x-pathname") ?? "") === "/";
   return (
     <html
       lang="en"
@@ -79,7 +82,7 @@ export default async function RootLayout({
           <PageViewTracker />
         </Suspense>
         <div className="flex-1">{children}</div>
-        {isApex && <Footer />}
+        {isApex && !isHomepage && <Footer />}
       </body>
     </html>
   );
