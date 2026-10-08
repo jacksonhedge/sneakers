@@ -83,7 +83,7 @@ export default function LandingPage() {
       />
       <h1 className="mt-2 text-xl font-semibold tracking-wide text-white/85 sm:text-2xl">{NAME}</h1>
 
-      <p className="sneakers-lead mt-6 text-2xl font-semibold text-white sm:text-3xl">{LEAD}</p>
+      <p className="sneakers-lead mt-6 text-xl font-semibold text-white sm:text-3xl">{LEAD}</p>
       <p
         className="mt-2 text-[clamp(2.6rem,10vw,5rem)] leading-[1.05]"
         style={{
