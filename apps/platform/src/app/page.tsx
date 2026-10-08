@@ -36,12 +36,20 @@ export default function LandingPage() {
       style={{ backgroundColor: RED }}
     >
       <Image
+        src="/sneakers-wordmark.png"
+        alt="Sneakers"
+        width={694}
+        height={278}
+        priority
+        className="h-auto w-[min(64vw,340px)]"
+      />
+      <Image
         src="/sneakers-icon.png"
-        alt="Sneakers: two blue high-top sneakers"
+        alt="Two blue high-top sneakers"
         width={1024}
         height={1024}
         priority
-        className="h-auto w-[min(72vw,440px)]"
+        className="-mt-2 h-auto w-[min(68vw,400px)]"
       />
       <h1 className="mt-4 text-3xl font-bold tracking-tight text-white sm:text-5xl">{NAME}</h1>
       <p className="mt-4 max-w-xl text-lg leading-snug text-white/90 sm:text-2xl">{TAGLINE}</p>
