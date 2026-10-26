@@ -1,5 +1,7 @@
 import Image from 'next/image'
 import type { Metadata, Viewport } from 'next'
+import { Squish } from './squish'
+import { Wordmark } from './wordmark'
 
 // sneakersterminal.com is the front door of Sneakers, the P2P payments app: one line, as big as the screen allows.
 // The red is the app icon's own background; the letters are the brand's cream-and-navy stickers (the old punchline style).
@@ -35,7 +37,9 @@ export const viewport: Viewport = {
   themeColor: RED,
 }
 
-// One moment: each line is slapped on like a sticker, in order, and the shoes land last. Then nothing moves.
+// Each line is slapped on like a sticker, in order, and the shoes land last; then every few seconds a ripple runs through the
+// letters, one after another (the old punchline's bounce). Every letter is squishy too (squish.tsx). Reduced motion turns the
+// ripple off and the squish into a small pop.
 const MOTION = `
 @keyframes sneakers-stamp {
   0% { opacity: 0; transform: scale(1.18) rotate(-3deg) }
@@ -49,22 +53,43 @@ const MOTION = `
 }
 .sneakers-line { display: block; opacity: 0; transform-origin: left center; animation: sneakers-stamp 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.2) forwards }
 .sneakers-sticker { opacity: 0; transform: rotate(-12deg); animation: sneakers-land 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.3) 0.95s forwards }
+@keyframes sneakers-ripple {
+  0% { transform: none }
+  6% { transform: translateY(-0.14em) rotate(-5deg) }
+  12% { transform: translateY(0.02em) rotate(1.5deg) }
+  18%, 100% { transform: none }
+}
+.sneakers-char { display: inline-block; animation: sneakers-ripple 5.5s ease-in-out infinite }
+.sq { display: inline-block; transform-origin: 50% 100%; cursor: pointer }
+svg [data-sq] { transform-box: fill-box; transform-origin: 50% 100% }
 @media (prefers-reduced-motion: reduce) {
-  .sneakers-line, .sneakers-sticker { animation: none !important; opacity: 1 !important }
+  .sneakers-line, .sneakers-sticker, .sneakers-char { animation: none !important; opacity: 1 !important }
   .sneakers-line { transform: none !important }
 }
 `
 
-function Lines({ lines, className, sticker }: { lines: string[]; className: string; sticker: string }) {
+function Lines({ lines, className, sticker, id }: { lines: string[]; className: string; sticker: string; id: string }) {
+  // Letters are numbered across all the lines, so the ripple runs left to right and top to bottom.
+  const starts = lines.map((_, i) => lines.slice(0, i).reduce((n, l) => n + l.length, 0))
   return (
     <span aria-hidden="true" className={className}>
       {lines.map((line, i) => (
         <span key={line} className="sneakers-line whitespace-nowrap" style={{ animationDelay: `${0.15 + i * 0.2}s` }}>
-          {line}
+          {Array.from(line).map((ch, c) =>
+            ch === ' ' ? (
+              ' '
+            ) : (
+              <span key={c} className="sq" data-sq={`${id}-${starts[i] + c}`}>
+                <span className="sneakers-char" style={{ animationDelay: `${1.7 + (starts[i] + c) * 0.035}s` }}>
+                  {ch}
+                </span>
+              </span>
+            ),
+          )}
           {i === lines.length - 1 ? (
             // The app icon's shoes, slapped onto the end of the last line like a sticker (the drawing has its own outline).
             <span className="sneakers-sticker ml-[0.12em] inline-block align-middle">
-              <Image src="/sneakers-icon.png" alt="" width={1024} height={1024} priority className={`h-auto ${sticker}`} />
+              <Image src="/sneakers-shoes-s.png" alt="" width={1024} height={1024} priority className={`h-auto ${sticker}`} />
             </span>
           ) : null}
         </span>
@@ -85,7 +110,9 @@ export default function LandingPage() {
     >
       <style>{MOTION}</style>
       <header className="pt-[max(1.25rem,env(safe-area-inset-top))]">
-        <Image src="/sneakers-wordmark.png" alt="Sneakers" width={694} height={278} priority className="h-auto w-[clamp(7.5rem,22vw,11rem)]" />
+        <Squish className="block w-[clamp(7.5rem,22vw,11rem)]">
+          <Wordmark className="h-auto w-full" />
+        </Squish>
       </header>
 
       <div className="flex flex-1 items-center py-10">
@@ -101,8 +128,10 @@ export default function LandingPage() {
         >
           <span className="sr-only">{HEADLINE}</span>
           {/* Each line nearly fills the width; on a wide, short screen the height is the limit, so every line always fits. */}
-          <Lines lines={PHONE_LINES} className="sm:hidden" sticker="w-[1em]" />
-          <Lines lines={WIDE_LINES} className="hidden sm:block" sticker="w-[1.25em]" />
+          <Squish follow>
+            <Lines id="p" lines={PHONE_LINES} className="sm:hidden" sticker="w-[1em]" />
+            <Lines id="w" lines={WIDE_LINES} className="hidden sm:block" sticker="w-[1.25em]" />
+          </Squish>
         </h1>
       </div>
 
