@@ -1,23 +1,24 @@
 import Image from 'next/image'
 import type { Metadata, Viewport } from 'next'
 
-// sneakersterminal.com is now the front door of Sneakers, the P2P payments app.
-// The red is the app icon's own background, so the icon sits on the page seamlessly.
+// sneakersterminal.com is the front door of Sneakers, the P2P payments app: one line, as big as the screen allows.
+// The red is the app icon's own background; the letters are the brand's cream-and-navy stickers (the old punchline style).
 const RED = '#E03A3E'
 const CREAM = '#FFF3D6'
 const NAVY = '#0B1E3F'
 const NAME = 'Sneakers'
 const POWERED_BY = 'Hedge Payments'
-const LEAD = 'Sending payments to friends…'
-const PUNCH = 'just became more fun.'
-const TAGLINE = `${LEAD} ${PUNCH}`
+const HEADLINE = 'The fun way to pay your friends'
+// How the line breaks: short lines read as a poster, not a sentence. Four on a phone (so the letters can be bigger), three wider.
+const PHONE_LINES = ['The fun', 'way to', 'pay your', 'friends']
+const WIDE_LINES = ['The fun way', 'to pay your', 'friends']
 
 export const metadata: Metadata = {
   title: 'Sneakers',
-  description: TAGLINE,
+  description: HEADLINE,
   openGraph: {
     title: NAME,
-    description: TAGLINE,
+    description: HEADLINE,
     url: 'https://sneakersterminal.com',
     siteName: 'Sneakers',
     type: 'website',
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: NAME,
-    description: TAGLINE,
+    description: HEADLINE,
   },
 }
 
@@ -34,99 +35,82 @@ export const viewport: Viewport = {
   themeColor: RED,
 }
 
-// The punchline's letters bounce in one by one, then ripple every few seconds;
-// the shoes bob. Reduced motion turns all of it off.
+// One moment: each line is slapped on like a sticker, in order, and the shoes land last. Then nothing moves.
 const MOTION = `
-@keyframes sneakers-fade-up { from { opacity: 0; transform: translateY(10px) } to { opacity: 1; transform: none } }
-@keyframes sneakers-pop-in {
-  0% { opacity: 0; transform: translateY(0.55em) rotate(-10deg) scale(0.7) }
-  60% { opacity: 1; transform: translateY(-0.14em) rotate(4deg) scale(1.06) }
+@keyframes sneakers-stamp {
+  0% { opacity: 0; transform: scale(1.18) rotate(-3deg) }
+  55% { opacity: 1; transform: scale(0.97) rotate(0.6deg) }
   100% { opacity: 1; transform: none }
 }
-@keyframes sneakers-ripple {
-  0%, 72%, 100% { transform: none }
-  82% { transform: translateY(-0.16em) rotate(-4deg) }
-  91% { transform: translateY(0.03em) rotate(2deg) }
+@keyframes sneakers-land {
+  0% { opacity: 0; transform: translateY(-40%) scale(1.3) rotate(-30deg) }
+  60% { opacity: 1; transform: translateY(4%) scale(0.95) rotate(-10deg) }
+  100% { opacity: 1; transform: rotate(-12deg) }
 }
-@keyframes sneakers-bob { 0%, 100% { transform: translateY(0) rotate(0deg) } 50% { transform: translateY(-9px) rotate(-1.5deg) } }
-.sneakers-lead { animation: sneakers-fade-up 0.6s ease-out 0.25s both }
-.sneakers-char { display: inline-block; opacity: 0; animation-name: sneakers-pop-in, sneakers-ripple;
-  animation-duration: 0.65s, 3.4s; animation-timing-function: cubic-bezier(0.2, 0.9, 0.3, 1.4), ease-in-out;
-  animation-fill-mode: forwards, none; animation-iteration-count: 1, infinite }
-.sneakers-shoes { animation: sneakers-bob 3.6s ease-in-out infinite }
+.sneakers-line { display: block; opacity: 0; transform-origin: left center; animation: sneakers-stamp 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.2) forwards }
+.sneakers-sticker { opacity: 0; transform: rotate(-12deg); animation: sneakers-land 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.3) 0.95s forwards }
 @media (prefers-reduced-motion: reduce) {
-  .sneakers-lead, .sneakers-char, .sneakers-shoes { animation: none !important; opacity: 1 !important; transform: none !important }
+  .sneakers-line, .sneakers-sticker { animation: none !important; opacity: 1 !important }
+  .sneakers-line { transform: none !important }
 }
 `
+
+function Lines({ lines, className, sticker }: { lines: string[]; className: string; sticker: string }) {
+  return (
+    <span aria-hidden="true" className={className}>
+      {lines.map((line, i) => (
+        <span key={line} className="sneakers-line whitespace-nowrap" style={{ animationDelay: `${0.15 + i * 0.2}s` }}>
+          {line}
+          {i === lines.length - 1 ? (
+            // The app icon's shoes, slapped onto the end of the last line like a sticker (the drawing has its own outline).
+            <span className="sneakers-sticker ml-[0.12em] inline-block align-middle">
+              <Image src="/sneakers-icon.png" alt="" width={1024} height={1024} priority className={`h-auto ${sticker}`} />
+            </span>
+          ) : null}
+        </span>
+      ))}
+    </span>
+  )
+}
 
 export default function LandingPage() {
   return (
     <main
-      className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden px-6 pt-14 pb-20 text-center"
-      style={{ backgroundColor: RED }}
+      className="relative flex min-h-[100svh] flex-col overflow-hidden"
+      style={{
+        backgroundColor: RED,
+        paddingLeft: 'max(1.25rem, env(safe-area-inset-left), 5vw)',
+        paddingRight: 'max(1.25rem, env(safe-area-inset-right), 5vw)',
+      }}
     >
       <style>{MOTION}</style>
-      <Image
-        src="/sneakers-wordmark.png"
-        alt="Sneakers"
-        width={694}
-        height={278}
-        priority
-        className="h-auto w-[min(64vw,340px)]"
-      />
-      <Image
-        src="/sneakers-icon.png"
-        alt="Two blue high-top sneakers"
-        width={1024}
-        height={1024}
-        priority
-        className="sneakers-shoes -mt-2 h-auto w-[min(64vw,380px)]"
-      />
-      <h1 className="sr-only">{NAME}</h1>
+      <header className="pt-[max(1.25rem,env(safe-area-inset-top))]">
+        <Image src="/sneakers-wordmark.png" alt="Sneakers" width={694} height={278} priority className="h-auto w-[clamp(7.5rem,22vw,11rem)]" />
+      </header>
 
-      <p className="sneakers-lead mt-4 text-xl font-semibold text-white sm:text-3xl">{LEAD}</p>
-      <p
-        className="mt-2 text-[clamp(2.6rem,10vw,5rem)] leading-[1.05]"
-        style={{
-          fontFamily: 'var(--font-peace), var(--font-open-sauce), sans-serif',
-          color: CREAM,
-          WebkitTextStroke: `2px ${NAVY}`,
-          paintOrder: 'stroke fill',
-          textShadow: `0 5px 0 ${NAVY}, 0 9px 0 rgba(11, 30, 63, 0.28)`,
-        }}
-      >
-        <span className="sr-only">{PUNCH}</span>
-        <span aria-hidden="true">
-          {PUNCH.split(' ').map((word, w, words) => {
-            // Letters are numbered across the whole line so the bounce runs left to right.
-            const start = words.slice(0, w).reduce((n, x) => n + x.length + 1, 0)
-            return (
-              <span key={w}>
-                {/* One word never breaks across lines; the spaces between words can. */}
-                <span className="inline-block whitespace-nowrap">
-                  {Array.from(word).map((ch, c) => (
-                    <span
-                      key={c}
-                      className="sneakers-char"
-                      style={{ animationDelay: `${0.7 + (start + c) * 0.05}s, ${1.6 + (start + c) * 0.05}s` }}
-                    >
-                      {ch}
-                    </span>
-                  ))}
-                </span>
-                {w < words.length - 1 ? ' ' : null}
-              </span>
-            )
-          })}
-        </span>
-      </p>
-      <a
-        href="https://hedgepayments.com"
-        className="absolute text-sm text-white/80 transition-colors hover:text-white sm:text-base"
-        style={{ right: 'max(1.25rem, env(safe-area-inset-right))', bottom: 'max(1rem, env(safe-area-inset-bottom))' }}
-      >
-        Powered by <span className="font-semibold">{POWERED_BY}</span>
-      </a>
+      <div className="flex flex-1 items-center py-10">
+        <h1
+          className="relative leading-[0.98] text-[clamp(2.75rem,17.5vw,5.5rem)] sm:text-[clamp(3rem,min(13.5vw,22svh),11rem)]"
+          style={{
+            fontFamily: 'var(--font-peace), var(--font-open-sauce), sans-serif',
+            color: CREAM,
+            WebkitTextStroke: `0.035em ${NAVY}`,
+            paintOrder: 'stroke fill',
+            textShadow: `0.06em 0.07em 0 ${NAVY}`,
+          }}
+        >
+          <span className="sr-only">{HEADLINE}</span>
+          {/* Each line nearly fills the width; on a wide, short screen the height is the limit, so every line always fits. */}
+          <Lines lines={PHONE_LINES} className="sm:hidden" sticker="w-[1em]" />
+          <Lines lines={WIDE_LINES} className="hidden sm:block" sticker="w-[1.25em]" />
+        </h1>
+      </div>
+
+      <footer className="flex justify-end pb-[max(1rem,env(safe-area-inset-bottom))]">
+        <a href="https://hedgepayments.com" className="rounded-sm text-sm text-white/80 transition-colors hover:text-white focus-visible:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:text-base">
+          Powered by <span className="font-semibold">{POWERED_BY}</span>
+        </a>
+      </footer>
     </main>
   )
 }
