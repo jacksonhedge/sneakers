@@ -66,6 +66,18 @@ const nextConfig: NextConfig = {
       },
     ]
   },
+  // The front door goes straight to the app (Jackson, 2026-11-02): sneakersterminal.com → pay.sneakersterminal.com.
+  // Only the home page; /college, /agent, the legal pages and the API keep working at their own addresses. Temporary
+  // (307), so the landing can come back without browsers caching a permanent move.
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: 'https://pay.sneakersterminal.com/',
+        permanent: false,
+      },
+    ]
+  },
 }
 
 export default nextConfig
