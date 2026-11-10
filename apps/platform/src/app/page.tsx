@@ -18,7 +18,7 @@ const SIGN_IN_URL = 'https://pay.sneakersterminal.com/'
 const HEADLINE = 'Make paying things back fun'
 const SUBLINE = 'Sneakers is the fun way to pay your friends.'
 // How the line breaks: short lines read as a poster, not a sentence. Four on a phone (so the letters can be bigger), three wider.
-const PHONE_LINES = ['Make', 'paying', 'things', 'back fun']
+const PHONE_LINES = ['Make', 'paying', 'things', 'back', 'fun']
 const WIDE_LINES = ['Make paying', 'things back', 'fun']
 
 export const metadata: Metadata = {
@@ -58,7 +58,7 @@ const MOTION = `
   100% { opacity: 1; transform: rotate(-12deg) }
 }
 .sneakers-line { display: block; opacity: 0; transform-origin: left center; animation: sneakers-stamp 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.2) forwards }
-.sneakers-sticker { opacity: 0; transform: rotate(-12deg); animation: sneakers-land 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.3) 0.95s forwards }
+.sneakers-sticker { position: relative; z-index: 0; pointer-events: none; opacity: 0; transform: rotate(-12deg); animation: sneakers-land 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.3) 0.95s forwards }
 @keyframes sneakers-ripple {
   0% { transform: none }
   6% { transform: translateY(-0.14em) rotate(-5deg) }
@@ -68,7 +68,7 @@ const MOTION = `
 .sneakers-phone { opacity: 0; animation: sneakers-rise 0.7s cubic-bezier(0.2, 0.9, 0.3, 1.1) 1.2s forwards }
 @keyframes sneakers-rise { 0% { opacity: 0; transform: translateY(8%) rotate(10deg) } 100% { opacity: 1; transform: rotate(6deg) } }
 .sneakers-char { display: inline-block; animation: sneakers-ripple 5.5s ease-in-out infinite }
-.sq { display: inline-block; transform-origin: 50% 100%; cursor: pointer }
+.sq { display: inline-block; position: relative; z-index: 1; transform-origin: 50% 100%; cursor: pointer }
 svg [data-sq] { transform-box: fill-box; transform-origin: 50% 100% }
 @media (prefers-reduced-motion: reduce) {
   .sneakers-line, .sneakers-sticker, .sneakers-char, .sneakers-phone { animation: none !important; opacity: 1 !important }
