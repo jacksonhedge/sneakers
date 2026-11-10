@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import type { Metadata, Viewport } from 'next'
+import { Phone } from './phone'
 import { Squish } from './squish'
 import { Wordmark } from './wordmark'
 
@@ -10,6 +11,8 @@ const CREAM = '#FFF3D6'
 const NAVY = '#0B1E3F'
 const NAME = 'Sneakers'
 const POWERED_BY = 'Hedge Payments'
+// Where Sign up goes: the app's own sign-in screen, which has the Sign up toggle (web sign-up is open to testers for now).
+const SIGN_UP_URL = 'https://pay.sneakersterminal.com/'
 const HEADLINE = 'The fun way to pay your friends'
 // How the line breaks: short lines read as a poster, not a sentence. Four on a phone (so the letters can be bigger), three wider.
 const PHONE_LINES = ['The fun', 'way to', 'pay your', 'friends']
@@ -59,11 +62,13 @@ const MOTION = `
   12% { transform: translateY(0.02em) rotate(1.5deg) }
   18%, 100% { transform: none }
 }
+.sneakers-phone { opacity: 0; animation: sneakers-rise 0.7s cubic-bezier(0.2, 0.9, 0.3, 1.1) 1.2s forwards }
+@keyframes sneakers-rise { 0% { opacity: 0; transform: translateY(8%) rotate(10deg) } 100% { opacity: 1; transform: rotate(6deg) } }
 .sneakers-char { display: inline-block; animation: sneakers-ripple 5.5s ease-in-out infinite }
 .sq { display: inline-block; transform-origin: 50% 100%; cursor: pointer }
 svg [data-sq] { transform-box: fill-box; transform-origin: 50% 100% }
 @media (prefers-reduced-motion: reduce) {
-  .sneakers-line, .sneakers-sticker, .sneakers-char { animation: none !important; opacity: 1 !important }
+  .sneakers-line, .sneakers-sticker, .sneakers-char, .sneakers-phone { animation: none !important; opacity: 1 !important }
   .sneakers-line { transform: none !important }
 }
 `
@@ -115,24 +120,34 @@ export default function LandingPage() {
         </Squish>
       </header>
 
-      <div className="flex flex-1 items-center py-10">
-        <h1
-          className="relative leading-[0.98] text-[clamp(2.75rem,17.5vw,5.5rem)] sm:text-[clamp(3rem,min(13.5vw,22svh),11rem)]"
-          style={{
-            fontFamily: 'var(--font-peace), var(--font-open-sauce), sans-serif',
-            color: CREAM,
-            WebkitTextStroke: `0.035em ${NAVY}`,
-            paintOrder: 'stroke fill',
-            textShadow: `0.06em 0.07em 0 ${NAVY}`,
-          }}
-        >
-          <span className="sr-only">{HEADLINE}</span>
-          {/* Each line nearly fills the width; on a wide, short screen the height is the limit, so every line always fits. */}
-          <Squish follow>
-            <Lines id="p" lines={PHONE_LINES} className="sm:hidden" sticker="w-[1em]" />
-            <Lines id="w" lines={WIDE_LINES} className="hidden sm:block" sticker="w-[1.25em]" />
-          </Squish>
-        </h1>
+      <div className="flex flex-1 flex-col justify-center gap-10 py-10 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
+        <div className="flex flex-col items-start gap-8 lg:min-w-0 lg:flex-1">
+          <h1
+            className="relative leading-[0.98] text-[clamp(2.75rem,17.5vw,5.5rem)] sm:text-[clamp(3rem,min(13.5vw,22svh),11rem)] lg:text-[clamp(3rem,min(8vw,16svh),8rem)]"
+            style={{
+              fontFamily: 'var(--font-peace), var(--font-open-sauce), sans-serif',
+              color: CREAM,
+              WebkitTextStroke: `0.035em ${NAVY}`,
+              paintOrder: 'stroke fill',
+              textShadow: `0.06em 0.07em 0 ${NAVY}`,
+            }}
+          >
+            <span className="sr-only">{HEADLINE}</span>
+            {/* Each line nearly fills the width; on a wide, short screen the height is the limit, so every line always fits. */}
+            <Squish follow>
+              <Lines id="p" lines={PHONE_LINES} className="sm:hidden" sticker="w-[1em]" />
+              <Lines id="w" lines={WIDE_LINES} className="hidden sm:block" sticker="w-[1.25em]" />
+            </Squish>
+          </h1>
+          <a
+            href={SIGN_UP_URL}
+            className="sneakers-cta inline-flex min-h-[3.25rem] items-center rounded-full px-8 text-lg font-bold transition-transform hover:-translate-y-0.5 active:translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+            style={{ background: CREAM, color: NAVY, border: `0.18rem solid ${NAVY}`, boxShadow: `0.25rem 0.3rem 0 ${NAVY}`, fontFamily: 'var(--font-open-sauce), sans-serif' }}
+          >
+            Sign up
+          </a>
+        </div>
+        <Phone className="shrink-0 lg:mx-0" />
       </div>
 
       <footer className="flex justify-end pb-[max(1rem,env(safe-area-inset-bottom))]">
