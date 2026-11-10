@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import type { Metadata, Viewport } from 'next'
 import { Phone } from './phone'
+import { BLUE, GroupVisual, PaidVisual, RequestVisual, SplitVisual } from './visuals'
 import { Squish } from './squish'
 import { Wordmark } from './wordmark'
 
@@ -13,10 +14,12 @@ const NAME = 'Sneakers'
 const POWERED_BY = 'Hedge Payments'
 // Where Sign up goes: the app's own sign-in screen, which has the Sign up toggle (web sign-up is open to testers for now).
 const SIGN_UP_URL = 'https://pay.sneakersterminal.com/'
-const HEADLINE = 'The fun way to pay your friends'
+const SIGN_IN_URL = 'https://pay.sneakersterminal.com/'
+const HEADLINE = 'Make paying things back fun'
+const SUBLINE = 'Sneakers is the fun way to pay your friends.'
 // How the line breaks: short lines read as a poster, not a sentence. Four on a phone (so the letters can be bigger), three wider.
-const PHONE_LINES = ['The fun', 'way to', 'pay your', 'friends']
-const WIDE_LINES = ['The fun way', 'to pay your', 'friends']
+const PHONE_LINES = ['Make', 'paying', 'things', 'back fun']
+const WIDE_LINES = ['Make paying', 'things back', 'fun']
 
 export const metadata: Metadata = {
   title: 'Sneakers',
@@ -103,10 +106,37 @@ function Lines({ lines, className, sticker, id }: { lines: string[]; className: 
   )
 }
 
+const TONES = {
+  cream: { bg: CREAM, fg: NAVY },
+  blue: { bg: BLUE, fg: CREAM },
+  red: { bg: RED, fg: CREAM },
+} as const
+
+// One thing the app does: a short headline, one plain sentence and a drawing. The drawing swaps sides every other section.
+function Feature({ tone, flip, visual, title, body }: { tone: keyof typeof TONES; flip?: boolean; visual: React.ReactNode; title: string; body: string }) {
+  const { bg, fg } = TONES[tone]
+  return (
+    <section className="px-[max(1.25rem,5vw)] py-16 sm:py-24" style={{ background: bg, color: fg }}>
+      <div className={`mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2 lg:gap-20 ${flip ? 'lg:[&>*:first-child]:order-2' : ''}`}>
+        <div>
+          <h2 className="text-4xl leading-[1.05] sm:text-6xl" style={{ fontFamily: 'var(--font-peace), var(--font-open-sauce), sans-serif' }}>
+            {title}
+          </h2>
+          <p className="mt-5 max-w-md text-lg sm:text-xl" style={{ fontFamily: 'var(--font-open-sauce), sans-serif', opacity: 0.9 }}>
+            {body}
+          </p>
+        </div>
+        <div>{visual}</div>
+      </div>
+    </section>
+  )
+}
+
 export default function LandingPage() {
   return (
-    <main
-      className="relative flex min-h-[100svh] flex-col overflow-hidden"
+    <main>
+      <section
+      aria-label="Sneakers" className="relative flex min-h-[100svh] flex-col overflow-hidden"
       style={{
         backgroundColor: RED,
         paddingLeft: 'max(1.25rem, env(safe-area-inset-left), 5vw)',
@@ -114,10 +144,18 @@ export default function LandingPage() {
       }}
     >
       <style>{MOTION}</style>
-      <header className="pt-[max(1.25rem,env(safe-area-inset-top))]">
+      <header className="flex items-center justify-between pt-[max(1.25rem,env(safe-area-inset-top))]">
         <Squish className="block w-[clamp(7.5rem,22vw,11rem)]">
           <Wordmark className="h-auto w-full" />
         </Squish>
+        <nav aria-label="Account" className="flex items-center gap-3 text-base font-bold" style={{ fontFamily: 'var(--font-open-sauce), sans-serif' }}>
+          <a href={SIGN_IN_URL} className="rounded-full px-4 py-2 transition-colors hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" style={{ color: CREAM }}>
+            Log in
+          </a>
+          <a href={SIGN_UP_URL} className="rounded-full px-5 py-2 transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" style={{ background: CREAM, color: NAVY, border: `0.15rem solid ${NAVY}`, boxShadow: `0.15rem 0.2rem 0 ${NAVY}` }}>
+            Sign up
+          </a>
+        </nav>
       </header>
 
       <div className="flex flex-1 flex-col justify-center gap-10 py-10 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
@@ -139,6 +177,9 @@ export default function LandingPage() {
               <Lines id="w" lines={WIDE_LINES} className="hidden sm:block" sticker="w-[1.25em]" />
             </Squish>
           </h1>
+          <p className="max-w-[24rem] text-xl font-semibold" style={{ color: CREAM, fontFamily: 'var(--font-open-sauce), sans-serif' }}>
+            {SUBLINE}
+          </p>
           <a
             href={SIGN_UP_URL}
             className="sneakers-cta inline-flex min-h-[3.25rem] items-center rounded-full px-8 text-lg font-bold transition-transform hover:-translate-y-0.5 active:translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
@@ -150,8 +191,39 @@ export default function LandingPage() {
         <Phone className="shrink-0 lg:mx-0" />
       </div>
 
-      <footer className="flex justify-end pb-[max(1rem,env(safe-area-inset-bottom))]">
-        <a href="https://hedgepayments.com" className="rounded-sm text-sm text-white/80 transition-colors hover:text-white focus-visible:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:text-base">
+      </section>
+
+      <Feature tone="cream" visual={<PaidVisual />} title="Pay back in a few taps" body="Pick a friend, type the amount, add a note. It's done before the waiter is back with the card machine." />
+      <Feature tone="blue" flip visual={<RequestVisual />} title="Ask without the awkward" body="Send a request with a note that sounds like you. They tap once to pay, and nobody has to say it out loud." />
+      <Feature tone="cream" visual={<SplitVisual />} title="Split anything" body="Dinner, rides, the rental house. Pick who's in, and everyone gets their share. No spreadsheet required." />
+      <Feature tone="red" flip visual={<GroupVisual />} title="One tab for the whole trip" body="Make a group, keep one running tally, and settle up when you're home. Everyone sees the same numbers." />
+
+      <section className="px-[max(1.25rem,5vw)] py-20 text-center" style={{ background: NAVY, color: CREAM }}>
+        <h2 className="mx-auto max-w-3xl text-4xl font-bold leading-tight sm:text-6xl" style={{ fontFamily: 'var(--font-peace), var(--font-open-sauce), sans-serif' }}>
+          Paying back is the boring part. We fixed that.
+        </h2>
+        <p className="mx-auto mt-5 max-w-xl text-lg opacity-80" style={{ fontFamily: 'var(--font-open-sauce), sans-serif' }}>
+          Everything in Sneakers is play money for now, so you can try it with your friends and nothing real is on the line.
+        </p>
+        <a
+          href={SIGN_UP_URL}
+          className="mt-8 inline-flex min-h-[3.5rem] items-center rounded-full px-10 text-xl font-bold transition-transform hover:-translate-y-0.5 active:translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+          style={{ background: CREAM, color: NAVY, border: `0.18rem solid ${CREAM}`, boxShadow: `0.25rem 0.3rem 0 ${RED}`, fontFamily: 'var(--font-open-sauce), sans-serif' }}
+        >
+          Sign up
+        </a>
+      </section>
+
+      <footer className="px-[max(1.25rem,5vw)] py-10 text-sm" style={{ background: RED, color: CREAM, fontFamily: 'var(--font-open-sauce), sans-serif' }}>
+        <nav aria-label="Legal" className="flex flex-wrap gap-x-6 gap-y-2 font-semibold">
+          <a href="https://pay.sneakersterminal.com/rules" className="underline-offset-4 hover:underline">Community rules</a>
+          <a href="https://pay.sneakersterminal.com/privacy" className="underline-offset-4 hover:underline">Privacy</a>
+          <a href="https://pay.sneakersterminal.com/terms" className="underline-offset-4 hover:underline">Terms</a>
+        </nav>
+        <p className="mt-5 max-w-2xl opacity-85">
+          Sneakers is a Hedge, Inc. product. For now everything in the app is play money. Sign-up is open to invited testers while we get ready.
+        </p>
+        <a href="https://hedgepayments.com" className="mt-5 inline-block rounded-sm text-white/80 transition-colors hover:text-white focus-visible:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
           Powered by <span className="font-semibold">{POWERED_BY}</span>
         </a>
       </footer>
