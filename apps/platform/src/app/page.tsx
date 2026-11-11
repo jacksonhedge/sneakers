@@ -74,7 +74,13 @@ svg [data-sq] { transform-box: fill-box; transform-origin: 50% 100% }
 .fun-btn { transition: transform 0.16s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.16s ease-out; will-change: transform; -webkit-tap-highlight-color: transparent }
 .fun-btn:hover { transform: translate(-0.06rem, -0.2rem) rotate(-1.5deg) scale(1.04); box-shadow: 0.4rem 0.55rem 0 var(--fun-shadow, #0B1E3F) !important }
 .fun-btn:active { transform: translate(0.12rem, 0.2rem) scale(0.95, 0.92); box-shadow: 0 0 0 var(--fun-shadow, #0B1E3F) !important; transition-duration: 0.05s }
+@keyframes fun-wiggle { 0%, 100% { transform: none } 25% { transform: rotate(-4deg) scale(1.06) } 60% { transform: rotate(3deg) scale(1.06) } }
+.fun-btn:hover .fun-label { animation: fun-wiggle 0.45s ease-in-out }
+.fun-link { display: inline-block; transition: transform 0.16s cubic-bezier(0.3, 1.6, 0.5, 1) }
+.fun-link:hover { transform: translateY(-0.12em) rotate(-2deg) scale(1.06) }
+.fun-link:active { transform: scale(0.94, 0.9) }
 @media (prefers-reduced-motion: reduce) {
+  .fun-link, .fun-link:hover, .fun-link:active, .fun-btn:hover .fun-label { transform: none !important; animation: none !important; transition: none }
   .fun-btn, .fun-btn:hover, .fun-btn:active { transform: none !important; transition: none }
   .sneakers-line, .sneakers-sticker, .sneakers-char, .sneakers-phone { animation: none !important; opacity: 1 !important }
   .sneakers-line { transform: none !important }
@@ -154,7 +160,7 @@ export default function LandingPage() {
           <Wordmark className="h-auto w-full" />
         </Squish>
         <nav aria-label="Account" className="flex items-center gap-3 text-base font-bold" style={{ fontFamily: 'var(--font-open-sauce), sans-serif' }}>
-          <a href={SIGN_IN_URL} className="rounded-full px-4 py-2 transition-colors hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" style={{ color: CREAM }}>
+          <a href={SIGN_IN_URL} className="fun-link rounded-full px-4 py-2 transition-colors hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" style={{ color: CREAM }}>
             Log in
           </a>
           <FunLink href={SIGN_UP_URL} className="rounded-full px-5 py-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" style={{ background: CREAM, color: NAVY, border: `0.15rem solid ${NAVY}`, boxShadow: `0.15rem 0.2rem 0 ${NAVY}` }}>
@@ -186,6 +192,7 @@ export default function LandingPage() {
             {SUBLINE}
           </p>
           <FunLink
+            shoes
             href={SIGN_UP_URL}
             className="sneakers-cta inline-flex min-h-[3.25rem] items-center rounded-full px-8 text-lg font-bold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
             style={{ background: CREAM, color: NAVY, border: `0.18rem solid ${NAVY}`, boxShadow: `0.25rem 0.3rem 0 ${NAVY}`, fontFamily: 'var(--font-open-sauce), sans-serif' }}
@@ -211,6 +218,7 @@ export default function LandingPage() {
           Everything in Sneakers is play money for now, so you can try it with your friends and nothing real is on the line.
         </p>
         <FunLink
+          shoes
           href={SIGN_UP_URL}
           className="mt-8 inline-flex min-h-[3.5rem] items-center rounded-full px-10 text-xl font-bold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
           style={{ background: CREAM, color: NAVY, border: `0.18rem solid ${CREAM}`, boxShadow: `0.25rem 0.3rem 0 ${RED}`, ['--fun-shadow' as string]: RED, fontFamily: 'var(--font-open-sauce), sans-serif' }}
@@ -221,9 +229,9 @@ export default function LandingPage() {
 
       <footer className="px-[max(1.25rem,5vw)] py-10 text-sm" style={{ background: RED, color: CREAM, fontFamily: 'var(--font-open-sauce), sans-serif' }}>
         <nav aria-label="Legal" className="flex flex-wrap gap-x-6 gap-y-2 font-semibold">
-          <a href="https://pay.sneakersterminal.com/rules" className="underline-offset-4 hover:underline">Community rules</a>
-          <a href="https://pay.sneakersterminal.com/privacy" className="underline-offset-4 hover:underline">Privacy</a>
-          <a href="https://pay.sneakersterminal.com/terms" className="underline-offset-4 hover:underline">Terms</a>
+          <a href="https://pay.sneakersterminal.com/rules" className="fun-link underline-offset-4 hover:underline">Community rules</a>
+          <a href="https://pay.sneakersterminal.com/privacy" className="fun-link underline-offset-4 hover:underline">Privacy</a>
+          <a href="https://pay.sneakersterminal.com/terms" className="fun-link underline-offset-4 hover:underline">Terms</a>
         </nav>
         <p className="mt-5 max-w-2xl opacity-85">
           Sneakers is a Hedge, Inc. product. For now everything in the app is play money. Sign-up is open to invited testers while we get ready.

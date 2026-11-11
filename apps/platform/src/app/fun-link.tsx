@@ -7,14 +7,19 @@ import { useRef, type AnchorHTMLAttributes, type MouseEvent } from 'react'
 // wait and just goes. The look lives in .fun-btn (page.tsx MOTION); this adds the burst.
 const COLORS = ['#E03A3E', '#1B4DE4', '#FFF3D6', '#0B1E3F', '#FFC83D']
 
-export function burst(origin: HTMLElement, x: number, y: number) {
+export function burst(origin: HTMLElement, x: number, y: number, kind: 'confetti' | 'shoes' = 'confetti') {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches
   if (reduce) return 0
   const count = 18
   for (let i = 0; i < count; i++) {
-    const bit = document.createElement('span')
-    const size = 6 + Math.random() * 7
-    Object.assign(bit.style, {
+    const shoe = kind === 'shoes' && i % 3 === 0
+    const bit = document.createElement(shoe ? 'img' : 'span')
+    const size = shoe ? 30 + Math.random() * 12 : 6 + Math.random() * 7
+    if (shoe) {
+      ;(bit as HTMLImageElement).src = '/sneakers-shoes-s.png'
+      ;(bit as HTMLImageElement).alt = ''
+    }
+    Object.assign(bit.style, shoe ? { position: 'fixed', left: `${x}px`, top: `${y}px`, width: `${size}px`, height: 'auto', pointerEvents: 'none', zIndex: '9999' } : {
       position: 'fixed',
       left: `${x}px`,
       top: `${y}px`,
@@ -54,7 +59,7 @@ export function burst(origin: HTMLElement, x: number, y: number) {
   return 240
 }
 
-export function FunLink({ className = '', onClick, children, ...rest }: AnchorHTMLAttributes<HTMLAnchorElement>) {
+export function FunLink({ className = '', onClick, children, shoes = false, ...rest }: AnchorHTMLAttributes<HTMLAnchorElement> & { shoes?: boolean }) {
   const ref = useRef<HTMLAnchorElement>(null)
   const go = (e: MouseEvent<HTMLAnchorElement>) => {
     onClick?.(e)
@@ -64,7 +69,7 @@ export function FunLink({ className = '', onClick, children, ...rest }: AnchorHT
     // Keyboard activation reports 0,0; throw from the middle of the button then.
     const x = e.clientX || rect.left + rect.width / 2
     const y = e.clientY || rect.top + rect.height / 2
-    const wait = burst(a, x, y)
+    const wait = burst(a, x, y, shoes ? 'shoes' : 'confetti')
     if (wait && a.href) {
       e.preventDefault()
       window.setTimeout(() => {
@@ -74,7 +79,7 @@ export function FunLink({ className = '', onClick, children, ...rest }: AnchorHT
   }
   return (
     <a ref={ref} className={`fun-btn ${className}`} onClick={go} {...rest}>
-      {children}
+      <span className="fun-label inline-block">{children}</span>
     </a>
   )
 }
