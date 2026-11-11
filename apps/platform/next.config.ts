@@ -58,6 +58,18 @@ const nextConfig: NextConfig = {
   // bundle). Only needed for local multi-origin testing (e.g. comparing two
   // isolated cookie sessions side by side); irrelevant in production.
   ...(process.env.NODE_ENV === 'development' ? { allowedDevOrigins: ['127.0.0.1', '[::1]'] } : {}),
+  // One Vercel project serves several hosts. Only app. is sent to the Sneakers
+  // app; the apex shows the landing page and admin. keeps its own login.
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'app.sneakersterminal.com' }],
+        destination: 'https://pay.sneakersterminal.com/',
+        permanent: false,
+      },
+    ]
+  },
   async headers() {
     return [
       {
