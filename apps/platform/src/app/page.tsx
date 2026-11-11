@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import type { Metadata, Viewport } from 'next'
+import { FunLink } from './fun-link'
 import { Phone } from './phone'
 import { BLUE, GroupVisual, PaidVisual, RequestVisual, SplitVisual } from './visuals'
 import { Squish } from './squish'
@@ -70,7 +71,11 @@ const MOTION = `
 .sneakers-char { display: inline-block; animation: sneakers-ripple 5.5s ease-in-out infinite }
 .sq { display: inline-block; position: relative; z-index: 1; transform-origin: 50% 100%; cursor: pointer }
 svg [data-sq] { transform-box: fill-box; transform-origin: 50% 100% }
+.fun-btn { transition: transform 0.16s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.16s ease-out; will-change: transform; -webkit-tap-highlight-color: transparent }
+.fun-btn:hover { transform: translate(-0.06rem, -0.2rem) rotate(-1.5deg) scale(1.04); box-shadow: 0.4rem 0.55rem 0 var(--fun-shadow, #0B1E3F) !important }
+.fun-btn:active { transform: translate(0.12rem, 0.2rem) scale(0.95, 0.92); box-shadow: 0 0 0 var(--fun-shadow, #0B1E3F) !important; transition-duration: 0.05s }
 @media (prefers-reduced-motion: reduce) {
+  .fun-btn, .fun-btn:hover, .fun-btn:active { transform: none !important; transition: none }
   .sneakers-line, .sneakers-sticker, .sneakers-char, .sneakers-phone { animation: none !important; opacity: 1 !important }
   .sneakers-line { transform: none !important }
 }
@@ -152,9 +157,9 @@ export default function LandingPage() {
           <a href={SIGN_IN_URL} className="rounded-full px-4 py-2 transition-colors hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" style={{ color: CREAM }}>
             Log in
           </a>
-          <a href={SIGN_UP_URL} className="rounded-full px-5 py-2 transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" style={{ background: CREAM, color: NAVY, border: `0.15rem solid ${NAVY}`, boxShadow: `0.15rem 0.2rem 0 ${NAVY}` }}>
+          <FunLink href={SIGN_UP_URL} className="rounded-full px-5 py-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" style={{ background: CREAM, color: NAVY, border: `0.15rem solid ${NAVY}`, boxShadow: `0.15rem 0.2rem 0 ${NAVY}` }}>
             Sign up
-          </a>
+          </FunLink>
         </nav>
       </header>
 
@@ -180,13 +185,13 @@ export default function LandingPage() {
           <p className="max-w-[24rem] text-xl font-semibold" style={{ color: CREAM, fontFamily: 'var(--font-open-sauce), sans-serif' }}>
             {SUBLINE}
           </p>
-          <a
+          <FunLink
             href={SIGN_UP_URL}
-            className="sneakers-cta inline-flex min-h-[3.25rem] items-center rounded-full px-8 text-lg font-bold transition-transform hover:-translate-y-0.5 active:translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+            className="sneakers-cta inline-flex min-h-[3.25rem] items-center rounded-full px-8 text-lg font-bold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
             style={{ background: CREAM, color: NAVY, border: `0.18rem solid ${NAVY}`, boxShadow: `0.25rem 0.3rem 0 ${NAVY}`, fontFamily: 'var(--font-open-sauce), sans-serif' }}
           >
             Sign up
-          </a>
+          </FunLink>
         </div>
         <Phone className="shrink-0 lg:mx-0" />
       </div>
@@ -205,13 +210,13 @@ export default function LandingPage() {
         <p className="mx-auto mt-5 max-w-xl text-lg opacity-80" style={{ fontFamily: 'var(--font-open-sauce), sans-serif' }}>
           Everything in Sneakers is play money for now, so you can try it with your friends and nothing real is on the line.
         </p>
-        <a
+        <FunLink
           href={SIGN_UP_URL}
-          className="mt-8 inline-flex min-h-[3.5rem] items-center rounded-full px-10 text-xl font-bold transition-transform hover:-translate-y-0.5 active:translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
-          style={{ background: CREAM, color: NAVY, border: `0.18rem solid ${CREAM}`, boxShadow: `0.25rem 0.3rem 0 ${RED}`, fontFamily: 'var(--font-open-sauce), sans-serif' }}
+          className="mt-8 inline-flex min-h-[3.5rem] items-center rounded-full px-10 text-xl font-bold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+          style={{ background: CREAM, color: NAVY, border: `0.18rem solid ${CREAM}`, boxShadow: `0.25rem 0.3rem 0 ${RED}`, ['--fun-shadow' as string]: RED, fontFamily: 'var(--font-open-sauce), sans-serif' }}
         >
           Sign up
-        </a>
+        </FunLink>
       </section>
 
       <footer className="px-[max(1.25rem,5vw)] py-10 text-sm" style={{ background: RED, color: CREAM, fontFamily: 'var(--font-open-sauce), sans-serif' }}>

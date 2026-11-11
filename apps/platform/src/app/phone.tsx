@@ -1,3 +1,4 @@
+import { PhoneButtons } from "./phone-buttons";
 // A drawing of an iPhone showing the app's Pay screen with a play-money send. Every size is in em, and the whole phone scales from one
 // width (15.5rem, less on a narrow screen), so it keeps its proportions. Drawn, not a screenshot; the names and amounts are made up.
 const RED = "#E03A3E";
@@ -210,37 +211,7 @@ export function Phone({ className = "" }: { className?: string }) {
               </span>
             </div>
 
-            <div
-              className="mt-auto flex flex-col items-stretch"
-              style={{ gap: "0.65em", padding: "0 1.1em 1.5em" }}
-            >
-              <span
-                className="text-center"
-                style={{
-                  background: RED,
-                  color: CREAM,
-                  borderRadius: "99em",
-                  padding: "0.85em 0",
-                  fontSize: "1em",
-                  fontWeight: 700,
-                  boxShadow: `0.12em 0.18em 0 ${NAVY}`,
-                }}
-              >
-                Pay Sam
-              </span>
-              <span
-                className="text-center"
-                style={{
-                  border: `0.12em solid ${NAVY}`,
-                  borderRadius: "99em",
-                  padding: "0.6em 0",
-                  fontSize: "0.85em",
-                  fontWeight: 700,
-                }}
-              >
-                Make it free?
-              </span>
-            </div>
+            <PhoneButtons />
 
             {/* Home indicator. */}
             <span
