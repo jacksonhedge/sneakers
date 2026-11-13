@@ -11,23 +11,25 @@ import { Wordmark } from './wordmark'
 const RED = '#E03A3E'
 const CREAM = '#FFF3D6'
 const NAVY = '#0B1E3F'
-const NAME = 'Sneakers'
 const POWERED_BY = 'Hedge Payments'
 // Where Sign up goes while Sneakers is launching soon: the waitlist page. (Log in still goes to the app's sign-in for invited testers.)
 const SIGN_UP_URL = '/launching-soon'
 const SIGN_IN_URL = 'https://pay.sneakersterminal.com/'
 const HEADLINE = 'Paying your friends back should be fun!'
 const SUBLINE = 'Sneakers is the fun way to pay your friends.'
+// What a text or a post shows as the link preview (with opengraph-image.png and twitter-image.png).
+const SHARE_TITLE = 'Sneakers: the fun way to split payments with friends'
+const SHARE_DESCRIPTION = 'Pay friends back, split the bill, and keep one tab for the trip. The fun way to split payments with friends.'
 // How the line breaks: short lines read as a poster, not a sentence. Four on a phone (so the letters can be bigger), three wider.
 const PHONE_LINES = ['Paying', 'your', 'friends', 'back', 'should', 'be', 'fun!']
 const WIDE_LINES = ['Paying your', 'friends back', 'should be', 'fun!']
 
 export const metadata: Metadata = {
-  title: 'Sneakers',
-  description: HEADLINE,
+  title: SHARE_TITLE,
+  description: SHARE_DESCRIPTION,
   openGraph: {
-    title: NAME,
-    description: HEADLINE,
+    title: SHARE_TITLE,
+    description: SHARE_DESCRIPTION,
     url: 'https://sneakersterminal.com',
     siteName: 'Sneakers',
     type: 'website',
@@ -35,8 +37,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: NAME,
-    description: HEADLINE,
+    title: SHARE_TITLE,
+    description: SHARE_DESCRIPTION,
   },
 }
 
