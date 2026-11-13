@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { getSneakersWaitlistCount, publicCount } from '@/lib/sneakers-waitlist'
 import { CREAM, NAVY, RED } from '../visuals'
+import { parseRefParam } from '@/lib/waitlist-referral'
 import { LaunchingForm } from './launching-form'
 
 export const dynamic = 'force-dynamic'
@@ -9,7 +10,8 @@ export const metadata: Metadata = { title: 'Sneakers · Launching soon', descrip
 const peace = 'var(--font-peace), var(--font-open-sauce), sans-serif'
 const sauce = 'var(--font-open-sauce), sans-serif'
 
-export default async function LaunchingSoonPage() {
+export default async function LaunchingSoonPage({ searchParams }: { searchParams: Promise<{ ref?: string }> }) {
+  const { ref } = await searchParams
   // The real number of people on the list, shown only once it is big enough to mean something. Never padded.
   const count = publicCount(await getSneakersWaitlistCount())
   return (
@@ -23,7 +25,7 @@ export default async function LaunchingSoonPage() {
       <p className="max-w-md text-xl font-semibold" style={{ fontFamily: sauce }}>
         But here is the waitlist. Leave your email and we will tell you the moment Sneakers opens.
       </p>
-      <LaunchingForm />
+      <LaunchingForm refCode={parseRefParam(ref)} />
       {count !== null ? (
         <p className="text-lg font-bold" style={{ fontFamily: sauce }}>
           {count.toLocaleString('en-US')} people are on the waitlist
