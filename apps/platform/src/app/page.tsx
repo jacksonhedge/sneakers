@@ -2,7 +2,7 @@ import Image from 'next/image'
 import type { Metadata, Viewport } from 'next'
 import { FunLink } from './fun-link'
 import { Phone } from './phone'
-import { BLUE, GroupVisual, PaidVisual, RequestVisual, SplitVisual } from './visuals'
+import { BLUE, GroupVisual, PaidVisual, RequestVisual, RoundUpsVisual, SplitVisual } from './visuals'
 import { Squish } from './squish'
 import { Wordmark } from './wordmark'
 
@@ -16,11 +16,11 @@ const POWERED_BY = 'Hedge Payments'
 // Where Sign up goes: the app's own sign-in screen, which has the Sign up toggle (web sign-up is open to testers for now).
 const SIGN_UP_URL = 'https://pay.sneakersterminal.com/'
 const SIGN_IN_URL = 'https://pay.sneakersterminal.com/'
-const HEADLINE = 'Make paying things back fun'
+const HEADLINE = 'Paying your friends back should be fun!'
 const SUBLINE = 'Sneakers is the fun way to pay your friends.'
 // How the line breaks: short lines read as a poster, not a sentence. Four on a phone (so the letters can be bigger), three wider.
-const PHONE_LINES = ['Make', 'paying', 'things', 'back', 'fun']
-const WIDE_LINES = ['Make paying', 'things back', 'fun']
+const PHONE_LINES = ['Paying', 'your', 'friends', 'back', 'should', 'be', 'fun!']
+const WIDE_LINES = ['Paying your', 'friends back', 'should be', 'fun!']
 
 export const metadata: Metadata = {
   title: 'Sneakers',
@@ -87,6 +87,13 @@ svg [data-sq] { transform-box: fill-box; transform-origin: 50% 100% }
 }
 `
 
+// The word FUN stands apart: navy letters with a cream outline, the headline's colours turned inside out.
+const FUN_STYLE = { color: NAVY, WebkitTextStroke: `0.035em ${CREAM}`, textShadow: `0.06em 0.07em 0 ${CREAM}` } as const
+const isFun = (line: string, at: number): boolean => {
+  const m = /fun!?/i.exec(line)
+  return m !== null && at >= m.index && at < m.index + m[0].length
+}
+
 function Lines({ lines, className, sticker, id }: { lines: string[]; className: string; sticker: string; id: string }) {
   // Letters are numbered across all the lines, so the ripple runs left to right and top to bottom.
   const starts = lines.map((_, i) => lines.slice(0, i).reduce((n, l) => n + l.length, 0))
@@ -99,7 +106,7 @@ function Lines({ lines, className, sticker, id }: { lines: string[]; className: 
               ' '
             ) : (
               <span key={c} className="sq" data-sq={`${id}-${starts[i] + c}`}>
-                <span className="sneakers-char" style={{ animationDelay: `${1.7 + (starts[i] + c) * 0.035}s` }}>
+                <span className="sneakers-char" style={{ animationDelay: `${1.7 + (starts[i] + c) * 0.035}s`, ...(isFun(line, c) ? FUN_STYLE : {}) }}>
                   {ch}
                 </span>
               </span>
@@ -209,6 +216,7 @@ export default function LandingPage() {
       <Feature tone="blue" flip visual={<RequestVisual />} title="Ask without the awkward" body="Send a request with a note that sounds like you. They tap once to pay, and nobody has to say it out loud." />
       <Feature tone="cream" visual={<SplitVisual />} title="Split anything" body="Dinner, rides, the rental house. Pick who's in, and everyone gets their share. No spreadsheet required." />
       <Feature tone="red" flip visual={<GroupVisual />} title="One tab for the whole trip" body="Make a group, keep one running tally, and settle up when you're home. Everyone sees the same numbers." />
+      <Feature tone="cream" visual={<RoundUpsVisual />} title="Round-ups: spare change adds up" body="Every payment you send rounds up to the next dollar. The spare change adds up and moves into your balance once it reaches the amount shown. Pause any time." />
 
       <section className="px-[max(1.25rem,5vw)] py-20 text-center" style={{ background: NAVY, color: CREAM }}>
         <h2 className="mx-auto max-w-3xl text-4xl font-bold leading-tight sm:text-6xl" style={{ fontFamily: 'var(--font-peace), var(--font-open-sauce), sans-serif' }}>

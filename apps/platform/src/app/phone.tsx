@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { PhoneButtons } from "./phone-buttons";
 // A drawing of an iPhone showing the app's Pay screen with a play-money send. Every size is in em, and the whole phone scales from one
 // width (15.5rem, less on a narrow screen), so it keeps its proportions. Drawn, not a screenshot; the names and amounts are made up.
@@ -144,18 +145,8 @@ export function Phone({ className = "" }: { className?: string }) {
             >
               <span style={{ fontSize: "1.4em", lineHeight: 1 }}>‹</span>
               <span style={{ fontWeight: 700 }}>Pay</span>
-              <span
-                style={{
-                  background: NAVY,
-                  color: CREAM,
-                  borderRadius: "99em",
-                  padding: "0.2em 0.7em",
-                  fontSize: "0.8em",
-                  fontWeight: 700,
-                }}
-              >
-                Play money
-              </span>
+              {/* The app's own sticker wordmark, where the old badge was. */}
+              <Image src="/sneakers-wordmark-sticker.svg" alt="Sneakers" width={1950} height={374} style={{ height: "1.15em", width: "auto" }} />
             </div>
 
             <div

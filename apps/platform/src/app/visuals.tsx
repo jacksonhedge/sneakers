@@ -1,4 +1,4 @@
-// Four drawings for the home page, one per thing the app does (pay, request, split, groups). Drawn here in the sticker look, not screenshots:
+// Five drawings for the home page, one per thing the app does (pay, request, split, groups, round-ups). Drawn here in the sticker look, not screenshots:
 // cream cards, navy outlines and drops, the icon red and the shoes' blue. Every figure is play money and the names are made up.
 export const RED = "#E03A3E";
 export const CREAM = "#FFF3D6";
@@ -184,6 +184,45 @@ export function GroupVisual() {
         }}
       >
         Settle up
+      </div>
+    </div>
+  );
+}
+
+/** Round-ups: a payment rounds up to the next dollar and the spare change adds up. */
+export function RoundUpsVisual() {
+  return (
+    <div
+      aria-hidden="true"
+      className="mx-auto w-full max-w-[22rem] p-6"
+      style={card(2)}
+    >
+      <div className="flex items-center justify-between">
+        <span className="text-lg font-bold">Round-ups</span>
+        <span
+          className="rounded-full px-3 py-1 text-xs font-bold"
+          style={{ background: BLUE, color: CREAM }}
+        >
+          On
+        </span>
+      </div>
+      <div className="mt-4 flex items-center gap-3">
+        <Chip letter="S" bg={RED} size="2rem" />
+        <div className="flex-1 leading-tight">
+          <div className="text-base font-bold">Pizza night</div>
+          <div className="text-sm opacity-70">$11.40 rounds up to $12.00</div>
+        </div>
+        <span className="text-base font-bold">+ $0.60</span>
+      </div>
+      <div className="mt-5 text-sm font-bold opacity-70">Spare change so far</div>
+      <div className="mt-1 text-[2.75rem] font-bold leading-none tracking-tight">
+        $3.60
+      </div>
+      <div
+        className="mt-4 h-3 w-full overflow-hidden rounded-full"
+        style={{ border: `0.15rem solid ${NAVY}` }}
+      >
+        <div className="h-full" style={{ width: "72%", background: RED }} />
       </div>
     </div>
   );
