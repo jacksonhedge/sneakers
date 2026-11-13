@@ -13,8 +13,8 @@ const CREAM = '#FFF3D6'
 const NAVY = '#0B1E3F'
 const NAME = 'Sneakers'
 const POWERED_BY = 'Hedge Payments'
-// Where Sign up goes: the app's own sign-in screen, which has the Sign up toggle (web sign-up is open to testers for now).
-const SIGN_UP_URL = 'https://pay.sneakersterminal.com/'
+// Where Sign up goes while Sneakers is launching soon: the waitlist page. (Log in still goes to the app's sign-in for invited testers.)
+const SIGN_UP_URL = '/launching-soon'
 const SIGN_IN_URL = 'https://pay.sneakersterminal.com/'
 const HEADLINE = 'Paying your friends back should be fun!'
 const SUBLINE = 'Sneakers is the fun way to pay your friends.'
