@@ -18,8 +18,8 @@ const SIGN_IN_URL = 'https://pay.sneakersterminal.com/'
 const HEADLINE = 'Paying your friends back should be fun!'
 const SUBLINE = 'Sneakers is the fun way to pay your friends.'
 // What a text or a post shows as the link preview (with opengraph-image.png and twitter-image.png).
-const SHARE_TITLE = 'Sneakers: the fun way to split payments with friends'
-const SHARE_DESCRIPTION = 'Pay friends back, split the bill, and keep one tab for the trip. The fun way to split payments with friends.'
+const SHARE_TITLE = 'Sneakers · send a prediction, not just a payment'
+const SHARE_DESCRIPTION = 'Pay friends back, or predict what happens next. Coming soon.'
 // How the line breaks: short lines read as a poster, not a sentence. Four on a phone (so the letters can be bigger), three wider.
 const PHONE_LINES = ['Paying', 'your', 'friends', 'back', 'should', 'be', 'fun!']
 const WIDE_LINES = ['Paying your', 'friends back', 'should be', 'fun!']

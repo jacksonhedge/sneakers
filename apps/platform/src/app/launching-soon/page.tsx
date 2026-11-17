@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic'
 const SHARE_TITLE = 'Sneakers · Launching soon'
 const SHARE_DESCRIPTION = 'The fun way to pay friends back. Sneakers is launching soon. Join the waitlist.'
 // Setting openGraph/twitter here replaces the root's file-based share image, so point back to it (src/app/opengraph-image.png).
-const SHARE_IMAGE = { url: '/opengraph-image.png', width: 1200, height: 630, alt: 'Sneakers: two blue high-top sneakers with S patches on red.' }
+const SHARE_IMAGE = { url: '/opengraph-image.png?v=prediction-1', width: 1200, height: 630, alt: 'Sneakers: "send a prediction, not just a payment." Coming soon. Pay friends back, or predict what happens next.' }
 export const metadata: Metadata = {
   title: SHARE_TITLE,
   description: SHARE_DESCRIPTION,
