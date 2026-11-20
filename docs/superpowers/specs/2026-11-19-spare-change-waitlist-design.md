@@ -66,3 +66,22 @@ One form, two lists. Someone who signs up for the newsletter is also on the Snea
 - Looked at in a browser at 390px and desktop width.
 - The existing `/launching-soon` flow still works unchanged with the box unchecked.
 - The migration is written but **not applied**; applying it to Supabase and deploying are the owner's call.
+
+## Change, 2026-11-19 (evening)
+
+The owner changed the signup requirements after the first build. Where this section and the text above disagree, this section wins.
+
+- **Fields are now Name, Email, State, Age.** The "I'm 21 or older" checkbox is gone from `/spare-change` and from the optional newsletter section on `/launching-soon`.
+  - Name: required for the newsletter, trimmed, 1 to 80 characters, stored as typed.
+  - Age: a whole number the person types (numeric keypad on phones). Anything that is not a whole number from 13 to 120 is refused as a typing mistake (`invalid_age`).
+  - State: still required, same two-letter list with DC.
+- **The newsletter is 18+, not 21+.** Someone who types 13 to 17 is not added to the newsletter list; they join the Sneakers waitlist exactly as the old "box not ticked" path did, their name, age and state are not stored, and the page says the newsletter is 18+ only. Page copy that said 21+ now says 18+.
+- **Route.** `POST /api/spare-change-waitlist` takes `name`, `email`, `state`, `age`, `ref`. It answers `newsletter: true | false`, with `reason: "under_18"` when false. Error codes: `invalid_email`, `invalid_age`, `invalid_name`, `invalid_state`, plus `too_many` and `server_error` as before.
+- **Table.** Migration 048 had not been applied anywhere, so it was edited in place: `confirmed_21_at` is replaced by `name text not null` and `age_at_signup smallint not null check (age_at_signup >= 18 and age_at_signup <= 120)`. Everything else is unchanged. It is still **not applied**.
+- **Referral cap of 5.** Each person is credited for at most 5 friends who join with their link (`creditedReferrals(n) = min(max(n, 0), 5)`, `MAX_CREDITED_REFERRALS = 5`). After a newsletter signup the page shows "N of 5 friends joined. Up to 5 friends count." The place-in-line text is unchanged, and someone who joins the Sneakers waitlist without the newsletter sees the same uncapped count as before.
+- **Reward amounts are still undecided.** No page states an amount or says what a referral earns. The line stays "rewards for subscribers at launch".
+
+Known gaps left for a later decision:
+
+- The number shown is the person's Sneakers waitlist count (friends who joined the waitlist with their link), capped at 5. It does not yet check that each of those friends also joined the newsletter. `newsletter_waitlist.referred_by_code` holds what is needed to count that exactly once rewards are defined.
+- Age is what the person typed. Nothing verifies it.

@@ -6,7 +6,7 @@ import { SpareChangeForm } from './spare-change-form'
 
 // The newsletter's own page: what it is, one example ticket, and one form that also puts the person on the Sneakers waitlist.
 // Not indexed and not linked from the home page unless NEXT_PUBLIC_SPARE_CHANGE is on.
-export const metadata: Metadata = { title: `${NEWSLETTER_NAME} · Sneakers`, description: 'A daily email of long-shot parlays, coming soon. 21+ only.', robots: { index: false } }
+export const metadata: Metadata = { title: `${NEWSLETTER_NAME} · Sneakers`, description: 'A daily email of long-shot parlays, coming soon. 18+ only.', robots: { index: false } }
 
 const peace = 'var(--font-peace), var(--font-open-sauce), sans-serif'
 const sauce = 'var(--font-open-sauce), sans-serif'

@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { REFERRAL_CAP_NOTE, friendsJoinedText } from '@/lib/spare-change'
 import { referralLink, referralShareText } from '@/lib/waitlist-referral'
 import { CREAM, NAVY } from '../visuals'
 
@@ -11,8 +12,12 @@ export interface Joined {
 
 const sauce = 'var(--font-open-sauce), sans-serif'
 
-/** What a person sees after joining: the confirmation, and (for someone new to the Sneakers waitlist) their own link, a share button and their real standing. */
-export function WaitlistShare({ text, joined }: { text: string; joined: Joined | null }) {
+/**
+ * What a person sees after joining: the confirmation, and (for someone new to the Sneakers waitlist) their own link, a share button and
+ * their real standing. `newsletter` is true only for someone who just joined the newsletter list: their friends line is then the credited
+ * number out of 5. Everyone else sees the plain Sneakers waitlist count, exactly as before.
+ */
+export function WaitlistShare({ text, joined, newsletter = false }: { text: string; joined: Joined | null; newsletter?: boolean }) {
   const [note, setNote] = useState<string | null>(null)
   const link = joined ? referralLink(window.location.origin, joined.code) : null
   const share = async () => {
@@ -45,7 +50,7 @@ export function WaitlistShare({ text, joined }: { text: string; joined: Joined |
           {note ? <p style={{ fontFamily: sauce }}>{note}</p> : null}
           <p className="text-base font-semibold" style={{ fontFamily: sauce }}>
             {joined.position !== null ? `You are #${joined.position} in line. ` : ''}
-            {joined.referrals === 1 ? '1 friend joined with your link.' : `${joined.referrals} friends joined with your link.`}
+            {newsletter ? `${friendsJoinedText(joined.referrals)} ${REFERRAL_CAP_NOTE}` : joined.referrals === 1 ? '1 friend joined with your link.' : `${joined.referrals} friends joined with your link.`}
           </p>
         </>
       ) : null}
