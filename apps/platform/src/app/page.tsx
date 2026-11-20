@@ -5,6 +5,7 @@ import { Phone } from './phone'
 import { BLUE, GroupVisual, PaidVisual, RequestVisual, RoundUpsVisual, SplitVisual } from './visuals'
 import { Squish } from './squish'
 import { Wordmark } from './wordmark'
+import { NEWSLETTER_NAME, NEWSLETTER_PITCH } from '@/lib/spare-change'
 
 // sneakersterminal.com is the front door of Sneakers, the P2P payments app: one line, as big as the screen allows.
 // The red is the app icon's own background; the letters are the brand's cream-and-navy stickers (the old punchline style).
@@ -23,6 +24,8 @@ const SHARE_DESCRIPTION = 'Pay friends back, or predict what happens next. Comin
 // How the line breaks: short lines read as a poster, not a sentence. Four on a phone (so the letters can be bigger), three wider.
 const PHONE_LINES = ['Paying', 'your', 'friends', 'back', 'should', 'be', 'fun!']
 const WIDE_LINES = ['Paying your', 'friends back', 'should be', 'fun!']
+// The Spare Change Millionaire newsletter band. Off unless NEXT_PUBLIC_SPARE_CHANGE is exactly "on" (read when the site is built).
+const SPARE_CHANGE_ON = process.env.NEXT_PUBLIC_SPARE_CHANGE === 'on'
 
 export const metadata: Metadata = {
   title: SHARE_TITLE,
@@ -219,6 +222,27 @@ export default function LandingPage() {
       <Feature tone="cream" visual={<SplitVisual />} title="Split anything" body="Dinner, rides, the rental house. Pick who's in, and everyone gets their share. No spreadsheet required." />
       <Feature tone="red" flip visual={<GroupVisual />} title="One tab for the whole trip" body="Make a group, keep one running tally, and settle up when you're home. Everyone sees the same numbers." />
       <Feature tone="cream" visual={<RoundUpsVisual />} title="Round-ups: spare change adds up" body="Every payment you send rounds up to the next dollar. The spare change adds up and moves into your balance once it reaches the amount shown. Pause any time." />
+
+      {SPARE_CHANGE_ON ? (
+        <section aria-label={NEWSLETTER_NAME} className="px-[max(1.25rem,5vw)] py-16 text-center sm:py-20" style={{ background: BLUE, color: CREAM }}>
+          <p className="text-sm font-bold uppercase tracking-widest" style={{ fontFamily: 'var(--font-open-sauce), sans-serif' }}>
+            Coming soon
+          </p>
+          <h2 className="mx-auto mt-3 max-w-3xl text-4xl leading-[1.05] sm:text-6xl" style={{ fontFamily: 'var(--font-peace), var(--font-open-sauce), sans-serif' }}>
+            {NEWSLETTER_NAME}
+          </h2>
+          <p className="mx-auto mt-5 max-w-xl text-lg sm:text-xl" style={{ fontFamily: 'var(--font-open-sauce), sans-serif', opacity: 0.9 }}>
+            {NEWSLETTER_PITCH}
+          </p>
+          <FunLink
+            href="/spare-change"
+            className="mt-8 inline-flex min-h-[3.25rem] items-center rounded-full px-8 text-lg font-bold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+            style={{ background: CREAM, color: NAVY, border: `0.18rem solid ${NAVY}`, boxShadow: `0.25rem 0.3rem 0 ${NAVY}`, fontFamily: 'var(--font-open-sauce), sans-serif' }}
+          >
+            Get the email
+          </FunLink>
+        </section>
+      ) : null}
 
       <section className="px-[max(1.25rem,5vw)] py-20 text-center" style={{ background: NAVY, color: CREAM }}>
         <h2 className="mx-auto max-w-3xl text-4xl font-bold leading-tight sm:text-6xl" style={{ fontFamily: 'var(--font-peace), var(--font-open-sauce), sans-serif' }}>

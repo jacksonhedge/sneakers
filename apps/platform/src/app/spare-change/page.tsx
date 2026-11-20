@@ -1,0 +1,54 @@
+import type { Metadata } from 'next'
+import { EXAMPLE_TICKET, NEWSLETTER_NAME, NEWSLETTER_PITCH, NEWSLETTER_REWARDS, SNEAKERS_LINE } from '@/lib/spare-change'
+import { parseRefParam } from '@/lib/waitlist-referral'
+import { BLUE, CREAM, NAVY, RED } from '../visuals'
+import { SpareChangeForm } from './spare-change-form'
+
+// The newsletter's own page: what it is, one example ticket, and one form that also puts the person on the Sneakers waitlist.
+// Not indexed and not linked from the home page unless NEXT_PUBLIC_SPARE_CHANGE is on.
+export const metadata: Metadata = { title: `${NEWSLETTER_NAME} · Sneakers`, description: 'A daily email of long-shot parlays, coming soon. 21+ only.', robots: { index: false } }
+
+const peace = 'var(--font-peace), var(--font-open-sauce), sans-serif'
+const sauce = 'var(--font-open-sauce), sans-serif'
+const sticker = { fontFamily: peace, color: CREAM, WebkitTextStroke: `0.035em ${NAVY}`, paintOrder: 'stroke fill', textShadow: `0.06em 0.07em 0 ${NAVY}` } as const
+
+export default async function SpareChangePage({ searchParams }: { searchParams: Promise<{ ref?: string }> }) {
+  const { ref } = await searchParams
+  return (
+    <main className="flex min-h-svh flex-col items-center justify-center gap-8 px-[max(1.25rem,5vw)] py-12 text-center" style={{ background: BLUE, color: CREAM }}>
+      <a href="/" className="text-3xl" style={sticker}>
+        Sneakers
+      </a>
+      <h1 className="max-w-4xl text-[clamp(2.25rem,10vw,5rem)] leading-[0.98]" style={sticker}>
+        {NEWSLETTER_NAME}
+      </h1>
+      <div
+        role="img"
+        aria-label={`Example ticket: ${EXAMPLE_TICKET.buyIn} buy-in, ${EXAMPLE_TICKET.payout} payout`}
+        className="w-full max-w-sm px-6 py-5"
+        style={{ background: CREAM, color: NAVY, border: `0.2rem solid ${NAVY}`, borderRadius: '1.5rem', boxShadow: `0.35rem 0.4rem 0 ${NAVY}`, transform: 'rotate(-2deg)', fontFamily: sauce }}
+      >
+        <p className="text-sm font-bold uppercase tracking-widest" style={{ color: RED }}>
+          Example ticket
+        </p>
+        <p className="mt-2 whitespace-nowrap text-[clamp(1.5rem,7.5vw,2.4rem)] leading-none tabular-nums" style={{ fontFamily: peace }}>
+          {EXAMPLE_TICKET.buyIn} → {EXAMPLE_TICKET.payout}
+        </p>
+        <p className="mt-3 flex justify-between border-t-2 border-dashed pt-3 text-sm font-bold" style={{ borderColor: NAVY }}>
+          <span>buy-in</span>
+          <span>payout if it hits</span>
+        </p>
+      </div>
+      <p className="max-w-md text-xl font-semibold" style={{ fontFamily: sauce }}>
+        {NEWSLETTER_PITCH}
+      </p>
+      <SpareChangeForm refCode={parseRefParam(ref)} />
+      <p className="max-w-md text-lg font-bold" style={{ fontFamily: sauce }}>
+        {SNEAKERS_LINE}
+      </p>
+      <p className="max-w-md text-base" style={{ fontFamily: sauce }}>
+        {NEWSLETTER_REWARDS} Long shots miss far more often than they hit.
+      </p>
+    </main>
+  )
+}
