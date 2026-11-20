@@ -15,6 +15,9 @@ import {
   parseAge,
   parseName,
   parseState,
+  greetingName,
+  savedScreenCopy,
+  signupProblems,
 } from './spare-change'
 import { joinSpareChange, validateSpareChange, type SpareChangeDeps } from './spare-change-waitlist'
 
@@ -121,6 +124,7 @@ function fakes(over: Partial<SpareChangeDeps> = {}) {
   const deps = {
     addToSneakers: vi.fn<SpareChangeDeps['addToSneakers']>(async () => ({ ok: true, existing: false, code: 'K7M3QX' })),
     upsertNewsletter: vi.fn<SpareChangeDeps['upsertNewsletter']>(async () => true),
+    welcome: vi.fn<SpareChangeDeps['welcome']>(async () => 'sent'),
     ...over,
   }
   return deps
@@ -132,19 +136,21 @@ const minor = { ok: true, email: 'sam@school.edu', newsletter: false, reason: 'u
 describe('joining both lists with one form', () => {
   it('a new adult lands on the newsletter list and the Sneakers waitlist, and gets their code', async () => {
     const deps = fakes()
-    expect(await joinSpareChange(adult, context, deps)).toEqual({ ok: true, existing: false, code: 'K7M3QX', newsletter: true })
-    expect(deps.upsertNewsletter).toHaveBeenCalledWith({ email: 'sam@school.edu', name: 'Sam Lee', ageAtSignup: 19, state: 'NJ', referredByCode: 'ABCDEF' })
+    expect(await joinSpareChange(adult, context, deps)).toEqual({ ok: true, existing: false, code: 'K7M3QX', newsletter: true, welcome: 'sent' })
+    expect(deps.upsertNewsletter).toHaveBeenCalledWith({ email: 'sam@school.edu', name: 'Sam Lee', ageAtSignup: 19, state: 'NJ', referredByCode: 'ABCDEF', claimToken: expect.stringMatching(/^[A-Za-z0-9_-]{32}$/) })
+    expect(deps.welcome).toHaveBeenCalledWith('sam@school.edu')
     expect(deps.addToSneakers).toHaveBeenCalledWith({ email: 'sam@school.edu', referrer: context.referrer, ipCountry: 'US', referredBy: 'ABCDEF' })
   })
   it('someone already on the Sneakers waitlist can still opt in (no code is handed back for an address already on the list)', async () => {
     const deps = fakes({ addToSneakers: vi.fn(async () => ({ ok: true as const, existing: true, code: null })) })
-    expect(await joinSpareChange(adult, context, deps)).toEqual({ ok: true, existing: true, code: null, newsletter: true })
+    expect(await joinSpareChange(adult, context, deps)).toEqual({ ok: true, existing: true, code: null, newsletter: true, welcome: 'sent' })
     expect(deps.upsertNewsletter).toHaveBeenCalledTimes(1)
   })
   it('under 18: Sneakers waitlist only, no newsletter row is written, and the answer says why', async () => {
     const deps = fakes()
     expect(await joinSpareChange(minor, context, deps)).toEqual({ ok: true, existing: false, code: 'K7M3QX', newsletter: false, reason: 'under_18' })
     expect(deps.upsertNewsletter).not.toHaveBeenCalled()
+    expect(deps.welcome).not.toHaveBeenCalled()
     expect(deps.addToSneakers).toHaveBeenCalledTimes(1)
     expect(deps.addToSneakers).toHaveBeenCalledWith({ email: 'sam@school.edu', referrer: context.referrer, ipCountry: 'US', referredBy: null })
   })
@@ -152,7 +158,7 @@ describe('joining both lists with one form', () => {
     const addToSneakers = vi.fn<SpareChangeDeps['addToSneakers']>().mockResolvedValueOnce({ ok: true, existing: false, code: 'K7M3QX' }).mockResolvedValueOnce({ ok: true, existing: true, code: null })
     const deps = fakes({ addToSneakers })
     expect(await joinSpareChange(adult, context, deps)).toMatchObject({ ok: true, existing: false, newsletter: true })
-    expect(await joinSpareChange(adult, context, deps)).toEqual({ ok: true, existing: true, code: null, newsletter: true })
+    expect(await joinSpareChange(adult, context, deps)).toEqual({ ok: true, existing: true, code: null, newsletter: true, welcome: 'sent' })
     expect(deps.upsertNewsletter).toHaveBeenCalledTimes(2)
   })
   it('a failed newsletter write stops before the Sneakers row, so trying again still returns the person\'s code', async () => {
@@ -160,9 +166,36 @@ describe('joining both lists with one form', () => {
     expect(await joinSpareChange(adult, context, deps)).toEqual({ ok: false })
     expect(deps.addToSneakers).not.toHaveBeenCalled()
   })
-  it('a failed Sneakers write is a failure', async () => {
+  it('a failed Sneakers write is a failure, and no welcome email goes out', async () => {
     const deps = fakes({ addToSneakers: vi.fn(async () => ({ ok: false as const })) })
     expect(await joinSpareChange(adult, context, deps)).toEqual({ ok: false })
+    expect(deps.welcome).not.toHaveBeenCalled()
+  })
+  it('a failed newsletter write sends no welcome email', async () => {
+    const deps = fakes({ upsertNewsletter: vi.fn(async () => false) })
+    await joinSpareChange(adult, context, deps)
+    expect(deps.welcome).not.toHaveBeenCalled()
+  })
+  it('every signup offers a fresh claim token (the database keeps the first one for an email already on the list)', async () => {
+    const deps = fakes()
+    await joinSpareChange(adult, context, deps)
+    await joinSpareChange(adult, context, deps)
+    const [a, b] = vi.mocked(deps.upsertNewsletter).mock.calls.map(([row]) => row.claimToken)
+    expect(a).not.toBe(b)
+  })
+  it('the signup still succeeds when the welcome email could not go, and says so', async () => {
+    const deps = fakes({ welcome: vi.fn(async () => 'pending' as const) })
+    expect(await joinSpareChange(adult, context, deps)).toEqual({ ok: true, existing: false, code: 'K7M3QX', newsletter: true, welcome: 'pending' })
+    const threw = fakes({ welcome: vi.fn(async () => { throw new Error('boom') }) })
+    expect(await joinSpareChange(adult, context, threw)).toMatchObject({ ok: true, newsletter: true, welcome: 'pending' })
+  })
+  it('a first signup and a repeat one get the same welcome answer', async () => {
+    const addToSneakers = vi.fn<SpareChangeDeps['addToSneakers']>().mockResolvedValueOnce({ ok: true, existing: false, code: 'K7M3QX' }).mockResolvedValueOnce({ ok: true, existing: true, code: null })
+    const deps = fakes({ addToSneakers })
+    const first = await joinSpareChange(adult, context, deps)
+    const again = await joinSpareChange(adult, context, deps)
+    expect(first).toMatchObject({ newsletter: true, welcome: 'sent' })
+    expect(again).toMatchObject({ newsletter: true, welcome: 'sent' })
   })
 })
 
@@ -182,5 +215,57 @@ describe('the words people read', () => {
   })
   it('promise no amount for referrals or rewards', () => {
     for (const text of [NEWSLETTER_REWARDS, NEWSLETTER_OPT_IN, NEWSLETTER_UNDER_18, REFERRAL_CAP_NOTE, SNEAKERS_LINE, friendsJoinedText(5)]) expect(text).not.toMatch(/[$]|dollars?|\bfree\b|\bearn/i)
+  })
+})
+
+describe('the saved screen', () => {
+  const steps = ['Open the welcome email.', 'Tap "Claim your free dollar" and add your Venmo username.', 'We send your dollar on Friday.']
+  it('greets by first name and points at the email when one was sent', () => {
+    expect(savedScreenCopy({ name: ' Sam Lee ', emailSent: true })).toEqual({ heading: "You're in, Sam.", body: "We saved your spot. Check your email: there's a link to claim your free dollar.", steps })
+  })
+  it('never says an email was sent when it was not', () => {
+    const copy = savedScreenCopy({ name: 'Sam', emailSent: false })
+    expect(copy.body).toBe('We saved your spot. Your welcome email is on its way shortly.')
+    expect(copy.body).not.toMatch(/check your email/i)
+    expect(copy.steps).toEqual(steps)
+  })
+  it('with no usable name the heading is just "You\'re in."', () => {
+    for (const name of ['', '   ', undefined, 'http://evil.example', '<b>x</b>', '12345']) expect(savedScreenCopy({ name, emailSent: true }).heading, String(name)).toBe("You're in.")
+  })
+  it('a first name is letters (any alphabet), apostrophes, hyphens and dots, up to 30', () => {
+    expect(greetingName("  O'Neil-García Sam")).toBe("O'Neil-García")
+    expect(greetingName('J.R. Smith')).toBe('J.R.')
+    expect(greetingName('李 雷')).toBe('李')
+    expect(greetingName('a'.repeat(31))).toBeNull()
+    expect(greetingName(42)).toBeNull()
+  })
+  it('keeps to the site\'s wording and promises one dollar, nothing more', () => {
+    for (const emailSent of [true, false]) {
+      const copy = savedScreenCopy({ name: 'Sam', emailSent })
+      for (const text of [copy.heading, copy.body, ...copy.steps]) {
+        expect(text).not.toMatch(/\b(bets?|betting|cash|winnings|sportsbooks?|jackpot)\b/i)
+        expect(text).not.toContain('—')
+        expect(text).not.toMatch(/[$]\d/)
+      }
+    }
+  })
+})
+
+describe('what the form says about each field, before anything is sent', () => {
+  const ok = { name: 'Sam', email: 'sam@school.edu', state: 'NJ', age: '19' }
+  it('a complete form has no problems', () => {
+    expect(signupProblems(ok)).toEqual({})
+  })
+  it('each gap is named against its own field, all at once', () => {
+    expect(signupProblems({ name: ' ', email: 'nope', state: '', age: 'abc' })).toEqual({
+      name: 'Add your name.',
+      email: 'That email does not look right.',
+      state: 'Pick your state.',
+      age: 'Type your age as a number.',
+    })
+    expect(Object.keys(signupProblems({ ...ok, state: '' }))).toEqual(['state'])
+  })
+  it('under 18 needs only an email and an age (that person joins the Sneakers waitlist only)', () => {
+    expect(signupProblems({ name: '', email: 'sam@school.edu', state: '', age: '16' })).toEqual({})
   })
 })

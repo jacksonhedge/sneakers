@@ -1,12 +1,14 @@
 import { normalizeEmail } from './email-validation'
-import { addToSneakersWaitlist, type WaitlistJoined } from './sneakers-waitlist'
+import { type WaitlistJoined } from './sneakers-waitlist'
+import { newClaimToken } from './spare-change-claim'
 import { NEWSLETTER_MIN_AGE, NEWSLETTER_SOURCE, parseAge, parseName, parseState } from './spare-change'
 import { getServerClient } from './supabase-server'
 import { parseRefParam } from './waitlist-referral'
 
 // One form, two lists. Someone who asks for the Spare Change Millionaire newsletter and is 18 or older gets a row in `newsletter_waitlist`
 // AND a row on the Sneakers waitlist, with the same referral code and place in line as anyone else. Someone aged 13 to 17 joins the
-// Sneakers waitlist only: no newsletter row is ever written for them, and their name, age and state are dropped. Nothing here sends an email.
+// Sneakers waitlist only: no newsletter row is ever written for them, their name, age and state are dropped, and they get no welcome email.
+// An adult signup that stored cleanly gets the welcome email with their claim link (at most one per 24 hours: see spare-change-email.ts).
 
 export type SpareChangeSignup =
   | { ok: true; email: string; newsletter: true; name: string; age: number; state: string; referredBy: string | null }
@@ -35,19 +37,23 @@ export interface NewsletterRow {
   ageAtSignup: number
   state: string
   referredByCode: string | null
+  /** A fresh token for the link in the welcome email. Stored only when the row is new: an email already on the list keeps its first one. */
+  claimToken: string
 }
 
 export interface SpareChangeDeps {
   addToSneakers: (i: { email: string; referrer: string | null; ipCountry: string | null; referredBy: string | null }) => Promise<WaitlistJoined | { ok: false }>
   upsertNewsletter: (row: NewsletterRow) => Promise<boolean>
+  /** Send the welcome email if one is due. 'sent' = one went now or in the last 24 hours; 'pending' = none has gone. */
+  welcome: (email: string) => Promise<'sent' | 'pending'>
 }
 
-/** One row per email. A second signup with the same address changes nothing: the first row (their name, state and age at that signup) stays. */
+/** One row per email. A second signup with the same address changes nothing: the first row (their name, state, age and claim token at that signup) stays. */
 export async function upsertNewsletterRow(row: NewsletterRow): Promise<boolean> {
   try {
     const { error } = await getServerClient()
       .from('newsletter_waitlist')
-      .upsert({ email: row.email, name: row.name, age_at_signup: row.ageAtSignup, state: row.state, source: NEWSLETTER_SOURCE, referred_by_code: row.referredByCode }, { onConflict: 'email', ignoreDuplicates: true })
+      .upsert({ email: row.email, name: row.name, age_at_signup: row.ageAtSignup, state: row.state, source: NEWSLETTER_SOURCE, referred_by_code: row.referredByCode, claim_token: row.claimToken }, { onConflict: 'email', ignoreDuplicates: true })
     if (error) console.error('[spare-change-waitlist] upsert failed', error.code)
     return !error
   } catch {
@@ -56,22 +62,24 @@ export async function upsertNewsletterRow(row: NewsletterRow): Promise<boolean> 
   }
 }
 
-const realDeps: SpareChangeDeps = { addToSneakers: addToSneakersWaitlist, upsertNewsletter: upsertNewsletterRow }
-
-export type SpareChangeJoined = { ok: true; existing: boolean; code: string | null } & ({ newsletter: true } | { newsletter: false; reason: 'under_18' })
+export type SpareChangeJoined = { ok: true; existing: boolean; code: string | null } & ({ newsletter: true; welcome: 'sent' | 'pending' } | { newsletter: false; reason: 'under_18' })
 
 /**
  * Store a checked signup. The newsletter row goes first: both writes are safe to repeat, and if the second one fails the person can try
  * again and still be "new" to the Sneakers waitlist (so they still get their own link). `existing` and `code` mean what they mean on the
  * Sneakers waitlist; `newsletter` says whether this person is on the newsletter list, and `reason` says why not (under 18).
+ * The welcome email comes last, only once both rows are in, and can never fail the signup. `welcome` is the same for a first signup and
+ * a repeat one inside 24 hours, so the saved screen does not show whether an address was already on the list.
  */
-export async function joinSpareChange(signup: SpareChangeSignup, context: { referrer: string | null; ipCountry: string | null }, deps: SpareChangeDeps = realDeps): Promise<SpareChangeJoined | { ok: false }> {
+export async function joinSpareChange(signup: SpareChangeSignup, context: { referrer: string | null; ipCountry: string | null }, deps: SpareChangeDeps): Promise<SpareChangeJoined | { ok: false }> {
   if (signup.newsletter) {
-    const stored = await deps.upsertNewsletter({ email: signup.email, name: signup.name, ageAtSignup: signup.age, state: signup.state, referredByCode: signup.referredBy })
+    const stored = await deps.upsertNewsletter({ email: signup.email, name: signup.name, ageAtSignup: signup.age, state: signup.state, referredByCode: signup.referredBy, claimToken: newClaimToken() })
     if (!stored) return { ok: false }
   }
   const joined = await deps.addToSneakers({ email: signup.email, referrer: context.referrer, ipCountry: context.ipCountry, referredBy: signup.referredBy })
   if (!joined.ok) return { ok: false }
   const base = { ok: true as const, existing: joined.existing, code: joined.code }
-  return signup.newsletter ? { ...base, newsletter: true } : { ...base, newsletter: false, reason: signup.reason }
+  if (!signup.newsletter) return { ...base, newsletter: false, reason: signup.reason }
+  const welcome = await deps.welcome(signup.email).catch((): 'pending' => 'pending')
+  return { ...base, newsletter: true, welcome }
 }

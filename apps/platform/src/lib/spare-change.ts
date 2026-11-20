@@ -1,7 +1,9 @@
 // "Spare Change Millionaire": the newsletter's name, its words and the pure checks for its signup form. Nothing here touches the
 // database, so both the page (client) and the route (server) can use it, and it can be tested on its own.
-// Wording rule for everything a person can read: "long-shot parlays", "buy-in" and "payout". No dollar promise: "rewards for subscribers at launch".
-// The reward terms are not final, so nothing here names an amount or says what a referral earns: only that up to 5 friends count.
+// Wording rule for everything a person can read: "long-shot parlays", "buy-in", "payout" and "free dollar". The only amount promised
+// anywhere is the one welcome dollar (saved screen, welcome email, claim page). Nothing says what a referral earns: only that up to 5 friends count.
+import { normalizeEmail } from './email-validation'
+
 export const NEWSLETTER_NAME = 'Spare Change Millionaire'
 export const NEWSLETTER_SOURCE = 'spare-change'
 export const NEWSLETTER_PITCH = 'A daily email of long-shot parlays. A small buy-in, a big payout if it hits. 18+ only.'
@@ -62,3 +64,44 @@ export const creditedReferrals = (n: number): number => Math.min(Math.max(Number
 
 /** "3 of 5 friends joined." with the credited number. */
 export const friendsJoinedText = (referrals: number): string => `${creditedReferrals(referrals)} of ${MAX_CREDITED_REFERRALS} friends joined.`
+
+// What the form says about each field before anything is sent: the same checks the route makes, all at once. Someone who typed an age
+// from 13 to 17 needs only an email, because that person joins the Sneakers waitlist only. Keys come out in the order the fields are checked: name, email, state, age.
+export type SignupField = 'name' | 'email' | 'state' | 'age'
+export const SIGNUP_FIELD_PROBLEM: Record<SignupField, string> = {
+  name: 'Add your name.',
+  email: 'That email does not look right.',
+  state: 'Pick your state.',
+  age: 'Type your age as a number.',
+}
+export function signupProblems(v: { name: string; email: string; state: string; age: string }): Partial<Record<SignupField, string>> {
+  const age = parseAge(v.age)
+  const adult = age === null || age >= NEWSLETTER_MIN_AGE
+  const bad: SignupField[] = []
+  if (adult && !parseName(v.name)) bad.push('name')
+  if (!normalizeEmail(v.email)) bad.push('email')
+  if (adult && !parseState(v.state)) bad.push('state')
+  if (age === null) bad.push('age')
+  return Object.fromEntries(bad.map((f) => [f, SIGNUP_FIELD_PROBLEM[f]]))
+}
+
+/**
+ * The first name to greet someone by, or null when what they typed is not plainly a name. Letters in any alphabet, apostrophes, hyphens
+ * and dots, up to 30 characters: so a link or markup typed into the name box is never echoed in a heading or an email.
+ */
+export function greetingName(raw: unknown): string | null {
+  if (typeof raw !== 'string') return null
+  const first = raw.trim().split(/\s+/)[0] ?? ''
+  return /^\p{L}[\p{L}\p{M}'’.-]{0,29}$/u.test(first) ? first : null
+}
+
+// The screen after a newsletter signup. It says "check your email" only when a welcome email really went out (now, or within the last day).
+export const SAVED_STEPS = ['Open the welcome email.', 'Tap "Claim your free dollar" and add your Venmo username.', 'We send your dollar on Friday.'] as const
+export function savedScreenCopy(i: { name: unknown; emailSent: boolean }): { heading: string; body: string; steps: string[] } {
+  const first = greetingName(i.name)
+  return {
+    heading: first ? `You're in, ${first}.` : "You're in.",
+    body: i.emailSent ? "We saved your spot. Check your email: there's a link to claim your free dollar." : 'We saved your spot. Your welcome email is on its way shortly.',
+    steps: [...SAVED_STEPS],
+  }
+}

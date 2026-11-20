@@ -1,4 +1,5 @@
 import { Resend } from 'resend'
+import { welcomeFrom, type SendOutcome, type WelcomeEmail } from './spare-change-email'
 
 type WaitlistEmailInput = {
   to: string
@@ -456,5 +457,39 @@ export async function sendApprovedEmail({ to }: { to: string }): Promise<void> {
   } catch (err) {
     console.error('[email] approved send threw', err)
     throw err
+  }
+}
+
+/**
+ * The Spare Change Millionaire welcome email (built in spare-change-email.ts). From "The Hedge Team" at this file's usual address, or
+ * SPARE_CHANGE_FROM when set. The email asks people to reply (STOP, or a wrong Venmo username), so SPARE_CHANGE_REPLY_TO can name the
+ * inbox those replies go to when the From address is not one somebody reads.
+ * Never throws: 'skipped' with no key, 'failed' when Resend refuses, 'sent' otherwise. No address or link is logged (the link is a secret).
+ */
+export async function sendSpareChangeWelcome(mail: WelcomeEmail & { to: string }): Promise<SendOutcome> {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) {
+    console.log('[email] RESEND_API_KEY not set, skipping spare-change welcome')
+    return 'skipped'
+  }
+  try {
+    const replyTo = process.env.SPARE_CHANGE_REPLY_TO?.trim()
+    const { data, error } = await new Resend(apiKey).emails.send({
+      from: welcomeFrom({ override: process.env.SPARE_CHANGE_FROM, helperFrom: FROM }),
+      to: mail.to,
+      subject: mail.subject,
+      text: mail.text,
+      html: mail.html,
+      ...(replyTo ? { replyTo } : {}),
+    })
+    if (error) {
+      console.error('[email] spare-change welcome error', error.name)
+      return 'failed'
+    }
+    console.log('[email] spare-change welcome: ok', { id: data?.id ?? null })
+    return 'sent'
+  } catch {
+    console.error('[email] spare-change welcome threw')
+    return 'failed'
   }
 }

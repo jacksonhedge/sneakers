@@ -1,22 +1,17 @@
 'use client'
-import { useState } from 'react'
-import { NEWSLETTER_NAME, NEWSLETTER_UNDER_18, SNEAKERS_LINE } from '@/lib/spare-change'
-import { CREAM, NAVY } from '../visuals'
+import { useRef, useState } from 'react'
+import { NEWSLETTER_UNDER_18, signupProblems, type SignupField } from '@/lib/spare-change'
 import { WaitlistShare, type Joined } from '../launching-soon/waitlist-share'
-import { NameField, StateAgeFields, newsletterProblem, newsletterProblemText, problemFromError, type NewsletterProblem } from './newsletter-fields'
+import { EmailField, NameField, Spinner, StateAgeFields, buttonClass, buttonStyle, focusFirstProblem, problemsFromError, type Problems } from './newsletter-fields'
+import { NewsletterSaved } from './saved-screen'
 
-type Status = 'idle' | 'loading' | 'done' | 'invalid' | NewsletterProblem | 'error'
 const sauce = 'var(--font-open-sauce), sans-serif'
-const problem: Record<'invalid' | NewsletterProblem | 'error', string> = {
-  invalid: 'That email does not look right. Check it and try again.',
-  ...newsletterProblemText,
-  error: 'Something went wrong. Try again in a minute.',
-}
-type Result = { newsletter: boolean; under18: boolean; existing: boolean }
+const ORDER: readonly SignupField[] = ['name', 'email', 'state', 'age']
+const formProblem = { error: 'Something went wrong. Try again in a minute.', too_many: 'Too many tries. Wait a minute and try again.' } as const
+type Done = { newsletter: true; emailSent: boolean } | { newsletter: false; under18: boolean; existing: boolean }
 
-/** What to say once the lists are joined. Under 18 means the Sneakers waitlist only, and the page says the newsletter is 18+. */
-function doneText(r: Result): string {
-  if (r.newsletter) return r.existing ? `You're on the list for ${NEWSLETTER_NAME}. You were already on the Sneakers waitlist.` : `You're on the list for ${NEWSLETTER_NAME}. ${SNEAKERS_LINE}`
+/** What to say to someone who joined the Sneakers waitlist only. Under 18, the page says the newsletter is 18+. */
+function sneakersOnlyText(r: { under18: boolean; existing: boolean }): string {
   const sneakers = r.existing ? "You're already on the Sneakers waitlist." : "You're on the Sneakers waitlist."
   return r.under18 ? `${NEWSLETTER_UNDER_18} ${sneakers}` : sneakers
 }
@@ -26,61 +21,68 @@ export function SpareChangeForm({ refCode }: { refCode: string | null }) {
   const [email, setEmail] = useState('')
   const [state, setState] = useState('')
   const [age, setAge] = useState('')
-  const [status, setStatus] = useState<Status>('idle')
-  const [result, setResult] = useState<Result | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [problems, setProblems] = useState<Problems>({})
+  const [formError, setFormError] = useState<keyof typeof formProblem | null>(null)
+  const [done, setDone] = useState<Done | null>(null)
   const [joined, setJoined] = useState<Joined | null>(null)
+  // A ref, not state: a second tap can arrive before the first one's "loading" has been drawn.
+  const busy = useRef(false)
+
+  const show = (found: Problems) => {
+    setProblems(found)
+    focusFirstProblem('spare-change', found, ORDER)
+  }
+  const edit = (field: SignupField, set: (v: string) => void) => (v: string) => {
+    set(v)
+    if (problems[field]) setProblems(({ [field]: _gone, ...rest }) => rest)
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
-    if (status === 'loading') return
-    const gap = newsletterProblem({ name, state, age })
-    if (gap) return setStatus(gap)
-    setStatus('loading')
+    if (busy.current) return
+    setFormError(null)
+    const gaps = signupProblems({ name, email, state, age })
+    if (Object.keys(gaps).length) return show(gaps)
+    busy.current = true
+    setProblems({})
+    setLoading(true)
     try {
       const res = await fetch('/api/spare-change-waitlist', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, email, state, age, ref: refCode }) })
-      const data = (await res.json().catch(() => ({}))) as { error?: string; existing?: boolean; newsletter?: boolean; reason?: string; code?: string; referrals?: number; position?: number | null }
+      const data = (await res.json().catch(() => ({}))) as { error?: string; existing?: boolean; newsletter?: boolean; welcome?: string; reason?: string; code?: string; referrals?: number; position?: number | null }
       if (res.ok) {
         if (data.code) setJoined({ code: data.code, referrals: data.referrals ?? 0, position: data.position ?? null })
-        setResult({ newsletter: data.newsletter === true, under18: data.reason === 'under_18', existing: data.existing === true })
-        setStatus('done')
-      } else setStatus(res.status === 400 ? (problemFromError(data.error) ?? 'invalid') : 'error')
+        setDone(data.newsletter === true ? { newsletter: true, emailSent: data.welcome === 'sent' } : { newsletter: false, under18: data.reason === 'under_18', existing: data.existing === true })
+      } else if (res.status === 400 && Object.keys(problemsFromError(data.error)).length) show(problemsFromError(data.error))
+      else setFormError(res.status === 429 ? 'too_many' : 'error')
     } catch {
-      setStatus('error')
+      setFormError('error')
+    } finally {
+      busy.current = false
+      setLoading(false)
     }
   }
 
-  if (status === 'done' && result) return <WaitlistShare text={doneText(result)} joined={joined} newsletter={result.newsletter} />
+  if (done?.newsletter) return <NewsletterSaved name={name} emailSent={done.emailSent} joined={joined} />
+  if (done) return <WaitlistShare text={sneakersOnlyText(done)} joined={joined} />
   return (
-    <form onSubmit={submit} className="flex w-full max-w-md flex-col gap-3" noValidate>
-      <NameField idPrefix="spare-change" name={name} onName={setName} invalid={status === 'name'} />
-      <label htmlFor="spare-change-email" className="sr-only">
-        Email
-      </label>
-      <input
-        id="spare-change-email"
-        type="email"
-        inputMode="email"
-        autoComplete="email"
-        required
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="you@email.com"
-        aria-invalid={status === 'invalid' || undefined}
-        className="min-h-[3.25rem] rounded-full px-6 text-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-        style={{ background: CREAM, color: NAVY, border: `0.18rem solid ${NAVY}`, fontFamily: sauce }}
-      />
-      <StateAgeFields idPrefix="spare-change" state={state} onState={setState} age={age} onAge={setAge} invalid={status === 'state' || status === 'age' ? status : null} />
-      <button
-        type="submit"
-        disabled={status === 'loading'}
-        className="min-h-[3.25rem] rounded-full px-8 text-lg font-bold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white disabled:opacity-60"
-        style={{ background: CREAM, color: NAVY, border: `0.18rem solid ${NAVY}`, boxShadow: `0.25rem 0.3rem 0 ${NAVY}`, fontFamily: sauce }}
-      >
-        {status === 'loading' ? 'Joining…' : 'Get the email'}
+    <form onSubmit={submit} className="flex w-full max-w-md flex-col gap-3" noValidate aria-busy={loading || undefined}>
+      <NameField idPrefix="spare-change" name={name} onName={edit('name', setName)} error={problems.name} />
+      <EmailField idPrefix="spare-change" email={email} onEmail={edit('email', setEmail)} placeholder="you@email.com" error={problems.email} />
+      <StateAgeFields idPrefix="spare-change" state={state} onState={edit('state', setState)} age={age} onAge={edit('age', setAge)} stateError={problems.state} ageError={problems.age} />
+      <button type="submit" disabled={loading} className={buttonClass} style={buttonStyle}>
+        {loading ? (
+          <>
+            <Spinner />
+            Joining…
+          </>
+        ) : (
+          'Get the email'
+        )}
       </button>
-      {status !== 'idle' && status !== 'loading' && status !== 'done' ? (
+      {formError ? (
         <p role="alert" className="text-base font-semibold" style={{ fontFamily: sauce }}>
-          {problem[status]}
+          {formProblem[formError]}
         </p>
       ) : null}
     </form>
