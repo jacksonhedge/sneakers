@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { parseRefParam, rankPosition, referralLink, referralShareText } from './waitlist-referral'
+import { newsletterReferralLink, newsletterShareText, parseRefParam, rankPosition, referralLink, referralShareText } from './waitlist-referral'
 
 describe('the waitlist referral link', () => {
   it('is the launching-soon page with the person\'s code', () => {
@@ -33,5 +33,18 @@ describe('where you stand on the list', () => {
   })
   it('counts everyone with more referrals, then everyone with the same who joined earlier', () => {
     expect(rankPosition({ withMoreReferrals: 3, withSameReferralsEarlier: 9 })).toBe(13)
+  })
+})
+
+describe("a newsletter member's link", () => {
+  it('goes to the newsletter signup, with the same code', () => {
+    expect(newsletterReferralLink('https://sneakersterminal.com/', 'K7M3QX')).toBe('https://sneakersterminal.com/spare-change?ref=K7M3QX')
+    expect(parseRefParam(new URL(newsletterReferralLink('https://sneakersterminal.com', 'K7M3QX')).searchParams.get('ref'))).toBe('K7M3QX')
+  })
+  it('the share text names the newsletter and carries the link', () => {
+    const text = newsletterShareText('https://sneakersterminal.com/spare-change?ref=K7M3QX')
+    expect(text).toContain('Spare Change Millionaire')
+    expect(text.endsWith('https://sneakersterminal.com/spare-change?ref=K7M3QX')).toBe(true)
+    expect(text).not.toMatch(/\b(bet|sportsbook|winnings|cash)\b/i)
   })
 })

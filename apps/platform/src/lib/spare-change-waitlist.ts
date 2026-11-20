@@ -2,40 +2,43 @@ import { normalizeEmail } from './email-validation'
 import { type WaitlistJoined } from './sneakers-waitlist'
 import { newClaimToken } from './spare-change-claim'
 import { newLinkToken } from './spare-change-core'
-import { NEWSLETTER_MIN_AGE, NEWSLETTER_SOURCE, parseAge, parseName, parseState } from './spare-change'
+import { NEWSLETTER_MIN_AGE, NEWSLETTER_SOURCE, parseBirthday, parseName, parseState } from './spare-change'
 import { getServerClient } from './supabase-server'
 import { parseRefParam } from './waitlist-referral'
 
 // One form, two lists. Someone who asks for the Spare Change Millionaire newsletter and is 18 or older gets a row in `newsletter_waitlist`
 // AND a row on the Sneakers waitlist, with the same referral code and place in line as anyone else. Someone aged 13 to 17 joins the
-// Sneakers waitlist only: no newsletter row is ever written for them, their name, age and state are dropped, and they get no welcome email.
+// Sneakers waitlist only: no newsletter row is ever written for them, their name, birthday and state are dropped, and they get no welcome email.
 // An adult signup that stored cleanly gets the welcome email with their claim link (at most one per 24 hours: see spare-change-email.ts).
 
 export type SpareChangeSignup =
-  | { ok: true; email: string; newsletter: true; name: string; age: number; state: string; referredBy: string | null }
+  | { ok: true; email: string; newsletter: true; name: string; age: number; birthDate: string; state: string; referredBy: string | null }
   | { ok: true; email: string; newsletter: false; reason: 'under_18'; referredBy: string | null }
-export type SpareChangeInvalid = { ok: false; error: 'invalid_email' | 'invalid_age' | 'invalid_name' | 'invalid_state' }
+export type SpareChangeInvalid = { ok: false; error: 'invalid_email' | 'invalid_birthday' | 'invalid_name' | 'invalid_state' }
 
-/** Pure check of a posted body: email, then age, then (18 and over only) name and state. Under 18 is a Sneakers-only signup. */
-export function validateSpareChange(body: unknown): SpareChangeSignup | SpareChangeInvalid {
-  const b = (body && typeof body === 'object' ? body : {}) as { name?: unknown; email?: unknown; state?: unknown; age?: unknown; ref?: unknown }
+/** Pure check of a posted body: email, then birthday (the age is worked out from it, on `today`), then (18 and over only) name and state. Under 18 is a Sneakers-only signup. */
+export function validateSpareChange(body: unknown, today?: string): SpareChangeSignup | SpareChangeInvalid {
+  const b = (body && typeof body === 'object' ? body : {}) as { name?: unknown; email?: unknown; state?: unknown; birthday?: unknown; ref?: unknown }
   const email = normalizeEmail(b.email)
   if (!email) return { ok: false, error: 'invalid_email' }
-  const age = parseAge(b.age)
-  if (age === null) return { ok: false, error: 'invalid_age' }
+  const born = parseBirthday(b.birthday, today)
+  if (born === null) return { ok: false, error: 'invalid_birthday' }
+  const { age, birthDate } = born
   const referredBy = parseRefParam(b.ref)
   if (age < NEWSLETTER_MIN_AGE) return { ok: true, email, newsletter: false, reason: 'under_18', referredBy }
   const name = parseName(b.name)
   if (!name) return { ok: false, error: 'invalid_name' }
   const state = parseState(b.state)
   if (!state) return { ok: false, error: 'invalid_state' }
-  return { ok: true, email, newsletter: true, name, age, state, referredBy }
+  return { ok: true, email, newsletter: true, name, age, birthDate, state, referredBy }
 }
 
 export interface NewsletterRow {
   email: string
   name: string
   ageAtSignup: number
+  /** Their birthday, YYYY-MM-DD. Stored only when the row is new, like the rest of the row. */
+  birthDate: string
   state: string
   referredByCode: string | null
   /** A fresh token for the link in the welcome email. Stored only when the row is new: an email already on the list keeps its first one. */
@@ -58,12 +61,12 @@ export interface SpareChangeDeps {
   welcome: (email: string) => Promise<'sent' | 'pending'>
 }
 
-/** One row per email. A second signup with the same address changes nothing: the first row (their name, state, age and claim token at that signup) stays. */
+/** One row per email. A second signup with the same address changes nothing: the first row (their name, state, birthday, age and claim token at that signup) stays. */
 export async function upsertNewsletterRow(row: NewsletterRow): Promise<boolean> {
   try {
     const { error } = await getServerClient()
       .from('newsletter_waitlist')
-      .upsert({ email: row.email, name: row.name, age_at_signup: row.ageAtSignup, state: row.state, source: NEWSLETTER_SOURCE, referred_by_code: row.referredByCode, claim_token: row.claimToken, link_token: row.linkToken, referred_by_member_id: row.referredByMemberId }, { onConflict: 'email', ignoreDuplicates: true })
+      .upsert({ email: row.email, name: row.name, age_at_signup: row.ageAtSignup, birth_date: row.birthDate, state: row.state, source: NEWSLETTER_SOURCE, referred_by_code: row.referredByCode, claim_token: row.claimToken, link_token: row.linkToken, referred_by_member_id: row.referredByMemberId }, { onConflict: 'email', ignoreDuplicates: true })
     if (error) console.error('[spare-change-waitlist] upsert failed', error.code)
     return !error
   } catch {
@@ -102,7 +105,7 @@ export async function joinSpareChange(signup: SpareChangeSignup, context: { refe
   if (signup.newsletter) {
     // Who referred them, as a newsletter member. Looking this up can never fail the signup: no answer just means no referrer on the row.
     const referredByMemberId = signup.referredBy ? await deps.resolveReferrer(signup.referredBy, signup.email).catch(() => null) : null
-    const stored = await deps.upsertNewsletter({ email: signup.email, name: signup.name, ageAtSignup: signup.age, state: signup.state, referredByCode: signup.referredBy, claimToken: newClaimToken(), linkToken: newLinkToken(), referredByMemberId })
+    const stored = await deps.upsertNewsletter({ email: signup.email, name: signup.name, ageAtSignup: signup.age, birthDate: signup.birthDate, state: signup.state, referredByCode: signup.referredBy, claimToken: newClaimToken(), linkToken: newLinkToken(), referredByMemberId })
     if (!stored) return { ok: false }
   }
   const joined = await deps.addToSneakers({ email: signup.email, referrer: context.referrer, ipCountry: context.ipCountry, referredBy: signup.referredBy })

@@ -2,14 +2,14 @@
 import { useRef, useState } from 'react'
 import { NEWSLETTER_OPT_IN, NEWSLETTER_UNDER_18, signupProblems, type SignupField } from '@/lib/spare-change'
 import { NAVY } from '../visuals'
-import { EmailField, NameField, Spinner, StateAgeFields, buttonClass, buttonStyle, focusFirstProblem, problemsFromError, type Problems } from '../spare-change/newsletter-fields'
+import { EmailField, NameField, Spinner, StateBirthdayFields, buttonClass, buttonStyle, focusFirstProblem, problemsFromError, type Problems } from '../spare-change/newsletter-fields'
 import { NewsletterSaved } from '../spare-change/saved-screen'
 import { WaitlistShare, type Joined } from './waitlist-share'
 
 type Status = 'idle' | 'loading' | 'done' | 'existing' | 'invalid' | 'too_many' | 'error'
 
 const sauce = 'var(--font-open-sauce), sans-serif'
-const ORDER: readonly SignupField[] = ['email', 'name', 'state', 'age']
+const ORDER: readonly SignupField[] = ['email', 'name', 'state', 'birthday']
 const message: Record<Exclude<Status, 'idle' | 'loading'>, string> = {
   done: "You're on the list. We'll email you when Sneakers opens.",
   existing: "You're already on the list. We'll email you when Sneakers opens.",
@@ -27,7 +27,7 @@ export function LaunchingForm({ refCode }: { refCode: string | null }) {
   const [wantsNewsletter, setWantsNewsletter] = useState(false)
   const [name, setName] = useState('')
   const [state, setState] = useState('')
-  const [age, setAge] = useState('')
+  const [birthday, setBirthday] = useState('')
   const [problems, setProblems] = useState<Problems>({})
   const [newsletter, setNewsletter] = useState<{ on: true; emailSent: boolean } | { on: false } | null>(null)
   // A ref, not state: a second tap can arrive before the first one's "loading" has been drawn.
@@ -47,7 +47,7 @@ export function LaunchingForm({ refCode }: { refCode: string | null }) {
     e.preventDefault()
     if (busy.current) return
     if (wantsNewsletter) {
-      const gaps = signupProblems({ name, email, state, age })
+      const gaps = signupProblems({ name, email, state, birthday })
       if (Object.keys(gaps).length) return show(gaps)
     }
     busy.current = true
@@ -55,7 +55,7 @@ export function LaunchingForm({ refCode }: { refCode: string | null }) {
     setStatus('loading')
     try {
       const res = wantsNewsletter
-        ? await fetch('/api/spare-change-waitlist', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, email, state, age, ref: refCode }) })
+        ? await fetch('/api/spare-change-waitlist', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, email, state, birthday, ref: refCode }) })
         : await fetch('/api/sneakers-waitlist', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, ref: refCode }) })
       const data = (await res.json().catch(() => ({}))) as { error?: string; existing?: boolean; newsletter?: boolean; welcome?: string; code?: string; referrals?: number; position?: number | null }
       if (res.ok) {
@@ -96,7 +96,7 @@ export function LaunchingForm({ refCode }: { refCode: string | null }) {
       {wantsNewsletter ? (
         <>
           <NameField idPrefix="waitlist" name={name} onName={edit('name', setName)} error={problems.name} />
-          <StateAgeFields idPrefix="waitlist" state={state} onState={edit('state', setState)} age={age} onAge={edit('age', setAge)} stateError={problems.state} ageError={problems.age} />
+          <StateBirthdayFields idPrefix="waitlist" state={state} onState={edit('state', setState)} birthday={birthday} onBirthday={edit('birthday', setBirthday)} stateError={problems.state} birthdayError={problems.birthday} />
         </>
       ) : null}
       <button type="submit" disabled={loading} className={buttonClass} style={buttonStyle}>

@@ -2,11 +2,11 @@
 import { useRef, useState } from 'react'
 import { NEWSLETTER_UNDER_18, signupProblems, type SignupField } from '@/lib/spare-change'
 import { WaitlistShare, type Joined } from '../launching-soon/waitlist-share'
-import { EmailField, NameField, Spinner, StateAgeFields, buttonClass, buttonStyle, focusFirstProblem, problemsFromError, type Problems } from './newsletter-fields'
+import { EmailField, NameField, Spinner, StateBirthdayFields, buttonClass, buttonStyle, focusFirstProblem, problemsFromError, type Problems } from './newsletter-fields'
 import { NewsletterSaved } from './saved-screen'
 
 const sauce = 'var(--font-open-sauce), sans-serif'
-const ORDER: readonly SignupField[] = ['name', 'email', 'state', 'age']
+const ORDER: readonly SignupField[] = ['name', 'email', 'state', 'birthday']
 const formProblem = { error: 'Something went wrong. Try again in a minute.', too_many: 'Too many tries. Wait a minute and try again.' } as const
 type Done = { newsletter: true; emailSent: boolean } | { newsletter: false; under18: boolean; existing: boolean }
 
@@ -20,7 +20,7 @@ export function SpareChangeForm({ refCode }: { refCode: string | null }) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [state, setState] = useState('')
-  const [age, setAge] = useState('')
+  const [birthday, setBirthday] = useState('')
   const [loading, setLoading] = useState(false)
   const [problems, setProblems] = useState<Problems>({})
   const [formError, setFormError] = useState<keyof typeof formProblem | null>(null)
@@ -42,13 +42,13 @@ export function SpareChangeForm({ refCode }: { refCode: string | null }) {
     e.preventDefault()
     if (busy.current) return
     setFormError(null)
-    const gaps = signupProblems({ name, email, state, age })
+    const gaps = signupProblems({ name, email, state, birthday })
     if (Object.keys(gaps).length) return show(gaps)
     busy.current = true
     setProblems({})
     setLoading(true)
     try {
-      const res = await fetch('/api/spare-change-waitlist', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, email, state, age, ref: refCode }) })
+      const res = await fetch('/api/spare-change-waitlist', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, email, state, birthday, ref: refCode }) })
       const data = (await res.json().catch(() => ({}))) as { error?: string; existing?: boolean; newsletter?: boolean; welcome?: string; reason?: string; code?: string; referrals?: number; position?: number | null }
       if (res.ok) {
         if (data.code) setJoined({ code: data.code, referrals: data.referrals ?? 0, position: data.position ?? null })
@@ -69,7 +69,7 @@ export function SpareChangeForm({ refCode }: { refCode: string | null }) {
     <form onSubmit={submit} className="flex w-full max-w-md flex-col gap-3" noValidate aria-busy={loading || undefined}>
       <NameField idPrefix="spare-change" name={name} onName={edit('name', setName)} error={problems.name} />
       <EmailField idPrefix="spare-change" email={email} onEmail={edit('email', setEmail)} placeholder="you@email.com" error={problems.email} />
-      <StateAgeFields idPrefix="spare-change" state={state} onState={edit('state', setState)} age={age} onAge={edit('age', setAge)} stateError={problems.state} ageError={problems.age} />
+      <StateBirthdayFields idPrefix="spare-change" state={state} onState={edit('state', setState)} birthday={birthday} onBirthday={edit('birthday', setBirthday)} stateError={problems.state} birthdayError={problems.birthday} />
       <button type="submit" disabled={loading} className={buttonClass} style={buttonStyle}>
         {loading ? (
           <>

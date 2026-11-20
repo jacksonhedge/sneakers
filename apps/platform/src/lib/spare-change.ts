@@ -55,6 +55,27 @@ export function parseAge(raw: unknown): number | null {
   return age >= AGE_FLOOR && age <= AGE_CEILING ? age : null
 }
 
+/** Today's date in US Eastern time as YYYY-MM-DD: the day a person's age is counted on. */
+export function todayEastern(now: Date = new Date()): string {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now)
+}
+
+/**
+ * A birthday as YYYY-MM-DD (what a date box sends) -> that date and the person's age on `today`. null when it is not a real calendar
+ * date, or when the age it gives is outside 13 to 120 (a typing mistake, like parseAge). The age is worked out here, never typed.
+ */
+export function parseBirthday(raw: unknown, today: string = todayEastern()): { birthDate: string; age: number } | null {
+  if (typeof raw !== 'string') return null
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(raw.trim())
+  if (!m) return null
+  const [y, mo, d] = [Number(m[1]), Number(m[2]), Number(m[3])]
+  const date = new Date(Date.UTC(y, mo - 1, d))
+  if (date.getUTCFullYear() !== y || date.getUTCMonth() !== mo - 1 || date.getUTCDate() !== d) return null
+  const [ty, tm, td] = today.split('-').map(Number)
+  const age = ty - y - (tm < mo || (tm === mo && td < d) ? 1 : 0)
+  return age >= AGE_FLOOR && age <= AGE_CEILING ? { birthDate: m[0], age } : null
+}
+
 // Referrals: each person is credited for at most 5 friends who join with their link. What a credited friend is worth is not decided.
 export const MAX_CREDITED_REFERRALS = 5
 export const REFERRAL_CAP_NOTE = `Up to ${MAX_CREDITED_REFERRALS} friends count.`
@@ -65,23 +86,23 @@ export const creditedReferrals = (n: number): number => Math.min(Math.max(Number
 /** "3 of 5 friends joined." with the credited number. */
 export const friendsJoinedText = (referrals: number): string => `${creditedReferrals(referrals)} of ${MAX_CREDITED_REFERRALS} friends joined.`
 
-// What the form says about each field before anything is sent: the same checks the route makes, all at once. Someone who typed an age
-// from 13 to 17 needs only an email, because that person joins the Sneakers waitlist only. Keys come out in the order the fields are checked: name, email, state, age.
-export type SignupField = 'name' | 'email' | 'state' | 'age'
+// What the form says about each field before anything is sent: the same checks the route makes, all at once. Someone whose birthday makes them
+// 13 to 17 needs only an email, because that person joins the Sneakers waitlist only. Keys come out in the order the fields are checked: name, email, state, birthday.
+export type SignupField = 'name' | 'email' | 'state' | 'birthday'
 export const SIGNUP_FIELD_PROBLEM: Record<SignupField, string> = {
   name: 'Add your name.',
   email: 'That email does not look right.',
   state: 'Pick your state.',
-  age: 'Type your age as a number.',
+  birthday: 'Add your birthday.',
 }
-export function signupProblems(v: { name: string; email: string; state: string; age: string }): Partial<Record<SignupField, string>> {
-  const age = parseAge(v.age)
+export function signupProblems(v: { name: string; email: string; state: string; birthday: string }, today: string = todayEastern()): Partial<Record<SignupField, string>> {
+  const age = parseBirthday(v.birthday, today)?.age ?? null
   const adult = age === null || age >= NEWSLETTER_MIN_AGE
   const bad: SignupField[] = []
   if (adult && !parseName(v.name)) bad.push('name')
   if (!normalizeEmail(v.email)) bad.push('email')
   if (adult && !parseState(v.state)) bad.push('state')
-  if (age === null) bad.push('age')
+  if (age === null) bad.push('birthday')
   return Object.fromEntries(bad.map((f) => [f, SIGNUP_FIELD_PROBLEM[f]]))
 }
 

@@ -5,6 +5,11 @@ import { isValidReferralCodeFormat } from './referral-code'
 // joined come first, then people who joined earlier. Nothing here is estimated or invented.
 export const referralLink = (origin: string, code: string): string => `${origin.replace(/\/+$/, '')}/launching-soon?ref=${code}`
 
+/** A newsletter member's own link: the same code, but it lands a friend on the newsletter signup, where they become a member too. */
+export const newsletterReferralLink = (origin: string, code: string): string => `${origin.replace(/\/+$/, '')}/spare-change?ref=${code}`
+
+export const newsletterShareText = (link: string): string => `I get Spare Change Millionaire, a daily email of long-shot parlays. A small buy-in, a big payout if it hits. Join with my link: ${link}`
+
 export const referralShareText = (link: string): string => `I'm on the waitlist for Sneakers, the fun way to split payments with friends. Join with my link: ${link}`
 
 /** The code in `?ref=`, upper-cased, or null when it is not exactly a code. */

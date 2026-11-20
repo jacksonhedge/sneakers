@@ -13,6 +13,8 @@ import {
   creditedReferrals,
   friendsJoinedText,
   parseAge,
+  parseBirthday,
+  todayEastern,
   parseName,
   parseState,
   greetingName,
@@ -83,40 +85,64 @@ describe('the referral cap', () => {
   })
 })
 
-const good = { name: ' Sam Lee ', email: ' Sam@School.edu ', state: 'nj', age: '19', ref: 'k7m3qx' }
+// Ages are counted on this day in the tests.
+const TODAY = '2026-11-20'
+
+describe('the birthday field', () => {
+  it('takes a YYYY-MM-DD date and works out the age on the day', () => {
+    expect(parseBirthday('2007-11-20', TODAY)).toEqual({ birthDate: '2007-11-20', age: 19 })
+    expect(parseBirthday(' 2008-11-20 ', TODAY)).toEqual({ birthDate: '2008-11-20', age: 18 })
+    expect(parseBirthday('2008-11-21', TODAY)?.age).toBe(17) // 18 tomorrow
+    expect(parseBirthday('2005-11-21', TODAY)?.age).toBe(20) // 21 tomorrow
+    expect(parseBirthday('2004-02-29', '2026-02-28')?.age).toBe(21)
+    expect(parseBirthday('2013-11-20', TODAY)?.age).toBe(13)
+  })
+  it('refuses anything that is not a real date, and ages outside 13 to 120', () => {
+    for (const bad of [undefined, null, '', '19', 19, '11/20/2007', '2007-13-01', '2007-02-30', '2007-2-3', '2013-11-21', '2027-01-01', '1900-01-01', true, {}]) {
+      expect(parseBirthday(bad, TODAY), String(bad)).toBeNull()
+    }
+  })
+  it('counts the day in US Eastern time', () => {
+    expect(todayEastern(new Date('2026-11-21T03:30:00Z'))).toBe('2026-11-20')
+    expect(todayEastern(new Date('2026-11-21T05:30:00Z'))).toBe('2026-11-21')
+  })
+})
+
+const good = { name: ' Sam Lee ', email: ' Sam@School.edu ', state: 'nj', birthday: '2007-06-01', ref: 'k7m3qx' }
 
 describe('checking a signup before anything is stored', () => {
   it('normalizes a good one', () => {
-    expect(validateSpareChange(good)).toEqual({ ok: true, email: 'sam@school.edu', newsletter: true, name: 'Sam Lee', age: 19, state: 'NJ', referredBy: 'K7M3QX' })
-    expect(validateSpareChange({ ...good, age: 18 })).toMatchObject({ ok: true, newsletter: true, age: 18 })
+    expect(validateSpareChange(good, TODAY)).toEqual({ ok: true, email: 'sam@school.edu', newsletter: true, name: 'Sam Lee', age: 19, birthDate: '2007-06-01', state: 'NJ', referredBy: 'K7M3QX' })
+    expect(validateSpareChange({ ...good, birthday: '2008-11-20' }, TODAY)).toMatchObject({ ok: true, newsletter: true, age: 18 })
   })
   it('refuses a bad email first', () => {
-    expect(validateSpareChange({ ...good, email: 'nope' })).toEqual({ ok: false, error: 'invalid_email' })
+    expect(validateSpareChange({ ...good, email: 'nope' }, TODAY)).toEqual({ ok: false, error: 'invalid_email' })
     expect(validateSpareChange(null)).toEqual({ ok: false, error: 'invalid_email' })
   })
-  it('refuses a missing, non-numeric or out-of-range age', () => {
-    for (const age of [undefined, '', 'abc', '18.5', 12, 121]) expect(validateSpareChange({ ...good, age }), String(age)).toEqual({ ok: false, error: 'invalid_age' })
+  it('refuses a missing, malformed or out-of-range birthday (a typed age is not one)', () => {
+    for (const birthday of [undefined, '', 'abc', '19', 19, '2007-02-30', '2015-01-01', '1900-01-01']) expect(validateSpareChange({ ...good, birthday }, TODAY), String(birthday)).toEqual({ ok: false, error: 'invalid_birthday' })
+    expect(validateSpareChange({ ...good, birthday: undefined, age: '19' }, TODAY)).toEqual({ ok: false, error: 'invalid_birthday' })
   })
   it('refuses an adult signup with no name or one that is too long', () => {
-    expect(validateSpareChange({ ...good, name: '  ' })).toEqual({ ok: false, error: 'invalid_name' })
-    expect(validateSpareChange({ ...good, name: undefined })).toEqual({ ok: false, error: 'invalid_name' })
-    expect(validateSpareChange({ ...good, name: 'a'.repeat(81) })).toEqual({ ok: false, error: 'invalid_name' })
+    expect(validateSpareChange({ ...good, name: '  ' }, TODAY)).toEqual({ ok: false, error: 'invalid_name' })
+    expect(validateSpareChange({ ...good, name: undefined }, TODAY)).toEqual({ ok: false, error: 'invalid_name' })
+    expect(validateSpareChange({ ...good, name: 'a'.repeat(81) }, TODAY)).toEqual({ ok: false, error: 'invalid_name' })
   })
   it('refuses an adult signup with no state or a made-up one', () => {
-    expect(validateSpareChange({ ...good, state: undefined })).toEqual({ ok: false, error: 'invalid_state' })
-    expect(validateSpareChange({ ...good, state: 'ZZ' })).toEqual({ ok: false, error: 'invalid_state' })
+    expect(validateSpareChange({ ...good, state: undefined }, TODAY)).toEqual({ ok: false, error: 'invalid_state' })
+    expect(validateSpareChange({ ...good, state: 'ZZ' }, TODAY)).toEqual({ ok: false, error: 'invalid_state' })
   })
-  it('under 18 (13 to 17) is a Sneakers-only signup: the name, age and state are dropped', () => {
-    for (const age of [13, '17']) {
-      expect(validateSpareChange({ ...good, age, ref: undefined }), String(age)).toEqual({ ok: true, email: 'sam@school.edu', newsletter: false, reason: 'under_18', referredBy: null })
+  it('under 18 (13 to 17) is a Sneakers-only signup: the name, birthday and state are dropped', () => {
+    for (const birthday of ['2013-11-20', '2008-11-21']) {
+      expect(validateSpareChange({ ...good, birthday, ref: undefined }, TODAY), birthday).toEqual({ ok: true, email: 'sam@school.edu', newsletter: false, reason: 'under_18', referredBy: null })
     }
-    expect(validateSpareChange({ email: 'sam@school.edu', age: 16 })).toMatchObject({ ok: true, newsletter: false, reason: 'under_18' })
+    expect(validateSpareChange({ email: 'sam@school.edu', birthday: '2010-06-01' }, TODAY)).toMatchObject({ ok: true, newsletter: false, reason: 'under_18' })
   })
   it('the old 21+ box means nothing any more', () => {
-    expect(validateSpareChange({ email: 'sam@school.edu', state: 'NJ', confirmed21: true })).toEqual({ ok: false, error: 'invalid_age' })
+    expect(validateSpareChange({ email: 'sam@school.edu', state: 'NJ', confirmed21: true })).toEqual({ ok: false, error: 'invalid_birthday' })
   })
   it('drops a ref that is not a code', () => {
-    expect(validateSpareChange({ ...good, ref: "x';--" })).toMatchObject({ ok: true, referredBy: null })
+    expect(validateSpareChange({ ...good, ref: "x';--" }, TODAY)).toMatchObject({ ok: true, referredBy: null })
   })
 })
 
@@ -131,14 +157,14 @@ function fakes(over: Partial<SpareChangeDeps> = {}) {
   return deps
 }
 const context = { referrer: 'https://sneakersterminal.com/spare-change', ipCountry: 'US' }
-const adult = { ok: true, email: 'sam@school.edu', newsletter: true, name: 'Sam Lee', age: 19, state: 'NJ', referredBy: 'ABCDEF' } as const
+const adult = { ok: true, email: 'sam@school.edu', newsletter: true, name: 'Sam Lee', age: 19, birthDate: '2007-06-01', state: 'NJ', referredBy: 'ABCDEF' } as const
 const minor = { ok: true, email: 'sam@school.edu', newsletter: false, reason: 'under_18', referredBy: null } as const
 
 describe('joining both lists with one form', () => {
   it('a new adult lands on the newsletter list and the Sneakers waitlist, and gets their code', async () => {
     const deps = fakes()
     expect(await joinSpareChange(adult, context, deps)).toEqual({ ok: true, existing: false, code: 'K7M3QX', newsletter: true, welcome: 'sent' })
-    expect(deps.upsertNewsletter).toHaveBeenCalledWith({ email: 'sam@school.edu', name: 'Sam Lee', ageAtSignup: 19, state: 'NJ', referredByCode: 'ABCDEF', claimToken: expect.stringMatching(/^[A-Za-z0-9_-]{32}$/), linkToken: expect.stringMatching(/^[A-Za-z0-9_-]{32}$/), referredByMemberId: null })
+    expect(deps.upsertNewsletter).toHaveBeenCalledWith({ email: 'sam@school.edu', name: 'Sam Lee', ageAtSignup: 19, birthDate: '2007-06-01', state: 'NJ', referredByCode: 'ABCDEF', claimToken: expect.stringMatching(/^[A-Za-z0-9_-]{32}$/), linkToken: expect.stringMatching(/^[A-Za-z0-9_-]{32}$/), referredByMemberId: null })
     expect(deps.welcome).toHaveBeenCalledWith('sam@school.edu')
     expect(deps.addToSneakers).toHaveBeenCalledWith({ email: 'sam@school.edu', referrer: context.referrer, ipCountry: 'US', referredBy: 'ABCDEF' })
   })
@@ -253,21 +279,21 @@ describe('the saved screen', () => {
 })
 
 describe('what the form says about each field, before anything is sent', () => {
-  const ok = { name: 'Sam', email: 'sam@school.edu', state: 'NJ', age: '19' }
+  const ok = { name: 'Sam', email: 'sam@school.edu', state: 'NJ', birthday: '2007-06-01' }
   it('a complete form has no problems', () => {
-    expect(signupProblems(ok)).toEqual({})
+    expect(signupProblems(ok, TODAY)).toEqual({})
   })
   it('each gap is named against its own field, all at once', () => {
-    expect(signupProblems({ name: ' ', email: 'nope', state: '', age: 'abc' })).toEqual({
+    expect(signupProblems({ name: ' ', email: 'nope', state: '', birthday: 'abc' }, TODAY)).toEqual({
       name: 'Add your name.',
       email: 'That email does not look right.',
       state: 'Pick your state.',
-      age: 'Type your age as a number.',
+      birthday: 'Add your birthday.',
     })
-    expect(Object.keys(signupProblems({ ...ok, state: '' }))).toEqual(['state'])
+    expect(Object.keys(signupProblems({ ...ok, state: '' }, TODAY))).toEqual(['state'])
   })
-  it('under 18 needs only an email and an age (that person joins the Sneakers waitlist only)', () => {
-    expect(signupProblems({ name: '', email: 'sam@school.edu', state: '', age: '16' })).toEqual({})
+  it('under 18 needs only an email and a birthday (that person joins the Sneakers waitlist only)', () => {
+    expect(signupProblems({ name: '', email: 'sam@school.edu', state: '', birthday: '2010-06-01' }, TODAY)).toEqual({})
   })
 })
 

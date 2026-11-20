@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { REFERRAL_CAP_NOTE, friendsJoinedText } from '@/lib/spare-change'
-import { referralLink, referralShareText } from '@/lib/waitlist-referral'
+import { newsletterReferralLink, newsletterShareText, referralLink, referralShareText } from '@/lib/waitlist-referral'
 import { CREAM, NAVY } from '../visuals'
 
 export interface Joined {
@@ -14,15 +14,17 @@ const sauce = 'var(--font-open-sauce), sans-serif'
 
 /**
  * A person's own link, a share button and their real standing. Shown to someone new to the Sneakers waitlist (nothing for anyone else).
- * `newsletter` is true only for someone on the newsletter list: their friends line is then the credited number out of 5. Everyone else
+ * `newsletter` is true only for someone on the newsletter list: their link then goes to /spare-change (not /launching-soon), the share
+ * text is about the newsletter, and their friends line is the credited number out of 5. Everyone else
  * sees the plain Sneakers waitlist count, exactly as before.
  */
 export function ShareBlock({ joined, newsletter = false }: { joined: Joined | null; newsletter?: boolean }) {
   const [note, setNote] = useState<string | null>(null)
-  const link = joined ? referralLink(window.location.origin, joined.code) : null
+  // A newsletter member shares the newsletter page: a friend only counts for them once that friend is a member too.
+  const link = joined ? (newsletter ? newsletterReferralLink : referralLink)(window.location.origin, joined.code) : null
   const share = async () => {
     if (!link) return
-    const text = referralShareText(link)
+    const text = (newsletter ? newsletterShareText : referralShareText)(link)
     try {
       if (navigator.share) await navigator.share({ text })
       else {

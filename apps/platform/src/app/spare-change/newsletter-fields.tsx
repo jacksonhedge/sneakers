@@ -1,5 +1,5 @@
 'use client'
-import { NAME_MAX_LENGTH, SIGNUP_FIELD_PROBLEM, US_STATES, type SignupField } from '@/lib/spare-change'
+import { NAME_MAX_LENGTH, SIGNUP_FIELD_PROBLEM, US_STATES, todayEastern, type SignupField } from '@/lib/spare-change'
 import { CREAM, NAVY } from '../visuals'
 
 const sauce = 'var(--font-open-sauce), sans-serif'
@@ -13,7 +13,7 @@ export type Problems = Partial<Record<SignupField, string>>
 
 /** Which field a 400 from the route is about. */
 export function problemsFromError(error: string | undefined): Problems {
-  const field = ({ invalid_name: 'name', invalid_email: 'email', invalid_state: 'state', invalid_age: 'age' } as const)[error ?? '']
+  const field = ({ invalid_name: 'name', invalid_email: 'email', invalid_state: 'state', invalid_birthday: 'birthday' } as const)[error ?? '']
   return field ? { [field]: SIGNUP_FIELD_PROBLEM[field] } : {}
 }
 
@@ -67,8 +67,8 @@ export function EmailField({ idPrefix, email, onEmail, placeholder, error }: { i
   )
 }
 
-/** The person's state, and their age as a number they type (the newsletter is 18+). */
-export function StateAgeFields({ idPrefix, state, onState, age, onAge, stateError, ageError }: { idPrefix: string; state: string; onState: (v: string) => void; age: string; onAge: (v: string) => void; stateError?: string; ageError?: string }) {
+/** The person's state, and their birthday (the newsletter is 18+; the age is worked out from the date). */
+export function StateBirthdayFields({ idPrefix, state, onState, birthday, onBirthday, stateError, birthdayError }: { idPrefix: string; state: string; onState: (v: string) => void; birthday: string; onBirthday: (v: string) => void; stateError?: string; birthdayError?: string }) {
   return (
     <>
       <label htmlFor={`${idPrefix}-state`} className="sr-only">
@@ -83,11 +83,12 @@ export function StateAgeFields({ idPrefix, state, onState, age, onAge, stateErro
         ))}
       </select>
       <FieldError id={`${idPrefix}-state-error`} text={stateError} />
-      <label htmlFor={`${idPrefix}-age`} className="sr-only">
-        Age
+      {/* A date box has no placeholder, so its label is shown. */}
+      <label htmlFor={`${idPrefix}-birthday`} className="-mb-1 self-start px-2 text-left text-base font-bold" style={{ fontFamily: sauce }}>
+        Your birthday
       </label>
-      <input id={`${idPrefix}-age`} name="age" type="text" inputMode="numeric" pattern="[0-9]*" autoComplete="off" maxLength={3} value={age} onChange={(e) => onAge(e.target.value)} placeholder="Your age" aria-invalid={ageError ? true : undefined} aria-describedby={ageError ? `${idPrefix}-age-error` : undefined} className={fieldClass} style={fieldStyle} />
-      <FieldError id={`${idPrefix}-age-error`} text={ageError} />
+      <input id={`${idPrefix}-birthday`} name="birthday" type="date" autoComplete="bday" min="1900-01-01" max={todayEastern()} value={birthday} onChange={(e) => onBirthday(e.target.value)} aria-invalid={birthdayError ? true : undefined} aria-describedby={birthdayError ? `${idPrefix}-birthday-error` : undefined} className={fieldClass} style={fieldStyle} />
+      <FieldError id={`${idPrefix}-birthday-error`} text={birthdayError} />
     </>
   )
 }

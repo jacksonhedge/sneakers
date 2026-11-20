@@ -38,7 +38,8 @@ export function intSetting(raw: string | undefined, fallback: number, min: numbe
 }
 
 // ------------------------------------------------------------------------------------------------ sites: minimum age and where a button may go
-// THE one place that says how old someone must be for each site. Sportsbooks are 21; the exchange and the prediction markets are 18.
+// THE one place that says how old someone must be for each site. Sportsbooks are 21; the exchange and the prediction markets are 18,
+// except Novig, which is 21.
 // A site that is not listed is treated as 21.
 export const DEFAULT_MIN_AGE = 21
 export const SITE_MIN_AGE: Readonly<Record<string, number>> = {
@@ -48,6 +49,7 @@ export const SITE_MIN_AGE: Readonly<Record<string, number>> = {
   prophetx: 18,
   kalshi: 18,
   polymarket: 18,
+  novig: 21,
 }
 export const siteMinAge = (site: string): number => SITE_MIN_AGE[site.toLowerCase().replace(/[^a-z0-9]/g, '')] ?? DEFAULT_MIN_AGE
 

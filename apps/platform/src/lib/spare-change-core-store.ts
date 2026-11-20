@@ -1,3 +1,4 @@
+import { parseBirthday } from './spare-change'
 import type {
   GoStore,
   IngestStore,
@@ -27,11 +28,13 @@ const fail = (what: string, error: { code?: string } | null): never => {
 }
 const UNIQUE = '23505'
 
-const MEMBER_COLUMNS = 'id, age_at_signup, status, tester, daily_reward_cents, reward_days, extra_reward_days, started_on, referred_by_member_id, venmo_handle'
-type MemberRow = { id: string; age_at_signup: number; status: MemberStatus; tester: boolean; daily_reward_cents: number; reward_days: number; extra_reward_days: number; started_on: string | null; referred_by_member_id: string | null; venmo_handle: string | null }
+const MEMBER_COLUMNS = 'id, age_at_signup, birth_date, status, tester, daily_reward_cents, reward_days, extra_reward_days, started_on, referred_by_member_id, venmo_handle'
+type MemberRow = { id: string; age_at_signup: number; birth_date: string | null; status: MemberStatus; tester: boolean; daily_reward_cents: number; reward_days: number; extra_reward_days: number; started_on: string | null; referred_by_member_id: string | null; venmo_handle: string | null }
 const toMember = (r: MemberRow): Member => ({
   id: r.id,
-  age: r.age_at_signup,
+  // Their age today, from their birthday, so someone who turns 21 during the run gets the 21+ sites from that day. Rows from before
+  // the form asked for a birthday have none: for them it is still the age they typed when they signed up.
+  age: (r.birth_date ? parseBirthday(r.birth_date)?.age : undefined) ?? r.age_at_signup,
   status: r.status,
   tester: r.tester,
   dailyRewardCents: r.daily_reward_cents,
