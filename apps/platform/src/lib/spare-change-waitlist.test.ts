@@ -124,6 +124,7 @@ function fakes(over: Partial<SpareChangeDeps> = {}) {
   const deps = {
     addToSneakers: vi.fn<SpareChangeDeps['addToSneakers']>(async () => ({ ok: true, existing: false, code: 'K7M3QX' })),
     upsertNewsletter: vi.fn<SpareChangeDeps['upsertNewsletter']>(async () => true),
+    resolveReferrer: vi.fn<SpareChangeDeps['resolveReferrer']>(async () => null),
     welcome: vi.fn<SpareChangeDeps['welcome']>(async () => 'sent'),
     ...over,
   }
@@ -137,7 +138,7 @@ describe('joining both lists with one form', () => {
   it('a new adult lands on the newsletter list and the Sneakers waitlist, and gets their code', async () => {
     const deps = fakes()
     expect(await joinSpareChange(adult, context, deps)).toEqual({ ok: true, existing: false, code: 'K7M3QX', newsletter: true, welcome: 'sent' })
-    expect(deps.upsertNewsletter).toHaveBeenCalledWith({ email: 'sam@school.edu', name: 'Sam Lee', ageAtSignup: 19, state: 'NJ', referredByCode: 'ABCDEF', claimToken: expect.stringMatching(/^[A-Za-z0-9_-]{32}$/) })
+    expect(deps.upsertNewsletter).toHaveBeenCalledWith({ email: 'sam@school.edu', name: 'Sam Lee', ageAtSignup: 19, state: 'NJ', referredByCode: 'ABCDEF', claimToken: expect.stringMatching(/^[A-Za-z0-9_-]{32}$/), linkToken: expect.stringMatching(/^[A-Za-z0-9_-]{32}$/), referredByMemberId: null })
     expect(deps.welcome).toHaveBeenCalledWith('sam@school.edu')
     expect(deps.addToSneakers).toHaveBeenCalledWith({ email: 'sam@school.edu', referrer: context.referrer, ipCountry: 'US', referredBy: 'ABCDEF' })
   })
@@ -267,5 +268,35 @@ describe('what the form says about each field, before anything is sent', () => {
   })
   it('under 18 needs only an email and an age (that person joins the Sneakers waitlist only)', () => {
     expect(signupProblems({ name: '', email: 'sam@school.edu', state: '', age: '16' })).toEqual({})
+  })
+})
+
+describe('who referred a new member, and their link token', () => {
+  it('a referral code that belongs to a newsletter member is stored as that member', async () => {
+    const deps = fakes({ resolveReferrer: vi.fn(async () => 'member-1') })
+    await joinSpareChange(adult, context, deps)
+    expect(deps.resolveReferrer).toHaveBeenCalledWith('ABCDEF', 'sam@school.edu')
+    expect(vi.mocked(deps.upsertNewsletter).mock.calls[0][0]).toMatchObject({ referredByCode: 'ABCDEF', referredByMemberId: 'member-1' })
+  })
+  it('no code, no lookup; a lookup that fails never fails the signup', async () => {
+    const none = fakes()
+    await joinSpareChange({ ...adult, referredBy: null }, context, none)
+    expect(none.resolveReferrer).not.toHaveBeenCalled()
+    const down = fakes({ resolveReferrer: vi.fn(async () => { throw new Error('down') }) })
+    expect(await joinSpareChange(adult, context, down)).toMatchObject({ ok: true, newsletter: true })
+    expect(vi.mocked(down.upsertNewsletter).mock.calls[0][0].referredByMemberId).toBeNull()
+  })
+  it('someone under 18 gets no newsletter row, so no referrer is looked up', async () => {
+    const deps = fakes()
+    await joinSpareChange({ ...minor, referredBy: 'ABCDEF' }, context, deps)
+    expect(deps.resolveReferrer).not.toHaveBeenCalled()
+  })
+  it('every signup gets its own link token, different from its claim token', async () => {
+    const deps = fakes()
+    await joinSpareChange(adult, context, deps)
+    await joinSpareChange(adult, context, deps)
+    const rows = vi.mocked(deps.upsertNewsletter).mock.calls.map(([row]) => row)
+    expect(rows[0].linkToken).not.toBe(rows[1].linkToken)
+    expect(rows[0].linkToken).not.toBe(rows[0].claimToken)
   })
 })

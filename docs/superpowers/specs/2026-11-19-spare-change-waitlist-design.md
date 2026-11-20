@@ -140,3 +140,95 @@ What these do not stop: one person with several real email addresses and several
 - Tests written first for: Venmo parsing, validation and masking; token shape; claim decisions (open, claimed, unknown, cap reached, duplicate username, double tap) against injected store functions; the email builders (subject, claim link and 18+ line in both bodies, no avoided words, no script); the 24-hour rule and the reserve-then-send order; the saved screen's two wordings; the per-field form checks.
 - Looked at in headless Chrome at 390px and 1280px with the database-backed routes stubbed. The welcome email was rendered to an image at 600px.
 - Not checked against a real database or a real inbox: the migration has not been applied and no email was sent.
+
+## Change, 2026-11-19 (late night): members, tickets, wagers and rewards
+
+The owner asked for the database and backend behind the daily email: who the members are, which tickets went out, who tapped and placed which one, and what each member is owed. Later this becomes the user database and wager record for the Sneakers app. Where this section and the text above disagree, this section wins. In particular: paying is now run from a ledger (`sc_rewards`), not from `newsletter_waitlist.paid_at`, and "Reply STOP" now marks a member removed instead of deleting the row.
+
+**This system records wagers people place elsewhere. It never places a wager and never moves money.** A button opens the site; the member places the ticket themselves; a picture of the slip is checked by a person; Venmo is sent by hand.
+
+Built, tested without a database, **not applied and not deployed**. Migration `049_spare_change_core.sql` must be applied (after 048) before the code that uses it is deployed: the signup route writes two new columns and the claim route writes the ledger.
+
+### The tables
+
+All money is whole cents. Every table has `created_at`. RLS is on with no policies everywhere (service role only), and the two views are `security_invoker`. Everything new is prefixed `sc_`; no existing table other than `newsletter_waitlist` is touched.
+
+| Table | One row is | Key columns |
+|---|---|---|
+| `newsletter_waitlist` (the member table, extended) | a member | `id`, `email`, `age_at_signup`, `state`, plus new: `link_token` (unique, 192 random bits, in tracked links), `status` (waitlist / active / paused / removed), `tester`, `daily_reward_cents` (default 100), `reward_days` (default 30), `started_on`, `extra_reward_days`, `unsubscribed_at`, `sneakers_account_id`, `referred_by_member_id` |
+| `sc_issues` | a day's email | `issue_date` (key), `issue_no`, `subject`, `preheader`, `from_name`, `built_at`, `sent_at`, `source` (the whole issue.json), `updated_at` |
+| `sc_tickets` | one of the day's four tickets | `id`, `issue_date` + `position` (unique), `site`, `name`, `buy_in_cents`, `est_payout_cents`, `headline_cents`, `one_in`, `fair_one_in`, `fee_cents`, `min_age`, `link`, `estimated`, `result`, `settled_at` |
+| `sc_legs` | a leg of a ticket | `ticket_id` + `n` (unique), `sport`, `league`, `event`, `starts_at`, `market`, `pick`, `price_text`, `price_decimal`, `source_ref`, `result` |
+| `sc_wagers` | a member and a ticket | `member_id` + `ticket_id` (unique), `status` (tapped / submitted / verified / rejected), `source` (tap / slip / roundup / admin), `tapped_at`, `tap_count`, `stake_cents`, `slip_received_at`, `slip_ref`, `slip_bet_id` (unique when set), `verified_at`, `verified_by`, `rejected_reason`, `result`, `payout_cents`, `roundup_funded_cents`, `updated_at` |
+| `sc_rewards` | something a member is owed | `member_id`, `kind` (welcome / daily / referral_day / adjustment), `issue_date`, `amount_cents`, `wager_id`, `note`, `earned_at`, `paid_at`, `pay_batch`, `paid_to`; unique on member + kind + date, one welcome per member, one day reward per member per date |
+| `sc_referral_credits` | a referred friend | `referrer_id`, `friend_id` (unique), `qualified_at`, `days_granted` |
+| `sc_member_events` | something that happened (audit) | `member_id`, `type`, `ticket_id`, `meta`, `ip_country` |
+
+Views: `sc_payouts_due` (per member with unpaid rewards, a Venmo username and not removed: name, Venmo username, state, age, how many, how much, the oldest) and `sc_ticket_summary` (per ticket: members who tapped, total taps, slips in, verified, rejected).
+
+A ticket's minimum age comes from its site, in one map in `src/lib/spare-change-core.ts` (`SITE_MIN_AGE`): DraftKings, FanDuel and Fanatics are 21; ProphetX, Kalshi and Polymarket are 18; any site not listed is 21.
+
+### How a day moves through it
+
+1. **Ingest.** `tools/publish_issue.py --date D` posts the day's `issue.json` to `POST /api/spare-change/ingest` with a bearer secret. The route checks every number (whole cents, leg prices above 1, and each ticket's estimate against buy-in x (product of leg decimals - 1) within one cent) and refuses the whole body, naming the field, if anything is off. Then it stores the issue, its tickets and legs. Posting again is safe: a ticket keeps its id. A ticket with wagers on it is only updated in place (name, amounts, prices, link); it is never deleted or turned into a different ticket (another site or other picks), and anything refused for that reason is returned.
+2. **Tap.** A button in the email is `/go/<ticket id>?m=<link_token>`. The route finds the member and the ticket, makes or updates the member's `sc_wagers` row (first tap time, tap count), writes an event, and redirects to the ticket's own link. It shows a plain page instead when the token or ticket is unknown, the member was removed, the member is younger than the ticket's minimum age ("This ticket is 21+."), or the link is not https on the allow-list (prophetx.co, draftkings.com, kalshi.com, polymarket.us, polymarket.com, fanduel.com, fanatics.com and their subdomains). Without `m` it is an anonymous tap: an event, then the redirect. The token is never added to the destination and the browser is told to send no referrer.
+3. **Slip.** The member places the ticket on the site and sends a picture. An admin records it: `POST /api/spare-change/admin/wagers` with `action: "submit"`, the member, the ticket, where the picture is (`slip_ref`), and when known the site's bet id and the stake. The same bet id cannot be used on two wagers.
+4. **Verify.** The admin posts `action: "verify"` (or `"reject"` with a reason). Verifying runs the reward rule below and answers with exactly what was granted and a reason code for anything that was not.
+5. **Reward.** A granted reward is a row in `sc_rewards`, unpaid.
+6. **Friday.** `docs/launch/spare-change-friday-payouts.md`: read `sc_payouts_due`, pay each member on Venmo by hand, then set `paid_at`, `pay_batch` and `paid_to` on the rows paid (SQL in the runbook, or `POST /api/spare-change/admin/payouts`).
+7. **Results.** `tools/publish_issue.py --date D+1 --settle` posts the pipeline's grading of issue D to `POST /api/spare-change/admin/settle`: each leg's result, each ticket's result and settle time, and each wager's result. A won wager with a known stake gets `payout_cents` = stake x ((product of the decimals of the legs that hit) - 1), from the stored prices; it is an estimate of what the site paid, not a statement from the site. Results do not change rewards: a reward is for placing the ticket, not for winning.
+
+### The reward rule (one place: `decideDailyReward` and `verifyWager`)
+
+A verified slip earns one `daily` reward of the member's own `daily_reward_cents`, dated the ticket's issue date, when all of these hold:
+
+1. the member's status is `waitlist` or `active` (not `paused`, not `removed`);
+2. the member's age is at least the ticket's `min_age` and at least `SPARE_CHANGE_REWARD_MIN_AGE` (default 21);
+3. the issue date is inside the member's reward window, `started_on` through `started_on + reward_days + extra_reward_days - 1`; a member with no `started_on` starts on this date;
+4. the member has no daily reward for that date yet (a unique index is the final guard, so two tickets on one day earn one reward).
+
+A tester is the same rule with a different `daily_reward_cents` on their row (for example 500).
+
+Reason codes when nothing is granted: `member_paused`, `member_removed`, `under_ticket_min_age`, `under_reward_min_age`, `no_reward_amount`, `no_reward_days`, `before_reward_window`, `after_reward_window`, `already_rewarded_for_day`. The wager is still marked verified in every one of these cases; only the reward is withheld.
+
+**Referrals.** When a member who was referred has their first verified wager, their `sc_referral_credits` row is marked qualified and their referrer gets `SPARE_CHANGE_REFERRAL_DAYS_PER_FRIEND` (default 5) more reward days, for at most `SPARE_CHANGE_REFERRAL_MAX_FRIENDS` (default 5) friends. Later friends are still recorded, with 0 days. The referrer's `extra_reward_days` is set from the credit rows and capped at friends x days (25 by default), so it can never go higher through referrals, whatever order things arrive in. The friend counts even if the friend earns no reward themselves (for example an 18-year-old on a Kalshi ticket). Codes: `no_referrer`, `self_referral`, `already_qualified`, `referrer_cap_reached`.
+
+Who referred whom is settled at signup: a valid `?ref=` code belongs to a Sneakers waitlist row, that row's email may have a newsletter row, and that row's id is stored as `referred_by_member_id`. A referrer who is not on the newsletter list themselves earns nothing here.
+
+Everything is safe to repeat. Verifying twice grants nothing new, and a verify that stopped half way is finished by sending it again.
+
+### Automatic and manual
+
+| Automatic | Manual |
+|---|---|
+| A link token for every new member; who referred them | Applying migrations 048 and 049; setting the environment variables |
+| The welcome dollar's ledger row when a claim succeeds | Running `publish_issue.py` after the build is approved (it is not in the nightly run) |
+| Checking and storing an issue when it is posted | Turning tracked links on (`backend.tracked_links`), and getting each member's `link_token` into the email platform as the `{{link_token}}` merge value |
+| Recording taps; refusing removed and under-age members | Reading each slip picture; recording it (`submit`); deciding `verify` or `reject` |
+| The reward and referral rules when a slip is verified | Paying on Venmo; marking the batch paid |
+| Results, once the grading is posted | Posting the grading (`--settle`); removing or pausing a member; adjustments; setting `sent_at`, `tester`, a member's amount or days |
+
+There is no admin page yet: the admin routes are called from a signed-in admin browser session (the same `ADMIN_EMAILS` gate as `/api/admin/*`), and the payouts runbook is SQL. The two routes the pipeline posts to (ingest and settle) take the bearer secret `SPARE_CHANGE_INGEST_SECRET`; verifying slips and marking payouts never do.
+
+### What it does not do
+
+- It does not place, build or confirm a wager anywhere, hold a balance, or send money.
+- It does not verify age or identity: age is what the person typed at signup.
+- It does not check a member's state against where a site operates. `state` is on the member row for whoever sends the email to use.
+- It does not read slips. A person does.
+- It sends no email. Getting `link_token` to the email platform is not built.
+- Rejecting a verified wager, or taking back a granted reward, is done with an `adjustment` row, not by un-verifying.
+
+### Becoming the Sneakers record
+
+- **Accounts.** `newsletter_waitlist.sneakers_account_id` is null until a member is linked to a Sneakers account; set it when the same person signs in to Sneakers (matching on a verified email is the obvious first rule, and is not built). Everything else hangs off the member's uuid, so nothing has to be re-keyed. Nothing assumes email is the only way to reach a member: `status`, `unsubscribed_at` and the event trail are about the member, not the address.
+- **Wagers.** `sc_wagers` is already one row per person per ticket with a stake, a result and a payout in cents, a `source`, and timestamps for each step. Inside the app the same row can be written with `source = 'admin'` or a new source without changing its shape.
+- **Round-ups.** `sc_wagers.source = 'roundup'` and `sc_wagers.roundup_funded_cents` are reserved for a ticket funded from a member's round-up balance: the row would carry how many cents of the stake came from round-ups. Nothing writes either yet, and the round-up money itself belongs to the Hedge round-ups tool and the Sneakers wallet, never to these tables.
+- **Rewards.** `sc_rewards` is an append-only ledger with `paid_at`, `pay_batch` and `paid_to`. Paying through Sneakers instead of Venmo later means writing those same three fields from the payout that Sneakers makes.
+
+### Checks made
+
+- Tests written without a database (vitest, injected store functions): the reward rule (window edges, paused and removed, under the ticket's age, under the reward age, a day already rewarded, a tester's amount, no `started_on`); referral qualification and the five-friend cap; ingest validation (bad cents, a payout that does not match, posting again with and without wagers); the tracked link (unknown token, removed member, under age, a host not on the allow-list, an anonymous tap, a repeat tap); marking payouts; settling; the secret check; the token shape.
+- Both issues built so far (2026-11-20 and 2026-11-21) pass the ingest checks as they are.
+- The routes were called on a local dev server with the database unreachable: 503 with no secret configured, 401 without the right one, 401 on the admin routes without a session, 404 and 503 pages on `/go`.
+- **Not checked:** migrations 048 and 049 were not run against any database (there is no Postgres on the build machine), so the SQL was read through, not executed. Nothing was applied, sent, committed or deployed.

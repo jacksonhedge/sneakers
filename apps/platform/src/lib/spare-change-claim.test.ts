@@ -97,6 +97,7 @@ function store(over: Partial<ClaimStore> = {}) {
     countClaimed: vi.fn<ClaimStore['countClaimed']>(async () => 3),
     confirmEmail: vi.fn<ClaimStore['confirmEmail']>(async () => {}),
     claim: vi.fn<ClaimStore['claim']>(async () => 'claimed'),
+    recordWelcomeReward: vi.fn<ClaimStore['recordWelcomeReward']>(async () => {}),
     ...over,
   }
 }
@@ -211,6 +212,26 @@ describe('saving a Venmo username', () => {
   it('a database failure is an error', async () => {
     const s = store({ claim: vi.fn(async () => { throw new Error('down') }) })
     expect(await submitClaim({ t: TOKEN, venmo: 'samgold' }, { store: s, cap: 100, now })).toEqual({ status: 'error' })
+  })
+  it('a claim that succeeds puts the welcome dollar in the rewards ledger, once', async () => {
+    const s = store()
+    expect(await submitClaim({ t: TOKEN, venmo: 'samgold' }, { store: s, cap: 100, now })).toMatchObject({ status: 'saved' })
+    expect(s.recordWelcomeReward).toHaveBeenCalledTimes(1)
+    expect(s.recordWelcomeReward).toHaveBeenCalledWith(TOKEN, NOW.toISOString())
+  })
+  it('nothing goes in the ledger when nothing was claimed', async () => {
+    const outcomes = [store({ claim: vi.fn(async () => 'duplicate_venmo' as const) }), store({ findByToken: vi.fn(async () => taken) }), store({ countClaimed: vi.fn(async () => 100) }), store({ findByToken: vi.fn(async () => null) })]
+    for (const s of outcomes) {
+      await submitClaim({ t: TOKEN, venmo: 'samgold' }, { store: s, cap: 100, now })
+      expect(s.recordWelcomeReward).not.toHaveBeenCalled()
+    }
+    const bad = store()
+    await submitClaim({ t: TOKEN, venmo: 'no' }, { store: bad, cap: 100, now })
+    expect(bad.recordWelcomeReward).not.toHaveBeenCalled()
+  })
+  it('a ledger write that fails does not undo the claim', async () => {
+    const s = store({ recordWelcomeReward: vi.fn(async () => { throw new Error('down') }) })
+    expect(await submitClaim({ t: TOKEN, venmo: 'samgold' }, { store: s, cap: 100, now })).toEqual({ status: 'saved', handle: 'samgold', email: 'sam@school.edu' })
   })
 })
 

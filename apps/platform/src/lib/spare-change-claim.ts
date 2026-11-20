@@ -103,6 +103,11 @@ export interface ClaimStore {
    * already holds that username's key.
    */
   claim: (token: string, handle: string, key: string, nowIso: string) => Promise<'claimed' | 'none' | 'duplicate_venmo'>
+  /**
+   * Put the welcome dollar in the rewards ledger: one 'welcome' row of 100 cents in sc_rewards for the member behind this token. A member
+   * who already has one keeps that one (a unique index), so calling this twice adds nothing. Throws when the database cannot be reached.
+   */
+  recordWelcomeReward: (token: string, nowIso: string) => Promise<void>
 }
 
 export interface ClaimDeps {
@@ -163,8 +168,14 @@ export async function submitClaim(body: unknown, deps: ClaimDeps): Promise<Claim
     if (!row) return { status: 'unknown' }
     if (row.claimedAt) return claimedView(row) as ClaimSubmit
     if (claimed >= deps.cap) return { status: 'cap_reached' }
-    const outcome = await deps.store.claim(token, venmo.handle, venmo.key, (deps.now?.() ?? new Date()).toISOString())
-    if (outcome === 'claimed') return { status: 'saved', handle: venmo.handle, email: row.email }
+    const nowIso = (deps.now?.() ?? new Date()).toISOString()
+    const outcome = await deps.store.claim(token, venmo.handle, venmo.key, nowIso)
+    if (outcome === 'claimed') {
+      // The claim is stored; the ledger row is the record that a dollar is now owed. If writing it fails the claim still stands (the
+      // Friday runbook has a query that adds any welcome row that is missing), so the person is never told their claim failed.
+      await deps.store.recordWelcomeReward(token, nowIso).catch(() => console.error('[spare-change-claim] welcome reward not recorded'))
+      return { status: 'saved', handle: venmo.handle, email: row.email }
+    }
     if (outcome === 'duplicate_venmo') return { status: 'duplicate_venmo' }
     const after = await deps.store.findByToken(token)
     return after?.claimedAt ? (claimedView(after) as ClaimSubmit) : { status: 'unknown' }

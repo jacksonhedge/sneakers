@@ -2,7 +2,8 @@ import { sendSpareChangeWelcome } from './email'
 import { addToSneakersWaitlist, waitlistStanding, SNEAKERS_WAITLIST_SOURCE } from './sneakers-waitlist'
 import { claimCap, claimOrigin, type ClaimDeps, type ClaimStore } from './spare-change-claim'
 import { sendWelcomeOnce, type WelcomeStore } from './spare-change-email'
-import { upsertNewsletterRow, type SpareChangeDeps } from './spare-change-waitlist'
+import { WELCOME_REWARD_CENTS } from './spare-change-core'
+import { resolveReferrerMember, upsertNewsletterRow, type SpareChangeDeps } from './spare-change-waitlist'
 import { getServerClient } from './supabase-server'
 
 // The Supabase side of the Spare Change welcome email and the claim page: the small reads and writes that spare-change-email.ts and
@@ -34,6 +35,7 @@ export function spareChangeDeps(requestOrigin: string | null): SpareChangeDeps {
   return {
     addToSneakers: addToSneakersWaitlist,
     upsertNewsletter: upsertNewsletterRow,
+    resolveReferrer: resolveReferrerMember,
     welcome: (email) =>
       sendWelcomeOnce(email, {
         store: welcomeStore,
@@ -67,6 +69,14 @@ const claimStore: ClaimStore = {
     if (error?.code === '23505') return 'duplicate_venmo'
     if (error) throw new Error(`claim ${error.code}`)
     return (data?.length ?? 0) === 1 ? 'claimed' : 'none'
+  },
+  // The welcome dollar in the rewards ledger (sc_rewards, migration 049). The partial unique index allows one 'welcome' row per member,
+  // so a claim that is cleared and made again (a corrected username) does not add a second dollar: that insert is refused (23505) and ignored.
+  async recordWelcomeReward(token, nowIso) {
+    const { data: member, error: findError } = await table().select('id').eq('claim_token', token).maybeSingle()
+    if (findError || !member) throw new Error(`welcome member ${findError?.code ?? 'missing'}`)
+    const { error } = await getServerClient().from('sc_rewards').insert({ member_id: member.id, kind: 'welcome', amount_cents: WELCOME_REWARD_CENTS, note: 'Welcome dollar', earned_at: nowIso })
+    if (error && error.code !== '23505') throw new Error(`welcome reward ${error.code}`)
   },
 }
 

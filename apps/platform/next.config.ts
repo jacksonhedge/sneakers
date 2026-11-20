@@ -76,6 +76,13 @@ const nextConfig: NextConfig = {
         source: '/:path*',
         headers: SECURITY_HEADERS,
       },
+      // Tracked links in the Spare Change email (/go/<ticket>?m=<link_token>). The address carries a member's link token and the
+      // response sends them to a betting or prediction site, so the browser must send no Referer at all. This entry comes after
+      // the one above on purpose: for the same header, the last matching entry wins.
+      {
+        source: '/go/:path*',
+        headers: [{ key: 'Referrer-Policy', value: 'no-referrer' }],
+      },
     ]
   },
 }

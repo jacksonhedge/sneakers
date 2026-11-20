@@ -1,6 +1,7 @@
 import { normalizeEmail } from './email-validation'
 import { type WaitlistJoined } from './sneakers-waitlist'
 import { newClaimToken } from './spare-change-claim'
+import { newLinkToken } from './spare-change-core'
 import { NEWSLETTER_MIN_AGE, NEWSLETTER_SOURCE, parseAge, parseName, parseState } from './spare-change'
 import { getServerClient } from './supabase-server'
 import { parseRefParam } from './waitlist-referral'
@@ -39,11 +40,20 @@ export interface NewsletterRow {
   referredByCode: string | null
   /** A fresh token for the link in the welcome email. Stored only when the row is new: an email already on the list keeps its first one. */
   claimToken: string
+  /** A fresh token for tracked links in the daily email (/go/<ticket>?m=<token>). Stored only when the row is new, like claimToken. */
+  linkToken: string
+  /** The newsletter member who referred them (their id in this same table), or null. Stored only when the row is new. */
+  referredByMemberId: string | null
 }
 
 export interface SpareChangeDeps {
   addToSneakers: (i: { email: string; referrer: string | null; ipCountry: string | null; referredBy: string | null }) => Promise<WaitlistJoined | { ok: false }>
   upsertNewsletter: (row: NewsletterRow) => Promise<boolean>
+  /**
+   * The newsletter member behind a referral code: the code is on a Sneakers waitlist row, that row has an email, and that email may have
+   * a newsletter row. null when any step finds nothing, or when it is this same person. Never throws.
+   */
+  resolveReferrer: (code: string, email: string) => Promise<string | null>
   /** Send the welcome email if one is due. 'sent' = one went now or in the last 24 hours; 'pending' = none has gone. */
   welcome: (email: string) => Promise<'sent' | 'pending'>
 }
@@ -53,12 +63,29 @@ export async function upsertNewsletterRow(row: NewsletterRow): Promise<boolean> 
   try {
     const { error } = await getServerClient()
       .from('newsletter_waitlist')
-      .upsert({ email: row.email, name: row.name, age_at_signup: row.ageAtSignup, state: row.state, source: NEWSLETTER_SOURCE, referred_by_code: row.referredByCode, claim_token: row.claimToken }, { onConflict: 'email', ignoreDuplicates: true })
+      .upsert({ email: row.email, name: row.name, age_at_signup: row.ageAtSignup, state: row.state, source: NEWSLETTER_SOURCE, referred_by_code: row.referredByCode, claim_token: row.claimToken, link_token: row.linkToken, referred_by_member_id: row.referredByMemberId }, { onConflict: 'email', ignoreDuplicates: true })
     if (error) console.error('[spare-change-waitlist] upsert failed', error.code)
     return !error
   } catch {
     console.error('[spare-change-waitlist] upsert threw')
     return false
+  }
+}
+
+/**
+ * A referral code -> the newsletter member who owns it. Two small reads: the Sneakers waitlist row with that code (the same lookup
+ * addToSneakersWaitlist makes), then the newsletter row with that row's email. The referrer has to be on the newsletter list themselves.
+ */
+export async function resolveReferrerMember(code: string, email: string): Promise<string | null> {
+  try {
+    const supabase = getServerClient()
+    const { data: owner } = await supabase.from('waitlist').select('email').eq('referral_code', code).maybeSingle()
+    const ownerEmail = typeof owner?.email === 'string' ? owner.email.trim().toLowerCase() : null
+    if (!ownerEmail || ownerEmail === email) return null
+    const { data: member } = await supabase.from('newsletter_waitlist').select('id').eq('email', ownerEmail).maybeSingle()
+    return typeof member?.id === 'string' ? member.id : null
+  } catch {
+    return null
   }
 }
 
@@ -73,7 +100,9 @@ export type SpareChangeJoined = { ok: true; existing: boolean; code: string | nu
  */
 export async function joinSpareChange(signup: SpareChangeSignup, context: { referrer: string | null; ipCountry: string | null }, deps: SpareChangeDeps): Promise<SpareChangeJoined | { ok: false }> {
   if (signup.newsletter) {
-    const stored = await deps.upsertNewsletter({ email: signup.email, name: signup.name, ageAtSignup: signup.age, state: signup.state, referredByCode: signup.referredBy, claimToken: newClaimToken() })
+    // Who referred them, as a newsletter member. Looking this up can never fail the signup: no answer just means no referrer on the row.
+    const referredByMemberId = signup.referredBy ? await deps.resolveReferrer(signup.referredBy, signup.email).catch(() => null) : null
+    const stored = await deps.upsertNewsletter({ email: signup.email, name: signup.name, ageAtSignup: signup.age, state: signup.state, referredByCode: signup.referredBy, claimToken: newClaimToken(), linkToken: newLinkToken(), referredByMemberId })
     if (!stored) return { ok: false }
   }
   const joined = await deps.addToSneakers({ email: signup.email, referrer: context.referrer, ipCountry: context.ipCountry, referredBy: signup.referredBy })
