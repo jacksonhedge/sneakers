@@ -71,7 +71,8 @@ export default async function RootLayout({
   // Every social bio links to /launching-soon. `x-pathname` is set by src/proxy.ts on every request.
   const pathname = hdrs.get("x-pathname") ?? "";
   const isSneakersPage =
-    pathname === "/" || pathname === "/launching-soon" || pathname.startsWith("/launching-soon/");
+    pathname === "/" || pathname === "/launching-soon" || pathname.startsWith("/launching-soon/") ||
+    pathname === "/spare-change" || pathname.startsWith("/spare-change/");
   return (
     <html
       lang="en"
