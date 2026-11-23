@@ -13,8 +13,10 @@ const RED = '#E03A3E'
 const CREAM = '#FFF3D6'
 const NAVY = '#0B1E3F'
 const POWERED_BY = 'Hedge Payments'
-// Where Sign up goes while Sneakers is launching soon: the waitlist page. (Log in still goes to the app's sign-in for invited testers.)
-const SIGN_UP_URL = '/launching-soon'
+// Where "Join Waitlist" goes while Sneakers is launching soon: the Spare Change Millionaire newsletter signup, which also puts the
+// person on the Sneakers waitlist. (/launching-soon still works for anyone who has that link. Log in still goes to the app's sign-in.)
+const SIGN_UP_URL = '/spare-change'
+const SIGN_UP_LABEL = 'Join Waitlist'
 const SIGN_IN_URL = 'https://pay.sneakersterminal.com/'
 const HEADLINE = 'Paying your friends back should be fun!'
 const SUBLINE = 'Sneakers is the fun way to pay your friends.'
@@ -176,7 +178,7 @@ export default function LandingPage() {
             Log in
           </a>
           <FunLink href={SIGN_UP_URL} className="rounded-full px-5 py-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" style={{ background: CREAM, color: NAVY, border: `0.15rem solid ${NAVY}`, boxShadow: `0.15rem 0.2rem 0 ${NAVY}` }}>
-            Sign up
+            {SIGN_UP_LABEL}
           </FunLink>
         </nav>
       </header>
@@ -209,7 +211,7 @@ export default function LandingPage() {
             className="sneakers-cta inline-flex min-h-[3.25rem] items-center rounded-full px-8 text-lg font-bold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
             style={{ background: CREAM, color: NAVY, border: `0.18rem solid ${NAVY}`, boxShadow: `0.25rem 0.3rem 0 ${NAVY}`, fontFamily: 'var(--font-open-sauce), sans-serif' }}
           >
-            Sign up
+            {SIGN_UP_LABEL}
           </FunLink>
         </div>
         <Phone className="shrink-0 lg:mx-0" />
@@ -257,7 +259,7 @@ export default function LandingPage() {
           className="mt-8 inline-flex min-h-[3.5rem] items-center rounded-full px-10 text-xl font-bold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
           style={{ background: CREAM, color: NAVY, border: `0.18rem solid ${CREAM}`, boxShadow: `0.25rem 0.3rem 0 ${RED}`, ['--fun-shadow' as string]: RED, fontFamily: 'var(--font-open-sauce), sans-serif' }}
         >
-          Sign up
+          {SIGN_UP_LABEL}
         </FunLink>
       </section>
 
