@@ -4,7 +4,8 @@ import { parseRefParam } from '@/lib/waitlist-referral'
 import { BLUE, CREAM, NAVY, RED } from '../visuals'
 import { PartnerFloat, PartnerRow } from './partner-float'
 import { SpareChangeForm } from './spare-change-form'
-import { StoryFloat, StoryRow } from './story-float'
+import { ResponsiblePlay } from './responsible-play'
+import { MoreStories, StoryFloat, StoryRow } from './story-float'
 
 // The newsletter's own page: what it is, one example ticket, and one form that also puts the person on the Sneakers waitlist.
 // Not indexed and not linked from the home page unless NEXT_PUBLIC_SPARE_CHANGE is on.
@@ -53,6 +54,7 @@ export default async function SpareChangePage({ searchParams }: { searchParams: 
       <PartnerRow />
       <SpareChangeForm refCode={parseRefParam(ref)} />
       <StoryRow />
+      <MoreStories />
       <section aria-labelledby="refer-heading" className="w-full max-w-md px-6 py-6 text-left" style={{ background: CREAM, color: NAVY, border: `0.2rem solid ${NAVY}`, borderRadius: '1.5rem', boxShadow: `0.35rem 0.4rem 0 ${NAVY}`, transform: 'rotate(1deg)', fontFamily: sauce }}>
         <p className="text-sm font-bold uppercase tracking-widest" style={{ color: RED }}>
           Referrals
@@ -77,9 +79,7 @@ export default async function SpareChangePage({ searchParams }: { searchParams: 
       <p className="max-w-md text-lg font-bold" style={{ fontFamily: sauce }}>
         {SNEAKERS_LINE}
       </p>
-      <p className="max-w-md text-base" style={{ fontFamily: sauce }}>
-        Long shots miss far more often than they hit.
-      </p>
+      <ResponsiblePlay />
       </div>
     </main>
   )
