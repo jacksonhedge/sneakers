@@ -869,7 +869,7 @@ describe('verifying a slip', () => {
 
 describe('referrals: a friend\'s first verified wager pays the referrer $5', () => {
   const REFERRER = uuid(200)
-  const friend = (n: number, over: Partial<Member> = {}) => member({ id: uuid(300 + n), referredByMemberId: REFERRER, ...over })
+  const friend = (n: number, over: Partial<Member> = {}) => member({ id: uuid(300 + n), referredByMemberId: REFERRER, venmoHandle: `friend${n}`, ...over })
   const setup = (friends: Member[], tickets: TicketRef[] = [ticket({ minAge: 18 })], referrer: Partial<Member> = {}) =>
     wagerDb({ members: [member({ id: REFERRER, startedOn: '2026-11-20', ...referrer }), ...friends], tickets })
   const verifyFor = async (db: ReturnType<typeof wagerDb>, memberId: string, ticketId = uuid(1), config = REWARD_DEFAULTS) => {
@@ -949,6 +949,19 @@ describe('referrals: a friend\'s first verified wager pays the referrer $5', () 
       expect(cashFor(db)).toBe(0)
       expect(db.credits.get(uuid(301))).toMatchObject({ centsGranted: 0, daysGranted: 0 })
     }
+  })
+  it('no $5 when the friend has the referrer\'s Venmo username (one person, two signups) or the friend is paused or removed', async () => {
+    const same = setup([friend(1, { venmoHandle: '@SamGold' })], undefined, { venmoHandle: 'samgold' })
+    expect((await verifyFor(same, uuid(301))).withheld).toContainEqual({ what: 'referral', code: 'referrer_not_eligible', detail: 'the friend and the referrer have the same Venmo username' })
+    expect(cashFor(same)).toBe(0)
+    const differs = setup([friend(1, { venmoHandle: 'jamie' })], undefined, { venmoHandle: 'samgold' })
+    await verifyFor(differs, uuid(301))
+    expect(cashFor(differs)).toBe(500)
+    const out = setup([friend(1, { status: 'paused' })])
+    await submitSlip(slip({ member_id: uuid(301) }), deps(out))
+    const r = await verifyWager(slip({ member_id: uuid(301) }), deps(out))
+    expect(r.ok && r.withheld).toContainEqual({ what: 'referral', code: 'referrer_not_eligible', detail: 'the friend is paused' })
+    expect(cashFor(out)).toBe(0)
   })
   it('the settings change the amount, the cap, and can add days on top', async () => {
     const friends = [1, 2, 3].map((n) => friend(n))

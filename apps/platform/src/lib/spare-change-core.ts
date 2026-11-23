@@ -660,6 +660,8 @@ export type VerifyResult =
  * Safe to run again: the credit row remembers the wager and amount, and the reward row is unique per wager, so a run that stopped
  * half way finishes and a repeat adds nothing.
  */
+const venmoKey = (h: string) => h.trim().replace(/^@/, '').toLowerCase()
+
 async function qualifyReferral(friend: Member, wager: Wager, deps: { store: WagerStore; config: RewardConfig }, at: string): Promise<{ granted: Granted[]; withheld?: Withheld }> {
   const referrerId = friend.referredByMemberId
   if (!referrerId) return { granted: [], withheld: { what: 'referral', code: 'no_referrer', detail: 'nobody referred this member' } }
@@ -688,7 +690,10 @@ async function qualifyReferral(friend: Member, wager: Wager, deps: { store: Wage
   }
 
   const referrer = await store.memberById(referrerId)
-  const eligible = !!referrer && referrer.status !== 'paused' && referrer.status !== 'removed' && referrer.age >= config.rewardMinAge
+  // Same Venmo username on both sides = one person paying themselves (the $5 can only be paid to a Venmo username).
+  const sameVenmo = !!referrer?.venmoHandle && !!friend.venmoHandle && venmoKey(referrer.venmoHandle) === venmoKey(friend.venmoHandle)
+  const friendOut = friend.status === 'paused' || friend.status === 'removed'
+  const eligible = !!referrer && !sameVenmo && !friendOut && referrer.status !== 'paused' && referrer.status !== 'removed' && referrer.age >= config.rewardMinAge
   const counted = await store.creditedFriends(referrerId)
   const open = eligible && counted < config.referralMaxFriends
   const cents = open ? config.referralCentsPerFriend : 0
@@ -697,7 +702,13 @@ async function qualifyReferral(friend: Member, wager: Wager, deps: { store: Wage
   if (!won) return { granted: [], withheld: alreadyCounted }
   await store.logEvent({ memberId: referrerId, type: 'referral_qualified', ticketId: wager.ticketId, meta: { friend_id: friend.id, cents, days, wager_id: wager.id } })
   if (!eligible) {
-    const why = !referrer ? 'the referrer is no longer on the list' : referrer.status === 'paused' || referrer.status === 'removed' ? `the referrer is ${referrer.status}` : `referral rewards are ${config.rewardMinAge}+ and the referrer signed up as ${referrer.age}`
+    const why = !referrer
+      ? 'the referrer is no longer on the list'
+      : sameVenmo
+        ? 'the friend and the referrer have the same Venmo username'
+        : friendOut
+          ? `the friend is ${friend.status}`
+          : referrer.status === 'paused' || referrer.status === 'removed' ? `the referrer is ${referrer.status}` : `referral rewards are ${config.rewardMinAge}+ and the referrer signed up as ${referrer.age}`
     return { granted: [], withheld: { what: 'referral', code: 'referrer_not_eligible', detail: why } }
   }
   if (!open) return { granted: [], withheld: { what: 'referral', code: 'referrer_cap_reached', detail: `the referrer already has ${config.referralMaxFriends} friends counted` } }
