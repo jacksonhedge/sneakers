@@ -228,6 +228,20 @@ describe('checking an issue before it is stored', () => {
     // Paying out the stake as well (decimal odds without the "- 1") is the classic mistake: refused.
     expect(detailOf(issueJson({ tickets: [ticketJson({ winnings: 15.0, headline: 15 })] }))).toMatch(/do not match/)
   })
+  // A ProphetX quote prices the whole parlay, often below the legs multiplied ($14.00 here): $1.00 x (12.5 - 1) = $11.50.
+  const quotedJson = (over: Record<string, unknown> = {}) => ticketJson({ estimated: false, quoted: true, quote_decimal: 12.5, winnings: 11.5, headline: 11, est_winnings_multiplied: 14.0, ...over })
+  it('a quoted ticket is checked against buy-in x (quoted decimal - 1), not the legs', () => {
+    const r = parseIssue(issueJson({ tickets: [quotedJson()] }))
+    if (!r.ok) throw new Error(r.detail)
+    expect(r.issue.tickets[0]).toMatchObject({ buyInCents: 100, estPayoutCents: 1150, headlineCents: 1100, estimated: false })
+    expect(detailOf(issueJson({ tickets: [quotedJson({ winnings: 14.0, headline: 14 })] }))).toBe('tickets[0] (position 2): quoted winnings of 1400 cents do not match buy-in 100 cents x (quoted decimal 12.5 - 1) = 1150.00 cents (off by 250.00; allowed 1)')
+  })
+  it('a quoted ticket needs a quoted decimal above 1 and must not also say estimated', () => {
+    for (const quote_decimal of [undefined, 1, 0.5, NaN, '12.5', null]) {
+      expect(detailOf(issueJson({ tickets: [quotedJson({ quote_decimal })] })), String(quote_decimal)).toMatch(/^tickets\[0\]\.quote_decimal: .* must be a number greater than 1$/)
+    }
+    expect(detailOf(issueJson({ tickets: [quotedJson({ estimated: true })] }))).toBe('tickets[0]: a quoted ticket must have estimated: false')
+  })
   it('the real shape of a long ticket passes: 65 cents on fourteen legs', () => {
     const decimals = [2.2, 1.9091, 2.05, 2.75, 1.9091, 1.9091, 2.35, 1.8, 1.9091, 1.9091, 2.6, 2.1, 1.9091, 2.9]
     const winnings = Math.round(expectedPayoutCents(65, decimals)) / 100
@@ -1123,12 +1137,22 @@ describe('what a won wager paid', () => {
     expect(wonPayoutCents(100, [{ priceDecimal: 2, result: 'hit' }, { priceDecimal: 3, result: 'void' }])).toBe(100)
     expect(wonPayoutCents(null, [{ priceDecimal: 2, result: 'hit' }])).toBeNull()
   })
+  it('a quoted ticket with every leg hit pays at the quote; a void leg falls back to the legs', () => {
+    const quote = { buyInCents: 100, estPayoutCents: 1150 }
+    const allHit = [{ priceDecimal: 2, result: 'hit' as const }, { priceDecimal: 3, result: 'hit' as const }, { priceDecimal: 2.5, result: 'hit' as const }]
+    expect(wonPayoutCents(100, allHit, quote)).toBe(1150)
+    expect(wonPayoutCents(65, allHit, quote)).toBe(748)
+    expect(wonPayoutCents(100, [allHit[0], { priceDecimal: 3, result: 'void' }, allHit[2]], quote)).toBe(400)
+    expect(wonPayoutCents(100, allHit, null)).toBe(1400)
+  })
 })
 
 function settleDb() {
   const tickets = [
-    { id: uuid(1), position: 1, legs: [{ n: 1, priceDecimal: 2 }, { n: 2, priceDecimal: 3 }, { n: 3, priceDecimal: 2.5 }] },
-    { id: uuid(2), position: 2, legs: [{ n: 1, priceDecimal: 2 }, { n: 2, priceDecimal: 4 }] },
+    { id: uuid(1), position: 1, quote: null, legs: [{ n: 1, priceDecimal: 2 }, { n: 2, priceDecimal: 3 }, { n: 3, priceDecimal: 2.5 }] },
+    { id: uuid(2), position: 2, quote: null, legs: [{ n: 1, priceDecimal: 2 }, { n: 2, priceDecimal: 4 }] },
+    // Quoted by ProphetX at 6.0 against 2 x 4 = 8 multiplied.
+    { id: uuid(4), position: 4, quote: { buyInCents: 100, estPayoutCents: 500 }, legs: [{ n: 1, priceDecimal: 2 }, { n: 2, priceDecimal: 4 }] },
   ]
   const legResults = new Map<string, string>()
   const ticketResults = new Map<string, { result: string; settledAt: string | null }>()
@@ -1138,6 +1162,7 @@ function settleDb() {
     [uuid(13), { ticketId: uuid(1), stakeCents: null, result: 'pending', payoutCents: null }],
     [uuid(14), { ticketId: uuid(1), stakeCents: 100, result: 'pending', payoutCents: null }],
     [uuid(21), { ticketId: uuid(2), stakeCents: 100, result: 'pending', payoutCents: null }],
+    [uuid(41), { ticketId: uuid(4), stakeCents: 100, result: 'pending', payoutCents: null }],
   ])
   const store: SettleStore = {
     ticketsWithLegs: vi.fn<SettleStore['ticketsWithLegs']>(async (issueDate) => (issueDate === '2026-11-20' ? tickets : [])),
@@ -1196,6 +1221,11 @@ describe('writing graded results', () => {
     await settleIssue(settled({ issue_date: '2026-11-20', tickets: [{ position: 1, legs: [{ n: 1, result: 'hit' }, { n: 2, result: 'push' }, { n: 3, result: 'hit' }] }] }), { store: db.store, now })
     expect(db.legResults.get(`${uuid(1)}:2`)).toBe('void')
     expect(db.wagers.get(uuid(11))).toMatchObject({ result: 'won', payoutCents: 400 })
+  })
+  it('a won quoted ticket pays its wagers at the quote', async () => {
+    const db = settleDb()
+    await settleIssue(settled({ issue_date: '2026-11-20', tickets: [{ position: 4, legs: [{ n: 1, result: 'hit' }, { n: 2, result: 'hit' }] }] }), { store: db.store, now })
+    expect(db.wagers.get(uuid(41))).toMatchObject({ result: 'won', payoutCents: 500 })
   })
   it('a correction from won to lost clears the payout', async () => {
     const db = settleDb()

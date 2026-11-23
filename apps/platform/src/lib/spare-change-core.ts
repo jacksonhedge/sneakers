@@ -235,9 +235,21 @@ function parseTicket(raw: unknown, index: number, warnings: string[]): IssueTick
   const legsRaw = Array.isArray(t.legs) ? t.legs : bad(`${where}.legs: missing`)
   if (legsRaw.length < 1 || legsRaw.length > MAX_LEGS) bad(`${where}.legs: needs 1 to ${MAX_LEGS} legs, got ${legsRaw.length}`)
   const legs = (legsRaw as unknown[]).map((l, i) => parseLeg(l, i + 1, `${where}.legs[${i}]`))
-  const expected = expectedPayoutCents(buyInCents, legs.map((l) => l.priceDecimal))
-  if (Math.abs(estPayoutCents - expected) > PAYOUT_TOLERANCE_CENTS + 1e-6) {
-    bad(`${where} (position ${position}): estimated winnings of ${estPayoutCents} cents do not match buy-in ${buyInCents} cents x (product of the ${legs.length} leg decimals - 1) = ${expected.toFixed(2)} cents (off by ${(estPayoutCents - expected).toFixed(2)}; allowed ${PAYOUT_TOLERANCE_CENTS})`)
+  if (t.quoted === true) {
+    // A ProphetX quote prices the whole parlay, often below the legs multiplied, so the winnings are checked against the quote instead.
+    // It is stored as estimated: false, which is how settling knows the stored winnings are the site's own price.
+    if (t.estimated !== false) bad(`${where}: a quoted ticket must have estimated: false`)
+    const q = t.quote_decimal
+    if (typeof q !== 'number' || !Number.isFinite(q) || q <= 1 || q >= 1e8) bad(`${where}.quote_decimal: ${JSON.stringify(q)} must be a number greater than 1`)
+    const quoted = buyInCents * ((q as number) - 1)
+    if (Math.abs(estPayoutCents - quoted) > PAYOUT_TOLERANCE_CENTS + 1e-6) {
+      bad(`${where} (position ${position}): quoted winnings of ${estPayoutCents} cents do not match buy-in ${buyInCents} cents x (quoted decimal ${q} - 1) = ${quoted.toFixed(2)} cents (off by ${(estPayoutCents - quoted).toFixed(2)}; allowed ${PAYOUT_TOLERANCE_CENTS})`)
+    }
+  } else {
+    const expected = expectedPayoutCents(buyInCents, legs.map((l) => l.priceDecimal))
+    if (Math.abs(estPayoutCents - expected) > PAYOUT_TOLERANCE_CENTS + 1e-6) {
+      bad(`${where} (position ${position}): estimated winnings of ${estPayoutCents} cents do not match buy-in ${buyInCents} cents x (product of the ${legs.length} leg decimals - 1) = ${expected.toFixed(2)} cents (off by ${(estPayoutCents - expected).toFixed(2)}; allowed ${PAYOUT_TOLERANCE_CENTS})`)
+    }
   }
   return {
     position: position as number,
@@ -880,15 +892,22 @@ export function parseSettle(body: unknown): SettleParse {
  * What a won wager paid, in cents: the stake times the ticket's multiplier, where the multiplier is (product of the decimals of the legs
  * that hit) - 1, the same "winnings" the ticket's estimate uses. A void leg drops out, as it does on a real slip. null without a stake.
  * It is worked out from the stored leg prices, so it is an estimate of what the site paid, not a statement from the site.
+ * quote: a ticket stored with estimated: false (a ProphetX quote), whose winnings are the site's own price for the whole parlay. It holds
+ * only while every leg hit; a void leg reprices the slip, so that case falls back to the legs.
  */
-export function wonPayoutCents(stakeCents: number | null, legs: Array<{ priceDecimal: number; result: LegResult }>): number | null {
+export function wonPayoutCents(stakeCents: number | null, legs: Array<{ priceDecimal: number; result: LegResult }>, quote: TicketQuote | null = null): number | null {
   if (stakeCents === null) return null
+  if (quote && legs.every((l) => l.result === 'hit')) return Math.max(0, Math.round((stakeCents * quote.estPayoutCents) / quote.buyInCents))
   const multiplier = legs.filter((l) => l.result === 'hit').reduce((p, l) => p * l.priceDecimal, 1) - 1
   return Math.max(0, Math.round(stakeCents * multiplier))
 }
 
+/** The buy-in and winnings of a ticket stored with estimated: false; their ratio is the site's own multiplier. */
+export type TicketQuote = { buyInCents: number; estPayoutCents: number }
+
 export interface SettleStore {
-  ticketsWithLegs: (issueDate: string) => Promise<Array<{ id: string; position: number; legs: Array<{ n: number; priceDecimal: number }> }>>
+  /** quote is null for an estimated ticket. */
+  ticketsWithLegs: (issueDate: string) => Promise<Array<{ id: string; position: number; quote: TicketQuote | null; legs: Array<{ n: number; priceDecimal: number }> }>>
   setLegResults: (ticketId: string, legs: Array<{ n: number; result: LegResult }>) => Promise<void>
   /** settledAt is null while the ticket is pending. */
   setTicketResult: (ticketId: string, result: TicketResult, settledAt: string | null) => Promise<void>
@@ -928,7 +947,7 @@ export async function settleIssue(settle: Extract<SettleParse, { ok: true }>, de
     // Wagers that get the same payout are written together (in practice: one group with no payout, and one per stake).
     const groups = new Map<number | null, string[]>()
     for (const w of wagers) {
-      const payout = t.result === 'won' ? wonPayoutCents(w.stakeCents, legs) : null
+      const payout = t.result === 'won' ? wonPayoutCents(w.stakeCents, legs, ticket.quote) : null
       groups.set(payout, [...(groups.get(payout) ?? []), w.id])
     }
     let withPayout = 0

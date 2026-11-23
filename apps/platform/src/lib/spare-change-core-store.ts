@@ -344,14 +344,20 @@ export const payoutStore: PayoutStore = {
 // ------------------------------------------------------------------------------------------------ settle
 export const settleStore: SettleStore = {
   async ticketsWithLegs(issueDate) {
-    const { data: tickets, error } = await db().from('sc_tickets').select('id, position').eq('issue_date', issueDate)
+    const { data: tickets, error } = await db().from('sc_tickets').select('id, position, buy_in_cents, est_payout_cents, estimated').eq('issue_date', issueDate)
     if (error) fail('tickets', error)
-    const rows = (tickets ?? []) as Array<{ id: string; position: number }>
+    const rows = (tickets ?? []) as Array<{ id: string; position: number; buy_in_cents: number; est_payout_cents: number | string; estimated: boolean }>
     if (rows.length === 0) return []
     const { data: legs, error: legsError } = await db().from('sc_legs').select('ticket_id, n, price_decimal').in('ticket_id', rows.map((t) => t.id))
     if (legsError) fail('legs', legsError)
     const all = (legs ?? []) as Array<{ ticket_id: string; n: number; price_decimal: number | string }>
-    return rows.map((t) => ({ id: t.id, position: t.position, legs: all.filter((l) => l.ticket_id === t.id).map((l) => ({ n: l.n, priceDecimal: Number(l.price_decimal) })) }))
+    return rows.map((t) => ({
+      id: t.id,
+      position: t.position,
+      // est_payout_cents is a bigint column, which can come back as a string.
+      quote: t.estimated === false ? { buyInCents: t.buy_in_cents, estPayoutCents: Number(t.est_payout_cents) } : null,
+      legs: all.filter((l) => l.ticket_id === t.id).map((l) => ({ n: l.n, priceDecimal: Number(l.price_decimal) })),
+    }))
   },
   // One statement per result (at most five), not one per leg.
   async setLegResults(ticketId, legs) {
