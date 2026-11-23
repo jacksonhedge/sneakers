@@ -1,23 +1,25 @@
 import { PARTNERS, partnerLinkOk, type Partner } from '@/lib/spare-change-partners'
 import { NAVY } from '../visuals'
 
-// The partner logos around the page. Wide screens: sticker tiles down the right edge, each bobbing a little on its own
+// The partner logos around the page. Wide screens (1280px+): sticker tiles down the right edge, each bobbing a little on its own
 // beat, with a few large faint ones behind everything. Narrow screens have no room at the sides, so the faint ones stay and the tiles
 // come back as one small row (PartnerRow) inside the page. Every tile is a link (see spare-change-partners.ts). The bobbing stops
 // for people who ask for less motion (.sc-bob in globals.css).
 
-type Spot = { side: 'left' | 'right'; top: string; inset: string; size: string; tilt: number; dur: number; delay: number }
-// One spot per partner, in PARTNERS order, all down the right edge in two staggered lanes: the left edge holds the real-story cards
-// (story-float.tsx).
+type Spot = { lane: 'outer' | 'inner'; size: string; tilt: number; dur: number; delay: number }
+// One spot per partner, in PARTNERS order, down the right edge in two staggered lanes (the left edge holds the real posts,
+// story-float.tsx). Tile n sits at 114px + n x --tile-gap, so the lanes start level with the title and end level with the left
+// column at every width (the gap grows with the posts' scale). The outer lane matches the posts' 2vw edge; the inner one is 80px in.
 const SPOTS: readonly Spot[] = [
-  { side: 'right', top: '6%', inset: '6vw', size: '6rem', tilt: 7, dur: 4.8, delay: 0.6 },
-  { side: 'right', top: '18%', inset: '12vw', size: '5.25rem', tilt: -8, dur: 4.2, delay: 0 },
-  { side: 'right', top: '31%', inset: '5vw', size: '5.5rem', tilt: -6, dur: 4.4, delay: 0.3 },
-  { side: 'right', top: '44%', inset: '11vw', size: '5.25rem', tilt: 6, dur: 5.2, delay: 1.1 },
-  { side: 'right', top: '57%', inset: '5.5vw', size: '6rem', tilt: 5, dur: 5.4, delay: 1.4 },
-  { side: 'right', top: '70%', inset: '11.5vw', size: '5.25rem', tilt: -4, dur: 4.9, delay: 0.9 },
-  { side: 'right', top: '83%', inset: '6vw', size: '5.5rem', tilt: 8, dur: 4.6, delay: 0.5 },
+  { lane: 'outer', size: '6rem', tilt: 7, dur: 4.8, delay: 0.6 },
+  { lane: 'inner', size: '5.25rem', tilt: -8, dur: 4.2, delay: 0 },
+  { lane: 'outer', size: '5.5rem', tilt: -6, dur: 4.4, delay: 0.3 },
+  { lane: 'inner', size: '5.25rem', tilt: 6, dur: 5.2, delay: 1.1 },
+  { lane: 'outer', size: '6rem', tilt: 5, dur: 5.4, delay: 1.4 },
+  { lane: 'inner', size: '5.25rem', tilt: -4, dur: 4.9, delay: 0.9 },
+  { lane: 'outer', size: '5.5rem', tilt: 8, dur: 4.6, delay: 0.5 },
 ]
+const LANE = { outer: '2vw', inner: 'calc(2vw + 80px)' } as const
 // The big faint ones in the background: which partner, and where.
 const GHOSTS: ReadonlyArray<{ i: number; top: string; left: string; size: string; tilt: number; dur: number; delay: number }> = [
   { i: 0, top: '4%', left: '24%', size: '15rem', tilt: -12, dur: 7, delay: 0.2 },
@@ -69,11 +71,12 @@ export function PartnerFloat() {
           )
         })}
       </div>
-      <ul className="hidden lg:block" aria-label="Sites we cover">
+      {/* Same breakpoint as the posts on the left (xl): below it the tiles become PartnerRow. */}
+      <ul className="hidden [--tile-gap:159px] min-[1440px]:[--tile-gap:176px] min-[1536px]:[--tile-gap:186px] min-[1800px]:[--tile-gap:208px] xl:block" aria-label="Sites we cover">
         {PARTNERS.map((p, i) => {
           const s = SPOTS[i % SPOTS.length]
           return (
-            <li key={p.key} className="sc-bob absolute" style={{ top: s.top, [s.side]: s.inset, ...bob(s.dur, s.delay) }}>
+            <li key={p.key} className="sc-bob absolute" style={{ top: `calc(114px + ${i} * var(--tile-gap))`, right: LANE[s.lane], ...bob(s.dur, s.delay) }}>
               <Tile p={p} size={s.size} tilt={s.tilt} />
             </li>
           )
@@ -83,13 +86,14 @@ export function PartnerFloat() {
   )
 }
 
-/** The same tiles as one small bobbing row, for screens with no room at the sides. */
+/** The same tiles as one small bobbing row, for screens with no room at the sides (under 1280px). */
 export function PartnerRow() {
   return (
-    <ul className="flex max-w-md flex-wrap items-center justify-center gap-4 lg:hidden" aria-label="Sites we cover">
+    // One row: 52px tiles 12px apart from 640px (436px wide), 40px tiles 8px apart below it (328px), so nothing wraps.
+    <ul className="flex max-w-md flex-wrap items-center justify-center gap-2 [--row-tile:2.5rem] sm:gap-3 sm:[--row-tile:3.25rem] xl:hidden" aria-label="Sites we cover">
       {PARTNERS.map((p, i) => (
         <li key={p.key} className="sc-bob" style={bob(4 + (i % 3) * 0.5, i * 0.25)}>
-          <Tile p={p} size="3.25rem" tilt={i % 2 ? 5 : -5} />
+          <Tile p={p} size="var(--row-tile)" tilt={i % 2 ? 5 : -5} />
         </li>
       ))}
     </ul>

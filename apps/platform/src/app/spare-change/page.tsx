@@ -48,7 +48,7 @@ export default async function SpareChangePage({ searchParams }: { searchParams: 
       <p className="max-w-md text-xl font-semibold" style={{ fontFamily: sauce }}>
         {NEWSLETTER_PITCH}
       </p>
-      <p className="rounded-full px-6 py-2 text-lg font-bold" style={{ background: CREAM, color: NAVY, border: `0.18rem solid ${NAVY}`, boxShadow: `0.25rem 0.3rem 0 ${NAVY}`, transform: 'rotate(1.5deg)', fontFamily: sauce }}>
+      <p className="rounded-full px-4 py-2 text-base font-bold min-[400px]:px-6 min-[400px]:text-lg" style={{ background: CREAM, color: NAVY, border: `0.18rem solid ${NAVY}`, boxShadow: `0.25rem 0.3rem 0 ${NAVY}`, transform: 'rotate(1.5deg)', fontFamily: sauce }}>
         {NEWSLETTER_REWARDS}
       </p>
       <PartnerRow />

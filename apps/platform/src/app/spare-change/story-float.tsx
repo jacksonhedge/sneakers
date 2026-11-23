@@ -34,12 +34,12 @@ const Missing = () => <p className="m-0 p-4 text-sm" style={{ color: NAVY, fontF
 
 function Framed({ p, tilt = 0 }: { p: Post; tilt?: number }) {
   return (
-    <figure className="pointer-events-auto m-0 flex flex-col gap-2" style={{ transform: `rotate(${tilt}deg)` }}>
+    <figure className="pointer-events-auto m-0 flex flex-col gap-4" style={{ transform: `rotate(${tilt}deg)` }}>
       <div data-theme="light" className="overflow-hidden" style={{ border: `0.2rem solid ${NAVY}`, borderRadius: '1.1rem', boxShadow: `0.35rem 0.4rem 0 ${NAVY}`, background: '#FFFFFF', ['--tweet-container-margin' as string]: '0' }}>
         <Tweet id={p.id} components={{ TweetNotFound: Missing }} />
       </div>
       {p.caption ? (
-        <figcaption className="rounded-full px-3 py-1 text-center text-sm font-bold" style={{ background: CREAM, color: NAVY, border: `0.15rem solid ${NAVY}`, fontFamily: sauce }}>
+        <figcaption className="rounded-full px-3 py-1 text-center text-[13px] font-bold text-balance min-[400px]:text-sm" style={{ background: CREAM, color: NAVY, border: `0.15rem solid ${NAVY}`, fontFamily: sauce }}>
           {p.caption}
         </figcaption>
       ) : null}
@@ -51,17 +51,21 @@ function Framed({ p, tilt = 0 }: { p: Post; tilt?: number }) {
 export function StoryFloat() {
   return (
     <div className="pointer-events-none absolute inset-0 z-0 hidden xl:block">
-      {/* One column, the posts close together. Drawn at a readable width, then scaled to fit beside the page (more room from 1536px up). */}
-      <ul aria-label="Real long shots on X" className="absolute flex w-[30rem] flex-col gap-10 [zoom:0.58] 2xl:[zoom:0.74]" style={{ top: '5%', left: '2.5vw' }}>
-        {POSTS.map((p, i) => {
-          const s = SPOTS[i % SPOTS.length]
-          return (
-            <li key={p.id} className="sc-bob" style={bob(s.dur, s.delay)}>
-              <Framed p={p} tilt={s.tilt} />
-            </li>
-          )
-        })}
-      </ul>
+      {/* One column, the posts close together, top level with the title (114px). Drawn at a readable width, then scaled to the room
+          beside the page: 0.64 from 1280px, 0.70 from 1440, 0.74 from 1536, 0.82 from 1800. The logo lanes on the right follow. */}
+      {/* Placed by an unscaled wrapper: zoom would scale top and left too. */}
+      <div className="absolute" style={{ top: '114px', left: '2vw' }}>
+        <ul aria-label="Real long shots on X" className="flex w-[30rem] flex-col gap-10 [zoom:0.64] min-[1440px]:[zoom:0.70] min-[1536px]:[zoom:0.74] min-[1800px]:[zoom:0.82]">
+          {POSTS.map((p, i) => {
+            const s = SPOTS[i % SPOTS.length]
+            return (
+              <li key={p.id} className="sc-bob" style={bob(s.dur, s.delay)}>
+                <Framed p={p} tilt={s.tilt} />
+              </li>
+            )
+          })}
+        </ul>
+      </div>
     </div>
   )
 }
@@ -113,9 +117,10 @@ function Card({ s, tilt = 0 }: { s: Story; tilt?: number }) {
         <span className="text-xs font-semibold opacity-70">{s.date}</span>
       </span>
       <span className="mt-1.5 block text-sm font-semibold leading-snug">{s.text}</span>
-      {/* A long amount steps down a size so it stays inside the card. */}
-      <span className={`mt-2 block whitespace-nowrap leading-none tabular-nums ${(s.buyIn + s.payout).length > 13 ? 'text-[1.2rem]' : 'text-[1.45rem]'}`} style={{ fontFamily: peace }}>
-        {s.buyIn} → {s.payout}
+      {/* A long amount wraps at the arrow, keeping "→ payout" together, instead of shrinking. */}
+      <span className="mt-2 flex flex-wrap items-baseline gap-x-1.5 text-[1.35rem] leading-tight tabular-nums" style={{ fontFamily: peace }}>
+        <span className="whitespace-nowrap">{s.buyIn}</span>
+        <span className="whitespace-nowrap">→ {s.payout}</span>
       </span>
       <span className="mt-2 flex items-center justify-between gap-2 text-xs font-bold">
         <span className="whitespace-nowrap rounded-full px-2 py-0.5" style={{ background: GREEN, color: CREAM }}>
@@ -130,7 +135,8 @@ function Card({ s, tilt = 0 }: { s: Story; tilt?: number }) {
 /** Below the form, every screen: the sourced cards, two across where there's room. */
 export function MoreStories() {
   return (
-    <section aria-labelledby="more-stories-heading" className="flex w-full max-w-xl flex-col items-center gap-4">
+    // The form's width (448px), so the grid lines up with the form, the posts and the footer.
+    <section aria-labelledby="more-stories-heading" className="flex w-full max-w-md flex-col items-center gap-4">
       <h2 id="more-stories-heading" className="text-lg font-bold" style={{ fontFamily: sauce }}>
         More real long shots
       </h2>
