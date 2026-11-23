@@ -54,6 +54,18 @@ export function NameField({ idPrefix, name, onName, error }: { idPrefix: string;
   )
 }
 
+/** Optional: the name of whoever told them about the newsletter. Shown with its label, because it is the one box people may skip. */
+export function ReferrerNameField({ idPrefix, value, onValue }: { idPrefix: string; value: string; onValue: (v: string) => void }) {
+  return (
+    <>
+      <label htmlFor={`${idPrefix}-referrer`} className="-mb-1 self-start px-2 text-left text-base font-bold" style={{ fontFamily: sauce }}>
+        Who referred you? <span className="font-normal">(optional)</span>
+      </label>
+      <input id={`${idPrefix}-referrer`} name="referrerName" type="text" autoComplete="off" maxLength={NAME_MAX_LENGTH} value={value} onChange={(e) => onValue(e.target.value)} placeholder="Their name" className={fieldClass} style={fieldStyle} />
+    </>
+  )
+}
+
 /** The email box, the same on both pages apart from its placeholder. */
 export function EmailField({ idPrefix, email, onEmail, placeholder, error }: { idPrefix: string; email: string; onEmail: (v: string) => void; placeholder: string; error?: string }) {
   return (

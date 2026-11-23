@@ -20,6 +20,7 @@ const ITEMS: Array<{ href: string; label: string; pending?: boolean }> = [
   { href: '/otoole', label: "O'Toole" },
   { href: '/students', label: 'Students', pending: true },
   { href: '/enterprise', label: 'Enterprise', pending: true },
+  { href: '/picks-api', label: 'Picks API' },
   { href: '/system', label: 'System' },
   // /admin/signup-config nav item removed — route doesn't exist (404). Re-add
   // when the page is built.

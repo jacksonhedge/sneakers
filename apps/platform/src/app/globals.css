@@ -137,3 +137,14 @@ body {
   .hero-glow,
   .hero-fog { animation: none; }
 }
+
+/* Spare Change Millionaire: partner logos bob gently, each on its own beat (--sc-dur, --sc-delay). `translate` (not transform) so a
+   tile keeps its own tilt. Still for people who ask for less motion. */
+@keyframes sc-bob {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -0.7rem; }
+}
+.sc-bob { animation: sc-bob var(--sc-dur, 4.5s) ease-in-out var(--sc-delay, 0s) infinite; will-change: translate; }
+@media (prefers-reduced-motion: reduce) {
+  .sc-bob { animation: none; }
+}

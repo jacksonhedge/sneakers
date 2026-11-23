@@ -4,6 +4,8 @@ import { claimCap, claimOrigin, type ClaimDeps, type ClaimStore } from './spare-
 import { sendWelcomeOnce, type WelcomeStore } from './spare-change-email'
 import { WELCOME_REWARD_CENTS } from './spare-change-core'
 import { resolveReferrerMember, upsertNewsletterRow, type SpareChangeDeps } from './spare-change-waitlist'
+import { after } from 'next/server'
+import { notifyNewSubscriber } from './spare-change-slack'
 import { getServerClient } from './supabase-server'
 
 // The Supabase side of the Spare Change welcome email and the claim page: the small reads and writes that spare-change-email.ts and
@@ -36,6 +38,8 @@ export function spareChangeDeps(requestOrigin: string | null): SpareChangeDeps {
     addToSneakers: addToSneakersWaitlist,
     upsertNewsletter: upsertNewsletterRow,
     resolveReferrer: resolveReferrerMember,
+    // After the signup has answered, so Slack never slows it down.
+    onNewSubscriber: (sub) => after(() => notifyNewSubscriber(sub)),
     welcome: (email) =>
       sendWelcomeOnce(email, {
         store: welcomeStore,

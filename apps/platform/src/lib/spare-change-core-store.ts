@@ -253,23 +253,30 @@ export const wagerStore: WagerStore = {
     return { rewardId: (data as { id: string }).id }
   },
   async referralCredit(friendId) {
-    const { data, error } = await db().from('sc_referral_credits').select('referrer_id, qualified_at, days_granted').eq('friend_id', friendId).maybeSingle()
+    const { data, error } = await db().from('sc_referral_credits').select('referrer_id, qualified_at, days_granted, cents_granted, wager_id').eq('friend_id', friendId).maybeSingle()
     if (error) fail('credit', error)
-    return data ? { referrerId: data.referrer_id, qualifiedAt: data.qualified_at, daysGranted: data.days_granted } : null
+    return data ? { referrerId: data.referrer_id, qualifiedAt: data.qualified_at, daysGranted: data.days_granted, centsGranted: data.cents_granted, wagerId: data.wager_id } : null
   },
   async creditedFriends(referrerId) {
-    const { count, error } = await db().from('sc_referral_credits').select('id', { count: 'exact', head: true }).eq('referrer_id', referrerId).not('qualified_at', 'is', null).gt('days_granted', 0)
+    const { count, error } = await db().from('sc_referral_credits').select('id', { count: 'exact', head: true }).eq('referrer_id', referrerId).not('qualified_at', 'is', null).or('cents_granted.gt.0,days_granted.gt.0')
     if (error || count === null) fail('credit count', error)
     return count as number
   },
   async qualifyReferral(i) {
-    const { error: insertError } = await db().from('sc_referral_credits').insert({ referrer_id: i.referrerId, friend_id: i.friendId, qualified_at: i.nowIso, days_granted: i.daysGranted })
+    const { error: insertError } = await db().from('sc_referral_credits').insert({ referrer_id: i.referrerId, friend_id: i.friendId, wager_id: i.wagerId, qualified_at: i.nowIso, days_granted: i.daysGranted, cents_granted: i.centsGranted })
     if (!insertError) return true
     if (insertError.code !== UNIQUE) fail('credit insert', insertError)
     // The friend already has a row (unique friend_id): fill it in only if it has not qualified yet.
-    const { data, error } = await db().from('sc_referral_credits').update({ qualified_at: i.nowIso, days_granted: i.daysGranted }).eq('friend_id', i.friendId).is('qualified_at', null).select('id')
+    const { data, error } = await db().from('sc_referral_credits').update({ wager_id: i.wagerId, qualified_at: i.nowIso, days_granted: i.daysGranted, cents_granted: i.centsGranted }).eq('friend_id', i.friendId).is('qualified_at', null).select('id')
     if (error) fail('credit update', error)
     return (data?.length ?? 0) === 1
+  },
+  async insertReferralReward(i) {
+    // issue_date stays null: two friends qualifying on the same day must both pay (the (member, kind, date) unique key ignores nulls).
+    const { data, error } = await db().from('sc_rewards').insert({ member_id: i.referrerId, kind: 'referral', amount_cents: i.amountCents, wager_id: i.wagerId, note: i.note, earned_at: i.nowIso }).select('id').single()
+    if (error?.code === UNIQUE) return 'duplicate'
+    if (error || !data) fail('referral reward insert', error)
+    return { rewardId: (data as { id: string }).id }
   },
   async referralDaysGranted(referrerId) {
     const { data, error } = await db().from('sc_referral_credits').select('days_granted').eq('referrer_id', referrerId).not('qualified_at', 'is', null)

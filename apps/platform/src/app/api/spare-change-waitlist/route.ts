@@ -16,7 +16,7 @@ function allowed(ip: string): boolean {
 
 /**
  * Join the Spare Change Millionaire newsletter list and the Sneakers waitlist with one form.
- * Body: `name`, `email`, `state`, `birthday` (YYYY-MM-DD) and an optional `ref` code. The age is worked out from the birthday, in US Eastern time.
+ * Body: `name`, `email`, `state`, `birthday` (YYYY-MM-DD) an optional `ref` code and an optional `referrerName` (who told them, as typed). The age is worked out from the birthday, in US Eastern time.
  * 400 errors: `invalid_email`, `invalid_birthday` (not a real date, or an age outside 13 to 120), `invalid_name`, `invalid_state`.
  * Under 18 the person joins the Sneakers waitlist only: `newsletter` comes back false with `reason: "under_18"`, and no email is sent.
  * An adult gets the welcome email with their claim link, at most once per 24 hours. `welcome` is "sent" when one went now or within the

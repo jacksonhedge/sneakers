@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { newsletterReferralLink, newsletterShareText, parseRefParam, rankPosition, referralLink, referralShareText } from './waitlist-referral'
+import { emailShareHref, smsShareHref, newsletterReferralLink, newsletterShareText, parseRefParam, rankPosition, referralLink, referralShareText } from './waitlist-referral'
 
 describe('the waitlist referral link', () => {
   it('is the launching-soon page with the person\'s code', () => {
@@ -46,5 +46,17 @@ describe("a newsletter member's link", () => {
     expect(text).toContain('Spare Change Millionaire')
     expect(text.endsWith('https://sneakersterminal.com/spare-change?ref=K7M3QX')).toBe(true)
     expect(text).not.toMatch(/\b(bet|sportsbook|winnings|cash)\b/i)
+  })
+})
+
+describe('text and email share links', () => {
+  const text = newsletterShareText('https://sneakersterminal.com/spare-change?ref=K7M3QX')
+  it('open the text app and the email app with the message filled in', () => {
+    expect(smsShareHref(text).startsWith('sms:?&body=')).toBe(true)
+    expect(decodeURIComponent(smsShareHref(text).slice('sms:?&body='.length))).toBe(text)
+    const mail = new URL(emailShareHref('Spare Change Millionaire', text))
+    expect(mail.protocol).toBe('mailto:')
+    expect(mail.searchParams.get('subject')).toBe('Spare Change Millionaire')
+    expect(mail.searchParams.get('body')).toBe(text)
   })
 })

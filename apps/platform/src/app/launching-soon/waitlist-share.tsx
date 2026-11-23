@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
-import { REFERRAL_CAP_NOTE, friendsJoinedText } from '@/lib/spare-change'
-import { newsletterReferralLink, newsletterShareText, referralLink, referralShareText } from '@/lib/waitlist-referral'
+import { NEWSLETTER_NAME, REFERRAL_CAP_NOTE, REFERRAL_SHARE_LINE, friendsJoinedText } from '@/lib/spare-change'
+import { emailShareHref, newsletterReferralLink, newsletterShareText, referralLink, referralShareText, smsShareHref } from '@/lib/waitlist-referral'
 import { CREAM, NAVY } from '../visuals'
 
 export interface Joined {
@@ -39,12 +39,22 @@ export function ShareBlock({ joined, newsletter = false }: { joined: Joined | nu
   return (
     <>
       <p className="text-lg font-bold" style={{ fontFamily: sauce }}>
-        Friends who join with your link move you up the list.
+        {newsletter ? REFERRAL_SHARE_LINE : 'Friends who join with your link move you up the list.'}
       </p>
       <input readOnly aria-label="Your link" value={link} onFocus={(e) => e.currentTarget.select()} className="min-h-[3.25rem] w-full rounded-full px-5 text-base" style={{ background: CREAM, color: NAVY, border: `0.18rem solid ${NAVY}`, fontFamily: sauce }} />
       <button type="button" onClick={share} className="min-h-[3.25rem] rounded-full px-8 text-lg font-bold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white" style={{ background: CREAM, color: NAVY, border: `0.18rem solid ${NAVY}`, boxShadow: `0.25rem 0.3rem 0 ${NAVY}`, fontFamily: sauce }}>
         Share your link
       </button>
+      {newsletter ? (
+        <div className="flex w-full gap-3">
+          <a href={smsShareHref(newsletterShareText(link))} className="flex min-h-[3.25rem] flex-1 items-center justify-center rounded-full px-4 text-lg font-bold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white" style={{ background: CREAM, color: NAVY, border: `0.18rem solid ${NAVY}`, boxShadow: `0.25rem 0.3rem 0 ${NAVY}`, fontFamily: sauce }}>
+            Text a friend
+          </a>
+          <a href={emailShareHref(NEWSLETTER_NAME, newsletterShareText(link))} className="flex min-h-[3.25rem] flex-1 items-center justify-center rounded-full px-4 text-lg font-bold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white" style={{ background: CREAM, color: NAVY, border: `0.18rem solid ${NAVY}`, boxShadow: `0.25rem 0.3rem 0 ${NAVY}`, fontFamily: sauce }}>
+            Email a friend
+          </a>
+        </div>
+      ) : null}
       {note ? <p style={{ fontFamily: sauce }}>{note}</p> : null}
       <p className="text-base font-semibold" style={{ fontFamily: sauce }}>
         {joined.position !== null ? `You are #${joined.position} in line. ` : ''}

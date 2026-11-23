@@ -10,6 +10,12 @@ export const newsletterReferralLink = (origin: string, code: string): string => 
 
 export const newsletterShareText = (link: string): string => `I get Spare Change Millionaire, a daily email of long-shot parlays. A small buy-in, a big payout if it hits. Join with my link: ${link}`
 
+/** A link that opens the phone's text app with the message filled in and nobody chosen. */
+export const smsShareHref = (text: string): string => `sms:?&body=${encodeURIComponent(text)}`
+
+/** A link that opens the person's email app with the subject and message filled in and nobody chosen. */
+export const emailShareHref = (subject: string, text: string): string => `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(text)}`
+
 export const referralShareText = (link: string): string => `I'm on the waitlist for Sneakers, the fun way to split payments with friends. Join with my link: ${link}`
 
 /** The code in `?ref=`, upper-cased, or null when it is not exactly a code. */

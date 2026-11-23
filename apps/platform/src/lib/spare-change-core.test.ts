@@ -135,8 +135,8 @@ describe('settings from the environment', () => {
     for (const raw of [undefined, '', 'abc', '17', '121', '21.5', '-21', '1e2']) expect(intSetting(raw, 21, 18, 120), String(raw)).toBe(21)
   })
   it('the reward settings default to 21, 5 days and 5 friends', () => {
-    expect(rewardConfig({})).toEqual({ rewardMinAge: 21, referralDaysPerFriend: 5, referralMaxFriends: 5 })
-    expect(rewardConfig({ SPARE_CHANGE_REWARD_MIN_AGE: '18', SPARE_CHANGE_REFERRAL_DAYS_PER_FRIEND: '3', SPARE_CHANGE_REFERRAL_MAX_FRIENDS: '2' })).toEqual({ rewardMinAge: 18, referralDaysPerFriend: 3, referralMaxFriends: 2 })
+    expect(rewardConfig({})).toEqual({ rewardMinAge: 21, referralCentsPerFriend: 500, referralDaysPerFriend: 0, referralMaxFriends: 5 })
+    expect(rewardConfig({ SPARE_CHANGE_REWARD_MIN_AGE: '18', SPARE_CHANGE_REFERRAL_DAYS_PER_FRIEND: '3', SPARE_CHANGE_REFERRAL_MAX_FRIENDS: '2' })).toEqual({ rewardMinAge: 18, referralCentsPerFriend: 500, referralDaysPerFriend: 3, referralMaxFriends: 2 })
     expect(rewardConfig({ SPARE_CHANGE_REWARD_MIN_AGE: '12' }).rewardMinAge).toBe(21)
   })
 })
@@ -603,7 +603,8 @@ function wagerDb(seed: { members?: Member[]; tickets?: TicketRef[] } = {}) {
   const tickets = new Map((seed.tickets ?? [ticket({ minAge: 18, site: 'Kalshi' })]).map((t) => [t.id, t]))
   const wagers = new Map<string, Wager & { slipRef?: string; slipBetId?: string | null; stakeCents?: number | null; verifiedBy?: string; rejectedReason?: string | null }>()
   const rewards: Array<{ id: string; memberId: string; issueDate: string; amountCents: number; wagerId: string }> = []
-  const credits = new Map<string, { referrerId: string; qualifiedAt: string | null; daysGranted: number }>()
+  const credits = new Map<string, { referrerId: string; qualifiedAt: string | null; daysGranted: number; centsGranted: number; wagerId: string | null }>()
+  const referralRewards: Array<{ id: string; memberId: string; wagerId: string; amountCents: number }> = []
   const events: MemberEvent[] = []
   let next = 500
   const store: WagerStore = {
@@ -646,11 +647,17 @@ function wagerDb(seed: { members?: Member[]; tickets?: TicketRef[] } = {}) {
       return { rewardId: id }
     },
     referralCredit: async (friendId) => credits.get(friendId) ?? null,
-    creditedFriends: async (referrerId) => [...credits.values()].filter((c) => c.referrerId === referrerId && c.qualifiedAt && c.daysGranted > 0).length,
+    creditedFriends: async (referrerId) => [...credits.values()].filter((c) => c.referrerId === referrerId && c.qualifiedAt && (c.centsGranted > 0 || c.daysGranted > 0)).length,
     qualifyReferral: async (i) => {
       if (credits.get(i.friendId)?.qualifiedAt) return false
-      credits.set(i.friendId, { referrerId: i.referrerId, qualifiedAt: i.nowIso, daysGranted: i.daysGranted })
+      credits.set(i.friendId, { referrerId: i.referrerId, qualifiedAt: i.nowIso, daysGranted: i.daysGranted, centsGranted: i.centsGranted, wagerId: i.wagerId })
       return true
+    },
+    insertReferralReward: async (i) => {
+      if (referralRewards.some((r) => r.wagerId === i.wagerId)) return 'duplicate'
+      const id = uuid(next++)
+      referralRewards.push({ id, memberId: i.referrerId, wagerId: i.wagerId, amountCents: i.amountCents })
+      return { rewardId: id }
     },
     referralDaysGranted: async (referrerId) => [...credits.values()].filter((c) => c.referrerId === referrerId && c.qualifiedAt).reduce((sum, c) => sum + c.daysGranted, 0),
     raiseExtraRewardDays: async (referrerId, days) => {
@@ -659,7 +666,7 @@ function wagerDb(seed: { members?: Member[]; tickets?: TicketRef[] } = {}) {
     },
     logEvent: async (e) => void events.push(e),
   }
-  return { store, members, emails, tickets, wagers, rewards, credits, events }
+  return { store, members, emails, tickets, wagers, rewards, referralRewards, credits, events }
 }
 const BY = 'admin@example.com'
 const deps = (db: ReturnType<typeof wagerDb>, config = REWARD_DEFAULTS) => ({ store: db.store, config, by: BY, now })
@@ -860,89 +867,102 @@ describe('verifying a slip', () => {
   })
 })
 
-describe('referrals: a friend\'s first verified wager', () => {
+describe('referrals: a friend\'s first verified wager pays the referrer $5', () => {
   const REFERRER = uuid(200)
   const friend = (n: number, over: Partial<Member> = {}) => member({ id: uuid(300 + n), referredByMemberId: REFERRER, ...over })
-  const setup = (friends: Member[], tickets: TicketRef[] = [ticket({ minAge: 18 })]) => wagerDb({ members: [member({ id: REFERRER, startedOn: '2026-11-20' }), ...friends], tickets })
+  const setup = (friends: Member[], tickets: TicketRef[] = [ticket({ minAge: 18 })], referrer: Partial<Member> = {}) =>
+    wagerDb({ members: [member({ id: REFERRER, startedOn: '2026-11-20', ...referrer }), ...friends], tickets })
   const verifyFor = async (db: ReturnType<typeof wagerDb>, memberId: string, ticketId = uuid(1), config = REWARD_DEFAULTS) => {
     await submitSlip(slip({ member_id: memberId, ticket_id: ticketId }), deps(db, config))
     const result = await verifyWager(slip({ member_id: memberId, ticket_id: ticketId }), deps(db, config))
     if (!result.ok) throw new Error(result.error)
     return result
   }
+  const cashFor = (db: ReturnType<typeof wagerDb>) => db.referralRewards.filter((r) => r.memberId === REFERRER).reduce((s, r) => s + r.amountCents, 0)
 
-  it('qualifies the friend and adds 5 days to the referrer', async () => {
+  it('qualifies the friend and puts $5 in the referrer\'s ledger, tied to the friend\'s wager; no extra days by default', async () => {
     const db = setup([friend(1)])
     const result = await verifyFor(db, uuid(301))
     expect(result.granted).toEqual([
       { kind: 'daily', reward_id: expect.any(String), member_id: uuid(301), issue_date: '2026-11-20', amount_cents: 100 },
-      { kind: 'referral_days', referrer_id: REFERRER, friend_id: uuid(301), days: 5, referrer_extra_reward_days: 5 },
+      { kind: 'referral_cash', reward_id: expect.any(String), referrer_id: REFERRER, friend_id: uuid(301), amount_cents: 500 },
     ])
-    expect(db.credits.get(uuid(301))).toEqual({ referrerId: REFERRER, qualifiedAt: NOW.toISOString(), daysGranted: 5 })
-    expect(db.members.get(REFERRER)?.extraRewardDays).toBe(5)
-    expect(db.events.find((e) => e.type === 'referral_qualified')).toMatchObject({ memberId: REFERRER, meta: { friend_id: uuid(301), days: 5 } })
+    expect(db.referralRewards).toEqual([{ id: expect.any(String), memberId: REFERRER, wagerId: result.wager_id, amountCents: 500 }])
+    expect(db.credits.get(uuid(301))).toEqual({ referrerId: REFERRER, qualifiedAt: NOW.toISOString(), daysGranted: 0, centsGranted: 500, wagerId: result.wager_id })
+    expect(db.members.get(REFERRER)?.extraRewardDays).toBe(0)
+    expect(db.events.find((e) => e.type === 'referral_qualified')).toMatchObject({ memberId: REFERRER, meta: { friend_id: uuid(301), cents: 500, days: 0 } })
   })
-  it('only the FIRST verified wager counts: the friend\'s second one adds nothing', async () => {
+  it('only the FIRST verified wager counts: the friend\'s second one pays nothing more', async () => {
     const db = setup([friend(1)], [ticket({ minAge: 18 }), ticket({ id: uuid(2), issueDate: '2026-11-21', minAge: 18 })])
     await verifyFor(db, uuid(301))
     const second = await verifyFor(db, uuid(301), uuid(2))
     expect(second.granted.map((g) => g.kind)).toEqual(['daily'])
     expect(second.withheld).toEqual([{ what: 'referral', code: 'already_qualified', detail: 'this friend already counted for their referrer' }])
-    expect(db.members.get(REFERRER)?.extraRewardDays).toBe(5)
+    expect(cashFor(db)).toBe(500)
   })
-  it('verifying the same wager twice adds nothing either', async () => {
+  it('verifying the same wager twice pays nothing more either', async () => {
     const db = setup([friend(1)])
     await verifyFor(db, uuid(301))
     const again = await verifyWager(slip({ member_id: uuid(301) }), deps(db))
     expect(again).toMatchObject({ ok: true, granted: [] })
-    expect(db.members.get(REFERRER)?.extraRewardDays).toBe(5)
+    expect(cashFor(db)).toBe(500)
     expect(db.credits.size).toBe(1)
   })
-  it('five friends count, 25 days at most: the sixth and seventh add nothing, ever', async () => {
+  it('a run that stopped after qualifying but before paying is finished by the next run', async () => {
+    const db = setup([friend(1)])
+    const insert = db.store.insertReferralReward
+    db.store.insertReferralReward = async () => {
+      throw new Error('network')
+    }
+    await expect(verifyFor(db, uuid(301))).rejects.toThrow('network')
+    expect(cashFor(db)).toBe(0)
+    db.store.insertReferralReward = insert
+    const again = await verifyWager(slip({ member_id: uuid(301) }), deps(db))
+    expect(again.ok && again.granted).toContainEqual({ kind: 'referral_cash', reward_id: expect.any(String), referrer_id: REFERRER, friend_id: uuid(301), amount_cents: 500 })
+    expect(cashFor(db)).toBe(500)
+  })
+  it('five friends pay, $25 at most: the sixth and seventh pay nothing, ever', async () => {
     const friends = [1, 2, 3, 4, 5, 6, 7].map((n) => friend(n))
     const db = setup(friends)
-    const days: number[] = []
+    const paid: number[] = []
     for (const f of friends) {
       const result = await verifyFor(db, f.id)
-      const granted = result.granted.find((g) => g.kind === 'referral_days')
-      days.push(granted && granted.kind === 'referral_days' ? granted.days : 0)
-      expect(db.members.get(REFERRER)!.extraRewardDays).toBeLessThanOrEqual(25)
-      if (!granted) expect(result.withheld).toContainEqual({ what: 'referral', code: 'referrer_cap_reached', detail: 'the referrer already has 5 friends counted' })
+      const cash = result.granted.find((g) => g.kind === 'referral_cash')
+      paid.push(cash && cash.kind === 'referral_cash' ? cash.amount_cents : 0)
+      if (!cash) expect(result.withheld).toContainEqual({ what: 'referral', code: 'referrer_cap_reached', detail: 'the referrer already has 5 friends counted' })
     }
-    expect(days).toEqual([5, 5, 5, 5, 5, 0, 0])
-    expect(db.members.get(REFERRER)?.extraRewardDays).toBe(25)
-    expect([...db.credits.values()].map((c) => c.daysGranted)).toEqual([5, 5, 5, 5, 5, 0, 0])
-    // Every one of them is still on record as qualified.
+    expect(paid).toEqual([500, 500, 500, 500, 500, 0, 0])
+    expect(cashFor(db)).toBe(2500)
     expect([...db.credits.values()].every((c) => c.qualifiedAt)).toBe(true)
-  })
-  it('even if two friends slip past the count at the same moment, the referrer never gets more than friends x days', async () => {
-    const friends = [1, 2, 3, 4, 5, 6].map((n) => friend(n))
-    const db = setup(friends)
-    for (const f of friends.slice(0, 4)) await verifyFor(db, f.id)
-    // Both remaining friends see "4 counted" and are granted days; the total on the referrer is still capped.
-    db.store.creditedFriends = async () => 4
-    await verifyFor(db, uuid(305))
-    await verifyFor(db, uuid(306))
-    expect(db.members.get(REFERRER)?.extraRewardDays).toBe(25)
   })
   it('the friend counts for the referrer even when the friend earns no reward themselves', async () => {
     const db = setup([friend(1, { age: 19 })])
     const result = await verifyFor(db, uuid(301))
-    expect(result.granted).toEqual([{ kind: 'referral_days', referrer_id: REFERRER, friend_id: uuid(301), days: 5, referrer_extra_reward_days: 5 }])
+    expect(result.granted).toEqual([{ kind: 'referral_cash', reward_id: expect.any(String), referrer_id: REFERRER, friend_id: uuid(301), amount_cents: 500 }])
     expect(result.withheld).toEqual([{ what: 'daily', code: 'under_reward_min_age', detail: expect.any(String) }])
   })
-  it('the settings change the days and the cap', async () => {
+  it('a referrer under the reward minimum age, paused or removed earns nothing, and the friend is used up', async () => {
+    for (const referrer of [{ age: 19 }, { status: 'paused' as const }, { status: 'removed' as const }]) {
+      const db = setup([friend(1)], undefined, referrer)
+      const result = await verifyFor(db, uuid(301))
+      expect(result.withheld).toContainEqual({ what: 'referral', code: 'referrer_not_eligible', detail: expect.any(String) })
+      expect(cashFor(db)).toBe(0)
+      expect(db.credits.get(uuid(301))).toMatchObject({ centsGranted: 0, daysGranted: 0 })
+    }
+  })
+  it('the settings change the amount, the cap, and can add days on top', async () => {
     const friends = [1, 2, 3].map((n) => friend(n))
     const db = setup(friends)
-    const config = { ...REWARD_DEFAULTS, referralDaysPerFriend: 3, referralMaxFriends: 2 }
+    const config = { ...REWARD_DEFAULTS, referralCentsPerFriend: 300, referralDaysPerFriend: 3, referralMaxFriends: 2 }
     for (const f of friends) await verifyFor(db, f.id, uuid(1), config)
+    expect(cashFor(db)).toBe(600)
     expect(db.members.get(REFERRER)?.extraRewardDays).toBe(6)
     expect([...db.credits.values()].map((c) => c.daysGranted)).toEqual([3, 3, 0])
   })
-  it('extra days set by hand above the referral total are never lowered', async () => {
+  it('extra days set by hand are never lowered', async () => {
     const db = setup([friend(1)])
     db.members.get(REFERRER)!.extraRewardDays = 40
-    await verifyFor(db, uuid(301))
+    await verifyFor(db, uuid(301), uuid(1), { ...REWARD_DEFAULTS, referralDaysPerFriend: 5 })
     expect(db.members.get(REFERRER)?.extraRewardDays).toBe(40)
   })
   it('nobody refers themselves', async () => {

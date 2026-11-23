@@ -8,6 +8,10 @@ import {
   NEWSLETTER_REWARDS,
   NEWSLETTER_UNDER_18,
   REFERRAL_CAP_NOTE,
+  REFERRAL_OFFER_HEADING,
+  REFERRAL_OFFER_STEPS,
+  REFERRAL_OFFER_TERMS,
+  REFERRAL_SHARE_LINE,
   SNEAKERS_LINE,
   US_STATES,
   creditedReferrals,
@@ -112,7 +116,9 @@ const good = { name: ' Sam Lee ', email: ' Sam@School.edu ', state: 'nj', birthd
 
 describe('checking a signup before anything is stored', () => {
   it('normalizes a good one', () => {
-    expect(validateSpareChange(good, TODAY)).toEqual({ ok: true, email: 'sam@school.edu', newsletter: true, name: 'Sam Lee', age: 19, birthDate: '2007-06-01', state: 'NJ', referredBy: 'K7M3QX' })
+    expect(validateSpareChange(good, TODAY)).toEqual({ ok: true, email: 'sam@school.edu', newsletter: true, name: 'Sam Lee', age: 19, birthDate: '2007-06-01', state: 'NJ', referredBy: 'K7M3QX', referredByName: null })
+    expect(validateSpareChange({ ...good, referrerName: '  Jamie Fox ' }, TODAY)).toMatchObject({ ok: true, referredByName: 'Jamie Fox' })
+    for (const referrerName of ['', '   ', 42, 'a'.repeat(81)]) expect(validateSpareChange({ ...good, referrerName }, TODAY), String(referrerName)).toMatchObject({ ok: true, referredByName: null })
     expect(validateSpareChange({ ...good, birthday: '2008-11-20' }, TODAY)).toMatchObject({ ok: true, newsletter: true, age: 18 })
   })
   it('refuses a bad email first', () => {
@@ -149,7 +155,7 @@ describe('checking a signup before anything is stored', () => {
 function fakes(over: Partial<SpareChangeDeps> = {}) {
   const deps = {
     addToSneakers: vi.fn<SpareChangeDeps['addToSneakers']>(async () => ({ ok: true, existing: false, code: 'K7M3QX' })),
-    upsertNewsletter: vi.fn<SpareChangeDeps['upsertNewsletter']>(async () => true),
+    upsertNewsletter: vi.fn<SpareChangeDeps['upsertNewsletter']>(async () => 'new' as const),
     resolveReferrer: vi.fn<SpareChangeDeps['resolveReferrer']>(async () => null),
     welcome: vi.fn<SpareChangeDeps['welcome']>(async () => 'sent'),
     ...over,
@@ -157,14 +163,24 @@ function fakes(over: Partial<SpareChangeDeps> = {}) {
   return deps
 }
 const context = { referrer: 'https://sneakersterminal.com/spare-change', ipCountry: 'US' }
-const adult = { ok: true, email: 'sam@school.edu', newsletter: true, name: 'Sam Lee', age: 19, birthDate: '2007-06-01', state: 'NJ', referredBy: 'ABCDEF' } as const
+const adult = { ok: true, email: 'sam@school.edu', newsletter: true, name: 'Sam Lee', age: 19, birthDate: '2007-06-01', state: 'NJ', referredBy: 'ABCDEF', referredByName: 'Jamie Fox' } as const
 const minor = { ok: true, email: 'sam@school.edu', newsletter: false, reason: 'under_18', referredBy: null } as const
 
 describe('joining both lists with one form', () => {
+  it('tells Slack about a NEW subscriber only: not a repeat signup, not someone under 18, and a broken notifier never fails the signup', async () => {
+    const onNewSubscriber = vi.fn()
+    await joinSpareChange(adult, context, fakes({ onNewSubscriber, resolveReferrer: vi.fn(async () => 'member-1') }))
+    expect(onNewSubscriber).toHaveBeenCalledWith({ name: 'Sam Lee', state: 'NJ', age: 19, referredByMemberId: 'member-1', referredByName: 'Jamie Fox' })
+    await joinSpareChange(adult, context, fakes({ onNewSubscriber, upsertNewsletter: vi.fn(async () => 'existing' as const) }))
+    await joinSpareChange(minor, context, fakes({ onNewSubscriber }))
+    expect(onNewSubscriber).toHaveBeenCalledTimes(1)
+    const broken = fakes({ onNewSubscriber: () => { throw new Error('slack down') } })
+    expect(await joinSpareChange(adult, context, broken)).toMatchObject({ ok: true, newsletter: true })
+  })
   it('a new adult lands on the newsletter list and the Sneakers waitlist, and gets their code', async () => {
     const deps = fakes()
     expect(await joinSpareChange(adult, context, deps)).toEqual({ ok: true, existing: false, code: 'K7M3QX', newsletter: true, welcome: 'sent' })
-    expect(deps.upsertNewsletter).toHaveBeenCalledWith({ email: 'sam@school.edu', name: 'Sam Lee', ageAtSignup: 19, birthDate: '2007-06-01', state: 'NJ', referredByCode: 'ABCDEF', claimToken: expect.stringMatching(/^[A-Za-z0-9_-]{32}$/), linkToken: expect.stringMatching(/^[A-Za-z0-9_-]{32}$/), referredByMemberId: null })
+    expect(deps.upsertNewsletter).toHaveBeenCalledWith({ email: 'sam@school.edu', name: 'Sam Lee', ageAtSignup: 19, birthDate: '2007-06-01', state: 'NJ', referredByCode: 'ABCDEF', referredByName: 'Jamie Fox', claimToken: expect.stringMatching(/^[A-Za-z0-9_-]{32}$/), linkToken: expect.stringMatching(/^[A-Za-z0-9_-]{32}$/), referredByMemberId: null })
     expect(deps.welcome).toHaveBeenCalledWith('sam@school.edu')
     expect(deps.addToSneakers).toHaveBeenCalledWith({ email: 'sam@school.edu', referrer: context.referrer, ipCountry: 'US', referredBy: 'ABCDEF' })
   })
@@ -189,7 +205,7 @@ describe('joining both lists with one form', () => {
     expect(deps.upsertNewsletter).toHaveBeenCalledTimes(2)
   })
   it('a failed newsletter write stops before the Sneakers row, so trying again still returns the person\'s code', async () => {
-    const deps = fakes({ upsertNewsletter: vi.fn(async () => false) })
+    const deps = fakes({ upsertNewsletter: vi.fn(async () => false as const) })
     expect(await joinSpareChange(adult, context, deps)).toEqual({ ok: false })
     expect(deps.addToSneakers).not.toHaveBeenCalled()
   })
@@ -199,7 +215,7 @@ describe('joining both lists with one form', () => {
     expect(deps.welcome).not.toHaveBeenCalled()
   })
   it('a failed newsletter write sends no welcome email', async () => {
-    const deps = fakes({ upsertNewsletter: vi.fn(async () => false) })
+    const deps = fakes({ upsertNewsletter: vi.fn(async () => false as const) })
     await joinSpareChange(adult, context, deps)
     expect(deps.welcome).not.toHaveBeenCalled()
   })
@@ -232,7 +248,7 @@ describe('the words people read', () => {
     expect(NEWSLETTER_OPT_IN).toBe('Also send me Spare Change Millionaire, our daily long-shot parlay email. 18+ only.')
     expect(NEWSLETTER_PITCH).toContain('18+ only')
     expect(NEWSLETTER_UNDER_18).toBe('Spare Change Millionaire is 18+ only, so we left you off that list.')
-    expect(NEWSLETTER_REWARDS).toContain('rewards for subscribers at launch')
+    expect(NEWSLETTER_REWARDS).toBe('Subscribers get a free $0.25 a day.')
     expect(REFERRAL_CAP_NOTE).toBe('Up to 5 friends count.')
     for (const text of words) {
       expect(text).not.toMatch(/\b(bets?|betting|cash|winnings|sportsbooks?|jackpot)\b/i)
@@ -240,8 +256,13 @@ describe('the words people read', () => {
       expect(text).not.toContain('21')
     }
   })
-  it('promise no amount for referrals or rewards', () => {
-    for (const text of [NEWSLETTER_REWARDS, NEWSLETTER_OPT_IN, NEWSLETTER_UNDER_18, REFERRAL_CAP_NOTE, SNEAKERS_LINE, friendsJoinedText(5)]) expect(text).not.toMatch(/[$]|dollars?|\bfree\b|\bearn/i)
+  it('the only amounts promised are $0.25 a day and $5 a verified friend; nothing else names money', () => {
+    for (const text of [NEWSLETTER_OPT_IN, NEWSLETTER_UNDER_18, REFERRAL_CAP_NOTE, SNEAKERS_LINE, friendsJoinedText(5)]) expect(text).not.toMatch(/[$]|dollars?|\bfree\b|\bearn/i)
+    expect(REFERRAL_OFFER_HEADING).toBe('Refer a friend, get $5')
+    // every line that names the $5 also says when it is paid
+    for (const text of [REFERRAL_OFFER_STEPS.join(' '), REFERRAL_SHARE_LINE]) expect(text).toMatch(/\$5.*verified/)
+    expect(REFERRAL_OFFER_TERMS).toMatch(/Up to 5 friends.*verified.*Terms apply/)
+    for (const text of [REFERRAL_OFFER_HEADING, ...REFERRAL_OFFER_STEPS, REFERRAL_OFFER_TERMS, REFERRAL_SHARE_LINE]) expect(text).not.toMatch(/\b(bets?|betting|cash|winnings|sportsbooks?|jackpot)\b/i)
   })
 })
 

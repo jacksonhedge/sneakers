@@ -2,7 +2,7 @@
 import { useRef, useState } from 'react'
 import { NEWSLETTER_UNDER_18, signupProblems, type SignupField } from '@/lib/spare-change'
 import { WaitlistShare, type Joined } from '../launching-soon/waitlist-share'
-import { EmailField, NameField, Spinner, StateBirthdayFields, buttonClass, buttonStyle, focusFirstProblem, problemsFromError, type Problems } from './newsletter-fields'
+import { EmailField, NameField, ReferrerNameField, Spinner, StateBirthdayFields, buttonClass, buttonStyle, focusFirstProblem, problemsFromError, type Problems } from './newsletter-fields'
 import { NewsletterSaved } from './saved-screen'
 
 const sauce = 'var(--font-open-sauce), sans-serif'
@@ -21,6 +21,7 @@ export function SpareChangeForm({ refCode }: { refCode: string | null }) {
   const [email, setEmail] = useState('')
   const [state, setState] = useState('')
   const [birthday, setBirthday] = useState('')
+  const [referrerName, setReferrerName] = useState('')
   const [loading, setLoading] = useState(false)
   const [problems, setProblems] = useState<Problems>({})
   const [formError, setFormError] = useState<keyof typeof formProblem | null>(null)
@@ -48,7 +49,7 @@ export function SpareChangeForm({ refCode }: { refCode: string | null }) {
     setProblems({})
     setLoading(true)
     try {
-      const res = await fetch('/api/spare-change-waitlist', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, email, state, birthday, ref: refCode }) })
+      const res = await fetch('/api/spare-change-waitlist', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, email, state, birthday, ref: refCode, referrerName }) })
       const data = (await res.json().catch(() => ({}))) as { error?: string; existing?: boolean; newsletter?: boolean; welcome?: string; reason?: string; code?: string; referrals?: number; position?: number | null }
       if (res.ok) {
         if (data.code) setJoined({ code: data.code, referrals: data.referrals ?? 0, position: data.position ?? null })
@@ -70,6 +71,7 @@ export function SpareChangeForm({ refCode }: { refCode: string | null }) {
       <NameField idPrefix="spare-change" name={name} onName={edit('name', setName)} error={problems.name} />
       <EmailField idPrefix="spare-change" email={email} onEmail={edit('email', setEmail)} placeholder="you@email.com" error={problems.email} />
       <StateBirthdayFields idPrefix="spare-change" state={state} onState={edit('state', setState)} birthday={birthday} onBirthday={edit('birthday', setBirthday)} stateError={problems.state} birthdayError={problems.birthday} />
+      <ReferrerNameField idPrefix="spare-change" value={referrerName} onValue={setReferrerName} />
       <button type="submit" disabled={loading} className={buttonClass} style={buttonStyle}>
         {loading ? (
           <>

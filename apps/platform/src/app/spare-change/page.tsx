@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
-import { EXAMPLE_TICKET, NEWSLETTER_NAME, NEWSLETTER_PITCH, NEWSLETTER_REWARDS, SNEAKERS_LINE } from '@/lib/spare-change'
+import { EXAMPLE_TICKET, NEWSLETTER_NAME, NEWSLETTER_PITCH, NEWSLETTER_REWARDS, REFERRAL_OFFER_HEADING, REFERRAL_OFFER_STEPS, REFERRAL_OFFER_TERMS, SNEAKERS_LINE } from '@/lib/spare-change'
 import { parseRefParam } from '@/lib/waitlist-referral'
 import { BLUE, CREAM, NAVY, RED } from '../visuals'
+import { PartnerFloat, PartnerRow } from './partner-float'
 import { SpareChangeForm } from './spare-change-form'
 
 // The newsletter's own page: what it is, one example ticket, and one form that also puts the person on the Sneakers waitlist.
@@ -15,7 +16,9 @@ const sticker = { fontFamily: peace, color: CREAM, WebkitTextStroke: `0.035em ${
 export default async function SpareChangePage({ searchParams }: { searchParams: Promise<{ ref?: string }> }) {
   const { ref } = await searchParams
   return (
-    <main className="flex min-h-svh flex-col items-center justify-center gap-8 px-[max(1.25rem,5vw)] py-12 text-center" style={{ background: BLUE, color: CREAM }}>
+    <main className="relative overflow-hidden" style={{ background: BLUE, color: CREAM }}>
+      <PartnerFloat />
+      <div className="relative z-10 mx-auto flex min-h-svh max-w-2xl flex-col items-center justify-center gap-8 px-[max(1.25rem,5vw)] py-12 text-center">
       <a href="/" className="text-3xl" style={sticker}>
         Sneakers
       </a>
@@ -42,13 +45,39 @@ export default async function SpareChangePage({ searchParams }: { searchParams: 
       <p className="max-w-md text-xl font-semibold" style={{ fontFamily: sauce }}>
         {NEWSLETTER_PITCH}
       </p>
+      <p className="rounded-full px-6 py-2 text-lg font-bold" style={{ background: CREAM, color: NAVY, border: `0.18rem solid ${NAVY}`, boxShadow: `0.25rem 0.3rem 0 ${NAVY}`, transform: 'rotate(1.5deg)', fontFamily: sauce }}>
+        {NEWSLETTER_REWARDS}
+      </p>
+      <PartnerRow />
       <SpareChangeForm refCode={parseRefParam(ref)} />
+      <section aria-labelledby="refer-heading" className="w-full max-w-md px-6 py-6 text-left" style={{ background: CREAM, color: NAVY, border: `0.2rem solid ${NAVY}`, borderRadius: '1.5rem', boxShadow: `0.35rem 0.4rem 0 ${NAVY}`, transform: 'rotate(1deg)', fontFamily: sauce }}>
+        <p className="text-sm font-bold uppercase tracking-widest" style={{ color: RED }}>
+          Referrals
+        </p>
+        <h2 id="refer-heading" className="mt-2 text-[clamp(1.6rem,7vw,2.2rem)] leading-none" style={{ fontFamily: peace }}>
+          {REFERRAL_OFFER_HEADING}
+        </h2>
+        <ol className="mt-4 flex flex-col gap-3">
+          {REFERRAL_OFFER_STEPS.map((step, i) => (
+            <li key={step} className="flex items-start gap-3 text-base font-semibold">
+              <span aria-hidden="true" className="inline-flex size-7 shrink-0 items-center justify-center rounded-full text-sm font-bold tabular-nums" style={{ background: NAVY, color: CREAM }}>
+                {i + 1}
+              </span>
+              <span className="pt-0.5">{step}</span>
+            </li>
+          ))}
+        </ol>
+        <p className="mt-4 border-t-2 border-dashed pt-3 text-sm font-semibold" style={{ borderColor: NAVY }}>
+          {REFERRAL_OFFER_TERMS}
+        </p>
+      </section>
       <p className="max-w-md text-lg font-bold" style={{ fontFamily: sauce }}>
         {SNEAKERS_LINE}
       </p>
       <p className="max-w-md text-base" style={{ fontFamily: sauce }}>
-        {NEWSLETTER_REWARDS} Long shots miss far more often than they hit.
+        Long shots miss far more often than they hit.
       </p>
+      </div>
     </main>
   )
 }

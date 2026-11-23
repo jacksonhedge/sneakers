@@ -465,18 +465,21 @@ export async function handleGo(i: { ticketId: unknown; token: string | null; ipC
 export interface RewardConfig {
   /** Nobody younger than this earns a daily reward, whatever the ticket (SPARE_CHANGE_REWARD_MIN_AGE, default 21). */
   rewardMinAge: number
-  /** Extra reward days a referrer gets per friend (SPARE_CHANGE_REFERRAL_DAYS_PER_FRIEND, default 5). */
+  /** Cash a referrer earns per friend, in cents (SPARE_CHANGE_REFERRAL_CENTS_PER_FRIEND, default 500 = $5). */
+  referralCentsPerFriend: number
+  /** Extra reward days a referrer gets per friend (SPARE_CHANGE_REFERRAL_DAYS_PER_FRIEND, default 0: referrals pay cash now). */
   referralDaysPerFriend: number
   /** How many friends count (SPARE_CHANGE_REFERRAL_MAX_FRIENDS, default 5). */
   referralMaxFriends: number
 }
-export const REWARD_DEFAULTS: RewardConfig = { rewardMinAge: 21, referralDaysPerFriend: 5, referralMaxFriends: 5 }
+export const REWARD_DEFAULTS: RewardConfig = { rewardMinAge: 21, referralCentsPerFriend: 500, referralDaysPerFriend: 0, referralMaxFriends: 5 }
 export const WELCOME_REWARD_CENTS = 100
 const MAX_EXTRA_DAYS = 365
 
 export function rewardConfig(env: Record<string, string | undefined>): RewardConfig {
   return {
     rewardMinAge: intSetting(env.SPARE_CHANGE_REWARD_MIN_AGE, REWARD_DEFAULTS.rewardMinAge, 18, 120),
+    referralCentsPerFriend: intSetting(env.SPARE_CHANGE_REFERRAL_CENTS_PER_FRIEND, REWARD_DEFAULTS.referralCentsPerFriend, 0, 10_000),
     referralDaysPerFriend: intSetting(env.SPARE_CHANGE_REFERRAL_DAYS_PER_FRIEND, REWARD_DEFAULTS.referralDaysPerFriend, 0, 60),
     referralMaxFriends: intSetting(env.SPARE_CHANGE_REFERRAL_MAX_FRIENDS, REWARD_DEFAULTS.referralMaxFriends, 0, 50),
   }
@@ -559,11 +562,13 @@ export interface WagerStore {
   startRewardWindow: (memberId: string, issueDate: string) => Promise<string>
   /** Insert the 'daily' sc_rewards row. 'duplicate' when the unique index says that member already has one for that date. */
   insertDailyReward: (i: { memberId: string; issueDate: string; amountCents: number; wagerId: string; note: string; nowIso: string }) => Promise<{ rewardId: string } | 'duplicate'>
-  referralCredit: (friendId: string) => Promise<{ referrerId: string; qualifiedAt: string | null; daysGranted: number } | null>
-  /** How many of this referrer's friends have qualified AND added days. */
+  referralCredit: (friendId: string) => Promise<{ referrerId: string; qualifiedAt: string | null; daysGranted: number; centsGranted: number; wagerId: string | null } | null>
+  /** How many of this referrer's friends have qualified AND earned them something (cash or days): the friends that count toward the cap. */
   creditedFriends: (referrerId: string) => Promise<number>
   /** Make (or fill in) the friend's sc_referral_credits row as qualified. False when it was already qualified. */
-  qualifyReferral: (i: { referrerId: string; friendId: string; daysGranted: number; nowIso: string }) => Promise<boolean>
+  qualifyReferral: (i: { referrerId: string; friendId: string; wagerId: string; daysGranted: number; centsGranted: number; nowIso: string }) => Promise<boolean>
+  /** Insert the referrer's 'referral' sc_rewards row for this friend's qualifying wager. 'duplicate' when that wager already paid one. */
+  insertReferralReward: (i: { referrerId: string; wagerId: string; amountCents: number; note: string; nowIso: string }) => Promise<{ rewardId: string } | 'duplicate'>
   /** The sum of days_granted over this referrer's qualified friends. */
   referralDaysGranted: (referrerId: string) => Promise<number>
   /** Raise the referrer's extra_reward_days to this number. Never lowers it. */
@@ -636,9 +641,10 @@ export async function rejectWager(body: unknown, deps: { store: WagerStore; by: 
   return { ok: true, wager_id: wager.id, status: 'rejected' }
 }
 
-export type ReferralWithheld = 'no_referrer' | 'self_referral' | 'already_qualified' | 'referrer_cap_reached'
+export type ReferralWithheld = 'no_referrer' | 'self_referral' | 'already_qualified' | 'referrer_cap_reached' | 'referrer_not_eligible'
 export type Granted =
   | { kind: 'daily'; reward_id: string; member_id: string; issue_date: string; amount_cents: number }
+  | { kind: 'referral_cash'; reward_id: string; referrer_id: string; friend_id: string; amount_cents: number }
   | { kind: 'referral_days'; referrer_id: string; friend_id: string; days: number; referrer_extra_reward_days: number }
 export type Withheld = { what: 'daily'; code: DailyWithheld; detail: string } | { what: 'referral'; code: ReferralWithheld; detail: string }
 export type VerifyResult =
@@ -647,34 +653,60 @@ export type VerifyResult =
 
 /**
  * The referral half of verification. A friend's FIRST verified wager qualifies them, once (the friend's credit row is unique, and it is
- * only ever qualified once). The referrer gets `referralDaysPerFriend` extra days for each of their first `referralMaxFriends` friends and
- * nothing for any after that. The referrer's extra_reward_days is then set from the credit rows themselves, capped at friends x days, so
- * running this again (or two friends qualifying at the same moment) can never add more.
+ * only ever qualified once). For each of the referrer's first `referralMaxFriends` friends the referrer earns `referralCentsPerFriend` as
+ * one 'referral' row in sc_rewards (paid on Fridays with everything else), plus `referralDaysPerFriend` extra days if that is set. Friends
+ * after the cap still qualify but earn nothing. The referrer must be allowed rewards (not paused or removed, and at least the reward
+ * minimum age); a friend who qualifies while their referrer is not still uses up their one qualification.
+ * Safe to run again: the credit row remembers the wager and amount, and the reward row is unique per wager, so a run that stopped
+ * half way finishes and a repeat adds nothing.
  */
-async function qualifyReferral(friend: Member, wager: Wager, deps: { store: WagerStore; config: RewardConfig }, at: string): Promise<{ granted?: Granted; withheld?: Withheld }> {
+async function qualifyReferral(friend: Member, wager: Wager, deps: { store: WagerStore; config: RewardConfig }, at: string): Promise<{ granted: Granted[]; withheld?: Withheld }> {
   const referrerId = friend.referredByMemberId
-  if (!referrerId) return { withheld: { what: 'referral', code: 'no_referrer', detail: 'nobody referred this member' } }
-  if (referrerId === friend.id) return { withheld: { what: 'referral', code: 'self_referral', detail: 'a member cannot refer themselves' } }
+  if (!referrerId) return { granted: [], withheld: { what: 'referral', code: 'no_referrer', detail: 'nobody referred this member' } }
+  if (referrerId === friend.id) return { granted: [], withheld: { what: 'referral', code: 'self_referral', detail: 'a member cannot refer themselves' } }
   const { store, config } = deps
   const cap = Math.min(config.referralMaxFriends * config.referralDaysPerFriend, MAX_EXTRA_DAYS)
-  const syncReferrer = async (): Promise<number> => {
+  const syncReferrerDays = async (): Promise<number> => {
     const total = Math.min(await store.referralDaysGranted(referrerId), cap)
-    await store.raiseExtraRewardDays(referrerId, total)
+    if (total > 0) await store.raiseExtraRewardDays(referrerId, total)
     return total
   }
+  const payCash = async (wagerId: string, cents: number): Promise<Granted | null> => {
+    if (cents <= 0) return null
+    const note = `Referral: friend ${friend.id} had a first slip verified`
+    const inserted = await store.insertReferralReward({ referrerId, wagerId, amountCents: cents, note, nowIso: at })
+    return inserted === 'duplicate' ? null : { kind: 'referral_cash', reward_id: inserted.rewardId, referrer_id: referrerId, friend_id: friend.id, amount_cents: cents }
+  }
+  const alreadyCounted: Withheld = { what: 'referral', code: 'already_qualified', detail: 'this friend already counted for their referrer' }
+
   const credit = await store.referralCredit(friend.id)
   if (credit?.qualifiedAt) {
-    await syncReferrer()
-    return { withheld: { what: 'referral', code: 'already_qualified', detail: 'this friend already counted for their referrer' } }
+    // Finish anything an earlier run left undone.
+    await syncReferrerDays()
+    const finished = credit.wagerId ? await payCash(credit.wagerId, credit.centsGranted) : null
+    return { granted: finished ? [finished] : [], withheld: finished ? undefined : alreadyCounted }
   }
+
+  const referrer = await store.memberById(referrerId)
+  const eligible = !!referrer && referrer.status !== 'paused' && referrer.status !== 'removed' && referrer.age >= config.rewardMinAge
   const counted = await store.creditedFriends(referrerId)
-  const days = counted < config.referralMaxFriends ? config.referralDaysPerFriend : 0
-  const won = await store.qualifyReferral({ referrerId, friendId: friend.id, daysGranted: days, nowIso: at })
-  const total = await syncReferrer()
-  if (!won) return { withheld: { what: 'referral', code: 'already_qualified', detail: 'this friend already counted for their referrer' } }
-  await store.logEvent({ memberId: referrerId, type: 'referral_qualified', ticketId: wager.ticketId, meta: { friend_id: friend.id, days, wager_id: wager.id } })
-  if (days === 0) return { withheld: { what: 'referral', code: 'referrer_cap_reached', detail: `the referrer already has ${config.referralMaxFriends} friends counted` } }
-  return { granted: { kind: 'referral_days', referrer_id: referrerId, friend_id: friend.id, days, referrer_extra_reward_days: total } }
+  const open = eligible && counted < config.referralMaxFriends
+  const cents = open ? config.referralCentsPerFriend : 0
+  const days = open ? config.referralDaysPerFriend : 0
+  const won = await store.qualifyReferral({ referrerId, friendId: friend.id, wagerId: wager.id, daysGranted: days, centsGranted: cents, nowIso: at })
+  if (!won) return { granted: [], withheld: alreadyCounted }
+  await store.logEvent({ memberId: referrerId, type: 'referral_qualified', ticketId: wager.ticketId, meta: { friend_id: friend.id, cents, days, wager_id: wager.id } })
+  if (!eligible) {
+    const why = !referrer ? 'the referrer is no longer on the list' : referrer.status === 'paused' || referrer.status === 'removed' ? `the referrer is ${referrer.status}` : `referral rewards are ${config.rewardMinAge}+ and the referrer signed up as ${referrer.age}`
+    return { granted: [], withheld: { what: 'referral', code: 'referrer_not_eligible', detail: why } }
+  }
+  if (!open) return { granted: [], withheld: { what: 'referral', code: 'referrer_cap_reached', detail: `the referrer already has ${config.referralMaxFriends} friends counted` } }
+  const granted: Granted[] = []
+  const cash = await payCash(wager.id, cents)
+  if (cash) granted.push(cash)
+  const total = await syncReferrerDays()
+  if (days > 0) granted.push({ kind: 'referral_days', referrer_id: referrerId, friend_id: friend.id, days, referrer_extra_reward_days: total })
+  return { granted }
 }
 
 /**
@@ -714,7 +746,7 @@ export async function verifyWager(body: unknown, deps: { store: WagerStore; conf
   }
 
   const referral = await qualifyReferral(member, wager, deps, at)
-  if (referral.granted) granted.push(referral.granted)
+  granted.push(...referral.granted)
   if (referral.withheld) withheld.push(referral.withheld)
   return { ok: true, wager_id: wager.id, status: 'verified', already_verified: alreadyVerified, granted, withheld }
 }

@@ -1,13 +1,19 @@
 // "Spare Change Millionaire": the newsletter's name, its words and the pure checks for its signup form. Nothing here touches the
 // database, so both the page (client) and the route (server) can use it, and it can be tested on its own.
 // Wording rule for everything a person can read: "long-shot parlays", "buy-in", "payout" and "free dollar". The only amount promised
-// anywhere is the one welcome dollar (saved screen, welcome email, claim page). Nothing says what a referral earns: only that up to 5 friends count.
+// anywhere are: the one welcome dollar (saved screen, welcome email, claim page), the free $0.25 a day for subscribers, and $5 for each
+// referred friend once that friend is verified (up to 5 friends). Those three numbers live here and nowhere else.
 import { normalizeEmail } from './email-validation'
 
 export const NEWSLETTER_NAME = 'Spare Change Millionaire'
 export const NEWSLETTER_SOURCE = 'spare-change'
 export const NEWSLETTER_PITCH = 'A daily email of long-shot parlays. A small buy-in, a big payout if it hits. 18+ only.'
-export const NEWSLETTER_REWARDS = 'Coming soon, with rewards for subscribers at launch.'
+export const NEWSLETTER_REWARDS = 'Subscribers get a free $0.25 a day.'
+// The referral offer, as the page states it. The condition ("once your friend is verified") is part of every line that names the $5.
+export const REFERRAL_OFFER_HEADING = 'Refer a friend, get $5'
+export const REFERRAL_OFFER_STEPS = ['Subscribe, and you get your own link.', 'Text or email it to a friend.', 'We pay you $5 once your friend is verified.'] as const
+export const REFERRAL_OFFER_TERMS = 'Up to 5 friends. A friend counts once they have subscribed with your link and been verified. Terms apply.'
+export const REFERRAL_SHARE_LINE = 'Get $5 for each friend who joins with your link, once they are verified.'
 export const NEWSLETTER_OPT_IN = `Also send me ${NEWSLETTER_NAME}, our daily long-shot parlay email. 18+ only.`
 export const NEWSLETTER_UNDER_18 = `${NEWSLETTER_NAME} is 18+ only, so we left you off that list.`
 export const SNEAKERS_LINE = "You're also first in line for Sneakers."
@@ -36,6 +42,13 @@ export function parseState(raw: unknown): string | null {
 /** A person's name for the newsletter: trimmed, 1 to 80 characters, otherwise kept as typed. null when it is not one. */
 export const NAME_MAX_LENGTH = 80
 export function parseName(raw: unknown): string | null {
+  if (typeof raw !== 'string') return null
+  const name = raw.trim()
+  return name.length >= 1 && name.length <= NAME_MAX_LENGTH ? name : null
+}
+
+/** The name of whoever told them about the newsletter, as typed: optional, trimmed, up to 80 characters. '' or anything else -> null. */
+export function parseReferrerName(raw: unknown): string | null {
   if (typeof raw !== 'string') return null
   const name = raw.trim()
   return name.length >= 1 && name.length <= NAME_MAX_LENGTH ? name : null
