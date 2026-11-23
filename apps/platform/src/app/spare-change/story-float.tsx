@@ -53,8 +53,9 @@ export function StoryFloat() {
     <div className="pointer-events-none absolute inset-0 z-0 hidden xl:block">
       {/* One column, the posts close together, top level with the title (114px). Drawn at a readable width, then scaled to the room
           beside the page: 0.64 from 1280px, 0.70 from 1440, 0.74 from 1536, 0.82 from 1800. The logo lanes on the right follow. */}
-      {/* Placed by an unscaled wrapper: zoom would scale top and left too. */}
-      <div className="absolute" style={{ top: '114px', left: '2vw' }}>
+      {/* Placed by an unscaled wrapper: zoom would scale top and left too. 2vw from the edge; from 1800px the column is centered in
+          the space left of the page (50% - 336px), so on very wide screens it doesn't hug the edge. 24.6rem = 30rem at 0.82. */}
+      <div className="absolute [--post-left:2vw] min-[1800px]:[--post-left:max(2vw,calc((50%_-_336px_-_24.6rem)/2))]" style={{ top: '114px', left: 'var(--post-left)' }}>
         <ul aria-label="Real long shots on X" className="flex w-[30rem] flex-col gap-10 [zoom:0.64] min-[1440px]:[zoom:0.70] min-[1536px]:[zoom:0.74] min-[1800px]:[zoom:0.82]">
           {POSTS.map((p, i) => {
             const s = SPOTS[i % SPOTS.length]

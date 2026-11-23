@@ -19,7 +19,8 @@ const SPOTS: readonly Spot[] = [
   { lane: 'inner', size: '5.25rem', tilt: -4, dur: 4.9, delay: 0.9 },
   { lane: 'outer', size: '5.5rem', tilt: 8, dur: 4.6, delay: 0.5 },
 ]
-const LANE = { outer: '2vw', inner: 'calc(2vw + 80px)' } as const
+// From 1800px the two lanes (80px apart, tiles up to 96px: 176px in all) are centered in the space right of the page instead.
+const LANE = { outer: 'var(--lane-right)', inner: 'calc(var(--lane-right) + 80px)' } as const
 // The big faint ones in the background: which partner, and where.
 const GHOSTS: ReadonlyArray<{ i: number; top: string; left: string; size: string; tilt: number; dur: number; delay: number }> = [
   { i: 0, top: '4%', left: '24%', size: '15rem', tilt: -12, dur: 7, delay: 0.2 },
@@ -72,7 +73,7 @@ export function PartnerFloat() {
         })}
       </div>
       {/* Same breakpoint as the posts on the left (xl): below it the tiles become PartnerRow. */}
-      <ul className="hidden [--tile-gap:159px] min-[1440px]:[--tile-gap:176px] min-[1536px]:[--tile-gap:186px] min-[1800px]:[--tile-gap:208px] xl:block" aria-label="Sites we cover">
+      <ul className="hidden [--lane-right:2vw] [--tile-gap:159px] min-[1440px]:[--tile-gap:176px] min-[1536px]:[--tile-gap:186px] min-[1800px]:[--lane-right:max(2vw,calc((50%_-_336px_-_176px)/2))] min-[1800px]:[--tile-gap:208px] xl:block" aria-label="Sites we cover">
         {PARTNERS.map((p, i) => {
           const s = SPOTS[i % SPOTS.length]
           return (
