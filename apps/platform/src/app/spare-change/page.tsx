@@ -4,6 +4,7 @@ import { parseRefParam } from '@/lib/waitlist-referral'
 import { BLUE, CREAM, NAVY, RED } from '../visuals'
 import { PartnerFloat, PartnerRow } from './partner-float'
 import { SpareChangeForm } from './spare-change-form'
+import { StoryFloat, StoryRow } from './story-float'
 
 // The newsletter's own page: what it is, one example ticket, and one form that also puts the person on the Sneakers waitlist.
 // Not indexed and not linked from the home page unless NEXT_PUBLIC_SPARE_CHANGE is on.
@@ -18,6 +19,7 @@ export default async function SpareChangePage({ searchParams }: { searchParams: 
   return (
     <main className="relative overflow-hidden" style={{ background: BLUE, color: CREAM }}>
       <PartnerFloat />
+      <StoryFloat />
       <div className="relative z-10 mx-auto flex min-h-svh max-w-2xl flex-col items-center justify-center gap-8 px-[max(1.25rem,5vw)] py-12 text-center">
       <a href="/" className="text-3xl" style={sticker}>
         Sneakers
@@ -34,7 +36,7 @@ export default async function SpareChangePage({ searchParams }: { searchParams: 
         <p className="text-sm font-bold uppercase tracking-widest" style={{ color: RED }}>
           Example ticket
         </p>
-        <p className="mt-2 whitespace-nowrap text-[clamp(1.5rem,7.5vw,2.4rem)] leading-none tabular-nums" style={{ fontFamily: peace }}>
+        <p className="mt-2 whitespace-nowrap text-[clamp(1.35rem,6.6vw,2.15rem)] leading-none tabular-nums" style={{ fontFamily: peace }}>
           {EXAMPLE_TICKET.buyIn} → {EXAMPLE_TICKET.payout}
         </p>
         <p className="mt-3 flex justify-between border-t-2 border-dashed pt-3 text-sm font-bold" style={{ borderColor: NAVY }}>
@@ -50,6 +52,7 @@ export default async function SpareChangePage({ searchParams }: { searchParams: 
       </p>
       <PartnerRow />
       <SpareChangeForm refCode={parseRefParam(ref)} />
+      <StoryRow />
       <section aria-labelledby="refer-heading" className="w-full max-w-md px-6 py-6 text-left" style={{ background: CREAM, color: NAVY, border: `0.2rem solid ${NAVY}`, borderRadius: '1.5rem', boxShadow: `0.35rem 0.4rem 0 ${NAVY}`, transform: 'rotate(1deg)', fontFamily: sauce }}>
         <p className="text-sm font-bold uppercase tracking-widest" style={{ color: RED }}>
           Referrals

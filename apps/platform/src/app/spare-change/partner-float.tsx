@@ -1,21 +1,22 @@
 import { PARTNERS, partnerLinkOk, type Partner } from '@/lib/spare-change-partners'
 import { NAVY } from '../visuals'
 
-// The partner logos around the page. Wide screens: sticker tiles down the left and right edges, each bobbing a little on its own
+// The partner logos around the page. Wide screens: sticker tiles down the right edge, each bobbing a little on its own
 // beat, with a few large faint ones behind everything. Narrow screens have no room at the sides, so the faint ones stay and the tiles
 // come back as one small row (PartnerRow) inside the page. Every tile is a link (see spare-change-partners.ts). The bobbing stops
 // for people who ask for less motion (.sc-bob in globals.css).
 
 type Spot = { side: 'left' | 'right'; top: string; inset: string; size: string; tilt: number; dur: number; delay: number }
-// One spot per partner, in PARTNERS order: left, right, left, right... spread down the page.
+// One spot per partner, in PARTNERS order, all down the right edge in two staggered lanes: the left edge holds the real-story cards
+// (story-float.tsx).
 const SPOTS: readonly Spot[] = [
-  { side: 'left', top: '9%', inset: '6vw', size: '6.5rem', tilt: -8, dur: 4.2, delay: 0 },
-  { side: 'right', top: '12%', inset: '7vw', size: '6rem', tilt: 7, dur: 4.8, delay: 0.6 },
-  { side: 'left', top: '33%', inset: '11vw', size: '5.25rem', tilt: 6, dur: 5.2, delay: 1.1 },
-  { side: 'right', top: '37%', inset: '11.5vw', size: '5.5rem', tilt: -6, dur: 4.4, delay: 0.3 },
-  { side: 'left', top: '57%', inset: '5vw', size: '6rem', tilt: -4, dur: 4.9, delay: 0.9 },
-  { side: 'right', top: '61%', inset: '5.5vw', size: '6.25rem', tilt: 5, dur: 5.4, delay: 1.4 },
-  { side: 'left', top: '80%', inset: '10vw', size: '5.25rem', tilt: 8, dur: 4.6, delay: 0.5 },
+  { side: 'right', top: '6%', inset: '6vw', size: '6rem', tilt: 7, dur: 4.8, delay: 0.6 },
+  { side: 'right', top: '18%', inset: '12vw', size: '5.25rem', tilt: -8, dur: 4.2, delay: 0 },
+  { side: 'right', top: '31%', inset: '5vw', size: '5.5rem', tilt: -6, dur: 4.4, delay: 0.3 },
+  { side: 'right', top: '44%', inset: '11vw', size: '5.25rem', tilt: 6, dur: 5.2, delay: 1.1 },
+  { side: 'right', top: '57%', inset: '5.5vw', size: '6rem', tilt: 5, dur: 5.4, delay: 1.4 },
+  { side: 'right', top: '70%', inset: '11.5vw', size: '5.25rem', tilt: -4, dur: 4.9, delay: 0.9 },
+  { side: 'right', top: '83%', inset: '6vw', size: '5.5rem', tilt: 8, dur: 4.6, delay: 0.5 },
 ]
 // The big faint ones in the background: which partner, and where.
 const GHOSTS: ReadonlyArray<{ i: number; top: string; left: string; size: string; tilt: number; dur: number; delay: number }> = [
