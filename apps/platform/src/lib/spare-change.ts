@@ -17,7 +17,7 @@ export const REFERRAL_SHARE_LINE = 'Get $5 for each friend who joins with your l
 export const NEWSLETTER_OPT_IN = `Also send me ${NEWSLETTER_NAME}, our daily long-shot parlay email. 18+ only.`
 export const NEWSLETTER_UNDER_18 = `${NEWSLETTER_NAME} is 18+ only, so we left you off that list.`
 export const SNEAKERS_LINE = "You're also first in line for Sneakers."
-export const EXAMPLE_TICKET = { buyIn: '$0.89', payout: '$450,000' } as const
+export const EXAMPLE_TICKET = { buyIn: '$0.25', payout: '$80,000' } as const
 
 // The 50 states and DC. Any of them can join the waitlist; who gets which tickets is decided when an issue is sent.
 export const US_STATES: ReadonlyArray<readonly [code: string, name: string]> = [

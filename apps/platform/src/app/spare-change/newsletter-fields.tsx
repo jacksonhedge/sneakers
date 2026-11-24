@@ -4,7 +4,8 @@ import { CREAM, NAVY } from '../visuals'
 
 const sauce = 'var(--font-open-sauce), sans-serif'
 export const fieldClass = 'min-h-[3.25rem] w-full rounded-full px-6 text-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'
-export const fieldStyle = { background: CREAM, color: NAVY, border: `0.18rem solid ${NAVY}`, fontFamily: sauce } as const
+// The fill can be set per page with --field-bg (the newsletter page uses white); cream everywhere else.
+export const fieldStyle = { background: `var(--field-bg, ${CREAM})`, color: NAVY, border: `0.18rem solid ${NAVY}`, fontFamily: sauce } as const
 export const buttonClass = 'inline-flex min-h-[3.25rem] items-center justify-center gap-3 rounded-full px-8 text-lg font-bold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white disabled:opacity-70'
 export const buttonStyle = { background: CREAM, color: NAVY, border: `0.18rem solid ${NAVY}`, boxShadow: `0.25rem 0.3rem 0 ${NAVY}`, fontFamily: sauce } as const
 

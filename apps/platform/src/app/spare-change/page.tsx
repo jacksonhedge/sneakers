@@ -13,12 +13,14 @@ export const metadata: Metadata = { title: `${NEWSLETTER_NAME} · Sneakers`, des
 
 const peace = 'var(--font-peace), var(--font-open-sauce), sans-serif'
 const sauce = 'var(--font-open-sauce), sans-serif'
+// The newsletter's own lime (its email masthead), for the daily-reward pill.
+const LIME = '#C9F73A'
 const sticker = { fontFamily: peace, color: CREAM, WebkitTextStroke: `0.035em ${NAVY}`, paintOrder: 'stroke fill', textShadow: `0.06em 0.07em 0 ${NAVY}` } as const
 
 export default async function SpareChangePage({ searchParams }: { searchParams: Promise<{ ref?: string }> }) {
   const { ref } = await searchParams
   return (
-    <main className="relative overflow-hidden" style={{ background: BLUE, color: CREAM }}>
+    <main className="relative overflow-hidden" style={{ background: BLUE, color: CREAM, ['--field-bg' as string]: '#FFFFFF' }}>
       <PartnerFloat />
       <StoryFloat />
       <div className="relative z-10 mx-auto flex min-h-svh max-w-2xl flex-col items-center justify-center gap-8 px-[max(1.25rem,5vw)] py-12 text-center">
@@ -48,7 +50,7 @@ export default async function SpareChangePage({ searchParams }: { searchParams: 
       <p className="max-w-md text-xl font-semibold" style={{ fontFamily: sauce }}>
         {NEWSLETTER_PITCH}
       </p>
-      <p className="rounded-full px-4 py-2 text-base font-bold min-[400px]:px-6 min-[400px]:text-lg" style={{ background: CREAM, color: NAVY, border: `0.18rem solid ${NAVY}`, boxShadow: `0.25rem 0.3rem 0 ${NAVY}`, transform: 'rotate(1.5deg)', fontFamily: sauce }}>
+      <p className="rounded-full px-4 py-2 text-base font-bold min-[400px]:px-6 min-[400px]:text-lg" style={{ background: LIME, color: NAVY, border: `0.18rem solid ${NAVY}`, boxShadow: `0.25rem 0.3rem 0 ${NAVY}`, transform: 'rotate(1.5deg)', fontFamily: sauce }}>
         {NEWSLETTER_REWARDS}
       </p>
       <PartnerRow />
