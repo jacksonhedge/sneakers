@@ -9,7 +9,16 @@ import { MoreStories, StoryFloat, StoryRow } from './story-float'
 
 // The newsletter's own page: what it is, one example ticket, and one form that also puts the person on the Sneakers waitlist.
 // Not indexed and not linked from the home page unless NEXT_PUBLIC_SPARE_CHANGE is on.
-export const metadata: Metadata = { title: `${NEWSLETTER_NAME} · Sneakers`, description: 'A daily email of long-shot parlays, coming soon. 18+ only.', robots: { index: false } }
+// The link card (iMessage, X, Slack): the share line as the title, over the image in opengraph-image.tsx.
+const SHARE_TITLE = 'Your sports betting lottery ticket'
+const SHARE_DESCRIPTION = `${NEWSLETTER_NAME}: a daily email of long-shot parlays. A small buy-in, a big payout if it hits. 18+.`
+export const metadata: Metadata = {
+  title: `${NEWSLETTER_NAME} · Sneakers`,
+  description: 'A daily email of long-shot parlays, coming soon. 18+ only.',
+  robots: { index: false },
+  openGraph: { title: SHARE_TITLE, description: SHARE_DESCRIPTION, url: '/spare-change', siteName: NEWSLETTER_NAME, type: 'website' },
+  twitter: { card: 'summary_large_image', title: SHARE_TITLE, description: SHARE_DESCRIPTION },
+}
 
 const peace = 'var(--font-peace), var(--font-open-sauce), sans-serif'
 const sauce = 'var(--font-open-sauce), sans-serif'
