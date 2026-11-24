@@ -6,7 +6,9 @@ import { EXAMPLE_TICKET, NEWSLETTER_NAME } from '@/lib/spare-change'
 // The card iMessage, X and Slack show for a /spare-change link (with or without ?ref=): the page's sticker look on its blue, the
 // name, the lime line, the example ticket, and the 18+ and help lines. Next serves it as og:image (twitter-image.tsx re-exports it).
 
-export const SHARE_LINE = 'Your sports betting lottery ticket'
+export const SHARE_LINE = 'A Daily Sports Betting Lottery ticket newsletter'
+// The sticker shows it on two lines.
+const SHARE_LINES = ['A Daily Sports Betting', 'Lottery ticket newsletter'] as const
 export const alt = `${NEWSLETTER_NAME}: ${SHARE_LINE}. Example ticket ${EXAMPLE_TICKET.buyIn} buy-in, ${EXAMPLE_TICKET.payout} payout if it hits. 18+.`
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
@@ -34,8 +36,12 @@ export default async function Image() {
             <span>Millionaire</span>
           </div>
           <div style={{ display: 'flex' }}>
-            <div style={{ display: 'flex', background: LIME, border: `4px solid ${NAVY}`, borderRadius: 999, padding: '12px 28px', fontSize: 31, fontWeight: 700, whiteSpace: 'nowrap', boxShadow: `6px 7px 0 ${NAVY}`, transform: 'rotate(-1.5deg)' }}>
-              {SHARE_LINE}
+            <div style={{ display: 'flex', flexDirection: 'column', background: LIME, border: `4px solid ${NAVY}`, borderRadius: 30, padding: '12px 30px', fontSize: 32, lineHeight: 1.2, boxShadow: `6px 7px 0 ${NAVY}`, transform: 'rotate(-1.5deg)' }}>
+              {SHARE_LINES.map((l) => (
+                <span key={l} style={{ whiteSpace: 'nowrap' }}>
+                  {l}
+                </span>
+              ))}
             </div>
           </div>
           <div style={{ display: 'flex', fontSize: 20, color: CREAM, whiteSpace: 'nowrap' }}>sneakersterminal.com · 18+ · Gambling problem? Call 1-800-GAMBLER</div>

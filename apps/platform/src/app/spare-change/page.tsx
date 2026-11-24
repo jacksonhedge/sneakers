@@ -10,7 +10,7 @@ import { MoreStories, StoryFloat, StoryRow } from './story-float'
 // The newsletter's own page: what it is, one example ticket, and one form that also puts the person on the Sneakers waitlist.
 // Not indexed and not linked from the home page unless NEXT_PUBLIC_SPARE_CHANGE is on.
 // The link card (iMessage, X, Slack): the share line as the title, over the image in opengraph-image.tsx.
-const SHARE_TITLE = 'Your sports betting lottery ticket'
+const SHARE_TITLE = 'A Daily Sports Betting Lottery ticket newsletter'
 const SHARE_DESCRIPTION = `${NEWSLETTER_NAME}: a daily email of long-shot parlays. A small buy-in, a big payout if it hits. 18+.`
 export const metadata: Metadata = {
   title: `${NEWSLETTER_NAME} · Sneakers`,
