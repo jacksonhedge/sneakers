@@ -9,7 +9,7 @@ import { EXAMPLE_TICKET, NEWSLETTER_NAME } from '@/lib/spare-change'
 export const SHARE_LINE = 'A Daily Sports Betting Lottery ticket newsletter'
 // The sticker shows it on two lines.
 const SHARE_LINES = ['A Daily Sports Betting', 'Lottery ticket newsletter'] as const
-export const alt = `${NEWSLETTER_NAME}: ${SHARE_LINE}. Example ticket ${EXAMPLE_TICKET.buyIn} buy-in, ${EXAMPLE_TICKET.payout} payout if it hits. 18+.`
+export const alt = `Sneakers. ${NEWSLETTER_NAME}: ${SHARE_LINE}. One quarter, one dream: ${EXAMPLE_TICKET.buyIn} buy-in, ${EXAMPLE_TICKET.payout} payout if it hits. 18+.`
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -22,18 +22,27 @@ const LIME = '#C9F73A'
 const sticker = `3px 3px 0 ${NAVY}, -3px 3px 0 ${NAVY}, 3px -3px 0 ${NAVY}, -3px -3px 0 ${NAVY}, 7px 9px 0 ${NAVY}`
 
 export default async function Image() {
-  const [peace, sauce] = await Promise.all([
+  const [peace, sauce, shoes] = await Promise.all([
     readFile(join(process.cwd(), 'src/fonts/PeaceSans.otf')),
     readFile(join(process.cwd(), 'src/fonts/OpenSauceSans-Regular.woff')),
+    // The Sneakers shoes on their red tile, shown as a small app-icon sticker beside the wordmark.
+    readFile(join(process.cwd(), 'public/sneakers-shoes-s.png')),
   ])
+  const shoesSrc = `data:image/png;base64,${shoes.toString('base64')}`
   return new ImageResponse(
     (
       <div style={{ width: '100%', height: '100%', display: 'flex', background: BLUE, padding: '56px 64px', fontFamily: 'Sauce', color: NAVY }}>
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', width: 660 }}>
-          <div style={{ display: 'flex', fontFamily: 'Peace', fontSize: 34, color: CREAM, textShadow: `2px 2px 0 ${NAVY}, -2px 2px 0 ${NAVY}, 2px -2px 0 ${NAVY}, -2px -2px 0 ${NAVY}, 4px 5px 0 ${NAVY}` }}>Sneakers</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <div style={{ display: 'flex', width: 78, height: 78, background: RED, borderRadius: 18, border: `3px solid ${NAVY}`, boxShadow: `4px 5px 0 ${NAVY}`, transform: 'rotate(-6deg)', overflow: 'hidden' }}>
+              <img src={shoesSrc} width={72} height={72} alt="" />
+            </div>
+            <div style={{ display: 'flex', fontFamily: 'Peace', fontSize: 38, color: CREAM, textShadow: `2px 2px 0 ${NAVY}, -2px 2px 0 ${NAVY}, 2px -2px 0 ${NAVY}, -2px -2px 0 ${NAVY}, 4px 5px 0 ${NAVY}` }}>Sneakers</div>
+          </div>
           <div style={{ display: 'flex', flexDirection: 'column', fontFamily: 'Peace', fontSize: 80, lineHeight: 1, color: CREAM, textShadow: sticker }}>
             <span>Spare Change</span>
-            <span>Millionaire</span>
+            <span style={{ color: LIME }}>Millionaire</span>
           </div>
           <div style={{ display: 'flex' }}>
             <div style={{ display: 'flex', flexDirection: 'column', background: LIME, border: `4px solid ${NAVY}`, borderRadius: 30, padding: '12px 30px', fontSize: 32, lineHeight: 1.2, boxShadow: `6px 7px 0 ${NAVY}`, transform: 'rotate(-1.5deg)' }}>
@@ -48,7 +57,8 @@ export default async function Image() {
         </div>
         <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'flex-end' }}>
           <div style={{ display: 'flex', flexDirection: 'column', width: 390, background: CREAM, border: `5px solid ${NAVY}`, borderRadius: 34, boxShadow: `10px 12px 0 ${NAVY}`, padding: '30px 34px', transform: 'rotate(3deg)' }}>
-            <div style={{ display: 'flex', fontSize: 22, letterSpacing: 3, color: RED }}>EXAMPLE TICKET</div>
+            {/* Still an illustration, not a real ticket: "one quarter, one dream", after the long-shot posts on the page. */}
+            <div style={{ display: 'flex', fontSize: 21, letterSpacing: 1.5, color: RED, whiteSpace: 'nowrap' }}>ONE QUARTER. ONE DREAM.</div>
             <div style={{ display: 'flex', flexDirection: 'column', fontFamily: 'Peace', fontSize: 62, lineHeight: 1.08, marginTop: 14 }}>
               <span style={{ whiteSpace: 'nowrap' }}>{EXAMPLE_TICKET.buyIn} →</span>
               <span style={{ whiteSpace: 'nowrap' }}>{EXAMPLE_TICKET.payout}</span>
