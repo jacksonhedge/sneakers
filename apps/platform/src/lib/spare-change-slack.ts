@@ -1,11 +1,13 @@
 import { getServerClient } from './supabase-server'
 
-// A Slack message for every NEW Spare Change Millionaire subscriber (a repeat signup with the same email sends nothing), posted to the
-// Incoming Webhook in SPARE_CHANGE_SLACK_WEBHOOK_URL (#spare-change-signups). Unset = off. Best effort: it runs after the signup has
-// answered (next/server `after`), and a failure is logged without the webhook address and never touches the signup.
+// Slack messages to the Incoming Webhook in SPARE_CHANGE_SLACK_WEBHOOK_URL (#spare-change-signups). Unset = off. Best effort: they run
+// after the request has answered (next/server `after`), and a failure is logged without the webhook address and never touches the request.
 //
-// What it shows: first name and last initial, state, age, who referred them, and how many subscribers there are now. Never the email
-// address or the birthday.
+// 1. Every NEW Spare Change Millionaire subscriber (a repeat signup with the same email sends nothing): first name and last initial,
+//    state, age, who referred them, and how many subscribers there are now.
+// 2. Every referral that pays out (a referred friend's first slip verified, the referrer's $5 granted): both first names and initials,
+//    the amount, and how many of the referrer's friends now count.
+// Never an email address, a birthday or a Venmo username.
 
 export interface NewSubscriber {
   name: string
@@ -25,6 +27,9 @@ export function shortName(name: string): string {
 
 /** Slack mrkdwn treats & < > as markup: escape anything a person typed. */
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+
+/** 500 -> "$5", 250 -> "$2.50". */
+const usd = (cents: number) => `$${(cents / 100).toFixed(cents % 100 ? 2 : 0)}`
 
 export function signupSlackText(s: NewSubscriber, extra: { referrerName: string | null; total: number | null }): string {
   const who = `*${esc(shortName(s.name))}* (${esc(s.state)}, ${s.age})`
@@ -77,4 +82,45 @@ export async function notifyNewSubscriber(s: NewSubscriber, env: Record<string, 
     // The message still goes, just without the extras.
   }
   await postSlack(url, signupSlackText(s, { referrerName, total }))
+}
+
+export interface ReferralEarned {
+  referrerId: string
+  friendId: string
+  amountCents: number
+}
+
+export function referralSlackText(i: { referrerName: string | null; friendName: string | null; amountCents: number; counted: number | null; max: number }): string {
+  const referrer = i.referrerName ? `*${esc(shortName(i.referrerName))}*` : 'a referrer'
+  const friend = i.friendName ? ` *${esc(shortName(i.friendName))}*` : ''
+  const of = i.counted !== null ? ` (${i.counted} of ${i.max} friends)` : ''
+  return `:handshake: Referral earned: ${referrer} gets ${usd(i.amountCents)}. Their friend${friend} had a first slip verified${of}`
+}
+
+/** Look up both names and how many of the referrer's friends count now, then post. Never throws. */
+export async function notifyReferralEarned(i: ReferralEarned, max: number, env: Record<string, string | undefined> = process.env, fetchImpl: typeof fetch = fetch): Promise<void> {
+  const url = env.SPARE_CHANGE_SLACK_WEBHOOK_URL?.trim()
+  if (!webhookOk(url)) return
+  let referrerName: string | null = null
+  let friendName: string | null = null
+  let counted: number | null = null
+  try {
+    const db = getServerClient()
+    const [people, credits] = await Promise.all([
+      db.from('newsletter_waitlist').select('id, name').in('id', [i.referrerId, i.friendId]),
+      // The same count the referral rule uses (creditedFriends): qualified friends who earned something.
+      db.from('sc_referral_credits').select('id', { count: 'exact', head: true }).eq('referrer_id', i.referrerId).not('qualified_at', 'is', null).or('cents_granted.gt.0,days_granted.gt.0'),
+    ])
+    const rows = (people.data ?? []) as Array<{ id: string; name: unknown }>
+    const nameOf = (id: string) => {
+      const n = rows.find((r) => r.id === id)?.name
+      return typeof n === 'string' ? n : null
+    }
+    referrerName = nameOf(i.referrerId)
+    friendName = nameOf(i.friendId)
+    counted = credits.error ? null : credits.count
+  } catch {
+    // The message still goes, just without the names.
+  }
+  await postSlack(url, referralSlackText({ referrerName, friendName, amountCents: i.amountCents, counted, max }), fetchImpl)
 }
