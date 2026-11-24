@@ -2,7 +2,7 @@ import { normalizeEmail } from './email-validation'
 import { type WaitlistJoined } from './sneakers-waitlist'
 import { newClaimToken } from './spare-change-claim'
 import { newLinkToken } from './spare-change-core'
-import { NEWSLETTER_MIN_AGE, NEWSLETTER_SOURCE, parseBirthday, parseName, parseReferrerName, parseState } from './spare-change'
+import { NEWSLETTER_MIN_AGE, NEWSLETTER_SOURCE, parseBirthday, parseName, parsePhone, parseReferrerName, parseState } from './spare-change'
 import type { NewSubscriber } from './spare-change-slack'
 import { getServerClient } from './supabase-server'
 import { parseRefParam } from './waitlist-referral'
@@ -13,13 +13,29 @@ import { parseRefParam } from './waitlist-referral'
 // An adult signup that stored cleanly gets the welcome email with their claim link (at most one per 24 hours: see spare-change-email.ts).
 
 export type SpareChangeSignup =
-  | { ok: true; email: string; newsletter: true; name: string; age: number; birthDate: string; state: string; referredBy: string | null; referredByName: string | null }
+  | {
+      ok: true
+      email: string
+      newsletter: true
+      name: string
+      age: number
+      birthDate: string
+      state: string
+      referredBy: string | null
+      referredByName: string | null
+      /** "+1" and ten digits, or null when none was given. */
+      phone: string | null
+      /** The Terms box was ticked (the /spare-change and /waitlist form requires it; other forms don't send it). */
+      termsAccepted: boolean
+      /** "Tell me when the Sneakers app launches" was ticked. */
+      launchAlerts: boolean
+    }
   | { ok: true; email: string; newsletter: false; reason: 'under_18'; referredBy: string | null }
-export type SpareChangeInvalid = { ok: false; error: 'invalid_email' | 'invalid_birthday' | 'invalid_name' | 'invalid_state' }
+export type SpareChangeInvalid = { ok: false; error: 'invalid_email' | 'invalid_birthday' | 'invalid_name' | 'invalid_state' | 'invalid_phone' }
 
-/** Pure check of a posted body: email, then birthday (the age is worked out from it, on `today`), then (18 and over only) name and state. Under 18 is a Sneakers-only signup. */
+/** Pure check of a posted body: email, then birthday (the age is worked out from it, on `today`), then (18 and over only) name, state and the optional phone. Under 18 is a Sneakers-only signup. */
 export function validateSpareChange(body: unknown, today?: string): SpareChangeSignup | SpareChangeInvalid {
-  const b = (body && typeof body === 'object' ? body : {}) as { name?: unknown; email?: unknown; state?: unknown; birthday?: unknown; ref?: unknown; referrerName?: unknown }
+  const b = (body && typeof body === 'object' ? body : {}) as { name?: unknown; email?: unknown; state?: unknown; birthday?: unknown; ref?: unknown; referrerName?: unknown; phone?: unknown; terms?: unknown; launchAlerts?: unknown }
   const email = normalizeEmail(b.email)
   if (!email) return { ok: false, error: 'invalid_email' }
   const born = parseBirthday(b.birthday, today)
@@ -31,8 +47,10 @@ export function validateSpareChange(body: unknown, today?: string): SpareChangeS
   if (!name) return { ok: false, error: 'invalid_name' }
   const state = parseState(b.state)
   if (!state) return { ok: false, error: 'invalid_state' }
-  // Optional, and never a reason to refuse a signup: a name that is too long or not text is simply left off.
-  return { ok: true, email, newsletter: true, name, age, birthDate, state, referredBy, referredByName: parseReferrerName(b.referrerName) }
+  const phone = parsePhone(b.phone)
+  if (!phone.ok) return { ok: false, error: 'invalid_phone' }
+  // Optional, and never a reason to refuse a signup: a name that is too long or not text is simply left off. Only a real true counts as a tick.
+  return { ok: true, email, newsletter: true, name, age, birthDate, state, referredBy, referredByName: parseReferrerName(b.referrerName), phone: phone.phone, termsAccepted: b.terms === true, launchAlerts: b.launchAlerts === true }
 }
 
 export interface NewsletterRow {
@@ -51,6 +69,12 @@ export interface NewsletterRow {
   linkToken: string
   /** The newsletter member who referred them (their id in this same table), or null. Stored only when the row is new. */
   referredByMemberId: string | null
+  /** Their phone, "+1" and ten digits, or null. Stored only when the row is new, like the rest. */
+  phone: string | null
+  /** When they ticked the Terms box (ISO time), or null when the form didn't ask. Stored only when the row is new. */
+  termsAcceptedAt: string | null
+  /** They asked to hear when the Sneakers app launches. Stored only when the row is new. */
+  launchAlerts: boolean
 }
 
 export interface SpareChangeDeps {
@@ -73,7 +97,7 @@ export async function upsertNewsletterRow(row: NewsletterRow): Promise<'new' | '
   try {
     const { data, error } = await getServerClient()
       .from('newsletter_waitlist')
-      .upsert({ email: row.email, name: row.name, age_at_signup: row.ageAtSignup, birth_date: row.birthDate, state: row.state, source: NEWSLETTER_SOURCE, referred_by_code: row.referredByCode, referred_by_name: row.referredByName, claim_token: row.claimToken, link_token: row.linkToken, referred_by_member_id: row.referredByMemberId }, { onConflict: 'email', ignoreDuplicates: true })
+      .upsert({ email: row.email, name: row.name, age_at_signup: row.ageAtSignup, birth_date: row.birthDate, state: row.state, source: NEWSLETTER_SOURCE, referred_by_code: row.referredByCode, referred_by_name: row.referredByName, claim_token: row.claimToken, link_token: row.linkToken, referred_by_member_id: row.referredByMemberId, phone: row.phone, terms_accepted_at: row.termsAcceptedAt, launch_alerts: row.launchAlerts }, { onConflict: 'email', ignoreDuplicates: true })
       // A skipped duplicate comes back as no rows, so this also says whether the row is new.
       .select('id')
     if (error) {
@@ -117,7 +141,7 @@ export async function joinSpareChange(signup: SpareChangeSignup, context: { refe
   if (signup.newsletter) {
     // Who referred them, as a newsletter member. Looking this up can never fail the signup: no answer just means no referrer on the row.
     const referredByMemberId = signup.referredBy ? await deps.resolveReferrer(signup.referredBy, signup.email).catch(() => null) : null
-    const stored = await deps.upsertNewsletter({ email: signup.email, name: signup.name, ageAtSignup: signup.age, birthDate: signup.birthDate, state: signup.state, referredByCode: signup.referredBy, referredByName: signup.referredByName, claimToken: newClaimToken(), linkToken: newLinkToken(), referredByMemberId })
+    const stored = await deps.upsertNewsletter({ email: signup.email, name: signup.name, ageAtSignup: signup.age, birthDate: signup.birthDate, state: signup.state, referredByCode: signup.referredBy, referredByName: signup.referredByName, claimToken: newClaimToken(), linkToken: newLinkToken(), referredByMemberId, phone: signup.phone, termsAcceptedAt: signup.termsAccepted ? new Date().toISOString() : null, launchAlerts: signup.launchAlerts })
     if (!stored) return { ok: false }
     if (stored === 'new') {
       try {

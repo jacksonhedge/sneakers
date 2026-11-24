@@ -14,7 +14,7 @@ export type Problems = Partial<Record<SignupField, string>>
 
 /** Which field a 400 from the route is about. */
 export function problemsFromError(error: string | undefined): Problems {
-  const field = ({ invalid_name: 'name', invalid_email: 'email', invalid_state: 'state', invalid_birthday: 'birthday' } as const)[error ?? '']
+  const field = ({ invalid_name: 'name', invalid_email: 'email', invalid_state: 'state', invalid_birthday: 'birthday', invalid_phone: 'phone' } as const)[error ?? '']
   return field ? { [field]: SIGNUP_FIELD_PROBLEM[field] } : {}
 }
 
@@ -24,12 +24,15 @@ export function focusFirstProblem(idPrefix: string, problems: Problems, order: r
   if (first) document.getElementById(`${idPrefix}-${first}`)?.focus()
 }
 
+// Error messages are red with white text (about 5.6:1), so they stand out from the cream and white of the form.
+const ERROR_RED = '#C62828'
+
 /** The message under a field: read out when it appears, and tied to its field with aria-describedby. */
 export function FieldError({ id, text }: { id: string; text: string | undefined }) {
   if (!text) return null
   return (
-    <p id={id} role="alert" className="-mt-1 flex items-center gap-2 self-start rounded-2xl px-4 py-1.5 text-left text-base font-bold" style={{ background: CREAM, color: NAVY, fontFamily: sauce }}>
-      <span aria-hidden="true" className="inline-flex size-5 shrink-0 items-center justify-center rounded-full text-sm" style={{ background: NAVY, color: CREAM }}>
+    <p id={id} role="alert" className="-mt-1 flex items-center gap-2 self-start rounded-2xl px-4 py-1.5 text-left text-base font-bold" style={{ background: ERROR_RED, color: '#FFFFFF', fontFamily: sauce }}>
+      <span aria-hidden="true" className="inline-flex size-5 shrink-0 items-center justify-center rounded-full text-sm" style={{ background: '#FFFFFF', color: ERROR_RED }}>
         !
       </span>
       {text}
@@ -102,6 +105,32 @@ export function StateBirthdayFields({ idPrefix, state, onState, birthday, onBirt
       </label>
       <input id={`${idPrefix}-birthday`} name="birthday" type="date" autoComplete="bday" min="1900-01-01" max={todayEastern()} value={birthday} onChange={(e) => onBirthday(e.target.value)} aria-invalid={birthdayError ? true : undefined} aria-describedby={birthdayError ? `${idPrefix}-birthday-error` : undefined} className={fieldClass} style={fieldStyle} />
       <FieldError id={`${idPrefix}-birthday-error`} text={birthdayError} />
+    </>
+  )
+}
+
+/** Optional: a US phone number. Kept as typed here; the server stores it as +1 and ten digits. */
+export function PhoneField({ idPrefix, phone, onPhone, error }: { idPrefix: string; phone: string; onPhone: (v: string) => void; error?: string }) {
+  return (
+    <>
+      <label htmlFor={`${idPrefix}-phone`} className="sr-only">
+        Phone number (optional)
+      </label>
+      <input id={`${idPrefix}-phone`} name="phone" type="tel" inputMode="tel" autoComplete="tel" maxLength={20} value={phone} onChange={(e) => onPhone(e.target.value)} placeholder="Phone number (optional)" aria-invalid={error ? true : undefined} aria-describedby={error ? `${idPrefix}-phone-error` : undefined} className={fieldClass} style={fieldStyle} />
+      <FieldError id={`${idPrefix}-phone-error`} text={error} />
+    </>
+  )
+}
+
+/** A tick box with its words beside it (the whole line toggles it; links inside open on their own). */
+export function ConsentBox({ id, checked, onChecked, error, children }: { id: string; checked: boolean; onChecked: (v: boolean) => void; error?: string; children: React.ReactNode }) {
+  return (
+    <>
+      <label htmlFor={id} className="flex cursor-pointer items-start gap-3 self-start px-1 text-left text-base font-semibold leading-snug" style={{ fontFamily: sauce }}>
+        <input id={id} type="checkbox" checked={checked} onChange={(e) => onChecked(e.target.checked)} aria-invalid={error ? true : undefined} aria-describedby={error ? `${id}-error` : undefined} className="mt-0.5 size-6 shrink-0 cursor-pointer accent-[#0B1E3F] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" />
+        <span>{children}</span>
+      </label>
+      <FieldError id={`${id}-error`} text={error} />
     </>
   )
 }

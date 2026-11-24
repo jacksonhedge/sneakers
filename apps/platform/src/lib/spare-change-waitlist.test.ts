@@ -21,6 +21,7 @@ import {
   todayEastern,
   parseName,
   parseState,
+  parsePhone,
   greetingName,
   savedScreenCopy,
   signupProblems,
@@ -116,7 +117,7 @@ const good = { name: ' Sam Lee ', email: ' Sam@School.edu ', state: 'nj', birthd
 
 describe('checking a signup before anything is stored', () => {
   it('normalizes a good one', () => {
-    expect(validateSpareChange(good, TODAY)).toEqual({ ok: true, email: 'sam@school.edu', newsletter: true, name: 'Sam Lee', age: 19, birthDate: '2007-06-01', state: 'NJ', referredBy: 'K7M3QX', referredByName: null })
+    expect(validateSpareChange(good, TODAY)).toEqual({ ok: true, email: 'sam@school.edu', newsletter: true, name: 'Sam Lee', age: 19, birthDate: '2007-06-01', state: 'NJ', referredBy: 'K7M3QX', referredByName: null, phone: null, termsAccepted: false, launchAlerts: false })
     expect(validateSpareChange({ ...good, referrerName: '  Jamie Fox ' }, TODAY)).toMatchObject({ ok: true, referredByName: 'Jamie Fox' })
     for (const referrerName of ['', '   ', 42, 'a'.repeat(81)]) expect(validateSpareChange({ ...good, referrerName }, TODAY), String(referrerName)).toMatchObject({ ok: true, referredByName: null })
     expect(validateSpareChange({ ...good, birthday: '2008-11-20' }, TODAY)).toMatchObject({ ok: true, newsletter: true, age: 18 })
@@ -150,6 +151,24 @@ describe('checking a signup before anything is stored', () => {
   it('drops a ref that is not a code', () => {
     expect(validateSpareChange({ ...good, ref: "x';--" }, TODAY)).toMatchObject({ ok: true, referredBy: null })
   })
+  it('keeps an optional US phone as +1 and ten digits, and refuses one that is not a phone number', () => {
+    expect(validateSpareChange({ ...good, phone: '(412) 555-0199' }, TODAY)).toMatchObject({ ok: true, phone: '+14125550199' })
+    expect(validateSpareChange({ ...good, phone: '' }, TODAY)).toMatchObject({ ok: true, phone: null })
+    expect(validateSpareChange({ ...good, phone: '555-0199' }, TODAY)).toEqual({ ok: false, error: 'invalid_phone' })
+  })
+  it('records the Terms and the launch-alert boxes exactly as sent, and only true counts', () => {
+    expect(validateSpareChange({ ...good, terms: true, launchAlerts: true }, TODAY)).toMatchObject({ ok: true, termsAccepted: true, launchAlerts: true })
+    expect(validateSpareChange({ ...good, terms: 'yes', launchAlerts: 1 }, TODAY)).toMatchObject({ ok: true, termsAccepted: false, launchAlerts: false })
+  })
+})
+
+describe('the phone box', () => {
+  it('is optional, US only, stored as +1 and ten digits', () => {
+    expect(parsePhone('')).toEqual({ ok: true, phone: null })
+    expect(parsePhone(undefined)).toEqual({ ok: true, phone: null })
+    for (const raw of ['4125550199', '412-555-0199', '(412) 555-0199', '+1 412 555 0199', '1-412-555-0199']) expect(parsePhone(raw), raw).toEqual({ ok: true, phone: '+14125550199' })
+    for (const raw of ['555-0199', '0125550199', '1125550199', '44 20 7946 0958', '412555019912', 'call me', 42]) expect(parsePhone(raw), String(raw)).toEqual({ ok: false })
+  })
 })
 
 function fakes(over: Partial<SpareChangeDeps> = {}) {
@@ -163,7 +182,7 @@ function fakes(over: Partial<SpareChangeDeps> = {}) {
   return deps
 }
 const context = { referrer: 'https://sneakersterminal.com/spare-change', ipCountry: 'US' }
-const adult = { ok: true, email: 'sam@school.edu', newsletter: true, name: 'Sam Lee', age: 19, birthDate: '2007-06-01', state: 'NJ', referredBy: 'ABCDEF', referredByName: 'Jamie Fox' } as const
+const adult = { ok: true, email: 'sam@school.edu', newsletter: true, name: 'Sam Lee', age: 19, birthDate: '2007-06-01', state: 'NJ', referredBy: 'ABCDEF', referredByName: 'Jamie Fox', phone: null, termsAccepted: false, launchAlerts: false } as const
 const minor = { ok: true, email: 'sam@school.edu', newsletter: false, reason: 'under_18', referredBy: null } as const
 
 describe('joining both lists with one form', () => {
@@ -180,9 +199,14 @@ describe('joining both lists with one form', () => {
   it('a new adult lands on the newsletter list and the Sneakers waitlist, and gets their code', async () => {
     const deps = fakes()
     expect(await joinSpareChange(adult, context, deps)).toEqual({ ok: true, existing: false, code: 'K7M3QX', newsletter: true, welcome: 'sent' })
-    expect(deps.upsertNewsletter).toHaveBeenCalledWith({ email: 'sam@school.edu', name: 'Sam Lee', ageAtSignup: 19, birthDate: '2007-06-01', state: 'NJ', referredByCode: 'ABCDEF', referredByName: 'Jamie Fox', claimToken: expect.stringMatching(/^[A-Za-z0-9_-]{32}$/), linkToken: expect.stringMatching(/^[A-Za-z0-9_-]{32}$/), referredByMemberId: null })
+    expect(deps.upsertNewsletter).toHaveBeenCalledWith({ email: 'sam@school.edu', name: 'Sam Lee', ageAtSignup: 19, birthDate: '2007-06-01', state: 'NJ', referredByCode: 'ABCDEF', referredByName: 'Jamie Fox', claimToken: expect.stringMatching(/^[A-Za-z0-9_-]{32}$/), linkToken: expect.stringMatching(/^[A-Za-z0-9_-]{32}$/), referredByMemberId: null, phone: null, termsAcceptedAt: null, launchAlerts: false })
     expect(deps.welcome).toHaveBeenCalledWith('sam@school.edu')
     expect(deps.addToSneakers).toHaveBeenCalledWith({ email: 'sam@school.edu', referrer: context.referrer, ipCountry: 'US', referredBy: 'ABCDEF' })
+  })
+  it('stores the phone, when the Terms were agreed to, and the launch-alert choice', async () => {
+    const deps = fakes()
+    await joinSpareChange({ ...adult, phone: '+14125550199', termsAccepted: true, launchAlerts: true }, context, deps)
+    expect(deps.upsertNewsletter).toHaveBeenCalledWith(expect.objectContaining({ phone: '+14125550199', termsAcceptedAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T/), launchAlerts: true }))
   })
   it('someone already on the Sneakers waitlist can still opt in (no code is handed back for an address already on the list)', async () => {
     const deps = fakes({ addToSneakers: vi.fn(async () => ({ ok: true as const, existing: true, code: null })) })
@@ -315,6 +339,17 @@ describe('what the form says about each field, before anything is sent', () => {
   })
   it('under 18 needs only an email and a birthday (that person joins the Sneakers waitlist only)', () => {
     expect(signupProblems({ name: '', email: 'sam@school.edu', state: '', birthday: '2010-06-01' }, TODAY)).toEqual({})
+  })
+  it('a form that asks for the phone and the boxes checks them too: a bad phone, the subscribe box and the Terms box', () => {
+    const asked = { ...ok, phone: '', subscribe: true, terms: true }
+    expect(signupProblems(asked, TODAY)).toEqual({})
+    expect(signupProblems({ ...asked, phone: '555-0199', subscribe: false, terms: false }, TODAY)).toEqual({
+      phone: 'That phone number does not look right.',
+      subscribe: 'Tick this to get the email.',
+      terms: 'Agree to the Terms to join.',
+    })
+    // Under 18 joins the Sneakers waitlist only, so the subscribe box doesn't apply, but the Terms still do.
+    expect(signupProblems({ ...asked, name: '', state: '', birthday: '2010-06-01', subscribe: false, terms: false }, TODAY)).toEqual({ terms: 'Agree to the Terms to join.' })
   })
 })
 

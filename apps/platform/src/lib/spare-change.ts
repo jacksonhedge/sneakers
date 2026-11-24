@@ -47,6 +47,18 @@ export function parseName(raw: unknown): string | null {
   return name.length >= 1 && name.length <= NAME_MAX_LENGTH ? name : null
 }
 
+/**
+ * An optional US phone number -> "+1" and ten digits. Blank (or missing) is fine: { ok: true, phone: null }. Anything else that isn't a US
+ * number (ten digits, or eleven starting with 1, any punctuation; the area code and exchange can't start with 0 or 1) is { ok: false }.
+ */
+export function parsePhone(raw: unknown): { ok: true; phone: string | null } | { ok: false } {
+  if (raw === undefined || raw === null || (typeof raw === 'string' && raw.trim() === '')) return { ok: true, phone: null }
+  if (typeof raw !== 'string' || !/^[\d\s()+.-]{7,20}$/.test(raw.trim())) return { ok: false }
+  let digits = raw.replace(/\D/g, '')
+  if (digits.length === 11 && digits.startsWith('1')) digits = digits.slice(1)
+  return /^[2-9]\d{2}[2-9]\d{6}$/.test(digits) ? { ok: true, phone: `+1${digits}` } : { ok: false }
+}
+
 /** The name of whoever told them about the newsletter, as typed: optional, trimmed, up to 80 characters. '' or anything else -> null. */
 export function parseReferrerName(raw: unknown): string | null {
   if (typeof raw !== 'string') return null
@@ -100,22 +112,33 @@ export const creditedReferrals = (n: number): number => Math.min(Math.max(Number
 export const friendsJoinedText = (referrals: number): string => `${creditedReferrals(referrals)} of ${MAX_CREDITED_REFERRALS} friends joined.`
 
 // What the form says about each field before anything is sent: the same checks the route makes, all at once. Someone whose birthday makes them
-// 13 to 17 needs only an email, because that person joins the Sneakers waitlist only. Keys come out in the order the fields are checked: name, email, state, birthday.
-export type SignupField = 'name' | 'email' | 'state' | 'birthday'
+// 13 to 17 needs only an email, because that person joins the Sneakers waitlist only. Keys come out in the order the fields sit on the page.
+// The phone and the two boxes are checked only by a form that has them (the /spare-change and /waitlist page): the subscribe box and the
+// Terms box must be ticked there, and a phone, when one is typed, must be a US number. The Terms apply under 18 too; the subscribe box doesn't.
+export type SignupField = 'name' | 'email' | 'phone' | 'state' | 'birthday' | 'subscribe' | 'terms'
 export const SIGNUP_FIELD_PROBLEM: Record<SignupField, string> = {
   name: 'Add your name.',
   email: 'That email does not look right.',
+  phone: 'That phone number does not look right.',
   state: 'Pick your state.',
   birthday: 'Add your birthday.',
+  subscribe: 'Tick this to get the email.',
+  terms: 'Agree to the Terms to join.',
 }
-export function signupProblems(v: { name: string; email: string; state: string; birthday: string }, today: string = todayEastern()): Partial<Record<SignupField, string>> {
+export function signupProblems(
+  v: { name: string; email: string; state: string; birthday: string; phone?: string; subscribe?: boolean; terms?: boolean },
+  today: string = todayEastern(),
+): Partial<Record<SignupField, string>> {
   const age = parseBirthday(v.birthday, today)?.age ?? null
   const adult = age === null || age >= NEWSLETTER_MIN_AGE
   const bad: SignupField[] = []
   if (adult && !parseName(v.name)) bad.push('name')
   if (!normalizeEmail(v.email)) bad.push('email')
+  if (adult && v.phone !== undefined && !parsePhone(v.phone).ok) bad.push('phone')
   if (adult && !parseState(v.state)) bad.push('state')
   if (age === null) bad.push('birthday')
+  if (adult && v.subscribe === false) bad.push('subscribe')
+  if (v.terms === false) bad.push('terms')
   return Object.fromEntries(bad.map((f) => [f, SIGNUP_FIELD_PROBLEM[f]]))
 }
 
