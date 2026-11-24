@@ -29,7 +29,11 @@ export default async function Image() {
   const shoesSrc = `data:image/png;base64,${shoes.toString('base64')}`
   return new ImageResponse(
     (
-      <div style={{ width: '100%', height: '100%', display: 'flex', background: BLUE, padding: '56px 64px', fontFamily: 'Sauce', color: NAVY }}>
+      <div style={{ width: '100%', height: '100%', display: 'flex', position: 'relative', background: BLUE, padding: '44px 64px 134px', fontFamily: 'Sauce', color: NAVY }}>
+        {/* The link and the help line on a white strip along the bottom, so they read at a glance. */}
+        <div style={{ position: 'absolute', left: 64, bottom: 40, display: 'flex', background: '#FFFFFF', color: NAVY, border: `3px solid ${NAVY}`, borderRadius: 999, boxShadow: `4px 5px 0 ${NAVY}`, padding: '9px 22px', fontSize: 21, whiteSpace: 'nowrap' }}>
+          sneakersterminal.com · 18+ · Gambling problem? Call 1-800-GAMBLER
+        </div>
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', width: 620 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -47,7 +51,6 @@ export default async function Image() {
               {SHARE_LINE}
             </div>
           </div>
-          <div style={{ display: 'flex', fontSize: 19, color: CREAM, whiteSpace: 'nowrap' }}>sneakersterminal.com · 18+ · Gambling problem? Call 1-800-GAMBLER</div>
         </div>
         <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'flex-end' }}>
           <div style={{ display: 'flex', flexDirection: 'column', width: 452, background: CREAM, border: `5px solid ${NAVY}`, borderRadius: 34, boxShadow: `10px 12px 0 ${NAVY}`, padding: '30px 34px', transform: 'rotate(3deg)' }}>
