@@ -1,6 +1,8 @@
+import { after } from 'next/server'
 import { ipLimiter, requestIp } from '@/lib/ip-limit'
 import { handleGo } from '@/lib/spare-change-core'
 import { goStore } from '@/lib/spare-change-core-store'
+import { notifyParlayClick } from '@/lib/spare-change-slack'
 
 export const dynamic = 'force-dynamic'
 
@@ -25,6 +27,7 @@ function page(message: string, status: number): Response {
  * No redirect, just a plain page, when: the ticket or the token is unknown (404); the member was removed, is younger than the ticket's
  * minimum age ("This ticket is 21+."), or the ticket's link is not https on the allow-list of sites (403). 429 after 30 taps a minute.
  * The destination is the stored link exactly: the token is never added to it. Opening a link places nothing and moves no money.
+ * Each redirect is posted to Slack (#spare-change-parlay-clicks) after it answers.
  */
 export async function GET(req: Request, { params }: { params: Promise<{ ticketId: string }> }) {
   if (!mayTap(requestIp(req.headers))) return page('Too many taps. Wait a minute and try again.', 429)
@@ -34,6 +37,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ ticketId
   try {
     const decision = await handleGo({ ticketId, token, ipCountry }, { store: goStore })
     if (decision.action === 'refuse') return page(decision.message, decision.status)
+    // The click goes to #spare-change-parlay-clicks after the redirect has answered (spare-change-slack.ts).
+    after(() => notifyParlayClick({ ticketId, token }))
     return new Response(null, { status: 302, headers: { ...HEADERS, Location: decision.url } })
   } catch {
     console.error('[go] lookup failed')

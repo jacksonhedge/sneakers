@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { notifyReferralEarned, postSlack, referralSlackText, shortName, signupSlackText, webhookOk } from './spare-change-slack'
+import { clickSlackText, notifyParlayClick, notifyReferralEarned, postSlack, referralSlackText, shortName, signupSlackText, webhookFor, webhookOk } from './spare-change-slack'
 
 const sub = { name: 'Sam  Lee', state: 'NJ', age: 22, referredByMemberId: null, referredByName: null }
 
@@ -36,6 +36,45 @@ describe('the Slack referral message', () => {
   it('sends nothing when the webhook is not set', async () => {
     const fetchImpl = vi.fn() as unknown as typeof fetch
     await notifyReferralEarned({ referrerId: 'r', friendId: 'f', amountCents: 500 }, 5, {}, fetchImpl)
+    expect(fetchImpl).not.toHaveBeenCalled()
+  })
+})
+
+describe('which channel each message goes to', () => {
+  const env = {
+    SPARE_CHANGE_SLACK_WEBHOOK_URL: 'https://hooks.slack.com/services/T/B1/subs',
+    SPARE_CHANGE_SLACK_REFERRALS_WEBHOOK_URL: 'https://hooks.slack.com/services/T/B2/refs',
+    SPARE_CHANGE_SLACK_CLICKS_WEBHOOK_URL: 'https://hooks.slack.com/services/T/B3/clicks',
+  }
+  it('subscribers, referrals and parlay clicks each use their own webhook', () => {
+    expect(webhookFor('subscribers', env)).toBe(env.SPARE_CHANGE_SLACK_WEBHOOK_URL)
+    expect(webhookFor('referrals', env)).toBe(env.SPARE_CHANGE_SLACK_REFERRALS_WEBHOOK_URL)
+    expect(webhookFor('clicks', env)).toBe(env.SPARE_CHANGE_SLACK_CLICKS_WEBHOOK_URL)
+  })
+  it('referrals fall back to the subscribers webhook; clicks never do (too many for that channel)', () => {
+    const only = { SPARE_CHANGE_SLACK_WEBHOOK_URL: env.SPARE_CHANGE_SLACK_WEBHOOK_URL }
+    expect(webhookFor('referrals', only)).toBe(env.SPARE_CHANGE_SLACK_WEBHOOK_URL)
+    expect(webhookFor('clicks', only)).toBeNull()
+    expect(webhookFor('subscribers', { SPARE_CHANGE_SLACK_WEBHOOK_URL: 'https://evil.example/x' })).toBeNull()
+  })
+})
+
+describe('the Slack parlay click message', () => {
+  const ticket = { name: 'The Lucky Seven', site: 'ProphetX', buyInCents: 100, headlineCents: 90000, issueDate: '2026-11-24' }
+  it('says who opened which ticket, its buy-in and headline, and the site', () => {
+    expect(clickSlackText({ memberName: 'Sam Lee', ticket })).toBe(':dart: Parlay click: *Sam L.* opened The Lucky Seven ($1 → $900) on ProphetX · issue of Nov 24')
+  })
+  it('an anonymous tap is "Someone", and a missing ticket still reads', () => {
+    expect(clickSlackText({ memberName: null, ticket })).toContain(':dart: Parlay click: Someone opened The Lucky Seven')
+    expect(clickSlackText({ memberName: null, ticket: null })).toBe(':dart: Parlay click: Someone opened a ticket')
+  })
+  it('escapes Slack markup in the ticket name', () => {
+    expect(clickSlackText({ memberName: '<!here>', ticket: { ...ticket, name: '<b>x</b>' } })).not.toMatch(/<!here>|<b>/)
+  })
+  it('sends nothing without the clicks webhook, and never looks anything up for a malformed id', async () => {
+    const fetchImpl = vi.fn() as unknown as typeof fetch
+    await notifyParlayClick({ ticketId: 'not-a-uuid', token: null }, { SPARE_CHANGE_SLACK_CLICKS_WEBHOOK_URL: 'https://hooks.slack.com/services/T/B3/c' }, fetchImpl)
+    await notifyParlayClick({ ticketId: '6f1d3c2a-8b7e-4f6a-9c1d-2e3f4a5b6c7d', token: null }, {}, fetchImpl)
     expect(fetchImpl).not.toHaveBeenCalled()
   })
 })
