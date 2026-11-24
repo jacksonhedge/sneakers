@@ -32,7 +32,7 @@ export default async function Image() {
   return new ImageResponse(
     (
       <div style={{ width: '100%', height: '100%', display: 'flex', background: BLUE, padding: '56px 64px', fontFamily: 'Sauce', color: NAVY }}>
-        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', width: 660 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', width: 620 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <div style={{ display: 'flex', width: 78, height: 78, background: RED, borderRadius: 18, border: `3px solid ${NAVY}`, boxShadow: `4px 5px 0 ${NAVY}`, transform: 'rotate(-6deg)', overflow: 'hidden' }}>
@@ -53,15 +53,19 @@ export default async function Image() {
               ))}
             </div>
           </div>
-          <div style={{ display: 'flex', fontSize: 20, color: CREAM, whiteSpace: 'nowrap' }}>sneakersterminal.com · 18+ · Gambling problem? Call 1-800-GAMBLER</div>
+          <div style={{ display: 'flex', fontSize: 19, color: CREAM, whiteSpace: 'nowrap' }}>sneakersterminal.com · 18+ · Gambling problem? Call 1-800-GAMBLER</div>
         </div>
         <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'flex-end' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', width: 390, background: CREAM, border: `5px solid ${NAVY}`, borderRadius: 34, boxShadow: `10px 12px 0 ${NAVY}`, padding: '30px 34px', transform: 'rotate(3deg)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', width: 452, background: CREAM, border: `5px solid ${NAVY}`, borderRadius: 34, boxShadow: `10px 12px 0 ${NAVY}`, padding: '30px 34px', transform: 'rotate(3deg)' }}>
             {/* Still an illustration, not a real ticket: "one quarter, one dream", after the long-shot posts on the page. */}
             <div style={{ display: 'flex', fontSize: 21, letterSpacing: 1.5, color: RED, whiteSpace: 'nowrap' }}>ONE QUARTER. ONE DREAM.</div>
-            <div style={{ display: 'flex', flexDirection: 'column', fontFamily: 'Peace', fontSize: 62, lineHeight: 1.08, marginTop: 14 }}>
-              <span style={{ whiteSpace: 'nowrap' }}>{EXAMPLE_TICKET.buyIn} →</span>
-              <span style={{ whiteSpace: 'nowrap' }}>{EXAMPLE_TICKET.payout}</span>
+            {/* One line: a cartoon quarter (the 25-cent buy-in) going to the payout. */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 18, fontFamily: 'Peace', color: NAVY }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 80, height: 80, borderRadius: 999, background: 'linear-gradient(145deg, #F4F6F9 0%, #C7CED8 55%, #9AA3AF 100%)', border: `4px solid ${NAVY}`, boxShadow: `3px 4px 0 ${NAVY}` }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 60, height: 60, borderRadius: 999, border: '2px dashed #5E6773', fontSize: 24 }}>25¢</div>
+              </div>
+              <span style={{ fontSize: 42 }}>→</span>
+              <span style={{ fontSize: 54, whiteSpace: 'nowrap' }}>{EXAMPLE_TICKET.payout}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: `4px dashed ${NAVY}`, marginTop: 22, paddingTop: 16, fontSize: 22 }}>
               <span>buy-in</span>
